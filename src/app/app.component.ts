@@ -1,7 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { AsyncPipe } from '@angular/common';
-import { Firestore } from '@angular/fire/firestore';
+import { collection, collectionData, Firestore } from '@angular/fire/firestore';
+import { map } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -15,5 +16,15 @@ export class AppComponent {
 
   constructor() {
 
+  }
+
+  ngOnInit() {
+    const usersRef = collection(this.firestore, 'users');
+
+    collectionData(usersRef).pipe(
+      map((users: any[]) => users.map(user => user.name))
+    ).subscribe(userNames => {
+      console.log('User-Namen aus Firestore:', userNames);
+    });
   }
 }
