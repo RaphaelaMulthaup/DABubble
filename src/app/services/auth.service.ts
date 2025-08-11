@@ -1,7 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { Auth, createUserWithEmailAndPassword, updateProfile, onAuthStateChanged, signOut, User } from '@angular/fire/auth';
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import { update } from '@angular/fire/database';
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { from, Observable } from 'rxjs';
 import { BehaviorSubject } from 'rxjs';
 
