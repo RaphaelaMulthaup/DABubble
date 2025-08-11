@@ -1,0 +1,7 @@
+<ul>
+    @for (user of channels$ | async; track $index) {
+        <li>
+   {{ user.name }}
+        </li>
+    }
+</ul>

@@ -19,9 +19,7 @@ export class LoginFormComponent {
     password: new FormControl('', [Validators.required, Validators.minLength(6)]),
   });
 
-  constructor() {
-
-  }
+  constructor() {}
 
  onSubmit(): void {
    const email = this.loginForm.get('email')?.value;

@@ -1,0 +1,15 @@
+<ul>
+    @for (user of users$ | async; track $index) {
+        <li>
+            <span>{{ user.name }} ({{ user.email }})</span>
+            @if(user.uid !== currentUserId ) {  
+                @if(isAlreadyContact(user.uid)) {
+                    <span>Already a contact</span>
+                    <button  (click)="removeContact(user.uid)">-</button>
+                }@else {
+                    <button  (click)="addContact(user.uid)">+</button>
+                }         
+            }
+        </li>
+    }
+</ul>

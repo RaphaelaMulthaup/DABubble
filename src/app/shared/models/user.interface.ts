@@ -1,4 +1,9 @@
 export interface UserInterface {
+  uid: string;
+  name: string;
   email: string;
-  displayName: string;
+  photoUrl?: string;
+  authProvider: 'password' | 'google.com';
+  active: boolean;
+  contacts: string[];
 }

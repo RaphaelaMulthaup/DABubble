@@ -22,10 +22,9 @@ export class RegisterFormComponent {
   }
 
  onSubmit(): void {
-   const email = this.registerForm.get('email')?.value;
-   const password = this.registerForm.get('password')?.value;
-   const displayName = this.registerForm.get('displayName')?.value;
-   this.authService.register(email, displayName, password).subscribe({
+  const thisForm = this.registerForm.getRawValue();
+
+   this.authService.register(thisForm.email, thisForm.displayName, thisForm.password).subscribe({
      next: () => {
        console.log('Registration successful');
      },
