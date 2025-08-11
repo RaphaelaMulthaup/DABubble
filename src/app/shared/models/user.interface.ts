@@ -6,4 +6,5 @@ export interface UserInterface {
   authProvider: 'password' | 'google.com';
   active: boolean;
   contacts: string[];
+  role: 'user' | 'admin';
 }

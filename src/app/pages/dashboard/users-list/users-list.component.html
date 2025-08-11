@@ -8,7 +8,12 @@
                     <button  (click)="removeContact(user.uid)">-</button>
                 }@else {
                     <button  (click)="addContact(user.uid)">+</button>
-                }         
+                }
+                @if(user.active) {
+                    <span>Active</span>
+                }@else {
+                    <span>Inactive</span>
+                }
             }
         </li>
     }

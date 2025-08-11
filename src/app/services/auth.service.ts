@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Auth, createUserWithEmailAndPassword, updateProfile, onAuthStateChanged, signOut, User } from '@angular/fire/auth';
 import { signInWithEmailAndPassword } from "firebase/auth";
 
-import { Firestore, doc, setDoc } from '@angular/fire/firestore';
+import { Firestore, doc, setDoc, updateDoc } from '@angular/fire/firestore';
 
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 
@@ -39,7 +39,8 @@ export class AuthService {
           photoUrl: user.photoURL ?? '',
           authProvider: 'password',
           active: true,
-          contacts: []
+          contacts: [],
+          role: 'user'
         };
         await setDoc(userRef, userData);
         this.userSubject.next(user);
@@ -47,23 +48,13 @@ export class AuthService {
         return from(promise);
 }
 
-loginWithGoogle(): Observable<void> {
-  const auth = getAuth();
-  const promise = signInWithPopup(auth, this.provider)
-    .then((response) => {
-      this.userSubject.next(response.user);
-      const credential = GoogleAuthProvider.credentialFromResult(response);
-    })
-    .catch((error) => {
-      const credential = GoogleAuthProvider.credentialFromError(error);
-    });
-  return from(promise) as Observable<void>;
-}
+
 
   login(email: string, password: string): Observable<void> {
     const promise = signInWithEmailAndPassword(this.auth, email, password)
-      .then(response => {
+      .then( async response => {
         this.userSubject.next(response.user);
+        await this.markUserAsActive(response.user.uid, true);
       });
     return from(promise);
   }
@@ -73,8 +64,35 @@ loginWithGoogle(): Observable<void> {
   }
 
   logout() {
-    return signOut(this.auth);
+    const user = this.auth.currentUser;
+    if (!user) {
+      return signOut(this.auth);
+    }
+    const userRef = doc(this.firestore, `users/${user.uid}`);
+    return updateDoc(userRef, { active: false })
+    .then(() => signOut(this.auth));
+  }
+
+  async markUserAsActive(uid: string, active: boolean){
+    const userDocRef = doc(this.firestore, `users/${uid}`);
+    await updateDoc(userDocRef, { active });
+  }
+
+
+
+
+
+
+  loginWithGoogle(): Observable<void> {
+    const auth = getAuth();
+    const promise = signInWithPopup(auth, this.provider)
+      .then((response) => {
+        this.userSubject.next(response.user);
+        const credential = GoogleAuthProvider.credentialFromResult(response);
+      })
+      .catch((error) => {
+        const credential = GoogleAuthProvider.credentialFromError(error);
+      });
+      return from(promise) as Observable<void>;
   }
 }
-
-
