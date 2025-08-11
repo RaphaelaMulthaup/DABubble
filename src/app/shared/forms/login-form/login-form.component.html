@@ -1,0 +1,15 @@
+<h2>Login</h2>
+<form action="" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+    <div class="form-group flex">
+        <label for="emailId">Email: </label>
+        <input id="emailId" type="text" placeholder="Email" formControlName="email" name="email" required>
+
+        <label for="passwordId">Password: </label>
+        <input id="passwordId" type="password" placeholder="Password" formControlName="password" name="password" required>
+
+        @if(errorMessage) {
+            <div class="error">{{ errorMessage }}</div>
+        }
+        <button type="submit" [disabled]="!loginForm.valid">Login</button>
+    </div>
+</form>
