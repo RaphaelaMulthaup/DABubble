@@ -1,6 +1,6 @@
 <h2>Login</h2>
 <form action="" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-    <div class="form-group">
+    <div class="form-group flex flex-col gap-[8px]">
         <label for="emailId">Email: </label>
         <input id="emailId" type="text" placeholder="Email" formControlName="email" name="email" required>
 

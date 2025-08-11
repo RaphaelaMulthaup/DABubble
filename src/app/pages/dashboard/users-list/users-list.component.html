@@ -5,14 +5,14 @@
             @if(user.uid !== currentUserId ) {  
                 @if(isAlreadyContact(user.uid)) {
                     <span>Already a contact</span>
-                    <button  (click)="removeContact(user.uid)">-</button>
+                    <button  (click)="removeContact(user.uid)" >-</button>
                 }@else {
                     <button  (click)="addContact(user.uid)">+</button>
                 }
                 @if(user.active) {
-                    <span>Active</span>
+                    <span class="bg-green-400 px-[8px] rounded-full"></span>
                 }@else {
-                    <span>Inactive</span>
+                    <span class="bg-red-400 px-[8px] rounded-xl"></span>
                 }
             }
         </li>

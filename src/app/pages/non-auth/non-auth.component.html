@@ -1,7 +1,6 @@
 <h2>Welcome to DABubble</h2>
 @if(noAccount){
     <app-register-form />
-
     <button (click)="toggleNoAccount()">to Login</button>
 }@else {
     <app-login-form />
@@ -9,6 +8,8 @@
     <p>Please log in to continue.</p>
     <p>If you don't have an account, please register<button (click)="toggleNoAccount()">here</button>.</p>
 }
+
+
 
 
 

@@ -1,8 +1,30 @@
-<ul>
+<div class="flex justify-around items-center mb-4">
+    <div>
+        <h2 class="font-bold text-xl">Active</h2>
     @for (channel of channels$ | async; track $index) {
-        <li>
-            {{ channel.name }}
-            {{ channel.description }}
-        </li>
+        <div class="flex gap-[32px] border-b border-gray-300 py-2 w-[300px]">
+            <div class="flex flex-col gap-[16px] w-full">
+                <span>{{channel.id}}</span>
+                <span>{{ channel.name }}</span>
+                <span>Members: {{channel.memberIds.length}}</span>
+                <span>{{ channel.description }}</span>
+            </div>
+            <button class="h-[48px]" (click)="deleteChannel(channel)">Delete</button>
+        </div>
     }
-</ul>
+</div>
+<div>
+    <h2 class="font-bold text-xl">Deleted</h2>
+    @for (channel of deletedChannels$ | async; track $index) {
+        <div class="flex gap-[32px] border-b border-gray-300 py-2 w-[300px]">
+            <div class="flex flex-col gap-[16px] w-full">
+                <span>{{channel.id}}</span>
+                <span>{{ channel.name }}</span>
+                <span>{{ channel.description }}</span>
+            </div>
+            <button class="h-[48px]" (click)="addChannel(channel)">Delete</button>
+        </div>
+    }
+</div>
+</div>
+
