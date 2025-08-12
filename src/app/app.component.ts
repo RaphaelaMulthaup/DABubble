@@ -21,6 +21,12 @@ export class AppComponent {
   constructor() {}
 
   ngOnInit() {
+    // let user = {
+    //   photoUrl: 'bild-zu-Pfad-9',
+    //   email: 'harryjamespotter@mail.com',
+    // };
+    // this.userService.updateUser('gE48Y93bLDaZ2cZXJmwY', user);
+
     // this.chatService
     //   .getReactions('gQSCQ7XLFTQAu9eDpHQz', 'MHRwE4cmeSN0LVpHjnsW')
     //   .subscribe((reactions) => {
