@@ -21,8 +21,14 @@ export class AppComponent {
   constructor() {}
 
   ngOnInit() {
-    this.chatService.getChatById('gQSCQ7XLFTQAu9eDpHQz').subscribe((chat)=>{console.log('Das ist der chat', chat);
-    });
+    // let message = {
+    //   senderId: 'XbsVa8YOj8Nd9vztzX1kAQXrc7Z2',
+    //   text: 'Wie geht es dir?',
+    // };
+    // this.chatService.sendMessage('VbD4ZPbP1AKwJkS62JHG', message);
+
+    // this.chatService.getChatById('gQSCQ7XLFTQAu9eDpHQz').subscribe((chat)=>{console.log('Das ist der chat', chat);
+    // });
 
     // this.userService.getAllUsers().subscribe((users) => {
     //   console.log('alle user', users);

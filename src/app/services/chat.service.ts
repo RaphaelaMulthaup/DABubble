@@ -10,6 +10,7 @@ import {
 } from '@angular/fire/firestore';
 import { ChatInterface } from '../shared/models/chat.interface';
 import { map, Observable } from 'rxjs';
+import { MessageInterface } from '../shared/models/message.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -17,6 +18,7 @@ import { map, Observable } from 'rxjs';
 export class ChatService {
   private firestore: Firestore = inject(Firestore);
 
+  //Funktion noch nicht genutz
   /** Neuen Chat anlegen */
   async createChat(userId1: string, userId2: string) {
     const chatsRef = collection(this.firestore, 'chats');
@@ -26,6 +28,7 @@ export class ChatService {
     });
   }
 
+  //Funktion noch nicht genutz
   /** Alle Chats eines Benutzers laden */
   getChatsForUser(
     userId: string
@@ -36,9 +39,24 @@ export class ChatService {
     ) as Observable<(ChatInterface[] & { id: string })[]>;
   }
 
+  //Funktion noch nicht genutz
   /** Einzelnen Chat laden */
   getChatById(chatId: string): Observable<ChatInterface | undefined> {
     const chatRef = doc(this.firestore, `chats/${chatId}`);
-    return docData(chatRef, { idField: 'id' }) as Observable<ChatInterface | undefined>;
+    return docData(chatRef, { idField: 'id' }) as Observable<
+      ChatInterface | undefined
+    >;
+  }
+
+  /** Nachricht senden */
+  async sendMessage(
+    chatId: string,
+    message: Omit<MessageInterface, 'createdAt'>
+  ) {
+    const messagesRef = collection(this.firestore, `chats/${chatId}/messages`);
+    await addDoc(messagesRef, {
+      ...message,
+      createdAt: serverTimestamp(),
+    });
   }
 }
