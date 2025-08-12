@@ -3,4 +3,5 @@ export interface MessageInterface {
   text?: string;
   createdAt: any;
   fileUrl?: string[];
+  id?: string;
 }

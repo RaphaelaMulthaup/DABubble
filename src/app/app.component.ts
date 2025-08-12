@@ -5,6 +5,8 @@ import { collection, collectionData, Firestore } from '@angular/fire/firestore';
 import { map } from 'rxjs';
 import { UserService } from './services/user.service';
 import { ChatService } from './services/chat.service';
+import { ThreadService } from './services/thread.service';
+
 
 @Component({
   selector: 'app-root',
@@ -17,9 +19,11 @@ export class AppComponent {
   firestore: Firestore = inject(Firestore);
   private userService = inject(UserService);
   private chatService = inject(ChatService);
+  private threadService = inject(ThreadService);
 
   constructor() {}
 
   ngOnInit() {
+    // this.threadService.createThread('9ceprLo5VynWRuNVajFQ', 'userId66');
   }
 }
