@@ -23,6 +23,17 @@ export class AppComponent {
   constructor() {}
 
   ngOnInit() {
+    // let message = {
+    //   senderId: 'userId56',
+    //   text: 'Antwort im Thread',
+    // };
+    // this.threadService.sendThreadMessage('9iTo1zxP7AbfJimTOCTE', message);
+
+    // this.threadService.createThreadWithFirstMessage(
+    //   '9ceprLo5VynWRuNVajFQ',
+    //   'userId6',
+    //   'Neuer Thread!!'
+    // );
     // this.threadService
     //   .getThreadsForChannel('9ceprLo5VynWRuNVajFQ')
     //   .subscribe((threads) => {console.log('hier die threads', threads);
