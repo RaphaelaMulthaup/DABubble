@@ -7,6 +7,7 @@ import {
   docData,
   Firestore,
   serverTimestamp,
+  updateDoc,
 } from '@angular/fire/firestore';
 import { ChatInterface } from '../shared/models/chat.interface';
 import { map, Observable } from 'rxjs';
@@ -58,5 +59,9 @@ export class ChatService {
       ...message,
       createdAt: serverTimestamp(),
     });
+
+    // lastMessageAt im Chat updaten
+    const chatRef = doc(this.firestore, `chats/${chatId}`);
+    await updateDoc(chatRef, { lastMessageAt: serverTimestamp() });
   }
 }

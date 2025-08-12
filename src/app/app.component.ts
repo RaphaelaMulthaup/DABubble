@@ -23,7 +23,7 @@ export class AppComponent {
   ngOnInit() {
     // let message = {
     //   senderId: 'XbsVa8YOj8Nd9vztzX1kAQXrc7Z2',
-    //   text: 'Wie geht es dir?',
+    //   text: 'Ich teste hier rum.',
     // };
     // this.chatService.sendMessage('VbD4ZPbP1AKwJkS62JHG', message);
 
