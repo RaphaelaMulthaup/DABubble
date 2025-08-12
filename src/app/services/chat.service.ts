@@ -1,12 +1,16 @@
 import { inject, Injectable } from '@angular/core';
 import {
   addDoc,
+  arrayRemove,
+  arrayUnion,
   collection,
   collectionData,
   doc,
   docData,
   Firestore,
+  getDoc,
   serverTimestamp,
+  setDoc,
   updateDoc,
 } from '@angular/fire/firestore';
 import { ChatInterface } from '../shared/models/chat.interface';
@@ -70,4 +74,34 @@ export class ChatService {
     const messagesRef = collection(this.firestore, `chats/${chatId}/messages`);
     return collectionData(messagesRef, { idField: 'id' }) as Observable<(MessageInterface & { id: string })[]>;
   }
-}
+
+/** Reaktion zu einer Nachricht hinzufügen (oder entfernen) */
+async toggleReaction(chatId: string, messageId: string, emojiName: string, userId: string) {
+  const reactionRef = doc(this.firestore, `chats/${chatId}/messages/${messageId}/reactions/${emojiName}`);
+
+  // Hole das Dokument mit der Reaction, um zu prüfen, ob userId schon drin ist
+  const reactionSnap = await getDoc(reactionRef);
+
+  if (reactionSnap.exists()) {
+    const data = reactionSnap.data();
+    const users: string[] = data['users'] || [];
+
+    if (users.includes(userId)) {
+      // User hat die Reaction schon gesetzt → entfernen
+      await updateDoc(reactionRef, {
+        users: arrayRemove(userId)
+      });
+    } else {
+      // User hat die Reaction noch nicht → hinzufügen
+      await updateDoc(reactionRef, {
+        users: arrayUnion(userId)
+      });
+    }
+  } else {
+    // Reaktion existiert noch nicht → anlegen mit userId
+    await setDoc(reactionRef, {
+      emojiName,
+      users: [userId]
+    });
+  }
+}}

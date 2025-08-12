@@ -21,6 +21,8 @@ export class AppComponent {
   constructor() {}
 
   ngOnInit() {
+    // this.chatService.toggleReaction('gQSCQ7XLFTQAu9eDpHQz', 'MHRwE4cmeSN0LVpHjnsW', 'summer', 'UserId67');
+
     // this.chatService
     //   .getMessages('VbD4ZPbP1AKwJkS62JHG')
     //   .subscribe((messages) => {
