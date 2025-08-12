@@ -17,12 +17,14 @@ import { ChatInterface } from '../shared/models/chat.interface';
 import { map, Observable } from 'rxjs';
 import { MessageInterface } from '../shared/models/message.interface';
 import { Reaction } from '../shared/models/reaction.interface';
+import { MessageService } from './message.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ChatService {
   private firestore: Firestore = inject(Firestore);
+  private messageService = inject(MessageService);
 
   //Funktion noch nicht genutzt
   /** Neuen Chat anlegen */
@@ -60,76 +62,47 @@ export class ChatService {
     chatId: string,
     message: Omit<MessageInterface, 'createdAt'>
   ) {
-    const messagesRef = collection(this.firestore, `chats/${chatId}/messages`);
-    await addDoc(messagesRef, {
-      ...message,
-      createdAt: serverTimestamp(),
-    });
+    await this.messageService.sendMessage(
+      `chats/${chatId}`,
+      'messages',
+      message
+    );
 
-    // lastMessageAt im Chat updaten
     const chatRef = doc(this.firestore, `chats/${chatId}`);
     await updateDoc(chatRef, { lastMessageAt: serverTimestamp() });
   }
 
   //Funktion noch nicht genutzt
   /** Nachrichten eines Chats abrufen */
-  getMessages(
-    chatId: string
-  ): Observable<(MessageInterface & { id: string })[]> {
-    const messagesRef = collection(this.firestore, `chats/${chatId}/messages`);
-    return collectionData(messagesRef, { idField: 'id' }) as Observable<
-      (MessageInterface & { id: string })[]
-    >;
+  getMessages(chatId: string) {
+    return this.messageService.getMessages<MessageInterface>(
+      `chats/${chatId}`,
+      'messages'
+    );
   }
-
   //Funktion noch nicht genutzt
   /** Reaktion zu einer Nachricht hinzufügen (oder entfernen) */
-  async toggleReaction(
+  toggleReaction(
     chatId: string,
     messageId: string,
     emojiName: string,
     userId: string
   ) {
-    const reactionRef = doc(
-      this.firestore,
-      `chats/${chatId}/messages/${messageId}/reactions/${emojiName}`
+    return this.messageService.toggleReaction(
+      `chats/${chatId}`,
+      'messages',
+      messageId,
+      emojiName,
+      userId
     );
-
-    // Hole das Dokument mit der Reaction, um zu prüfen, ob userId schon drin ist
-    const reactionSnap = await getDoc(reactionRef);
-
-    if (reactionSnap.exists()) {
-      const data = reactionSnap.data();
-      const users: string[] = data['users'] || [];
-
-      if (users.includes(userId)) {
-        // User hat die Reaction schon gesetzt → entfernen
-        await updateDoc(reactionRef, {
-          users: arrayRemove(userId),
-        });
-      } else {
-        // User hat die Reaction noch nicht → hinzufügen
-        await updateDoc(reactionRef, {
-          users: arrayUnion(userId),
-        });
-      }
-    } else {
-      // Reaktion existiert noch nicht → anlegen mit userId
-      await setDoc(reactionRef, {
-        emojiName,
-        users: [userId],
-      });
-    }
   }
 
   //Funktion noch nicht genutzt
-  getReactions(chatId: string, messageId: string): Observable<Reaction[]> {
-    const reactionsRef = collection(
-      this.firestore,
-      `chats/${chatId}/messages/${messageId}/reactions`
+  getReactions(chatId: string, messageId: string) {
+    return this.messageService.getReactions(
+      `chats/${chatId}`,
+      'messages',
+      messageId
     );
-    return collectionData(reactionsRef, { idField: 'id' }) as Observable<
-      Reaction[]
-    >;
   }
 }

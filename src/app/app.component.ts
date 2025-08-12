@@ -23,26 +23,28 @@ export class AppComponent {
   constructor() {}
 
   ngOnInit() {
-    // this.threadService
-    //   .getThreadMessages('9iTo1zxP7AbfJimTOCTE')
+    this.threadService.getThreadMessages('9iTo1zxP7AbfJimTOCTE').subscribe((messages)=>{console.log('HIer die Messages', messages);
+    })
+    // this.chatService
+    //   .getReactions('VbD4ZPbP1AKwJkS62JHG', '6RHZYXVjoHnu7IF6blVl')
+    //   .subscribe((reactions) => {
+    //     console.log('meine reactions', reactions);
+    //   });
+    //   this.chatService.toggleReaction(
+    //   'VbD4ZPbP1AKwJkS62JHG',
+    //   '6RHZYXVjoHnu7IF6blVl',
+    //   'sun',
+    //   'userId5'
+    // )
+    // this.chatService
+    //   .getMessages('VbD4ZPbP1AKwJkS62JHG')
     //   .subscribe((messages) => {
-    //     console.log('Hier alle Nachrichten:', messages);
+    //     console.log('hier die Nachrichten', messages);
     //   });
     // let message = {
-    //   senderId: 'userId56',
-    //   text: 'Antwort im Thread',
+    //   senderId: 'userId6',
+    //   text: 'Einen direkte Nachricht im Chat',
     // };
-    // this.threadService.sendThreadMessage('9iTo1zxP7AbfJimTOCTE', message);
-
-    // this.threadService.createThreadWithFirstMessage(
-    //   '9ceprLo5VynWRuNVajFQ',
-    //   'userId6',
-    //   'Neuer Thread!!'
-    // );
-    // this.threadService
-    //   .getThreadsForChannel('9ceprLo5VynWRuNVajFQ')
-    //   .subscribe((threads) => {console.log('hier die threads', threads);
-    //   });
-    // this.threadService.createThread('9ceprLo5VynWRuNVajFQ', 'userId66');
+    // this.chatService.sendMessage('VbD4ZPbP1AKwJkS62JHG', message);
   }
 }

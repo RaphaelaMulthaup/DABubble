@@ -13,49 +13,31 @@ import {
   where,
 } from '@angular/fire/firestore';
 import { MessageInterface } from '../shared/models/message.interface';
+import { MessageService } from './message.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ThreadService {
   private firestore: Firestore = inject(Firestore);
+  private messageService = inject(MessageService);
 
   //Funktion noch nicht benutzt
   // Thread erstellen
-  async createThreadWithFirstMessage(
-    channelId: string,
-    startedBy: string,
-    firstMessageText?: string,
-    fileUrls?: string[]
-  ): Promise<string> {
-    // 1. Neuen Thread erstellen
+async createThreadWithFirstMessage(channelId: string, startedBy: string, text?: string, fileUrls?: string[]) {
     const threadsRef = collection(this.firestore, 'threads');
-    const newThreadRef = await addDoc(threadsRef, {
-      channelId,
-      startedBy,
-    });
+    const newThreadRef = await addDoc(threadsRef, { channelId, startedBy });
 
     const threadId = newThreadRef.id;
+    const channelRef = doc(this.firestore, `channels/${channelId}`);
+    await updateDoc(channelRef, { threadIds: arrayUnion(threadId) });
 
-    // 2. Im Channel threadIds updaten
-    const channelRef = doc(this.firestore, 'channels', channelId);
-    await updateDoc(channelRef, {
-      threadIds: arrayUnion(threadId),
-    });
-
-    // 3. Erste Nachricht zum Thread hinzufügen
-    const messagesRef = collection(
-      this.firestore,
-      `threads/${threadId}/threadMessages`
-    );
-    await addDoc(messagesRef, {
+    await this.messageService.sendMessage(`threads/${threadId}`, 'threadMessages', {
       senderId: startedBy,
-      text: firstMessageText,
+      text,
       fileUrl: fileUrls || [],
-      createdAt: Timestamp.now(),
     });
 
-    // 4. Thread-ID zurückgeben
     return threadId;
   }
 
@@ -69,7 +51,10 @@ export class ThreadService {
 
   //Funktion noch nicht genutzt
   // ThreadMessage senden
-  async sendThreadMessage(threadId: string, message: Partial<MessageInterface>) {
+  async sendThreadMessage(
+    threadId: string,
+    message: Partial<MessageInterface>
+  ) {
     const messagesRef = collection(
       this.firestore,
       `threads/${threadId}/threadMessages`
@@ -83,8 +68,17 @@ export class ThreadService {
   //Funktion nochnicht genutzt
   // Alle Nachrichten eines Threads holen (sortiert nach createdAt)
   getThreadMessages(threadId: string) {
-    const messagesRef = collection(this.firestore, `threads/${threadId}/threadMessages`);
-    const q = query(messagesRef, orderBy('createdAt', 'asc'));
-    return collectionData(q, { idField: 'id' });
+    return this.messageService.getMessages<MessageInterface>(
+      `threads/${threadId}`,
+      'threadMessages'
+    );
+  }
+
+  toggleReaction(threadId: string, messageId: string, emojiName: string, userId: string) {
+    return this.messageService.toggleReaction(`threads/${threadId}`, 'threadMessages', messageId, emojiName, userId);
+  }
+
+  getReactions(threadId: string, messageId: string) {
+    return this.messageService.getReactions(`threads/${threadId}`, 'threadMessages', messageId);
   }
 }
