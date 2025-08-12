@@ -4,27 +4,25 @@ import { AsyncPipe } from '@angular/common';
 import { collection, collectionData, Firestore } from '@angular/fire/firestore';
 import { map } from 'rxjs';
 import { UserService } from './services/user.service';
+import { ChatService } from './services/chat.service';
 
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet, AsyncPipe],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  styleUrl: './app.component.scss',
 })
 export class AppComponent {
   title = 'DABubble';
   firestore: Firestore = inject(Firestore);
   private userService = inject(UserService);
+  private chatService = inject(ChatService);
 
   constructor() {}
 
   ngOnInit() {
     // this.userService.getAllUsers().subscribe((users) => {
     //   console.log('alle user', users);
-    // });
-
-    // this.userService.getUserById('gE48Y93bLDaZ2cZXJmwY').subscribe((user) => {
-    //   console.log('Test User:', user);
     // });
 
     // collectionData(usersRef).pipe(
