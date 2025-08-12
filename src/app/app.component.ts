@@ -21,43 +21,5 @@ export class AppComponent {
   constructor() {}
 
   ngOnInit() {
-    // let user = {
-    //   photoUrl: 'bild-zu-Pfad-9',
-    //   email: 'harryjamespotter@mail.com',
-    // };
-    // this.userService.updateUser('gE48Y93bLDaZ2cZXJmwY', user);
-
-    // this.chatService
-    //   .getReactions('gQSCQ7XLFTQAu9eDpHQz', 'MHRwE4cmeSN0LVpHjnsW')
-    //   .subscribe((reactions) => {
-    //     console.log('Hier die Reaktionen:', reactions);
-    //   });
-
-    // this.chatService.toggleReaction('gQSCQ7XLFTQAu9eDpHQz', 'MHRwE4cmeSN0LVpHjnsW', 'summer', 'UserId67');
-
-    // this.chatService
-    //   .getMessages('VbD4ZPbP1AKwJkS62JHG')
-    //   .subscribe((messages) => {
-    //     console.log('hier die Nachtrichten', messages);
-    //   });
-
-    // let message = {
-    //   senderId: 'XbsVa8YOj8Nd9vztzX1kAQXrc7Z2',
-    //   text: 'Ich teste hier rum.',
-    // };
-    // this.chatService.sendMessage('VbD4ZPbP1AKwJkS62JHG', message);
-
-    // this.chatService.getChatById('gQSCQ7XLFTQAu9eDpHQz').subscribe((chat)=>{console.log('Das ist der chat', chat);
-    // });
-
-    // this.userService.getAllUsers().subscribe((users) => {
-    //   console.log('alle user', users);
-    // });
-
-    // collectionData(usersRef).pipe(
-    //   map((users: any[]) => users.map(user => user.name))
-    // ).subscribe(userNames => {
-    //   console.log('User-Namen aus Firestore:', userNames);
-    // });
   }
 }

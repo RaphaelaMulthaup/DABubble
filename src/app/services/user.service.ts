@@ -48,6 +48,15 @@ export class UserService {
   /** Erstellt oder überschreibt einen Benutzer */
   async updateUser(userId: string, data: Partial<UserInterface>) {
     const userRef = doc(this.firestore, `users/${userId}`);
-    await setDoc(userRef, data, { merge: true });
+    await updateDoc(userRef, { ...data });
+  }
+
+  //Funktion noch nicht genutzt
+  /** Online/Offline setzen */
+  async setActiveStatus(userId: string, isActive: boolean) {
+    const userRef = doc(this.firestore, `users/${userId}`);
+    await updateDoc(userRef, {
+      active: isActive,
+    });
   }
 }
