@@ -5,11 +5,12 @@ import { UsersListComponent } from "./users-list/users-list.component";
 import { CreateChannelFormComponent } from "../../shared/forms/create-channel-form/create-channel-form.component";
 import { ChannelListComponent } from "./channel-list/channel-list.component";
 import { SidenavComponent } from "./sidenav/sidenav.component";
+import { ChannelDetailComponent } from "./channel-detail/channel-detail.component";
 
 
 @Component({
   selector: 'app-dashboard',
-  imports: [UsersListComponent, CreateChannelFormComponent, ChannelListComponent, SidenavComponent],
+  imports: [UsersListComponent, CreateChannelFormComponent, ChannelListComponent, SidenavComponent, ChannelDetailComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })

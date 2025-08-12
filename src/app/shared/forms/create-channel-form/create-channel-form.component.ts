@@ -38,6 +38,7 @@ export class CreateChannelFormComponent {
         console.log('Channel created successfully');
         this.errorMessage = null;
         this.createChannel.reset();
+        this.close.emit();
       },
       error: (err: { code: string | null }) => {
         this.errorMessage = err.code;

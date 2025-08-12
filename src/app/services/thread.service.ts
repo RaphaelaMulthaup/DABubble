@@ -14,6 +14,7 @@ import {
 } from '@angular/fire/firestore';
 import { MessageInterface } from '../shared/models/message.interface';
 import { MessageService } from './message.service';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -81,4 +82,5 @@ async createThreadWithFirstMessage(channelId: string, startedBy: string, text?: 
   getReactions(threadId: string, messageId: string) {
     return this.messageService.getReactions(`threads/${threadId}`, 'threadMessages', messageId);
   }
+
 }

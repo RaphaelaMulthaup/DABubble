@@ -10,7 +10,7 @@
     @for (channel of channels$ | async; track $index) {
         <div class="flex gap-[32px] border-b border-gray-300 py-2 w-[300px]">
             <div class="flex flex-col gap-[16px] w-full">
-                <span>{{ channel.name }}</span>
+                <span class="cursor-pointer" (click)="selectChannel(channel)">{{ channel.name }}</span>
             </div>
         </div>
     }

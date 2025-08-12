@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ChannelsService } from '../../../services/channels.service';
 import { Observable } from 'rxjs';
 import { ChannelInterface } from '../../../shared/models/channel.interface';
 import { AsyncPipe } from '@angular/common';
 import { CreateChannelFormComponent } from '../../../shared/forms/create-channel-form/create-channel-form.component';
+import { ChannelSelectionService } from '../../../services/channel-selection.service';
 
 @Component({
   selector: 'app-channel-list',
@@ -13,16 +14,24 @@ import { CreateChannelFormComponent } from '../../../shared/forms/create-channel
 })
 
 export class ChannelListComponent {
+  showPopup = false;
+
   channels$: Observable<ChannelInterface[]>;
   deletedChannels$: Observable<ChannelInterface[]>;
+  selectedChannel: ChannelInterface | null = null;
 
-      showPopup = false;
+  private channelSelectionService = inject(ChannelSelectionService);
+  private channnelsService =  inject(ChannelsService); 
 
-  constructor(private channnelsService: ChannelsService) {
+  constructor() {
     this.channels$ = this.channnelsService.getAllChannels();
     this.deletedChannels$ = this.channnelsService.getAllDeletedChannels();
   }
 
+
+  selectChannel(channel: ChannelInterface) {
+    this.channelSelectionService.selectChannel(channel);
+  }
 
 
   openPopup() {
