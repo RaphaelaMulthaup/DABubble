@@ -3,6 +3,8 @@ import {
   addDoc,
   collection,
   collectionData,
+  doc,
+  docData,
   Firestore,
   serverTimestamp,
 } from '@angular/fire/firestore';
@@ -32,5 +34,11 @@ export class ChatService {
     return collectionData(chatsRef, { idField: 'id' }).pipe(
       map((chats) => chats.filter((c) => c['userIds'].includes(userId)))
     ) as Observable<(ChatInterface[] & { id: string })[]>;
+  }
+
+  /** Einzelnen Chat laden */
+  getChatById(chatId: string): Observable<ChatInterface | undefined> {
+    const chatRef = doc(this.firestore, `chats/${chatId}`);
+    return docData(chatRef, { idField: 'id' }) as Observable<ChatInterface | undefined>;
   }
 }

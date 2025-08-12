@@ -21,7 +21,7 @@ export class AppComponent {
   constructor() {}
 
   ngOnInit() {
-    this.chatService.getChatsForUser('XbsVa8YOj8Nd9vztzX1kAQXrc7Z2').subscribe((chats)=>{console.log('Das sind die chats', chats);
+    this.chatService.getChatById('gQSCQ7XLFTQAu9eDpHQz').subscribe((chat)=>{console.log('Das ist der chat', chat);
     });
 
     // this.userService.getAllUsers().subscribe((users) => {
