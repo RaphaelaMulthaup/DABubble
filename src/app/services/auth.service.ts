@@ -31,6 +31,12 @@ export class AuthService {
     onAuthStateChanged(this.auth, (user) => this.userSubject.next(user));
   }
 
+
+  getCurrentUserId() {
+    const user = this.auth.currentUser;
+    return user ? user.uid : null;
+  }
+
   register(
     email: string,
     displayName: string,

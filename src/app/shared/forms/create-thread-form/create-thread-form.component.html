@@ -1,6 +1,7 @@
-<form action="" (ngsubmit)>
+<form action=""  [formGroup]="createThreadFrom" (ngSubmit)="onSubmit()">
     <div>
-        <label for=""></label>
-        <input fomrControlName="" type="text" name="" id="" placeholder="Enter thread title" required>
+        <label for="messageId"></label>
+        <input id="messageId" type="text" formControlName="message"  name="message"  placeholder="Enter thread title" required>
     </div>
+    <button type="submit">Send</button>
 </form>

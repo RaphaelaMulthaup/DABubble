@@ -17,6 +17,7 @@ import { docData } from '@angular/fire/firestore';
   providedIn: 'root',
 })
 export class UserService {
+  
   private firestore: Firestore = inject(Firestore);
 
   getAllUsers(): Observable<UserInterface[]> {
@@ -32,6 +33,7 @@ export class UserService {
       contacts: arrayUnion(contactId),
     });
   }
+
   removeContactFromUser(userId: string, contactId: string): Promise<void> {
     const userDocRef = doc(this.firestore, `users/${userId}`);
     return updateDoc(userDocRef, {

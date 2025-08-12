@@ -11,8 +11,17 @@ export class ChannelSelectionService {
   selectChannel(channel: ChannelInterface | null) {
     this.selectedChannelSubject.next(channel);
   }
-  
+
+  getSelectedChannelId(): string | null {
+    const selectedChannel = this.selectedChannelSubject.getValue();
+    return selectedChannel ? selectedChannel.id! : null;
+  }
+
   clearSelection() {
     this.selectedChannelSubject.next(null);
   }
+  
+  getSelectedChannelSync(): ChannelInterface | null {
+  return this.selectedChannelSubject.getValue();
+}
 }

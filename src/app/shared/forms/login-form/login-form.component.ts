@@ -10,6 +10,7 @@ import { FormControl, FormsModule, ReactiveFormsModule, FormGroup, Validators } 
   templateUrl: './login-form.component.html',
   styleUrl: './login-form.component.scss'
 })
+
 export class LoginFormComponent {
   authService = inject(AuthService);
   errorMessage: string | null = null;
