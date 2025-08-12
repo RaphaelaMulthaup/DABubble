@@ -7,7 +7,6 @@ import { UserService } from './services/user.service';
 import { ChatService } from './services/chat.service';
 import { ThreadService } from './services/thread.service';
 
-
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet, AsyncPipe],
@@ -24,6 +23,10 @@ export class AppComponent {
   constructor() {}
 
   ngOnInit() {
+    // this.threadService
+    //   .getThreadsForChannel('9ceprLo5VynWRuNVajFQ')
+    //   .subscribe((threads) => {console.log('hier die threads', threads);
+    //   });
     // this.threadService.createThread('9ceprLo5VynWRuNVajFQ', 'userId66');
   }
 }
