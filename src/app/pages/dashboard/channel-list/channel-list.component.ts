@@ -3,10 +3,11 @@ import { ChannelsService } from '../../../services/channels.service';
 import { Observable } from 'rxjs';
 import { ChannelInterface } from '../../../shared/models/channel.interface';
 import { AsyncPipe } from '@angular/common';
+import { CreateChannelFormComponent } from '../../../shared/forms/create-channel-form/create-channel-form.component';
 
 @Component({
   selector: 'app-channel-list',
-  imports: [AsyncPipe],
+  imports: [AsyncPipe, CreateChannelFormComponent],
   templateUrl: './channel-list.component.html',
   styleUrl: './channel-list.component.scss'
 })
@@ -14,13 +15,24 @@ import { AsyncPipe } from '@angular/common';
 export class ChannelListComponent {
   channels$: Observable<ChannelInterface[]>;
   deletedChannels$: Observable<ChannelInterface[]>;
-  
+
+      showPopup = false;
+
   constructor(private channnelsService: ChannelsService) {
     this.channels$ = this.channnelsService.getAllChannels();
-
     this.deletedChannels$ = this.channnelsService.getAllDeletedChannels();
-
   }
+
+
+
+  openPopup() {
+    this.showPopup = true;
+  }
+
+  closePopup() {
+    this.showPopup = false;
+  }
+
   deleteChannel(channel:ChannelInterface) {
     console.log('Deleting channel:', channel.id);
     this.channnelsService.deleteChannel(channel.id!)
@@ -34,6 +46,7 @@ export class ChannelListComponent {
         }
       });
   }
+  
     addChannel(channel:ChannelInterface) {
     console.log('Deleting channel:', channel);
     this.channnelsService.addChannel(channel.id!)

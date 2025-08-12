@@ -1,3 +1,6 @@
+<div class="overlay">
+  <div class="popup">
+
 <h2>Create Channel</h2>
 <form action="" [formGroup]="createChannel" (ngSubmit)="onSubmit()">
     <div class="form-group flex">
@@ -10,6 +13,11 @@
         @if(errorMessage) {
             <div class="error">{{ errorMessage }}</div>
         }
-        <button type="submit" [disabled]="!createChannel.valid">Create</button>
+        <div class="actions">
+            <button type="submit" [disabled]="!createChannel.valid">Create</button>
+            <button type="button" (click)="onClose()">Închide</button>
+        </div>
     </div>
 </form>
+  </div>
+</div>

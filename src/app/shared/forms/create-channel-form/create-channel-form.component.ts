@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, EventEmitter, inject, Output } from '@angular/core';
 import { ChannelsService } from '../../../services/channels.service';
 import { FormControl, FormsModule, ReactiveFormsModule, FormGroup, Validators } from '@angular/forms';
 
@@ -10,6 +10,9 @@ import { FormControl, FormsModule, ReactiveFormsModule, FormGroup, Validators } 
   styleUrl: './create-channel-form.component.scss'
 })
 export class CreateChannelFormComponent {
+  @Output() close = new EventEmitter<void>();
+  @Output() submitForm = new EventEmitter<any>();
+
   channelService = inject(ChannelsService);
   errorMessage: string | null = null;
 
@@ -40,5 +43,9 @@ export class CreateChannelFormComponent {
         this.errorMessage = err.code;
       }
    });
+  }
+
+    onClose() {
+    this.close.emit();
   }
 }
