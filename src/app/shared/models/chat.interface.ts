@@ -1,4 +1,4 @@
-export interface Chat {
+export interface ChatInterface {
   userIds: string[];
   lastMessageAt: any;
 }
