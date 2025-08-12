@@ -19,7 +19,9 @@ export class AppComponent {
   constructor() {}
 
   ngOnInit() {
-    const usersRef = collection(this.firestore, 'users');
+    this.userService.getAllUsers().subscribe((users) => {
+      console.log('alle user', users);
+    });
 
     // this.userService.getUserById('gE48Y93bLDaZ2cZXJmwY').subscribe((user) => {
     //   console.log('Test User:', user);
