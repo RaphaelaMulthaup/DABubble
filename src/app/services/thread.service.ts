@@ -6,6 +6,7 @@ import {
   collectionData,
   doc,
   Firestore,
+  orderBy,
   query,
   Timestamp,
   updateDoc,
@@ -77,5 +78,13 @@ export class ThreadService {
       ...message,
       createdAt: Timestamp.now(),
     });
+  }
+
+  //Funktion nochnicht genutzt
+  // Alle Nachrichten eines Threads holen (sortiert nach createdAt)
+  getThreadMessages(threadId: string) {
+    const messagesRef = collection(this.firestore, `threads/${threadId}/threadMessages`);
+    const q = query(messagesRef, orderBy('createdAt', 'asc'));
+    return collectionData(q, { idField: 'id' });
   }
 }

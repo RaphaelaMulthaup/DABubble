@@ -23,6 +23,11 @@ export class AppComponent {
   constructor() {}
 
   ngOnInit() {
+    // this.threadService
+    //   .getThreadMessages('9iTo1zxP7AbfJimTOCTE')
+    //   .subscribe((messages) => {
+    //     console.log('Hier alle Nachrichten:', messages);
+    //   });
     // let message = {
     //   senderId: 'userId56',
     //   text: 'Antwort im Thread',
