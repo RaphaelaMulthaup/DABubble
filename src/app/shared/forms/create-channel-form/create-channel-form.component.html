@@ -1,0 +1,15 @@
+<h2>Create Channel</h2>
+<form action="" [formGroup]="createChannel" (ngSubmit)="onSubmit()">
+    <div class="form-group flex">
+        <label for="nameId">Name: </label>
+        <input id="nameId" type="text" placeholder="Name" formControlName="name" name="name" required>
+
+        <label for="descriptionId">Description: </label>
+        <input id="descriptionId" type="text" placeholder="Description" formControlName="description" name="description" required>
+
+        @if(errorMessage) {
+            <div class="error">{{ errorMessage }}</div>
+        }
+        <button type="submit" [disabled]="!createChannel.valid">Create</button>
+    </div>
+</form>

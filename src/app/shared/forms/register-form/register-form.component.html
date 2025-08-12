@@ -1,0 +1,25 @@
+<h2>Register</h2>
+<form action="" [formGroup]="registerForm" (ngSubmit)="onSubmit()" >
+    <div class="flex flex-col gap-[8px]">
+        <div>        
+            <label for="emailId">Email: </label>
+            <input id="emailId" type="text" placeholder="Email" formControlName="email" name="email" required>
+        </div>
+
+        <div>        
+            <label for="passwordId">Password: </label>
+            <input id="passwordId" type="password" placeholder="Password" formControlName="password" name="password" required>
+        </div>
+
+        <div>
+            <label for="displayNameId">Display Name: </label>
+            <input id="displayNameId" type="text" placeholder="Display Name" formControlName="displayName" name="displayName" required>
+        </div>
+       
+
+        @if(errorMessage) {
+            <div class="error">{{ errorMessage }}</div>
+        }
+        <button type="submit" [disabled]="!registerForm.valid">Register</button>
+    </div>
+</form>

@@ -1,34 +1,39 @@
-import { inject, Injectable } from '@angular/core';
-import { collection, collectionData, doc, docData, Firestore } from '@angular/fire/firestore';
+import { Injectable, inject } from '@angular/core';
+import { Firestore, collectionData, collection, doc, updateDoc, arrayUnion, arrayRemove } from '@angular/fire/firestore';
+import { UserInterface } from '../shared/models/user.interface';
 import { Observable } from 'rxjs';
-
-export interface User {
-  userId?: string;
-  name: string;
-  email: string;
-  photoURL: string;
-  contacts: string[];
-  authProvider: 'google.com' | 'passwort';
-  active: boolean;
-}
+import { docData } from '@angular/fire/firestore';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
-export class UserService {
-  firestore: Firestore = inject(Firestore);
 
-  /** Holt einen Benutzer anhand der userId */
-  getUserById(userId: string): Observable<User | undefined> {
-    const userRef = doc(this.firestore, `users/${userId}`);
-    return docData(userRef, { idField: 'userId' }) as Observable<
-      User | undefined
-    >;
+export class UserService {
+   private firestore: Firestore = inject(Firestore);
+
+
+   getAllUsers(): Observable<UserInterface[]> {
+    const usersCollection = collection(this.firestore, 'users');
+    return collectionData(usersCollection, { idField: 'uid' }) as Observable<UserInterface[]>;
   }
 
-  /** Holt alle Benutzer */
-  getAllUsers(): Observable<User[]> {
-    const usersRef = collection(this.firestore, 'users');
-    return collectionData(usersRef, { idField: 'id' }) as Observable<User[]>;
+    addContactToUser(userId: string, contactId: string): Promise<void> {
+    const userDocRef = doc(this.firestore, `users/${userId}`);
+    return updateDoc(userDocRef, {
+      contacts: arrayUnion(contactId)
+    });
+  }
+    removeContactFromUser(userId: string, contactId: string): Promise<void> {
+      const userDocRef = doc(this.firestore, `users/${userId}`);
+      return updateDoc(userDocRef, {
+        contacts: arrayRemove(contactId)
+      });
+    }
+
+  getUserById(uid: string): Observable<UserInterface> {
+    const userDocRef = doc(this.firestore, `users/${uid}`);
+    return docData(userDocRef) as Observable<UserInterface>;
   }
 }
+
+
