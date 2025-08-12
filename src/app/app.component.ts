@@ -21,6 +21,12 @@ export class AppComponent {
   constructor() {}
 
   ngOnInit() {
+    // this.chatService
+    //   .getMessages('VbD4ZPbP1AKwJkS62JHG')
+    //   .subscribe((messages) => {
+    //     console.log('hier die Nachtrichten', messages);
+    //   });
+
     // let message = {
     //   senderId: 'XbsVa8YOj8Nd9vztzX1kAQXrc7Z2',
     //   text: 'Ich teste hier rum.',

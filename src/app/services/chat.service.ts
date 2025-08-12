@@ -64,4 +64,10 @@ export class ChatService {
     const chatRef = doc(this.firestore, `chats/${chatId}`);
     await updateDoc(chatRef, { lastMessageAt: serverTimestamp() });
   }
+
+   /** Nachrichten eines Chats abrufen */
+  getMessages(chatId: string): Observable<(MessageInterface & { id: string })[]> {
+    const messagesRef = collection(this.firestore, `chats/${chatId}/messages`);
+    return collectionData(messagesRef, { idField: 'id' }) as Observable<(MessageInterface & { id: string })[]>;
+  }
 }
