@@ -1,22 +1,20 @@
-
-
 <!-- <app-create-channel-form/>
 
 <div><app-channel-list/></div> -->
 <!-- <div><app-users-list/></div> -->
 
 <div class="flex flex-col w-full bg-green-400 h-[100vh] gap-[48px]">
-    <div class="flex w-full bg-white h-[60px]">
-
-        <button (click)="logout()">logout</button>
+  <div class="flex w-full bg-white h-[60px]">
+    <button (click)="logout()">logout</button>
+  </div>
+  <section class="flex w-full justify-around h-[calc(100vh-120px)] gap-[24px]">
+    <div class="w-[300px] bg-white h-full">
+      <app-sidenav />
     </div>
-    <section class="flex w-full justify-around h-[calc(100vh-120px)] gap-[24px]">
-        <div class="w-[300px] bg-white h-full">
-            <app-sidenav/>
-        </div>
-        <div class="w-[700px] bg-white h-full">
-            <app-channel-detail/>
-        </div>
-        <div class="w-[300px] bg-white h-full"></div>
-    </section>
+    <div class="w-[700px] bg-white h-full">
+      <app-channel-detail />
+      <!-- Oder auch app-chat-detail Das können wir vielleicht über verschiedene routes oder mit @if einfügen -->
+    </div>
+    <div class="w-[300px] bg-white h-full"></div>
+  </section>
 </div>
