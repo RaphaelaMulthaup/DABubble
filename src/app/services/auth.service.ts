@@ -89,22 +89,10 @@ export class AuthService {
     const promise = signInWithEmailAndPassword(this.auth, email, password).then(
       async (response) => {
         this.userSubject.next(response.user);
-await this.createOrUpdateUserInFirestore(response.user, 'password');      }
+        await this.createOrUpdateUserInFirestore(response.user, 'password');
+      }
     );
     return from(promise);
-  }
-
-  get currentUser(): User | null {
-    return this.auth.currentUser;
-  }
-
-  logout() {
-    const user = this.auth.currentUser;
-    if (!user) {
-      return signOut(this.auth);
-    }
-    const userRef = doc(this.firestore, `users/${user.uid}`);
-    return updateDoc(userRef, { active: false }).then(() => signOut(this.auth));
   }
 
   loginWithGoogle(): Observable<void> {
@@ -120,5 +108,18 @@ await this.createOrUpdateUserInFirestore(response.user, 'password');      }
       });
 
     return from(promise) as Observable<void>;
+  }
+
+  get currentUser(): User | null {
+    return this.auth.currentUser;
+  }
+
+  logout() {
+    const user = this.auth.currentUser;
+    if (!user) {
+      return signOut(this.auth);
+    }
+    const userRef = doc(this.firestore, `users/${user.uid}`);
+    return updateDoc(userRef, { active: false }).then(() => signOut(this.auth));
   }
 }
