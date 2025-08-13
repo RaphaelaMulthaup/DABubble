@@ -5,34 +5,37 @@ import { ChannelInterface } from '../../../shared/models/channel.interface';
 import { AsyncPipe } from '@angular/common';
 import { CreateChannelFormComponent } from '../../../shared/forms/create-channel-form/create-channel-form.component';
 import { ChannelSelectionService } from '../../../services/channel-selection.service';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-channel-list',
   imports: [AsyncPipe, CreateChannelFormComponent],
   templateUrl: './channel-list.component.html',
-  styleUrl: './channel-list.component.scss'
+  styleUrl: './channel-list.component.scss',
 })
-
 export class ChannelListComponent {
   showPopup = false;
 
-  channels$: Observable<ChannelInterface[]>;
-  deletedChannels$: Observable<ChannelInterface[]>;
+  channels$!: Observable<ChannelInterface[]>;
+  deletedChannels$!: Observable<ChannelInterface[]>;
   selectedChannel: ChannelInterface | null = null;
+  currentUserId!: string | null;
 
   private channelSelectionService = inject(ChannelSelectionService);
-  private channnelsService =  inject(ChannelsService); 
+  private channnelsService = inject(ChannelsService);
+  private authService = inject(AuthService);
 
-  constructor() {
-    this.channels$ = this.channnelsService.getAllChannels();
+  constructor() {  }
+
+  ngOnInit() {
+    this.currentUserId = this.authService.getCurrentUserId();
+    this.channels$ = this.channnelsService.getCurrentUserChannels();
     this.deletedChannels$ = this.channnelsService.getAllDeletedChannels();
   }
-
 
   selectChannel(channel: ChannelInterface) {
     this.channelSelectionService.selectChannel(channel);
   }
-
 
   openPopup() {
     this.showPopup = true;
@@ -42,31 +45,29 @@ export class ChannelListComponent {
     this.showPopup = false;
   }
 
-  deleteChannel(channel:ChannelInterface) {
+  deleteChannel(channel: ChannelInterface) {
     console.log('Deleting channel:', channel.id);
-    this.channnelsService.deleteChannel(channel.id!)
-      .subscribe({
-        next: () => {
-          alert('Channel deleted successfully!');
-        },
-        error: (error) => {
-          console.error('Error deleting channel:', error);
-          alert('Failed to delete channel. Please try again later.');
-        }
-      });
+    this.channnelsService.deleteChannel(channel.id!).subscribe({
+      next: () => {
+        alert('Channel deleted successfully!');
+      },
+      error: (error) => {
+        console.error('Error deleting channel:', error);
+        alert('Failed to delete channel. Please try again later.');
+      },
+    });
   }
-  
-    addChannel(channel:ChannelInterface) {
+
+  addChannel(channel: ChannelInterface) {
     console.log('Deleting channel:', channel);
-    this.channnelsService.addChannel(channel.id!)
-      .subscribe({
-        next: () => {
-          alert('Channel deleted successfully!');
-        },
-        error: (error) => {
-          console.error('Error deleting channel:', error);
-          alert('Failed to delete channel. Please try again later.');
-        }
-      });
+    this.channnelsService.addChannel(channel.id!).subscribe({
+      next: () => {
+        alert('Channel deleted successfully!');
+      },
+      error: (error) => {
+        console.error('Error deleting channel:', error);
+        alert('Failed to delete channel. Please try again later.');
+      },
+    });
   }
 }

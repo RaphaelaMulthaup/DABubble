@@ -1,19 +1,16 @@
-        
-        <div>
-            <h2 class="font-bold text-xl">Channels</h2>
-            <button (click)="openPopup()">+</button>
-            @if(showPopup){
-                <app-create-channel-form (close)="closePopup()" />
-            }
-
-        </div>
-    @for (channel of channels$ | async; track $index) {
-        <div class="flex gap-[32px] border-b border-gray-300 py-2 w-[300px]">
-            <div class="flex flex-col gap-[16px] w-full">
-                <span class="cursor-pointer" (click)="selectChannel(channel)">{{ channel.name }}</span>
-            </div>
-        </div>
-    }
-
-
-
+<div>
+  <h2 class="font-bold text-xl">Channels</h2>
+  <button (click)="openPopup()">+</button>
+  @if(showPopup){
+  <app-create-channel-form (close)="closePopup()" />
+  }
+</div>
+@for (channel of channels$ | async; track $index) {
+<div class="flex gap-[32px] border-b border-gray-300 py-2 w-[300px]">
+  <div class="flex flex-col gap-[16px] w-full">
+    <span class="cursor-pointer" (click)="selectChannel(channel)">{{
+      channel.name
+    }}</span>
+  </div>
+</div>
+}
