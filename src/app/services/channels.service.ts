@@ -36,7 +36,7 @@ export class ChannelsService {
         channels.filter(
           (channel) =>
             !channel['deleted'] &&
-            channel['memberIds']?.includes('uHudHTC15NOvhF7sOXjrBEOHjCt1')
+            channel['memberIds']?.includes(this.authService.getCurrentUserId())
         )
       )
     ) as Observable<ChannelInterface[]>;

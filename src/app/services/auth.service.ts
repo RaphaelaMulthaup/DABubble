@@ -9,7 +9,13 @@ import {
 } from '@angular/fire/auth';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 
-import { Firestore, doc, setDoc, updateDoc } from '@angular/fire/firestore';
+import {
+  Firestore,
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc,
+} from '@angular/fire/firestore';
 
 import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 
@@ -31,10 +37,34 @@ export class AuthService {
     onAuthStateChanged(this.auth, (user) => this.userSubject.next(user));
   }
 
-
   getCurrentUserId() {
     const user = this.auth.currentUser;
     return user ? user.uid : null;
+  }
+
+  private async createOrUpdateUserInFirestore(
+    user: User,
+    authProvider: 'google.com' | 'password',
+    displayName?: string
+  ) {
+    const userRef = doc(this.firestore, `users/${user.uid}`);
+    const userSnap = await getDoc(userRef);
+
+    if (!userSnap.exists()) {
+      const userData: UserInterface = {
+        uid: user.uid,
+        name: displayName ?? user.displayName ?? '',
+        email: user.email ?? '',
+        photoUrl: user.photoURL ?? '',
+        authProvider,
+        active: true,
+        contacts: [],
+        role: 'user',
+      };
+      await setDoc(userRef, userData);
+    } else {
+      await updateDoc(userRef, { active: true });
+    }
   }
 
   register(
@@ -49,18 +79,7 @@ export class AuthService {
     ).then(async (response) => {
       const user = response.user;
       await updateProfile(user, { displayName });
-      const userRef = doc(this.firestore, `users/${user.uid}`);
-      const userData: UserInterface = {
-        uid: user.uid,
-        name: displayName,
-        email: user.email ?? '',
-        photoUrl: user.photoURL ?? '',
-        authProvider: 'password',
-        active: true,
-        contacts: [],
-        role: 'user',
-      };
-      await setDoc(userRef, userData);
+      await this.createOrUpdateUserInFirestore(user, 'password', displayName);
       this.userSubject.next(user);
     });
     return from(promise);
@@ -70,8 +89,7 @@ export class AuthService {
     const promise = signInWithEmailAndPassword(this.auth, email, password).then(
       async (response) => {
         this.userSubject.next(response.user);
-        await this.markUserAsActive(response.user.uid, true);
-      }
+await this.createOrUpdateUserInFirestore(response.user, 'password');      }
     );
     return from(promise);
   }
@@ -89,21 +107,18 @@ export class AuthService {
     return updateDoc(userRef, { active: false }).then(() => signOut(this.auth));
   }
 
-  async markUserAsActive(uid: string, active: boolean) {
-    const userDocRef = doc(this.firestore, `users/${uid}`);
-    await updateDoc(userDocRef, { active });
-  }
-
   loginWithGoogle(): Observable<void> {
     const auth = getAuth();
     const promise = signInWithPopup(auth, this.provider)
-      .then((response) => {
-        this.userSubject.next(response.user);
-        const credential = GoogleAuthProvider.credentialFromResult(response);
+      .then(async (response) => {
+        const user = response.user;
+        this.userSubject.next(user);
+        await this.createOrUpdateUserInFirestore(user, 'google.com');
       })
       .catch((error) => {
-        const credential = GoogleAuthProvider.credentialFromError(error);
+        console.error('Google Login Error:', error);
       });
+
     return from(promise) as Observable<void>;
   }
 }
