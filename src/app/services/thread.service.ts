@@ -25,7 +25,12 @@ export class ThreadService {
 
   //Funktion noch nicht benutzt
   // Thread erstellen
-async createThreadWithFirstMessage(channelId: string, startedBy: string, text?: string, fileUrls?: string[]) {
+  async createThreadWithFirstMessage(
+    channelId: string,
+    startedBy: string,
+    text?: string,
+    fileUrls?: string[]
+  ) {
     const threadsRef = collection(this.firestore, 'threads');
     const newThreadRef = await addDoc(threadsRef, { channelId, startedBy });
 
@@ -33,10 +38,14 @@ async createThreadWithFirstMessage(channelId: string, startedBy: string, text?: 
     const channelRef = doc(this.firestore, `channels/${channelId}`);
     await updateDoc(channelRef, { threadIds: arrayUnion(threadId) });
 
-    await this.messageService.sendMessage(`threads/${threadId}`, 'threadMessages', {
-      senderId: startedBy,
-      text,
-    });
+    await this.messageService.sendMessage(
+      `threads/${threadId}`,
+      'threadMessages',
+      {
+        senderId: startedBy,
+        text,
+      }
+    );
 
     return threadId;
   }
@@ -74,12 +83,26 @@ async createThreadWithFirstMessage(channelId: string, startedBy: string, text?: 
     );
   }
 
-  toggleReaction(threadId: string, messageId: string, emojiName: string, userId: string) {
-    return this.messageService.toggleReaction(`threads/${threadId}`, 'threadMessages', messageId, emojiName, userId);
+  toggleReaction(
+    threadId: string,
+    messageId: string,
+    emojiName: string,
+    userId: string
+  ) {
+    return this.messageService.toggleReaction(
+      `threads/${threadId}`,
+      'threadMessages',
+      messageId,
+      emojiName,
+      userId
+    );
   }
 
   getReactions(threadId: string, messageId: string) {
-    return this.messageService.getReactions(`threads/${threadId}`, 'threadMessages', messageId);
+    return this.messageService.getReactions(
+      `threads/${threadId}`,
+      'threadMessages',
+      messageId
+    );
   }
-
 }
