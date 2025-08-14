@@ -5,22 +5,22 @@
   box-sizing: border-box;
 }
 
-button {
-  padding: 8px 8px;
-  border-radius: 8px;
-  background-color: wheat;
-  cursor: pointer;
+// button {
+//   padding: 8px 8px;
+//   border-radius: 8px;
+//   background-color: wheat;
+//   cursor: pointer;
 
-  &:hover {
-    background-color: #f0c040;
-  }
-}
+//   &:hover {
+//     background-color: #f0c040;
+//   }
+// }
 
-input {
-  padding: 8px 8px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-}
+// input {
+//   padding: 8px 8px;
+//   border-radius: 8px;
+//   border: 1px solid #ccc;
+// }
 
 :root {
   --color-purple-dark: #444DF2;
@@ -28,9 +28,14 @@ input {
   --color-purple-light: #797EF3;
   --color-purple-white: #eceefe;
   --color-gray: #686868;
-  --color-pink: #ED1E79;
   --color-black: #000000;
   --color-white: #FFFFFF;
+  --color-pink: #ED1E79;
+  --color-green: #92C83E;
+}
+
+button {
+  cursor: pointer;
 }
 
 .btn-primary {
@@ -38,6 +43,8 @@ input {
   border-radius: 25px;
   color: var(--color-white);
   background-color: var(--color-purple-dark);
+  font-size: 18px;
+  font-weight: 700;
 
   &:hover {
     background-color: var(--color-purple-light);
@@ -54,6 +61,8 @@ input {
   border-radius: 25px;
   color: var(--color-purple-dark);
   background-color: var(--color-white);
+  font-size: 18px;
+  font-weight: 700;
 
   &:hover {
     color: var(--color-white);
@@ -77,22 +86,6 @@ input {
 
   &:hover {
     background-color: var(--color-purple-white);
-  }
-}
-
-.collapsible {
-  width: fit-content;
-  padding: 12px 20px;
-  border-bottom-left-radius: 30px;
-  border-bottom-right-radius: 30px;
-  rotate: -90deg;
-  box-shadow: 4px 4px 7px 0px #00000033;
-  background-color: var(--color-white);
-  cursor: pointer;
-
-  &:hover {
-    color: var(--color-purple-medium);
-    background-color: var(--color-white);
   }
 }
 
@@ -125,4 +118,35 @@ input {
   &:hover {
     border: 1px solid var(--color-purple-light);
   }
+}
+
+.collapsible {
+  width: fit-content;
+  padding: 12px 20px;
+  border-bottom-left-radius: 30px;
+  border-bottom-right-radius: 30px;
+  rotate: -90deg;
+  box-shadow: 4px 4px 7px 0px #00000033;
+  background-color: var(--color-white);
+
+  &:hover {
+    color: var(--color-purple-medium);
+    background-color: var(--color-white);
+  }
+}
+
+.info-message {
+  width: fit-content;
+  //padding mobile: 20px 30px;
+  padding: 50px;
+  //gap mobile: 18px;
+  gap: 28px;
+  border-radius: 30px;
+  border-bottom-right-radius: 0;
+  color: var(--color-white);
+  background-color: var(--color-purple-dark);
+  //fs mobile: 22px;
+  font-size: 36px;
+  font-weight: 700;
+  box-shadow: 0px 6px 10px 0px #00000033;
 }
