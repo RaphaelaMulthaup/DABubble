@@ -14,14 +14,24 @@ import { ThreadService } from './services/thread.service';
   styleUrl: './app.component.scss',
 })
 export class AppComponent {
+  // Title of the application
   title = 'DABubble';
+
+  // Firestore instance for database access
   firestore: Firestore = inject(Firestore);
+
+  // Service to manage user-related operations
   private userService = inject(UserService);
+
+  // Service to manage chat-related operations
   private chatService = inject(ChatService);
+
+  // Service to manage thread-related operations
   private threadService = inject(ThreadService);
 
   constructor() {}
 
+  // Lifecycle hook that runs when the component is initialized
   ngOnInit() {
   }
 }

@@ -9,28 +9,37 @@ import { FormControl, FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, 
   styleUrl: './register-form.component.scss'
 })
 export class RegisterFormComponent {
+  // Injects the authentication service
   authService = inject(AuthService);
+
+  // Holds any error messages during registration
   errorMessage: string | null = null;
 
+  // Defines the registration form with validators for email, password, and display name
   registerForm: FormGroup = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
     password: new FormControl('', [Validators.required, Validators.minLength(6)]),
     displayName: new FormControl('', [Validators.required])
   });
-  constructor() {
 
+  constructor() {
+    // Constructor remains empty
   }
 
- onSubmit(): void {
-  const thisForm = this.registerForm.getRawValue();
+  // Handles form submission
+  onSubmit(): void {
+    // Get raw form values
+    const thisForm = this.registerForm.getRawValue();
 
-   this.authService.register(thisForm.email, thisForm.displayName, thisForm.password).subscribe({
-     next: () => {
-       console.log('Registration successful');
-     },
-     error: (err) => {
-       this.errorMessage = err.code;
-     }
-   });
+    // Call the authentication service to register the user
+    this.authService.register(thisForm.email, thisForm.displayName, thisForm.password).subscribe({
+      next: () => {
+        console.log('Registration successful');
+      },
+      error: (err) => {
+        // Set error message if registration fails
+        this.errorMessage = err.code;
+      }
+    });
   }
 }

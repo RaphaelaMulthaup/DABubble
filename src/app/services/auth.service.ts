@@ -28,20 +28,33 @@ import { UserInterface } from '../shared/models/user.interface';
   providedIn: 'root',
 })
 export class AuthService {
+  // Google authentication provider
   provider = new GoogleAuthProvider();
 
+  // BehaviorSubject to hold the current user state
   private userSubject = new BehaviorSubject<User | null>(null);
+  // Observable for external components to subscribe to user changes
   user$ = this.userSubject.asObservable();
 
   constructor(private auth: Auth, private firestore: Firestore) {
+    // Listen to authentication state changes and update the userSubject
     onAuthStateChanged(this.auth, (user) => this.userSubject.next(user));
   }
 
+  /**
+   * Returns the current user's ID or null if no user is logged in
+   */
   getCurrentUserId() {
     const user = this.auth.currentUser;
     return user ? user.uid : null;
   }
 
+  /**
+   * Creates a new user document in Firestore or updates an existing one
+   * @param user Firebase User object
+   * @param authProvider Authentication provider ('google.com' or 'password')
+   * @param displayName Optional display name for the user
+   */
   private async createOrUpdateUserInFirestore(
     user: User,
     authProvider: 'google.com' | 'password',
@@ -51,6 +64,7 @@ export class AuthService {
     const userSnap = await getDoc(userRef);
 
     if (!userSnap.exists()) {
+      // If user document doesn't exist, create it with default data
       const userData: UserInterface = {
         uid: user.uid,
         name: displayName ?? user.displayName ?? '',
@@ -63,10 +77,18 @@ export class AuthService {
       };
       await setDoc(userRef, userData);
     } else {
+      // If user exists, just update the active status
       await updateDoc(userRef, { active: true });
     }
   }
 
+  /**
+   * Registers a new user with email and password
+   * @param email User's email
+   * @param displayName User's display name
+   * @param password User's password
+   * @returns Observable<void>
+   */
   register(
     email: string,
     displayName: string,
@@ -78,29 +100,46 @@ export class AuthService {
       password
     ).then(async (response) => {
       const user = response.user;
+      // Update the user's display name in Firebase Auth
       await updateProfile(user, { displayName });
+      // Create or update the user document in Firestore
       await this.createOrUpdateUserInFirestore(user, 'password', displayName);
+      // Update the userSubject with the newly registered user
       this.userSubject.next(user);
     });
     return from(promise);
   }
 
+  /**
+   * Logs in a user with email and password
+   * @param email User's email
+   * @param password User's password
+   * @returns Observable<void>
+   */
   login(email: string, password: string): Observable<void> {
     const promise = signInWithEmailAndPassword(this.auth, email, password).then(
       async (response) => {
+        // Update the userSubject with the logged-in user
         this.userSubject.next(response.user);
+        // Create or update the user document in Firestore
         await this.createOrUpdateUserInFirestore(response.user, 'password');
       }
     );
     return from(promise);
   }
 
+  /**
+   * Logs in a user with Google authentication
+   * @returns Observable<void>
+   */
   loginWithGoogle(): Observable<void> {
     const auth = getAuth();
     const promise = signInWithPopup(auth, this.provider)
       .then(async (response) => {
         const user = response.user;
+        // Update the userSubject with the logged-in Google user
         this.userSubject.next(user);
+        // Create or update the user document in Firestore
         await this.createOrUpdateUserInFirestore(user, 'google.com');
       })
       .catch((error) => {
@@ -110,10 +149,16 @@ export class AuthService {
     return from(promise) as Observable<void>;
   }
 
+  /**
+   * Returns the current logged-in Firebase user
+   */
   get currentUser(): User | null {
     return this.auth.currentUser;
   }
 
+  /**
+   * Logs out the current user and updates Firestore to mark the user as inactive
+   */
   logout() {
     const user = this.auth.currentUser;
     if (!user) {

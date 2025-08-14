@@ -13,37 +13,53 @@ import { doc, Firestore } from '@angular/fire/firestore';
   styleUrl: './users-list.component.scss',
 })
 export class UsersListComponent {
+  // Observable containing the list of all users
   users$: Observable<UserInterface[]>;
-  currentUserId: string | null = null;
-  contactIds: string[] = [];
-  contacts: { [contactId: string]: { userId: string; chatId: string } } = {};
-    private firestore: Firestore = inject(Firestore);
 
+  // ID of the currently logged-in user
+  currentUserId: string | null = null;
+
+  // Array of contact IDs for the current user
+  contactIds: string[] = [];
+
+  // Object containing the contacts with userId and chatId for each contact
+  contacts: { [contactId: string]: { userId: string; chatId: string } } = {};
+
+  // Firestore instance
+  private firestore: Firestore = inject(Firestore);
 
   constructor(
     private userService: UserService,
     private authService: AuthService
   ) {
+    // Fetch all users
     this.users$ = this.userService.getAllUsers();
+
+    // Subscribe to the current authenticated user
     this.authService.user$.subscribe((user) => {
       this.currentUserId = user?.uid ?? null;
       if (this.currentUserId) {
+        // Fetch current user's contact list
         this.userService
           .getUserById(this.currentUserId)
           .subscribe((userData) => {
             this.contacts = userData.contacts || {};
-            this.contactIds = Object.keys(this.contacts); // nur IDs extrahieren
+            this.contactIds = Object.keys(this.contacts); // Extract only the IDs
           });
       }
     });
   }
 
+  /**
+   * Adds a new contact to the current user's contact list
+   * @param contactId ID of the user to add as a contact
+   */
   addContact(contactId: string) {
     if (!this.currentUserId) return;
 
     const newContact = {
       userId: contactId,
-      chatId: this.generateChatId(), // oder wie auch immer du ihn erzeugst
+      chatId: this.generateChatId(), // Generate a unique chat ID
     };
 
     this.userService
@@ -52,10 +68,18 @@ export class UsersListComponent {
       .catch((error) => console.error(error));
   }
 
-private generateChatId(): string {
-  // Dummy-Dokument-Referenz nutzen, um eine eindeutige ID zu bekommen
-  return doc(this.firestore, 'dummy', crypto.randomUUID()).id;
-}
+  /**
+   * Generates a unique chat ID using a dummy Firestore document reference
+   * @returns a unique chat ID
+   */
+  private generateChatId(): string {
+    return doc(this.firestore, 'dummy', crypto.randomUUID()).id;
+  }
+
+  /**
+   * Removes a contact from the current user's contact list
+   * @param contactId ID of the contact to remove
+   */
   removeContact(contactId: string) {
     if (!this.currentUserId) return;
 
@@ -65,6 +89,11 @@ private generateChatId(): string {
       .catch((error) => console.error(error));
   }
 
+  /**
+   * Checks if a given user is already a contact
+   * @param contactId ID of the user to check
+   * @returns true if the user is already a contact, false otherwise
+   */
   isAlreadyContact(contactId: string): boolean {
     return contactId in this.contacts;
   }

@@ -9,13 +9,23 @@ import { provideAuth, getAuth } from '@angular/fire/auth';
 import { provideRouter } from '@angular/router';
 import { routes } from './app/app.routes';
 
+// Bootstraps the Angular application with the root component
 bootstrapApplication(AppComponent, {
   providers: [
+    // Provides the Angular router with the defined routes
     provideRouter(routes),
+
+    // Initializes Firebase app with environment-specific configuration
     provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
+
+    // Provides Firestore instance for dependency injection
     provideFirestore(() => getFirestore()),
-        provideAuth(() => getAuth()),
-    // falls du weitere Provider brauchst, hier hinzufügen
+
+    // Provides Firebase Authentication instance for dependency injection
+    provideAuth(() => getAuth()),
+
+    // Add additional providers here if needed
   ]
 })
+// Catches and logs any errors during application bootstrap
 .catch((err) => console.error(err));

@@ -18,10 +18,12 @@ import { ChannelInterface } from '../shared/models/channel.interface';
   providedIn: 'root',
 })
 export class ChannelsService {
+  // Inject Firestore instance
   private firestore = inject(Firestore);
+  // Inject Authentication service
   private authService = inject(AuthService);
 
-  // Brauchen wir wirklich jemals alle Channels?
+  // // Do we really ever need all channels?
   // getAllChannels(): Observable<ChannelInterface[]> {
   //   const channelCollection = collection(this.firestore, 'channels');
   //   return collectionData(channelCollection, { idField: 'id' }).pipe(
@@ -29,6 +31,10 @@ export class ChannelsService {
   //   ) as Observable<ChannelInterface[]>;
   // }
 
+  /**
+   * Retrieves channels that the current user is a member of and not deleted
+   * @returns Observable list of the current user's channels
+   */
   getCurrentUserChannels(): Observable<ChannelInterface[]> {
     const channelCollection = collection(this.firestore, 'channels');
     return collectionData(channelCollection, { idField: 'id' }).pipe(
@@ -42,6 +48,10 @@ export class ChannelsService {
     ) as Observable<ChannelInterface[]>;
   }
 
+  /**
+   * Retrieves all channels that are marked as deleted
+   * @returns Observable list of deleted channels
+   */
   getAllDeletedChannels(): Observable<ChannelInterface[]> {
     const channelCollection = collection(this.firestore, 'channels');
     return collectionData(channelCollection, { idField: 'id' }).pipe(
@@ -49,6 +59,12 @@ export class ChannelsService {
     ) as Observable<ChannelInterface[]>;
   }
 
+  /**
+   * Creates a new channel with the current user as the creator and first member
+   * @param name Name of the channel
+   * @param description Optional description of the channel
+   * @returns Observable that completes when the channel is created
+   */
   createChannel(name: string, description?: string): Observable<void> {
     const user = this.authService.currentUser;
     if (!user) throw new Error('User not logged in');
@@ -66,12 +82,22 @@ export class ChannelsService {
     return from(promise);
   }
 
+  /**
+   * Marks a channel as deleted
+   * @param channelId ID of the channel to delete
+   * @returns Observable that completes when the channel is marked deleted
+   */
   deleteChannel(channelId: string): Observable<void> {
     const channelDocRef = doc(this.firestore, `channels/${channelId}`);
     const promise = updateDoc(channelDocRef, { deleted: true });
     return from(promise);
   }
 
+  /**
+   * Restores a previously deleted channel
+   * @param channelId ID of the channel to restore
+   * @returns Observable that completes when the channel is restored
+   */
   addChannel(channelId: string): Observable<void> {
     const channelDocRef = doc(this.firestore, `channels/${channelId}`);
     const promise = updateDoc(channelDocRef, { deleted: false });

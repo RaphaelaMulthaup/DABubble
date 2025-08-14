@@ -1,6 +1,4 @@
-
-import { Component , inject} from '@angular/core';
-
+import { Component , inject } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
 import { FormControl, FormsModule, ReactiveFormsModule, FormGroup, Validators } from '@angular/forms';
 
@@ -10,28 +8,41 @@ import { FormControl, FormsModule, ReactiveFormsModule, FormGroup, Validators } 
   templateUrl: './login-form.component.html',
   styleUrl: './login-form.component.scss'
 })
-
 export class LoginFormComponent {
+  // Injects the AuthService to handle authentication
   authService = inject(AuthService);
+
+  // Stores error messages during login
   errorMessage: string | null = null;
 
+  // Form group for login with email and password fields
   loginForm: FormGroup = new FormGroup({
+    // Email input with required and email validators
     email: new FormControl('', [Validators.required, Validators.email]),
+
+    // Password input with required and minimum length validators
     password: new FormControl('', [Validators.required, Validators.minLength(6)]),
   });
 
   constructor() {}
 
- onSubmit(): void {
-   const email = this.loginForm.get('email')?.value;
-   const password = this.loginForm.get('password')?.value;
-   this.authService.login(email, password).subscribe({
-     next: () => {
-       console.log('Login successful');
-     },
-     error: (err) => {
-       this.errorMessage = err.code;
-     }
-   });
+  /**
+   * Handles form submission
+   * Retrieves email and password from the form and attempts login
+   * Displays an error message if login fails
+   */
+  onSubmit(): void {
+    const email = this.loginForm.get('email')?.value;
+    const password = this.loginForm.get('password')?.value;
+
+    this.authService.login(email, password).subscribe({
+      next: () => {
+        console.log('Login successful');
+      },
+      error: (err) => {
+        // Sets the errorMessage to the returned error code
+        this.errorMessage = err.code;
+      }
+    });
   }
 }

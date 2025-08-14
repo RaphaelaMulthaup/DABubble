@@ -11,12 +11,24 @@ import { MessageInterface } from '../../../shared/models/message.interface';
   styleUrl: './channel-messages.component.scss',
 })
 export class ChannelMessagesComponent {
+  // Currently selected channel
   channel: ChannelInterface | null = null;
+
+  // Injected service to manage channel selection
   private channelSelectionService = inject(ChannelSelectionService);
+
+  // Injected service to manage threads
   private threadService = inject(ThreadService);
+
+  // Map storing messages for each thread by threadId
   threadMessagesMap: { [threadId: string]: MessageInterface[] } = {};
+
+  // List of all messages for the current channel
   messages: MessageInterface[] = [];
+
+  // Component initialization
   ngOnInit() {
+    // Subscribe to the currently selected channel
     this.channelSelectionService.selectedChannel$.subscribe((channel) => {
       this.channel = channel;
       this.messages = [];
@@ -25,6 +37,10 @@ export class ChannelMessagesComponent {
     });
   }
 
+  /**
+   * Loads messages for all threads in the channel
+   * @param threadsObj Object containing threads information
+   */
   loadThreads(
     threadsObj:
       | { [threadPathId: string]: { threadId: string; titleMessageId: string } }
@@ -35,9 +51,13 @@ export class ChannelMessagesComponent {
       return;
     }
 
+    // Loop through all threads and fetch messages
     Object.values(threadsObj).forEach((threadData) => {
       const threadId = threadData.threadId;
+
+      // Subscribe to messages of the current thread
       this.threadService.getThreadMessages(threadId).subscribe((messages) => {
+        // Convert Firestore timestamps to Date objects if necessary
         const messagesWithDate = messages.map((msg) => ({
           ...msg,
           createdAt: msg.createdAt.toDate
@@ -45,9 +65,10 @@ export class ChannelMessagesComponent {
             : msg.createdAt,
         }));
 
+        // Store messages in the threadMessagesMap
         this.threadMessagesMap[threadId] = messagesWithDate;
 
-        // Alle Nachrichten für diese Threads zusammenführen
+        // Merge all messages from threads into the main messages array
         messagesWithDate.forEach((message) => {
           this.messages.push(message);
         });
