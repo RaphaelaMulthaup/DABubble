@@ -4,17 +4,125 @@
 * {
   box-sizing: border-box;
 }
+
 button {
   padding: 8px 8px;
   border-radius: 8px;
   background-color: wheat;
   cursor: pointer;
+
   &:hover {
     background-color: #f0c040;
   }
 }
+
 input {
   padding: 8px 8px;
   border-radius: 8px;
   border: 1px solid #ccc;
+}
+
+:root {
+  --color-purple-dark: #444DF2;
+  --color-purple-medium: #535AF1;
+  --color-purple-light: #797EF3;
+  --color-purple-white: #eceefe;
+  --color-gray: #686868;
+  --color-pink: #ED1E79;
+  --color-black: #000000;
+  --color-white: #FFFFFF;
+}
+
+.btn-primary {
+  padding: 12px 24px;
+  border-radius: 25px;
+  color: var(--color-white);
+  background-color: var(--color-purple-dark);
+
+  &:hover {
+    background-color: var(--color-purple-light);
+  }
+
+  &:disabled {
+    background-color: var(--color-gray);
+  }
+}
+
+.btn-secondary {
+  padding: 12px 24px;
+  border: 1px solid var(--color-purple-light);
+  border-radius: 25px;
+  color: var(--color-purple-dark);
+  background-color: var(--color-white);
+
+  &:hover {
+    color: var(--color-white);
+    background-color: var(--color-purple-medium);
+  }
+
+  &:disabled {
+    border: 1px solid var(--color-gray);
+    color: var(--color-gray);
+  }
+
+  &:focus {
+    color: var(--color-white);
+    background-color: var(--color-purple-dark);
+  }
+}
+
+.btn-tertiary {
+  border-radius: 50%;
+  background-color: var(--color-white);
+
+  &:hover {
+    background-color: var(--color-purple-white);
+  }
+}
+
+.collapsible {
+  width: fit-content;
+  padding: 12px 20px;
+  border-bottom-left-radius: 30px;
+  border-bottom-right-radius: 30px;
+  rotate: -90deg;
+  box-shadow: 4px 4px 7px 0px #00000033;
+  background-color: var(--color-white);
+  cursor: pointer;
+
+  &:hover {
+    color: var(--color-purple-medium);
+    background-color: var(--color-white);
+  }
+}
+
+input {
+  outline: unset;
+  border: 1px solid var(--color-purple-white);
+  border-radius: 30px;
+
+  &::placeholder {
+    color: var(--color-gray);
+  }
+
+  &:focus-within {
+    border: 1px solid var(--color-purple-medium);
+  }
+}
+
+.input-primary {
+  padding: 18px 32px;
+  background-color: var(--color-purple-white);
+
+  &:hover {
+    border: 1px solid var(--color-gray);
+  }
+}
+
+.input-secondary {
+  background-color: var(--color-white);
+
+  &:hover {
+    border: 1px solid var(--color-purple-light);
+  }
 }

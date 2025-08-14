@@ -1,4 +1,4 @@
-import { Component, inject  } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Auth } from '@angular/fire/auth';
@@ -25,7 +25,7 @@ export class NonAuthComponent {
   constructor(private auth: Auth, private router: Router) {
     onAuthStateChanged(this.auth, user => {
       if (user) {
-         this.router.navigate(['/dashboard']);
+        this.router.navigate(['/dashboard']);
       } else {
         console.log('No user is logged in');
         this.router.navigate(['/']);
@@ -33,12 +33,11 @@ export class NonAuthComponent {
     });
   }
 
+  toggleNoAccount() {
+    this.noAccount = !this.noAccount;
+  }
 
-toggleNoAccount() {
-  this.noAccount = !this.noAccount;
-}
-
- loginWithGoogle() {
+  loginWithGoogle() {
     this.authService.loginWithGoogle().subscribe({
       next: () => {
         console.log('Login with Google successful');
@@ -47,8 +46,9 @@ toggleNoAccount() {
         console.error('Login with Google failed', err);
       }
     });
- }
-    ngOnInit() {
+  }
+
+  ngOnInit() {
     const usersRef = collection(this.firestore, 'users');
 
     collectionData(usersRef).pipe(
