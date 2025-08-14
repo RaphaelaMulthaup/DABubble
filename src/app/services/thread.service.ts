@@ -36,7 +36,6 @@ async createThreadWithFirstMessage(channelId: string, startedBy: string, text?: 
     await this.messageService.sendMessage(`threads/${threadId}`, 'threadMessages', {
       senderId: startedBy,
       text,
-      fileUrl: fileUrls || [],
     });
 
     return threadId;
