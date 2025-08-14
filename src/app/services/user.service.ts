@@ -8,6 +8,7 @@ import {
   arrayUnion,
   arrayRemove,
   setDoc,
+  deleteField,
 } from '@angular/fire/firestore';
 import { UserInterface } from '../shared/models/user.interface';
 import { Observable } from 'rxjs';
@@ -17,7 +18,6 @@ import { docData } from '@angular/fire/firestore';
   providedIn: 'root',
 })
 export class UserService {
-  
   private firestore: Firestore = inject(Firestore);
 
   getAllUsers(): Observable<UserInterface[]> {
@@ -27,20 +27,23 @@ export class UserService {
     >;
   }
 
-  addContactToUser(userId: string, contactId: string): Promise<void> {
+  addContactToUser(
+    userId: string,
+    contactId: string,
+    contactData: { userId: string; chatId: string }
+  ): Promise<void> {
     const userDocRef = doc(this.firestore, `users/${userId}`);
+    // einzelnes Feld setzen
     return updateDoc(userDocRef, {
-      contacts: arrayUnion(contactId),
+      [`contacts.${contactId}`]: contactData,
     });
   }
-
   removeContactFromUser(userId: string, contactId: string): Promise<void> {
     const userDocRef = doc(this.firestore, `users/${userId}`);
     return updateDoc(userDocRef, {
-      contacts: arrayRemove(contactId),
+      [`contacts.${contactId}`]: deleteField(),
     });
   }
-
   getUserById(uid: string): Observable<UserInterface> {
     const userDocRef = doc(this.firestore, `users/${uid}`);
     return docData(userDocRef) as Observable<UserInterface>;

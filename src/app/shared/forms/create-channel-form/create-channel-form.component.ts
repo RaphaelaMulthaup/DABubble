@@ -34,8 +34,13 @@ export class CreateChannelFormComponent {
       return;
     }
 
-    const name = this.createChannel.get('name')?.value;
-    const description = this.createChannel.get('description')?.value;
+    const name = this.createChannel.get('name')?.value?.trim();
+    const descriptionValue = this.createChannel
+      .get('description')
+      ?.value?.trim();
+
+    // Falls leerer String, zu undefined machen
+    const description = descriptionValue ? descriptionValue : undefined;
 
     this.channelService.createChannel(name, description).subscribe({
       next: () => {
@@ -49,7 +54,6 @@ export class CreateChannelFormComponent {
       },
     });
   }
-
   onClose() {
     this.close.emit();
   }

@@ -1,18 +1,21 @@
 <p>channel-detail works!</p>
 @if(channel) {
-    <h2 class="font-bold text-xl">Channel Detail</h2>
-    <p>Name: {{ channel.name }}</p>
-    <p>Description: {{ channel.description }}</p>
-    <p>Id: {{channel.id}}</p>
+<h2 class="font-bold text-xl">Channel Detail</h2>
+<p>Name: {{ channel.name }}</p>
+@if ( channel.description) {
+<p>Description: {{ channel.description }}</p>
 
-    <div>
-        <app-channel-messages />
-    </div>
+}
+<p>Id: {{ channel.id }}</p>
 
-    <div>
-        <app-create-thread-form/>
-    </div>
+<div>
+  <app-channel-messages />
+</div>
 
-    }@else {
-    <p>Select a channel to see details.</p>
-    }
+<div>
+  <app-create-thread-form />
+</div>
+
+}@else {
+<p>Select a channel to see details.</p>
+}

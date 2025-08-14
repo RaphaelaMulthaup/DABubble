@@ -1,20 +1,17 @@
 <ul>
-    @for (user of users$ | async; track $index) {
-        <li>
-            <span>{{ user.name }} ({{ user.email }})</span>
-            @if(user.uid !== currentUserId ) {  
-                @if(isAlreadyContact(user.uid)) {
-                    <span>Already a contact</span>
-                    <button  (click)="removeContact(user.uid)" >-</button>
-                }@else {
-                    <button  (click)="addContact(user.uid)">+</button>
-                }
-                @if(user.active) {
-                    <span class="bg-green-400 px-[8px] rounded-full"></span>
-                }@else {
-                    <span class="bg-red-400 px-[8px] rounded-xl"></span>
-                }
-            }
-        </li>
-    }
+  @for (user of users$ | async; track $index) {
+  <li>
+    <span>{{ user.name }} ({{ user.email }})</span>
+    @if(user.uid !== currentUserId ) { @if(isAlreadyContact(user.uid)) {
+    <span>Already a contact</span>
+    <button (click)="removeContact(user.uid)">-</button>
+    }@else {
+    <button (click)="addContact(user.uid)">+</button>
+    } @if(user.active) {
+    <span class="bg-green-400 px-[8px] rounded-full"></span>
+    }@else {
+    <span class="bg-red-400 px-[8px] rounded-xl"></span>
+    } }
+  </li>
+  }
 </ul>

@@ -49,7 +49,7 @@ export class ChannelsService {
     ) as Observable<ChannelInterface[]>;
   }
 
-  createChannel(name: string, description: string): Observable<void> {
+  createChannel(name: string, description?: string): Observable<void> {
     const user = this.authService.currentUser;
     if (!user) throw new Error('User not logged in');
     const channelData: ChannelInterface = {
@@ -57,7 +57,7 @@ export class ChannelsService {
       description,
       memberIds: [user.uid],
       name,
-      threadIds: [],
+      threads: {},
       deleted: false,
       createdAt: new Date(),
     };

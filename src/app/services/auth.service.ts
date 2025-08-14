@@ -57,8 +57,8 @@ export class AuthService {
         email: user.email ?? '',
         photoUrl: user.photoURL ?? '',
         authProvider,
+        contacts: {},
         active: true,
-        contacts: [],
         role: 'user',
       };
       await setDoc(userRef, userData);

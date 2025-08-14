@@ -25,21 +25,31 @@ export class ThreadService {
 
   //Funktion noch nicht benutzt
   // Thread erstellen
-async createThreadWithFirstMessage(channelId: string, startedBy: string, text?: string, fileUrls?: string[]) {
-    const threadsRef = collection(this.firestore, 'threads');
-    const newThreadRef = await addDoc(threadsRef, { channelId, startedBy });
+async createThreadWithFirstMessage(channelId: string, startedBy: string, text: string, fileUrls?: string[]) {
+  const threadsRef = collection(this.firestore, 'threads');
+  
+  // Thread-Dokument erstellen
+  const newThreadRef = await addDoc(threadsRef, {startedBy });
+  const threadId = newThreadRef.id;
 
-    const threadId = newThreadRef.id;
-    const channelRef = doc(this.firestore, `channels/${channelId}`);
-    await updateDoc(channelRef, { threadIds: arrayUnion(threadId) });
+  // Erste Nachricht erstellen
+  const firstMessageId = await this.messageService.sendMessage(`threads/${threadId}`, 'threadMessages', {
+    senderId: startedBy,
+    text,
+  });
 
-    await this.messageService.sendMessage(`threads/${threadId}`, 'threadMessages', {
-      senderId: startedBy,
-      text,
-    });
+  // Channel-Dokument aktualisieren: neues Thread-Objekt hinzufügen
+  const channelRef = doc(this.firestore, `channels/${channelId}`);
+  const threadPathId = threadId; // du kannst hier auch einen anderen Key nehmen
+  await updateDoc(channelRef, {
+    [`threads.${threadPathId}`]: {
+      threadId,
+      titleMessageId: firstMessageId
+    }
+  });
 
-    return threadId;
-  }
+  return threadId;
+}
 
   //Funktion nochnicht benutzt
   // Alle Threads eines Channels holen
