@@ -1,20 +1,27 @@
 /* You can add global styles to this file, and also import other style files */
 @use "tailwindcss" as *;
 
+@mixin dFlex($jc: center, $ai: center, $g: 0) {
+  display: flex;
+  justify-content: $jc;
+  align-items: $ai;
+  gap: $g;
+}
+
 * {
   box-sizing: border-box;
 }
 
 :root {
-  --color-purple-dark: #444DF2;
-  --color-purple-medium: #535AF1;
-  --color-purple-light: #797EF3;
+  --color-purple-dark: #444df2;
+  --color-purple-medium: #535af1;
+  --color-purple-light: #797ef3;
   --color-purple-white: #eceefe;
   --color-gray: #686868;
   --color-black: #000000;
-  --color-white: #FFFFFF;
-  --color-pink: #ED1E79;
-  --color-green: #92C83E;
+  --color-white: #ffffff;
+  --color-pink: #ed1e79;
+  --color-green: #92c83e;
 }
 
 button {
@@ -69,6 +76,13 @@ button {
 
   &:hover {
     background-color: var(--color-purple-white);
+  }
+}
+
+.btnDropDown {
+  @include dFlex($g: 12px);
+  svg:first-child {
+    margin-right: 5px;
   }
 }
 

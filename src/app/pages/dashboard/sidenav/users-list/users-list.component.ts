@@ -5,10 +5,11 @@ import { Observable } from 'rxjs';
 import { UserInterface } from '../../../../shared/models/user.interface';
 import { AsyncPipe } from '@angular/common';
 import { doc, Firestore } from '@angular/fire/firestore';
+import { ContactListItemComponent } from './contact-list-item/contact-list-item.component';
 
 @Component({
   selector: 'app-users-list',
-  imports: [AsyncPipe],
+  imports: [AsyncPipe, ContactListItemComponent],
   templateUrl: './users-list.component.html',
   styleUrl: './users-list.component.scss',
 })
