@@ -6,12 +6,14 @@ import { CreateChannelFormComponent } from "../../shared/forms/create-channel-fo
 import { ChannelListComponent } from "./channel-list/channel-list.component";
 import { SidenavComponent } from "./sidenav/sidenav.component";
 import { ChannelDetailComponent } from "./channel-detail/channel-detail.component";
+import { ChatWindowComponent } from './chat-window/chat-window.component';
+import { HeaderComponent } from '../../shared/components/header/header.component';
 
 
 @Component({
   selector: 'app-dashboard',
   // Import child components used in the dashboard
-  imports: [UsersListComponent, CreateChannelFormComponent, ChannelListComponent, SidenavComponent, ChannelDetailComponent],
+  imports: [UsersListComponent, CreateChannelFormComponent, ChannelListComponent, SidenavComponent, ChannelDetailComponent, SidenavComponent, ChatWindowComponent, HeaderComponent],
   templateUrl: './dashboard.component.html', // HTML template for the dashboard
   styleUrl: './dashboard.component.scss' // Styles for the dashboard
 })
