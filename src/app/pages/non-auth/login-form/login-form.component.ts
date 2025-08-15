@@ -1,4 +1,4 @@
-import { Component , inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
 import { FormControl, FormsModule, ReactiveFormsModule, FormGroup, Validators } from '@angular/forms';
 
@@ -24,7 +24,7 @@ export class LoginFormComponent {
     password: new FormControl('', [Validators.required, Validators.minLength(6)]),
   });
 
-  constructor() {}
+  constructor() { }
 
   /**
    * Handles form submission
@@ -42,6 +42,20 @@ export class LoginFormComponent {
       error: (err) => {
         // Sets the errorMessage to the returned error code
         this.errorMessage = err.code;
+      }
+    });
+  }
+
+  /**
+ * Login using Google OAuth via AuthService
+ */
+  loginWithGoogle() {
+    this.authService.loginWithGoogle().subscribe({
+      next: () => {
+        console.log('Login with Google successful');
+      },
+      error: (err) => {
+        console.error('Login with Google failed', err);
       }
     });
   }

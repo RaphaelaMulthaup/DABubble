@@ -1,25 +1,35 @@
-<h2>Register</h2>
-<form action="" [formGroup]="registerForm" (ngSubmit)="onSubmit()" >
-    <div class="flex flex-col gap-[8px]">
-        <div>        
-            <label for="emailId">Email: </label>
-            <input id="emailId" type="text" placeholder="Email" formControlName="email" name="email" required>
-        </div>
+<section class="flex flex-col items-center">
+    <h1>Konto erstellen</h1>
+    <p>Mit deinem Namen und deiner E-Mail-Adresse hast du dein neues DABubble-Konto.</p>
+    <form action="" [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+        <div class="flex flex-col gap-[8px]">
+            <div>
+                <!-- <label for="emailId">Email: </label> -->
+                <input class="input-primary" id="emailId" type="text" placeholder="Email" formControlName="email"
+                    name="email" required>
+            </div>
 
-        <div>        
-            <label for="passwordId">Password: </label>
-            <input id="passwordId" type="password" placeholder="Password" formControlName="password" name="password" required>
-        </div>
+            <div>
+                <!-- <label for="passwordId">Password: </label> -->
+                <input class="input-primary" id="passwordId" type="password" placeholder="Password"
+                    formControlName="password" name="password" required>
+            </div>
 
-        <div>
-            <label for="displayNameId">Display Name: </label>
-            <input id="displayNameId" type="text" placeholder="Display Name" formControlName="displayName" name="displayName" required>
-        </div>
-       
+            <div>
+                <!-- <label for="displayNameId">Display Name: </label> -->
+                <input class="input-primary" id="displayNameId" type="text" placeholder="Display Name"
+                    formControlName="displayName" name="displayName" required>
+            </div>
 
-        @if(errorMessage) {
+            <div class="flex">
+                <input type="checkbox">
+                <p>Ich stimme der <a class="link">Datenschutzerklärung</a> zu.</p>
+            </div>
+            
+            @if(errorMessage) {
             <div class="error">{{ errorMessage }}</div>
-        }
-        <button type="submit" [disabled]="!registerForm.valid">Register</button>
-    </div>
-</form>
+            }
+            <button class="btn-primary" type="submit" [disabled]="!registerForm.valid">Weiter</button>
+        </div>
+    </form>
+</section>
