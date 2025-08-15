@@ -14,37 +14,24 @@ import { ThreadService } from './services/thread.service';
   styleUrl: './app.component.scss',
 })
 export class AppComponent {
+  // Title of the application
   title = 'DABubble';
+
+  // Firestore instance for database access
   firestore: Firestore = inject(Firestore);
+
+  // Service to manage user-related operations
   private userService = inject(UserService);
+
+  // Service to manage chat-related operations
   private chatService = inject(ChatService);
+
+  // Service to manage thread-related operations
   private threadService = inject(ThreadService);
 
   constructor() {}
 
+  // Lifecycle hook that runs when the component is initialized
   ngOnInit() {
-    this.threadService.getThreadMessages('9iTo1zxP7AbfJimTOCTE').subscribe((messages)=>{console.log('HIer die Messages', messages);
-    })
-    // this.chatService
-    //   .getReactions('VbD4ZPbP1AKwJkS62JHG', '6RHZYXVjoHnu7IF6blVl')
-    //   .subscribe((reactions) => {
-    //     console.log('meine reactions', reactions);
-    //   });
-    //   this.chatService.toggleReaction(
-    //   'VbD4ZPbP1AKwJkS62JHG',
-    //   '6RHZYXVjoHnu7IF6blVl',
-    //   'sun',
-    //   'userId5'
-    // )
-    // this.chatService
-    //   .getMessages('VbD4ZPbP1AKwJkS62JHG')
-    //   .subscribe((messages) => {
-    //     console.log('hier die Nachrichten', messages);
-    //   });
-    // let message = {
-    //   senderId: 'userId6',
-    //   text: 'Einen direkte Nachricht im Chat',
-    // };
-    // this.chatService.sendMessage('VbD4ZPbP1AKwJkS62JHG', message);
   }
 }

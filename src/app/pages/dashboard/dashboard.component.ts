@@ -10,15 +10,20 @@ import { ChannelDetailComponent } from "./channel-detail/channel-detail.componen
 
 @Component({
   selector: 'app-dashboard',
+  // Import child components used in the dashboard
   imports: [UsersListComponent, CreateChannelFormComponent, ChannelListComponent, SidenavComponent, ChannelDetailComponent],
-  templateUrl: './dashboard.component.html',
-  styleUrl: './dashboard.component.scss'
+  templateUrl: './dashboard.component.html', // HTML template for the dashboard
+  styleUrl: './dashboard.component.scss' // Styles for the dashboard
 })
 export class DashboardComponent {
 
+  // Inject the authentication service to manage user login/logout
   private authService = inject(AuthService);
 
-    logout() {
+  /**
+   * Logs out the current user
+   */
+  logout() {
     this.authService.logout();
   }
 }
