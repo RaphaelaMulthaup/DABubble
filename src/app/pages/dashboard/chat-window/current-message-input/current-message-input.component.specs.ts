@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CreateThreadFormComponent } from './create-thread-form.component';
+import { CreateThreadFormComponent } from './current-message-input.component';
 
 describe('CreateThreadFormComponent', () => {
   let component: CreateThreadFormComponent;

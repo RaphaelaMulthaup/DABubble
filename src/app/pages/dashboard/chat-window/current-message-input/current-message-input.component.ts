@@ -8,10 +8,10 @@ import { AuthService } from '../../../services/auth.service';
 @Component({
   selector: 'app-create-thread-form',
   imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './create-thread-form.component.html',
-  styleUrl: './create-thread-form.component.scss'
+  templateUrl: './current-message-input.component.html',
+  styleUrl: './current-message-input.component.scss'
 })
-export class CreateThreadFormComponent {
+export class currentMessageInput {
   private threadService = inject(ThreadService);
   private channelSelectionService = inject(ChannelSelectionService); 
   private authService = inject(AuthService);
