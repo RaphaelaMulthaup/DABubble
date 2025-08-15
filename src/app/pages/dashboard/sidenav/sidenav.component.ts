@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
-import { UsersListComponent } from '../users-list/users-list.component';
-import { ChannelListComponent } from '../channel-list/channel-list.component';
+import { ChannelListComponent } from './channel-list/channel-list.component';
+import { UsersListComponent } from './users-list/users-list.component';
 
 @Component({
   selector: 'app-sidenav',

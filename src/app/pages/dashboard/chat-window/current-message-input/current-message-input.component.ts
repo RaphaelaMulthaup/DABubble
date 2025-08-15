@@ -1,9 +1,9 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { ThreadService } from '../../../services/thread.service';
-import { ChannelSelectionService } from '../../../services/channel-selection.service';
-import { AuthService } from '../../../services/auth.service';
+import { ThreadService } from '../../../../services/thread.service';
+import { ChannelSelectionService } from '../../../../services/channel-selection.service';
+import { AuthService } from '../../../../services/auth.service';
 
 @Component({
   selector: 'app-create-thread-form',

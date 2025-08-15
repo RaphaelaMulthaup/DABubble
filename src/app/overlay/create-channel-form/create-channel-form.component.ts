@@ -1,5 +1,5 @@
 import { Component, EventEmitter, inject, Output } from '@angular/core';
-import { ChannelsService } from '../../../services/channels.service';
+import { ChannelsService } from '../../services/channels.service';
 import {
   FormControl,
   FormsModule,

@@ -1,11 +1,11 @@
 import { Component, inject } from '@angular/core';
-import { ChannelsService } from '../../../services/channels.service';
+import { ChannelsService } from '../../../../services/channels.service';
 import { Observable } from 'rxjs';
-import { ChannelInterface } from '../../../shared/models/channel.interface';
+import { ChannelInterface } from '../../../../shared/models/channel.interface';
 import { AsyncPipe } from '@angular/common';
-import { CreateChannelFormComponent } from '../../../shared/forms/create-channel-form/create-channel-form.component';
-import { ChannelSelectionService } from '../../../services/channel-selection.service';
-import { AuthService } from '../../../services/auth.service';
+import { ChannelSelectionService } from '../../../../services/channel-selection.service';
+import { AuthService } from '../../../../services/auth.service';
+import { CreateChannelFormComponent } from '../../../../overlay/create-channel-form/create-channel-form.component';
 
 @Component({
   selector: 'app-channel-list',
