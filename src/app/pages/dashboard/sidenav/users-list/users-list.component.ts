@@ -1,8 +1,8 @@
 import { Component, inject } from '@angular/core';
-import { UserService } from '../../../services/user.service';
-import { AuthService } from '../../../services/auth.service';
+import { UserService } from '../../../../services/user.service';
+import { AuthService } from '../../../../services/auth.service';
 import { Observable } from 'rxjs';
-import { UserInterface } from '../../../shared/models/user.interface';
+import { UserInterface } from '../../../../shared/models/user.interface';
 import { AsyncPipe } from '@angular/common';
 import { doc, Firestore } from '@angular/fire/firestore';
 

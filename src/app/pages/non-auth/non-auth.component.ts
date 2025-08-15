@@ -3,11 +3,10 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Auth } from '@angular/fire/auth';
 import { onAuthStateChanged } from 'firebase/auth';
-import { LoginFormComponent } from "../../shared/forms/login-form/login-form.component";
-
+import { LoginFormComponent } from './login-form/login-form.component';
 import { collection, collectionData, Firestore } from '@angular/fire/firestore';
 import { map } from 'rxjs';
-import { RegisterFormComponent } from "../../shared/forms/register-form/register-form.component";
+import { RegisterFormComponent } from "./register-form/register-form.component";
 
 import { AuthService } from '../../services/auth.service';
 
