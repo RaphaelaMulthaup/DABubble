@@ -9,10 +9,11 @@ import { map } from 'rxjs';
 import { RegisterFormComponent } from "./register-form/register-form.component";
 
 import { AuthService } from '../../services/auth.service';
+import { IntroComponent } from './intro/intro.component';
 
 @Component({
   selector: 'app-non-auth',
-  imports: [CommonModule, LoginFormComponent, RegisterFormComponent],
+  imports: [CommonModule, LoginFormComponent, RegisterFormComponent, IntroComponent],
   templateUrl: './non-auth.component.html',
   styleUrl: './non-auth.component.scss'
 })

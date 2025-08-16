@@ -9,4 +9,8 @@ import { UserInterface } from '../../../../../shared/models/user.interface';
 })
 export class ContactListItemComponent {
    @Input() user!: UserInterface;
+
+   wonnaBeFunction() {}
 }
+
+

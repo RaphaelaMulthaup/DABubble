@@ -1,0 +1,61 @@
+@import './../../../../styles.scss';
+
+.logo-container{
+    background-color:var(--color-purple-dark);
+    width: 100vw;
+    height: 100vh;
+    z-index: 100;
+    transition: background-color 1s ease-out;
+
+    .solo-logo{
+        position: relative;
+        width: 60px;
+        height: 56px;
+        overflow: hidden;
+    }
+}
+
+.span-box{
+    overflow: hidden;
+}
+
+.animat-name{
+    display: none;
+    font-size: 28px;
+    font-weight: 656;
+    margin: 0px 0px 0px 11px;
+    animation: slideFromLeft 1s ease-in;
+}
+
+.animated-logo{
+    transition: width 1s;
+    width: 60px;
+    
+}
+
+.expand{
+    width: 205px;
+}
+
+.show{
+    display: flex !important;
+}
+
+.moveUp{
+    align-items: baseline;
+}
+
+.container-transperent{
+    background-color: transparent !important;
+}
+
+@keyframes slideFromLeft{
+    from {
+        transform: translateX(-150%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}

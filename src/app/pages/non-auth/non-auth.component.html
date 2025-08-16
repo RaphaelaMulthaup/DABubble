@@ -1,4 +1,7 @@
-<img src="assets/img/logo.png" alt="">
+<div class="logo-box flex justify-center">
+    <img class="logo" src="assets/img/logo.png" alt="">
+</div>
+ <app-intro></app-intro>
 @if(noAccount){
     <app-register-form />
     <button (click)="toggleNoAccount()">to Login</button>
