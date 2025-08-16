@@ -13,7 +13,6 @@ import {
   query,
   serverTimestamp,
   setDoc,
-  Timestamp,
   updateDoc
 } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
@@ -27,10 +26,10 @@ export class MessageService {
   private firestore: Firestore = inject(Firestore);
 
   /**
-   * Sendet eine Nachricht in eine Subcollection
-   * @param parentPath z.B. "chats/{chatId}" oder "threads/{threadId}"
-   * @param subcollectionName z.B. "messages" oder "threadMessages"
-   * @param message Nachrichtendaten (createdAt wird automatisch gesetzt)
+   * Sends a message to a subcollection
+   * @param parentPath e.g. "chats/{chatId}" or "threads/{threadId}"
+   * @param subcollectionName e.g. "messages" or "threadMessages"
+   * @param message Message data (createdAt is set automatically)
    */
   async sendMessage(
     parentPath: string,
@@ -45,7 +44,8 @@ export class MessageService {
   }
 
   /**
-   * Holt Nachrichten einer Subcollection
+   * Fetches messages from a subcollection
+   * @returns Observable list of messages including their ID
    */
   getMessages<T extends MessageInterface>(
     parentPath: string,
@@ -57,7 +57,10 @@ export class MessageService {
   }
 
   /**
-   * Fügt eine Reaktion hinzu oder entfernt sie, falls der User sie schon gesetzt hat
+   * Adds or removes a reaction depending on whether the user already reacted
+   * @param messageId ID of the message
+   * @param emojiName Name of the emoji
+   * @param userId ID of the user who reacts
    */
   async toggleReaction(
     parentPath: string,
@@ -95,7 +98,9 @@ export class MessageService {
   }
 
   /**
-   * Holt alle Reaktionen einer Nachricht
+   * Fetches all reactions of a message
+   * @param messageId ID of the message
+   * @returns Observable list of reactions
    */
   getReactions(
     parentPath: string,
@@ -110,7 +115,8 @@ export class MessageService {
   }
 
   /**
-   * Löscht eine Nachricht
+   * Deletes a message
+   * @param messageId ID of the message to delete
    */
   async deleteMessage(
     parentPath: string,

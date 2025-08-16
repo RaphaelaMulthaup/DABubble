@@ -1,20 +1,154 @@
 /* You can add global styles to this file, and also import other style files */
 @use "tailwindcss" as *;
 
+@mixin dFlex($jc: center, $ai: center, $g: 0) {
+  display: flex;
+  justify-content: $jc;
+  align-items: $ai;
+  gap: $g;
+}
+
 * {
   box-sizing: border-box;
 }
+
+:root {
+  --color-purple-dark: #444df2;
+  --color-purple-medium: #535af1;
+  --color-purple-light: #797ef3;
+  --color-purple-white: #eceefe;
+  --color-gray: #686868;
+  --color-black: #000000;
+  --color-white: #ffffff;
+  --color-pink: #ed1e79;
+  --color-green: #92c83e;
+}
+
 button {
-  padding: 8px 8px;
-  border-radius: 8px;
-  background-color: wheat;
   cursor: pointer;
+}
+
+.btn-primary {
+  padding: 12px 24px;
+  border-radius: 25px;
+  color: var(--color-white);
+  background-color: var(--color-purple-dark);
+  font-size: 18px;
+  font-weight: 700;
+
   &:hover {
-    background-color: #f0c040;
+    background-color: var(--color-purple-light);
+  }
+
+  &:disabled {
+    background-color: var(--color-gray);
   }
 }
+
+.btn-secondary {
+  padding: 12px 24px;
+  border: 1px solid var(--color-purple-light);
+  border-radius: 25px;
+  color: var(--color-purple-dark);
+  background-color: var(--color-white);
+  font-size: 18px;
+  font-weight: 700;
+
+  &:hover {
+    color: var(--color-white);
+    background-color: var(--color-purple-medium);
+  }
+
+  &:disabled {
+    border: 1px solid var(--color-gray);
+    color: var(--color-gray);
+  }
+
+  &:focus {
+    color: var(--color-white);
+    background-color: var(--color-purple-dark);
+  }
+}
+
+.btn-tertiary {
+  border-radius: 50%;
+  background-color: var(--color-white);
+
+  &:hover {
+    background-color: var(--color-purple-white);
+  }
+}
+
+.btnDropDown {
+  @include dFlex($g: 12px);
+  svg:first-child {
+    margin-right: 5px;
+  }
+}
+
 input {
-  padding: 8px 8px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
+  outline: unset;
+  border: 1px solid var(--color-purple-white);
+  border-radius: 30px;
+
+  &::placeholder {
+    color: var(--color-gray);
+  }
+
+  &:focus-within {
+    border: 1px solid var(--color-purple-medium);
+  }
+}
+
+.input-primary {
+  padding: 18px 32px;
+  background-color: var(--color-purple-white);
+
+  &:hover {
+    border: 1px solid var(--color-gray);
+  }
+}
+
+.input-secondary {
+  background-color: var(--color-white);
+
+  &:hover {
+    border: 1px solid var(--color-purple-light);
+  }
+}
+
+.collapsible {
+  width: fit-content;
+  padding: 12px 20px;
+  border-bottom-left-radius: 30px;
+  border-bottom-right-radius: 30px;
+  rotate: -90deg;
+  box-shadow: 4px 4px 7px 0px #00000033;
+  background-color: var(--color-white);
+
+  &:hover {
+    color: var(--color-purple-medium);
+    background-color: var(--color-white);
+  }
+}
+
+.info-message {
+  width: fit-content;
+  //padding mobile: 20px 30px;
+  padding: 50px;
+  //gap mobile: 18px;
+  gap: 28px;
+  border-radius: 30px;
+  border-bottom-right-radius: 0;
+  color: var(--color-white);
+  background-color: var(--color-purple-dark);
+  //fs mobile: 22px;
+  font-size: 36px;
+  font-weight: 700;
+  box-shadow: 0px 6px 10px 0px #00000033;
+}
+
+h1 {
+  font-weight: 700;
+  font-size: 32px;
 }
