@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { doc } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-intro',
@@ -19,16 +20,17 @@ export class IntroComponent implements OnInit {
     setTimeout(() => {
       logoContainer?.classList.add("container-transperent");
       this.moveUp();
+      this.getRid();
     }, 4000);
   }
 
   moveLogo() {
       let animatedLogo = document.querySelector(".animated-logo");
 
-          setTimeout(() => {
-            animatedLogo?.classList.add("expand");
-            this.moveSpan();
-          }, 1000);
+      setTimeout(() => {
+        animatedLogo?.classList.add("expand");
+        this.moveSpan();
+      }, 1000);
   }
 
   moveSpan() {
@@ -40,8 +42,16 @@ export class IntroComponent implements OnInit {
   }
 
   moveUp() {
+    let animatedLogo = document.querySelector(".animated-logo");
+    animatedLogo?.classList.add("moveUp");
+  }
+
+  getRid() {
     let logoContainer = document.querySelector(".logo-container");
-    logoContainer?.classList.add("moveUp");
+
+    setTimeout(() => {
+      logoContainer?.classList.add("getRid");
+    }, 2000);
   }
 
 }

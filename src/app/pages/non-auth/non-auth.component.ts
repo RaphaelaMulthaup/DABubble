@@ -68,11 +68,19 @@ export class NonAuthComponent {
    */
   ngOnInit() {
     const usersRef = collection(this.firestore, 'users');
+    this.showLogo();
 
     collectionData(usersRef).pipe(
       map((users: any[]) => users.map(user => user.name))
     ).subscribe(userNames => {
       console.log('User names from Firestore:', userNames);
     });
+  }
+
+  showLogo() {
+    let shownLogo = document.querySelector(".logo");
+    setTimeout(() => {
+      shownLogo?.classList.add("show");
+    }, 6000);
   }
 }

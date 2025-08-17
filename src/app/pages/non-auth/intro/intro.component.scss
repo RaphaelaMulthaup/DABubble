@@ -28,9 +28,9 @@
 }
 
 .animated-logo{
-    transition: width 1s;
+    transition: width 1s, height 2s;
     width: 60px;
-    
+    height: 56px;
 }
 
 .expand{
@@ -43,6 +43,11 @@
 
 .moveUp{
     align-items: baseline;
+    height: 99%;
+}
+
+.getRid{
+    display: none;
 }
 
 .container-transperent{
