@@ -12,7 +12,10 @@ export class IntroComponent implements OnInit {
   ngOnInit(): void {
       this.introAnimation();
   }
-  
+
+  /**
+   * Animation function intro screen
+   */
   introAnimation() {
     let logoContainer = document.querySelector(".logo-container");
     this.moveLogo();
@@ -24,6 +27,9 @@ export class IntroComponent implements OnInit {
     }, 4000);
   }
 
+  /**
+   * Moves logo to the left and calls function "moveSpan"
+   */
   moveLogo() {
       let animatedLogo = document.querySelector(".animated-logo");
 
@@ -33,6 +39,9 @@ export class IntroComponent implements OnInit {
       }, 1000);
   }
 
+  /**
+   * Name span appers from the left side
+   */
   moveSpan() {
        let animatName = document.querySelector(".animat-name");
 
@@ -41,11 +50,17 @@ export class IntroComponent implements OnInit {
        }, 1000);
   }
 
+  /**
+   * Moves the now complete logo to the top
+   */
   moveUp() {
     let animatedLogo = document.querySelector(".animated-logo");
     animatedLogo?.classList.add("moveUp");
   }
 
+  /**
+   * removes the animated logo and makes way for the actual logo
+   */
   getRid() {
     let logoContainer = document.querySelector(".logo-container");
 

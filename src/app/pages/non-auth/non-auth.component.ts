@@ -77,6 +77,9 @@ export class NonAuthComponent {
     });
   }
 
+  /**
+   * Repalced the animted logo with the actual one.
+   */
   showLogo() {
     let shownLogo = document.querySelector(".logo");
     setTimeout(() => {
