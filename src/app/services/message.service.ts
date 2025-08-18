@@ -16,7 +16,7 @@ import {
   setDoc,
   updateDoc,
 } from '@angular/fire/firestore';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { MessageInterface } from '../shared/models/message.interface';
 import { Reaction } from '../shared/models/reaction.interface';
 import { ChatInterface } from '../shared/models/chat.interface';
@@ -26,7 +26,13 @@ import { ChatInterface } from '../shared/models/chat.interface';
 })
 export class MessageService {
   private firestore: Firestore = inject(Firestore);
-  messagesDisplayedConversation: MessageInterface[] = [];
+  private _messagesDisplayedConversation = new BehaviorSubject<
+    MessageInterface[]
+  >([]);
+
+  // Observable für andere Components
+  messagesDisplayedConversation$ =
+    this._messagesDisplayedConversation.asObservable();
   /**
    * Sends a message to a subcollection
    * @param parentPath e.g. "chats/{chatId}" or "threads/{threadId}"
@@ -146,14 +152,14 @@ export class MessageService {
     selectedConversation: ChatInterface,
     typeOfConversation: string
   ) {
+    let messages: MessageInterface[] = [];
     if (selectedConversation.id) {
-      this.messagesDisplayedConversation = await this.loadMessages(
+      messages = await this.loadMessages(
         selectedConversation.id,
         typeOfConversation
       );
-    } else {
-      this.messagesDisplayedConversation = [];
     }
+    this._messagesDisplayedConversation.next(messages); // immer aktuelle Messages pushen
   }
 
   async loadMessages(
