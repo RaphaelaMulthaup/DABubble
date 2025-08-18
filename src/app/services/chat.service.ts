@@ -6,8 +6,11 @@ import {
   doc,
   docData,
   Firestore,
+  getDocs,
+  query,
   serverTimestamp,
   updateDoc,
+  where,
 } from '@angular/fire/firestore';
 import { ChatInterface } from '../shared/models/chat.interface';
 import { map, Observable } from 'rxjs';
@@ -126,5 +129,22 @@ export class ChatService {
       'messages',
       messageId
     );
+  }
+
+  async getChatId(userId1: string, userId2: string) {
+    const chatsRef = collection(this.firestore, 'chats');    
+    const q = query(chatsRef, where('userIds', 'array-contains', userId1));
+    const snapshot = await getDocs(q);
+
+    // Jetzt alle Ergebnisse filtern, die auch userId2 enthalten
+    let chatId: string | null = null;
+    snapshot.forEach((doc) => {
+      const data = doc.data() as any;
+      if (data.userIds.includes(userId2)) {
+        chatId = doc.id; // <- das ist dein chatId
+      }
+    });
+
+    return chatId;
   }
 }

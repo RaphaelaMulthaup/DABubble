@@ -7,5 +7,5 @@ import { Component } from '@angular/core';
   styleUrl: './window-display.component.scss'
 })
 export class WindowDisplayComponent {
-
+  messagesDisplayedConversation
 }

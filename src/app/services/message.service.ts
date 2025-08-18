@@ -9,22 +9,24 @@ import {
   doc,
   Firestore,
   getDoc,
+  getDocs,
   orderBy,
   query,
   serverTimestamp,
   setDoc,
-  updateDoc
+  updateDoc,
 } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { MessageInterface } from '../shared/models/message.interface';
 import { Reaction } from '../shared/models/reaction.interface';
+import { ChatInterface } from '../shared/models/chat.interface';
 
 @Injectable({
   providedIn: 'root',
 })
 export class MessageService {
   private firestore: Firestore = inject(Firestore);
-
+  messagesDisplayedConversation: MessageInterface[] = [];
   /**
    * Sends a message to a subcollection
    * @param parentPath e.g. "chats/{chatId}" or "threads/{threadId}"
@@ -36,7 +38,10 @@ export class MessageService {
     subcollectionName: string,
     message: Omit<MessageInterface, 'createdAt'>
   ) {
-    const messagesRef = collection(this.firestore, `${parentPath}/${subcollectionName}`);
+    const messagesRef = collection(
+      this.firestore,
+      `${parentPath}/${subcollectionName}`
+    );
     await addDoc(messagesRef, {
       ...message,
       createdAt: serverTimestamp(),
@@ -51,9 +56,14 @@ export class MessageService {
     parentPath: string,
     subcollectionName: string
   ): Observable<(T & { id: string })[]> {
-    const messagesRef = collection(this.firestore, `${parentPath}/${subcollectionName}`);
+    const messagesRef = collection(
+      this.firestore,
+      `${parentPath}/${subcollectionName}`
+    );
     const q = query(messagesRef, orderBy('createdAt', 'asc'));
-    return collectionData(q, { idField: 'id' }) as Observable<(T & { id: string })[]>;
+    return collectionData(q, { idField: 'id' }) as Observable<
+      (T & { id: string })[]
+    >;
   }
 
   /**
@@ -111,7 +121,9 @@ export class MessageService {
       this.firestore,
       `${parentPath}/${subcollectionName}/${messageId}/reactions`
     );
-    return collectionData(reactionsRef, { idField: 'id' }) as Observable<Reaction[]>;
+    return collectionData(reactionsRef, { idField: 'id' }) as Observable<
+      Reaction[]
+    >;
   }
 
   /**
@@ -123,7 +135,39 @@ export class MessageService {
     subcollectionName: string,
     messageId: string
   ) {
-    const messageRef = doc(this.firestore, `${parentPath}/${subcollectionName}/${messageId}`);
+    const messageRef = doc(
+      this.firestore,
+      `${parentPath}/${subcollectionName}/${messageId}`
+    );
     await deleteDoc(messageRef);
+  }
+
+  async provideMessages(
+    selectedConversation: ChatInterface,
+    typeOfConversation: string
+  ) {
+    if (selectedConversation.id) {
+      this.messagesDisplayedConversation = await this.loadMessages(
+        selectedConversation.id,
+        typeOfConversation
+      );
+    } else {
+      this.messagesDisplayedConversation = [];
+    }
+  }
+
+  async loadMessages(
+    conversationId: string,
+    typeOfConversation: string
+  ): Promise<MessageInterface[]> {
+    const messagesRef = collection(
+      this.firestore,
+      `${typeOfConversation}/${conversationId}/messages`
+    );
+    const snapshot = await getDocs(messagesRef);
+    return snapshot.docs.map((d) => ({
+      id: d.id,
+      ...(d.data() as Omit<MessageInterface, 'id'>),
+    }));
   }
 }
