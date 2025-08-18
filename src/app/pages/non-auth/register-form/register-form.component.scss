@@ -1,3 +1,76 @@
-section {
+section,
+form {
     background-color: var(--color-white);
+    gap: 20px;
+}
+
+.headline {
+    gap: 15px;
+    text-align: center;
+
+    h1 {
+        flex: 1;
+        padding-right: 40px;
+    }
+}
+
+.input-container {
+    gap: 12px;
+
+    .input-icon {
+        left: 24px
+    }
+
+    input {
+        padding-left: 64px;
+    }
+
+    .error-message {
+        padding-top: 4px;
+        padding-left: 12px;
+    }
+}
+
+.error-message {
+    height: 16px;
+    font-size: 16px;
+    color: var(--color-pink);
+    line-height: 1;
+}
+
+.checkbox-container {
+    padding-right: 8px;
+    cursor: pointer;
+
+    &:hover {
+        .checkbox {
+            background-image: url("../../../../assets/img/checkbox-unchecked-hover.svg");
+        }
+
+        .checkbox-checked {
+            background-image: url("../../../../assets/img/checkbox-checked-hover.svg") !important;
+        }
+    }
+
+    input[type="checkbox"] {
+        width: 24px;
+        height: 24px;
+        border: none;
+        appearance: none;
+        cursor: pointer;
+    }
+
+    .checkbox {
+        width: 24px;
+        height: 24px;
+        background-image: url("../../../../assets/img/checkbox-unchecked.svg");
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: contain;
+        pointer-events: none;
+    }
+
+    .checkbox-checked {
+        background-image: url("../../../../assets/img/checkbox-checked.svg") !important;
+    }
 }

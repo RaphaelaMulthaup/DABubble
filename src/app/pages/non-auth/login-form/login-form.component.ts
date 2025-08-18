@@ -13,7 +13,7 @@ export class LoginFormComponent {
   authService = inject(AuthService);
 
   // Stores error messages during login
-  errorMessage: string | null = null;
+  showErrorMessage: boolean = false;
 
   // Form group for login with email and password fields
   loginForm: FormGroup = new FormGroup({
@@ -39,9 +39,9 @@ export class LoginFormComponent {
       next: () => {
         console.log('Login successful');
       },
-      error: (err) => {
+      error: () => {
         // Sets the errorMessage to the returned error code
-        this.errorMessage = err.code;
+        this.showErrorMessage = true;
       }
     });
   }

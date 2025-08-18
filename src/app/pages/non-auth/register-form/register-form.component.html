@@ -1,35 +1,62 @@
 <section class="flex flex-col items-center">
-    <h1>Konto erstellen</h1>
-    <p>Mit deinem Namen und deiner E-Mail-Adresse hast du dein neues DABubble-Konto.</p>
-    <form action="" [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-        <div class="flex flex-col gap-[8px]">
-            <div>
-                <!-- <label for="emailId">Email: </label> -->
-                <input class="input-primary" id="emailId" type="text" placeholder="Email" formControlName="email"
-                    name="email" required>
-            </div>
-
-            <div>
-                <!-- <label for="passwordId">Password: </label> -->
-                <input class="input-primary" id="passwordId" type="password" placeholder="Password"
-                    formControlName="password" name="password" required>
-            </div>
-
-            <div>
-                <!-- <label for="displayNameId">Display Name: </label> -->
-                <input class="input-primary" id="displayNameId" type="text" placeholder="Display Name"
-                    formControlName="displayName" name="displayName" required>
-            </div>
-
-            <div class="flex">
-                <input type="checkbox">
-                <p>Ich stimme der <a class="link">Datenschutzerklärung</a> zu.</p>
-            </div>
-            
-            @if(errorMessage) {
-            <div class="error">{{ errorMessage }}</div>
-            }
-            <button class="btn-primary" type="submit" [disabled]="!registerForm.valid">Weiter</button>
+    <div class="headline flex flex-col">
+        <div class="flex place-content-center w-full">
+            <button (click)="backToLogin()" class="btn-tertiary" (mouseenter)="arrowBackImg.src = './assets/img/arrow-back-hover.svg'"
+                (mouseleave)="arrowBackImg.src = './assets/img/arrow-back.svg'">
+                <img #arrowBackImg src="./assets/img/arrow-back.svg" alt="go back to previous page">
+            </button>
+            <h1>Konto erstellen</h1>
         </div>
+        <p>Mit deinem Namen und deiner E-Mail-Adresse hast du dein neues DABubble-Konto.</p>
+    </div>
+    <form action="" [formGroup]="registerForm" (ngSubmit)="onSubmit()"
+        class="form-group flex flex-col items-center w-full">
+        <div class="input-container flex flex-col w-full">
+            <div>
+                <div class="flex items-center relative">
+                    <img class="input-icon absolute" src="./assets/img/person.svg" alt="person">
+                    <input class="input-primary" id="displayName" type="text" placeholder="Name und Nachname"
+                        formControlName="displayName" name="displayName" required>
+                </div>
+                <p class="error-message">@if (registerForm.get('displayName')?.invalid &&
+                    registerForm.get('displayName')?.touched)
+                    {Diese Feld darf nicht leer sein.}</p>
+            </div>
+
+            <div>
+                <div class="flex items-center relative">
+                    <img class="input-icon absolute" src="./assets/img/mail.svg" alt="mail">
+                    <input class="input-primary" id="email" type="text" placeholder="beispielname@email.com"
+                        formControlName="email" name="email" required>
+                </div>
+
+                <p class="error-message">@if (registerForm.get('email')?.invalid &&
+                    registerForm.get('email')?.touched){Bitte gib eine gültige E-Mail-Addresse ein.}</p>
+            </div>
+
+            <div>
+                <div class="flex items-center relative">
+                    <img class="input-icon absolute" src="./assets/img/lock.svg" alt="lock">
+                    <input class="input-primary" id="password" type="password" placeholder="Passwort"
+                        formControlName="password" name="password" required>
+                </div>
+                <p class="error-message">@if (registerForm.get('password')?.invalid &&
+                    registerForm.get('password')?.touched){Dein Passwort muss min. 6 Zeichen lang sein.}</p>
+            </div>
+        </div>
+
+        <div class="flex w-full">
+            <div class="checkbox-container flex relative">
+                <input (click)="toggleCheckboxChecked()" id="privacyPolicy" type="checkbox"
+                    formControlName="privacyPolicy" name="privacyPolicy" required>
+                <div [class.checkbox-checked]="checkboxChecked" class="checkbox absolute"></div>
+            </div>
+            <div class="flex flex-col">
+                <p>Ich stimme der <a class="link">Datenschutzerklärung</a> zu.</p>
+                <p class="error-message">@if (registerForm.get('privacyPolicy')?.invalid &&
+                    registerForm.get('privacyPolicy')?.touched){Bitte stimme der Datenschutzerklärung zu.}</p>
+            </div>
+        </div>
+        <button class="btn-primary self-end" type="submit" [disabled]="!registerForm.valid">Weiter</button>
     </form>
 </section>

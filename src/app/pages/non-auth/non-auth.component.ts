@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Auth } from '@angular/fire/auth';
@@ -10,14 +10,15 @@ import { RegisterFormComponent } from "./register-form/register-form.component";
 
 import { AuthService } from '../../services/auth.service';
 import { IntroComponent } from './intro/intro.component';
+import { AvatarSelectionComponent } from "./avatar-selection/avatar-selection.component";
 
 @Component({
   selector: 'app-non-auth',
-  imports: [CommonModule, LoginFormComponent, RegisterFormComponent, IntroComponent],
+  imports: [CommonModule, LoginFormComponent, RegisterFormComponent, IntroComponent, AvatarSelectionComponent],
   templateUrl: './non-auth.component.html',
   styleUrl: './non-auth.component.scss'
 })
-export class NonAuthComponent {
+export class NonAuthComponent implements OnInit {
   // Flag to toggle between login and register forms
   noAccount: boolean = false;
 
@@ -35,7 +36,7 @@ export class NonAuthComponent {
         this.router.navigate(['/dashboard']);
       } else {
         // Log a message if no user is logged in and navigate to home
-        console.log('No user is logged in');
+        //console.log('No user is logged in');
         this.router.navigate(['/']);
       }
     });
@@ -59,7 +60,7 @@ export class NonAuthComponent {
     collectionData(usersRef).pipe(
       map((users: any[]) => users.map(user => user.name))
     ).subscribe(userNames => {
-      console.log('User names from Firestore:', userNames);
+      //console.log('User names from Firestore:', userNames);
     });
   }
 
