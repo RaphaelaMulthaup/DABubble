@@ -1,7 +1,7 @@
 <section class="flex flex-col items-center">
     <div class="headline flex flex-col">
         <div class="flex items-center place-content-center w-full">
-            <button class="btn-tertiary" (mouseenter)="arrowBackImg.src = './assets/img/arrow-back-hover.svg'"
+            <button (click)="backToLogin()" class="btn-tertiary" (mouseenter)="arrowBackImg.src = './assets/img/arrow-back-hover.svg'"
                 (mouseleave)="arrowBackImg.src = './assets/img/arrow-back.svg'">
                 <img #arrowBackImg src="./assets/img/arrow-back.svg" alt="go back to previous page">
             </button>

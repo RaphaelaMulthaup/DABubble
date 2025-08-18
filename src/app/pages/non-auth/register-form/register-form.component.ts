@@ -31,6 +31,13 @@ export class RegisterFormComponent {
   }
 
   /**
+   * This function emits the showLogin-variable to change the non-auth-components variable noAccount to false.
+   */
+  backToLogin() {
+    this.showLogin.emit(false);
+  }
+
+  /**
    * This function toggles the checkboxChecked-variable to change the checkbox' appearence.
    */
   toggleCheckboxChecked() {
