@@ -1,0 +1,46 @@
+section,
+form {
+    background-color: var(--color-white);
+    gap: 20px;
+}
+
+.headline {
+    gap: 15px;
+    text-align: center;
+
+    h1 {
+        flex: 1;
+        padding-right: 40px;
+    }
+}
+
+.selected-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+}
+
+.user-name {
+    padding-top: 24px;
+    font-size: 32px;
+    font-weight: 700;
+}
+
+.choose-avatar-explanation {
+    font-size: 20px;
+    padding-top: 8px;
+    padding-bottom: 16px;
+}
+
+.avatar-list {
+    img {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        cursor: pointer;
+    }
+}
+
+.submit-btn {
+    margin-top: 24px;
+}

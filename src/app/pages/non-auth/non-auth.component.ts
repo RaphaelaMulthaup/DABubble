@@ -10,10 +10,11 @@ import { RegisterFormComponent } from "./register-form/register-form.component";
 
 import { AuthService } from '../../services/auth.service';
 import { IntroComponent } from './intro/intro.component';
+import { AvatarSelectionComponent } from "./avatar-selection/avatar-selection.component";
 
 @Component({
   selector: 'app-non-auth',
-  imports: [CommonModule, LoginFormComponent, RegisterFormComponent, IntroComponent],
+  imports: [CommonModule, LoginFormComponent, RegisterFormComponent, IntroComponent, AvatarSelectionComponent],
   templateUrl: './non-auth.component.html',
   styleUrl: './non-auth.component.scss'
 })

@@ -1,6 +1,6 @@
 <section class="flex flex-col items-center">
     <div class="headline flex flex-col">
-        <div class="flex items-center place-content-center w-full">
+        <div class="flex place-content-center w-full">
             <button (click)="backToLogin()" class="btn-tertiary" (mouseenter)="arrowBackImg.src = './assets/img/arrow-back-hover.svg'"
                 (mouseleave)="arrowBackImg.src = './assets/img/arrow-back.svg'">
                 <img #arrowBackImg src="./assets/img/arrow-back.svg" alt="go back to previous page">
@@ -57,6 +57,6 @@
                     registerForm.get('privacyPolicy')?.touched){Bitte stimme der Datenschutzerklärung zu.}</p>
             </div>
         </div>
-        <button class="btn-primary" type="submit" [disabled]="!registerForm.valid">Weiter</button>
+        <button class="btn-primary self-end" type="submit" [disabled]="!registerForm.valid">Weiter</button>
     </form>
 </section>

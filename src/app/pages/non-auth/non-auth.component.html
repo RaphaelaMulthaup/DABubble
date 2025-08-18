@@ -8,17 +8,13 @@
 <main class="flex place-content-center items-center">
     <section class="non-auth-form flex flex-col items-center">
         @if(noAccount){
-        <app-register-form (showLogin)="noAccount = $event"/>
+        <!-- <app-register-form (showLogin)="noAccount = $event"/> -->
+        <app-avatar-selection></app-avatar-selection>
         }@else {
         <app-login-form />
         }
     </section>
 </main>
-
-<footer class="flex place-content-center">
-    <a class="link" href="/">Impressum</a>
-    <a class="link" href="/">Datenschutz</a>
-</footer>
 
 @if (!noAccount) {
 <div class="register flex flex-col items-center">
@@ -26,3 +22,8 @@
     <button class="btn-secondary" (click)="toggleNoAccount()">Konto erstellen</button>
 </div>
 }
+
+<footer class="flex place-content-center">
+    <a class="link" href="/">Impressum</a>
+    <a class="link" href="/">Datenschutz</a>
+</footer>
