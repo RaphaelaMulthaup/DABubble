@@ -1,0 +1,32 @@
+section {
+    background-color: var(--color-white);
+}
+
+form,
+input,
+.seperator-container {
+    width: 100%;
+}
+
+.seperator-container {
+    gap: 16px;
+
+    .seperator {
+        width: 100%;
+        height: 2px;
+        flex: 1;
+        background-color: var(--color-purple-white);
+    }
+}
+
+
+.google-login-btn {
+    padding: 12px 32px;
+    gap: 20px;
+    border-radius: 100px;
+    background-color: var(--color-purple-white);
+}
+
+.submit-btns {
+    gap: 30px;
+}

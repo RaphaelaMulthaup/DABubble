@@ -1,15 +1,36 @@
-<h1>Anmeldung</h1>
-<form action="" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-    <div class="form-group flex flex-col gap-[8px]">
-        <label for="emailId">Email: </label>
-        <input id="emailId" type="text" placeholder="Email" formControlName="email" name="email" required>
+<section class="flex flex-col items-center">
+    <h1>Anmeldung</h1>
+    <p>Wir empfehlen dir, die E-Mail-Adresse zu nutzen, die du bei der Arbeit verwendest.</p>
+    <form action="" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <div class="form-group flex flex-col items-center gap-[8px]">
+            <!-- <label for="emailId">Email: </label> -->
+            <input class="input-primary" id="emailId" type="text" placeholder="Email" formControlName="email"
+                name="email" required>
 
-        <label for="passwordId">Password: </label>
-        <input id="passwordId" type="password" placeholder="Password" formControlName="password" name="password" required>
+            <!-- <label for="passwordId">Password: </label> -->
+            <input class="input-primary" id="passwordId" type="password" placeholder="Password"
+                formControlName="password" name="password" required>
 
-        @if(errorMessage) {
+            @if(errorMessage) {
             <div class="error">{{ errorMessage }}</div>
-        }
-        <button type="submit" [disabled]="!loginForm.valid">Login</button>
-    </div>
-</form>
+            }
+
+            <button class="link">Passwort vergessen?</button>
+
+            <div class="seperator-container flex items-center">
+                <div class="seperator"></div>
+                <p>ODER</p>
+                <div class="seperator"></div>
+            </div>
+
+            <button (click)="loginWithGoogle()" class="google-login-btn">
+                <img>
+                <p>Anmelden mit Google</p>
+            </button>
+            <div class="submit-btns flex">
+                <button class="btn-primary" type="submit" [disabled]="!loginForm.valid">Anmelden</button>
+                <button class="btn-secondary">Gäste-Login</button>
+            </div>
+        </div>
+    </form>
+</section>

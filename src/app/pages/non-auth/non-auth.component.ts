@@ -49,20 +49,6 @@ export class NonAuthComponent {
   }
 
   /**
-   * Login using Google OAuth via AuthService
-   */
-  loginWithGoogle() {
-    this.authService.loginWithGoogle().subscribe({
-      next: () => {
-        console.log('Login with Google successful');
-      },
-      error: (err) => {
-        console.error('Login with Google failed', err);
-      }
-    });
-  }
-
-  /**
    * Lifecycle hook: Runs on component initialization
    * Fetches all users from Firestore and logs their names
    */
