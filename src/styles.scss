@@ -72,16 +72,23 @@ button {
 }
 
 .btn-tertiary {
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   background-color: var(--color-white);
 
   &:hover {
     background-color: var(--color-purple-white);
   }
+
+  img {
+    justify-self: center;
+  }
 }
 
 .btnDropDown {
   @include dFlex($g: 12px);
+
   svg:first-child {
     margin-right: 5px;
   }

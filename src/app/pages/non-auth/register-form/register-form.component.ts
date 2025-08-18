@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, EventEmitter, inject, Output } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
 import { FormControl, FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 
@@ -23,6 +23,8 @@ export class RegisterFormComponent {
     password: new FormControl('', [Validators.required, Validators.minLength(6)]),
     privacyPolicy: new FormControl(false, [Validators.required])
   });
+
+  @Output() showLogin = new EventEmitter<boolean>();
 
   constructor() {
     // Constructor remains empty

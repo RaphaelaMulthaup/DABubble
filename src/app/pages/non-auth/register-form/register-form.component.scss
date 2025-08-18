@@ -7,6 +7,11 @@ form {
 .headline {
     gap: 15px;
     text-align: center;
+
+    h1 {
+        flex: 1;
+        padding-right: 40px;
+    }
 }
 
 .input-container {

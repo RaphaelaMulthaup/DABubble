@@ -1,6 +1,12 @@
 <section class="flex flex-col items-center">
     <div class="headline flex flex-col">
-        <h1>Konto erstellen</h1>
+        <div class="flex items-center place-content-center w-full">
+            <button class="btn-tertiary" (mouseenter)="arrowBackImg.src = './assets/img/arrow-back-hover.svg'"
+                (mouseleave)="arrowBackImg.src = './assets/img/arrow-back.svg'">
+                <img #arrowBackImg src="./assets/img/arrow-back.svg" alt="go back to previous page">
+            </button>
+            <h1>Konto erstellen</h1>
+        </div>
         <p>Mit deinem Namen und deiner E-Mail-Adresse hast du dein neues DABubble-Konto.</p>
     </div>
     <form action="" [formGroup]="registerForm" (ngSubmit)="onSubmit()"
