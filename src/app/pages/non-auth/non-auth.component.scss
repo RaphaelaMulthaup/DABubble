@@ -6,16 +6,13 @@ header {
     padding: 75px;
     padding-bottom: 0;
 
-    .logo-box {
-        width: 100vw;
-        height: 60px;
-        padding: 2px 0px 2px 0px;
+    .logo{
+        visibility: hidden;
+        height: 70px;
+    }
 
-        .logo {
-            //display: none;
-            width: 205px;
-            height: 56px;
-        }
+    .show-logo{
+        visibility: visible;
     }
 }
 
