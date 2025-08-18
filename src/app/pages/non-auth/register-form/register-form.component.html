@@ -7,29 +7,44 @@
         class="form-group flex flex-col items-center w-full">
         <div class="input-container flex flex-col w-full">
             <div>
-                <input class="input-primary" id="displayName" type="text" placeholder="Name und Nachname"
-                    formControlName="displayName" name="displayName" required>
+                <div class="flex items-center relative">
+                    <img class="input-icon absolute" src="./assets/img/person.svg" alt="person">
+                    <input class="input-primary" id="displayName" type="text" placeholder="Name und Nachname"
+                        formControlName="displayName" name="displayName" required>
+                </div>
+                <p class="error-message">Diese Feld darf nicht leer sein.</p>
             </div>
 
             <div>
-                <input class="input-primary" id="email" type="text" placeholder="beispielname@email.com"
-                    formControlName="email" name="email" required>
+                <div class="flex items-center relative">
+                    <img class="input-icon absolute" src="./assets/img/mail.svg" alt="mail">
+                    <input class="input-primary" id="email" type="text" placeholder="beispielname@email.com"
+                        formControlName="email" name="email" required>
+                </div>
+                <p class="error-message">Bitte gib eine gültige E-Mail-Addresse ein.</p>
             </div>
 
             <div>
-                <input class="input-primary" id="password" type="password" placeholder="Passwort"
-                    formControlName="password" name="password" required>
+                <div class="flex items-center relative">
+                    <img class="input-icon absolute" src="./assets/img/lock.svg" alt="lock">
+                    <input class="input-primary" id="password" type="password" placeholder="Passwort"
+                        formControlName="password" name="password" required>
+                </div>
+                <p class="error-message">Dein Passwort muss min. 6 Zeichen lang sein.</p>
             </div>
         </div>
 
-        <div class="flex">
-            <input id="privacyPolicy" type="checkbox" formControlName="privacyPolicy" name="privacyPolicy" required>
+        <div class="flex w-full">
+            <div class="checkbox-container flex relative">
+                <input (click)="toggleCheckboxChecked()" id="privacyPolicy" type="checkbox" formControlName="privacyPolicy" name="privacyPolicy" required>
+                <div [class.checkbox-checked]="checkboxChecked" class="checkbox absolute"></div>
+            </div>
             <p>Ich stimme der <a class="link">Datenschutzerklärung</a> zu.</p>
         </div>
 
-        @if(errorMessage) {
+        <!-- @if(errorMessage) {
         <div class="error">{{ errorMessage }}</div>
-        }
+        } -->
         <button class="btn-primary" type="submit" [disabled]="!registerForm.valid">Weiter</button>
     </form>
 </section>

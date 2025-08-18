@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
-import { FormControl, FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms'; 
+import { FormControl, FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-register-form',
@@ -9,6 +9,7 @@ import { FormControl, FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, 
   styleUrl: './register-form.component.scss'
 })
 export class RegisterFormComponent {
+  checkboxChecked = false;
   // Injects the authentication service
   authService = inject(AuthService);
 
@@ -25,6 +26,13 @@ export class RegisterFormComponent {
 
   constructor() {
     // Constructor remains empty
+  }
+
+  /**
+   * This function toggles the checkboxChecked-variable to change the checkbox' appearence.
+   */
+  toggleCheckboxChecked() {
+    this.checkboxChecked = !this.checkboxChecked;
   }
 
   // Handles form submission

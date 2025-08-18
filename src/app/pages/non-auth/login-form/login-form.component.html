@@ -8,7 +8,7 @@
         <div class="input-container flex flex-col w-full">
             <div>
                 <div class="flex items-center relative">
-                    <img class="input-icon absolute" src="./assets/img/mail.svg">
+                    <img class="input-icon absolute" src="./assets/img/mail.svg" alt="mail">
                     <input class="input-primary" id="emailId" type="text" placeholder="beispielname@email.com"
                         formControlName="email" name="email" required>
                 </div>
@@ -17,15 +17,12 @@
 
             <div>
                 <div class="flex items-center relative">
-                    <img class="input-icon absolute" src="./assets/img/lock.svg">
+                    <img class="input-icon absolute" src="./assets/img/lock.svg" alt="lock">
                     <input class="input-primary" id="passwordId" type="password" placeholder="Passwort"
                         formControlName="password" name="password" required>
                 </div>
                 <p class="error-message">Falsches Passwort.</p>
             </div>
-            <!-- @if(!errorMessage) {
-                <div class="error">{{ errorMessage }}</div>
-                } -->
         </div>
 
         <button class="link">Passwort vergessen?</button>

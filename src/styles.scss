@@ -159,4 +159,9 @@ h1 {
 
 .link {
   color: var(--color-purple-light);
+  cursor: pointer;
+
+  &:hover {
+    color: var(--color-purple-medium);
+  }
 }
