@@ -4,28 +4,28 @@
     <form action="" [formGroup]="registerForm" (ngSubmit)="onSubmit()">
         <div class="flex flex-col gap-[8px]">
             <div>
+                <!-- <label for="displayNameId">Display Name: </label> -->
+                <input class="input-primary" id="displayName" type="text" placeholder="Name und Nachname"
+                    formControlName="displayName" name="displayName" required>
+            </div>
+
+            <div>
                 <!-- <label for="emailId">Email: </label> -->
-                <input class="input-primary" id="emailId" type="text" placeholder="Email" formControlName="email"
+                <input class="input-primary" id="email" type="text" placeholder="beispielname@email.com" formControlName="email"
                     name="email" required>
             </div>
 
             <div>
                 <!-- <label for="passwordId">Password: </label> -->
-                <input class="input-primary" id="passwordId" type="password" placeholder="Password"
+                <input class="input-primary" id="password" type="password" placeholder="Passwort"
                     formControlName="password" name="password" required>
             </div>
 
-            <div>
-                <!-- <label for="displayNameId">Display Name: </label> -->
-                <input class="input-primary" id="displayNameId" type="text" placeholder="Display Name"
-                    formControlName="displayName" name="displayName" required>
-            </div>
-
             <div class="flex">
-                <input type="checkbox">
+                <input id="privacyPolicy" type="checkbox" formControlName="privacyPolicy" name="privacyPolicy" required>
                 <p>Ich stimme der <a class="link">Datenschutzerklärung</a> zu.</p>
             </div>
-            
+
             @if(errorMessage) {
             <div class="error">{{ errorMessage }}</div>
             }

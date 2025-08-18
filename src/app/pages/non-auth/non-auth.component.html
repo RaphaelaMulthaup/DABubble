@@ -2,13 +2,7 @@
     <div class="logo-box flex justify-center">
         <img class="logo" src="assets/img/logo.png" alt="Logo DABubble">
     </div>
-    <app-intro></app-intro>
-    @if (!noAccount) {
-    <div class="register">
-        <p>Neu bei DABubble?</p>
-        <button class="link" (click)="toggleNoAccount()">Konto erstellen</button>
-    </div>
-    }
+    <!-- <app-intro></app-intro> -->
 </header>
 
 <main class="flex place-content-center items-center">
@@ -25,3 +19,10 @@
     <a class="link" href="/">Impressum</a>
     <a class="link" href="/">Datenschutz</a>
 </footer>
+
+@if (!noAccount) {
+<div class="register flex flex-col items-center">
+    <p>Neu bei DABubble?</p>
+    <button class="btn-secondary" (click)="toggleNoAccount()">Konto erstellen</button>
+</div>
+}

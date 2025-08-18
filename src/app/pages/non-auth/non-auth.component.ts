@@ -35,7 +35,7 @@ export class NonAuthComponent implements OnInit {
         this.router.navigate(['/dashboard']);
       } else {
         // Log a message if no user is logged in and navigate to home
-        console.log('No user is logged in');
+        //console.log('No user is logged in');
         this.router.navigate(['/']);
       }
     });
@@ -59,7 +59,7 @@ export class NonAuthComponent implements OnInit {
     collectionData(usersRef).pipe(
       map((users: any[]) => users.map(user => user.name))
     ).subscribe(userNames => {
-      console.log('User names from Firestore:', userNames);
+      //console.log('User names from Firestore:', userNames);
     });
   }
 
@@ -67,7 +67,6 @@ export class NonAuthComponent implements OnInit {
    * Repalced the animted logo with the actual one.
    */
   showLogo() {
-    console.log(1)
     let shownLogo = document.querySelector(".logo");
     setTimeout(() => {
       shownLogo?.classList.add("show");

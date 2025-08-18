@@ -12,28 +12,38 @@ header {
         padding: 2px 0px 2px 0px;
 
         .logo {
-            display: none;
+            //display: none;
             width: 205px;
             height: 56px;
         }
     }
-
-    .register {
-        //visible on desktop
-        display: none;
-    }
 }
 
-.non-auth-form {
-    max-width: 80%;
-    padding: 50px 60px;
-    border-radius: 30px;
-    background-color: var(--color-white);
-    box-shadow: 0px 2px 10px 0px #00000014;
+main {
+    padding: 30px 0;
+
+    .non-auth-form {
+        max-width: 80%;
+        padding: 50px 60px;
+        border-radius: 30px;
+        background-color: var(--color-white);
+        box-shadow: 0px 2px 10px 0px #00000014;
+    }
 }
 
 footer {
     gap: 16px;
+    //visible for desktop
+    display: none;
+}
+
+.register {
+    width: 100%;
+    gap: 20px;
+
+    button {
+        padding: 7px 18px;
+    }
 }
 
 .show {

@@ -17,9 +17,10 @@ export class RegisterFormComponent {
 
   // Defines the registration form with validators for email, password, and display name
   registerForm: FormGroup = new FormGroup({
+    displayName: new FormControl('', [Validators.required]),
     email: new FormControl('', [Validators.required, Validators.email]),
     password: new FormControl('', [Validators.required, Validators.minLength(6)]),
-    displayName: new FormControl('', [Validators.required])
+    privacyPolicy: new FormControl(false, [Validators.required])
   });
 
   constructor() {
@@ -29,7 +30,8 @@ export class RegisterFormComponent {
   // Handles form submission
   onSubmit(): void {
     // Get raw form values
-    const thisForm = this.registerForm.getRawValue();
+    const thisForm = this.registerForm.value;
+    console.log(thisForm);
 
     // Call the authentication service to register the user
     this.authService.register(thisForm.email, thisForm.displayName, thisForm.password).subscribe({
