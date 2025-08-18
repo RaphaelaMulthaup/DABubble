@@ -69,7 +69,7 @@ export class NonAuthComponent {
   showLogo() {
     let shownLogo = document.querySelector(".logo");
     setTimeout(() => {
-      shownLogo?.classList.add("show");
-    }, 6000);
+      shownLogo?.classList.add("show-logo");
+    }, 5600);
   }
 }

@@ -9,8 +9,8 @@
 
     .solo-logo{
         position: relative;
-        width: 60px;
-        height: 56px;
+        width: 71px;
+        height: 66px;
         overflow: hidden;
     }
 }
@@ -21,20 +21,21 @@
 
 .animat-name{
     display: none;
-    font-size: 28px;
+    font-size: 34px;
     font-weight: 656;
-    margin: 0px 0px 0px 11px;
+    margin: 0px 0px 0px 14px;
     animation: slideFromLeft 1s ease-in;
+    width: 230px;
 }
 
 .animated-logo{
-    transition: width 1s, height 2s;
-    width: 60px;
-    height: 56px;
+    transition: width 2s, height 1.3s, margin 0.7s;
+    width: 100px;
+    height: 70px;
 }
 
 .expand{
-    width: 205px;
+    width: 348px;
 }
 
 .show{
@@ -43,7 +44,12 @@
 
 .moveUp{
     align-items: baseline;
-    height: 99%;
+    height: 100%;
+    width: 100%;
+}
+
+.addMargin{
+    margin: 309px 74px 154px 74px;
 }
 
 .getRid{

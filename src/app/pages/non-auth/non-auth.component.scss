@@ -7,7 +7,12 @@ header {
     padding-bottom: 0;
 
     .logo{
+        visibility: hidden;
         height: 70px;
+    }
+
+    .show-logo{
+        visibility: visible;
     }
 }
 

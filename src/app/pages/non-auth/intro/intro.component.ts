@@ -51,11 +51,12 @@ export class IntroComponent implements OnInit {
   }
 
   /**
-   * Moves the now complete logo to the top
+   * Moves the now complete logo to the final position
    */
   moveUp() {
     let animatedLogo = document.querySelector(".animated-logo");
     animatedLogo?.classList.add("moveUp");
+    animatedLogo?.classList.add("addMargin");
   }
 
   /**
@@ -66,7 +67,7 @@ export class IntroComponent implements OnInit {
 
     setTimeout(() => {
       logoContainer?.classList.add("getRid");
-    }, 2000);
+    }, 1600);
   }
 
 }
