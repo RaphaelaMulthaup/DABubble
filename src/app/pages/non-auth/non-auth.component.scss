@@ -20,11 +20,11 @@ header {
 }
 
 main {
-    padding: 30px 0;
+    padding: 30px 16px;
 
     .non-auth-form {
-        max-width: 80%;
-        padding: 50px 60px;
+        //padding: 50px 60px; for desktop
+        padding: 35px 20px;
         border-radius: 30px;
         background-color: var(--color-white);
         box-shadow: 0px 2px 10px 0px #00000014;
@@ -39,6 +39,7 @@ footer {
 
 .register {
     width: 100%;
+    padding-bottom: 80px;
     gap: 20px;
 
     button {

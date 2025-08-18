@@ -12,8 +12,8 @@ export class LoginFormComponent {
   // Injects the AuthService to handle authentication
   authService = inject(AuthService);
 
-  // Stores error messages during login
-  errorMessage: string | null = null;
+  // // Stores error messages during login
+  // errorMessage: string | null = null;
 
   // Form group for login with email and password fields
   loginForm: FormGroup = new FormGroup({
@@ -39,10 +39,10 @@ export class LoginFormComponent {
       next: () => {
         console.log('Login successful');
       },
-      error: (err) => {
-        // Sets the errorMessage to the returned error code
-        this.errorMessage = err.code;
-      }
+      // error: (err) => {
+      //   // Sets the errorMessage to the returned error code
+      //   this.errorMessage = err.code;
+      // }
     });
   }
 
