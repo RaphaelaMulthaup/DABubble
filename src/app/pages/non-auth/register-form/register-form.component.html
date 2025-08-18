@@ -12,7 +12,9 @@
                     <input class="input-primary" id="displayName" type="text" placeholder="Name und Nachname"
                         formControlName="displayName" name="displayName" required>
                 </div>
-                <p class="error-message">Diese Feld darf nicht leer sein.</p>
+                <p class="error-message">@if (registerForm.get('displayName')?.invalid &&
+                    registerForm.get('displayName')?.touched)
+                    {Diese Feld darf nicht leer sein.}</p>
             </div>
 
             <div>
@@ -21,7 +23,9 @@
                     <input class="input-primary" id="email" type="text" placeholder="beispielname@email.com"
                         formControlName="email" name="email" required>
                 </div>
-                <p class="error-message">Bitte gib eine gültige E-Mail-Addresse ein.</p>
+
+                <p class="error-message">@if (registerForm.get('email')?.invalid &&
+                    registerForm.get('email')?.touched){Bitte gib eine gültige E-Mail-Addresse ein.}</p>
             </div>
 
             <div>
@@ -30,21 +34,23 @@
                     <input class="input-primary" id="password" type="password" placeholder="Passwort"
                         formControlName="password" name="password" required>
                 </div>
-                <p class="error-message">Dein Passwort muss min. 6 Zeichen lang sein.</p>
+                <p class="error-message">@if (registerForm.get('password')?.invalid &&
+                    registerForm.get('password')?.touched){Dein Passwort muss min. 6 Zeichen lang sein.}</p>
             </div>
         </div>
 
         <div class="flex w-full">
             <div class="checkbox-container flex relative">
-                <input (click)="toggleCheckboxChecked()" id="privacyPolicy" type="checkbox" formControlName="privacyPolicy" name="privacyPolicy" required>
+                <input (click)="toggleCheckboxChecked()" id="privacyPolicy" type="checkbox"
+                    formControlName="privacyPolicy" name="privacyPolicy" required>
                 <div [class.checkbox-checked]="checkboxChecked" class="checkbox absolute"></div>
             </div>
-            <p>Ich stimme der <a class="link">Datenschutzerklärung</a> zu.</p>
+            <div class="flex flex-col">
+                <p>Ich stimme der <a class="link">Datenschutzerklärung</a> zu.</p>
+                <p class="error-message">@if (registerForm.get('privacyPolicy')?.invalid &&
+                    registerForm.get('privacyPolicy')?.touched){Bitte stimme der Datenschutzerklärung zu.}</p>
+            </div>
         </div>
-
-        <!-- @if(errorMessage) {
-        <div class="error">{{ errorMessage }}</div>
-        } -->
         <button class="btn-primary" type="submit" [disabled]="!registerForm.valid">Weiter</button>
     </form>
 </section>

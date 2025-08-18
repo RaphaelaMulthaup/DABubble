@@ -12,7 +12,8 @@
                     <input class="input-primary" id="emailId" type="text" placeholder="beispielname@email.com"
                         formControlName="email" name="email" required>
                 </div>
-                <p class="error-message">Diese E-Mail-Addresse ist ungültig.</p>
+                @if (showErrorMessage)
+                {<p class="error-message">Diese E-Mail-Addresse ist ungültig.</p>}
             </div>
 
             <div>
@@ -21,7 +22,8 @@
                     <input class="input-primary" id="passwordId" type="password" placeholder="Passwort"
                         formControlName="password" name="password" required>
                 </div>
-                <p class="error-message">Falsches Passwort.</p>
+                @if (showErrorMessage)
+                {<p class="error-message">Falsches Passwort.</p>}
             </div>
         </div>
 

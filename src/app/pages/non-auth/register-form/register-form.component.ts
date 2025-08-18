@@ -13,8 +13,8 @@ export class RegisterFormComponent {
   // Injects the authentication service
   authService = inject(AuthService);
 
-  // Holds any error messages during registration
-  errorMessage: string | null = null;
+  // // Holds any error messages during registration
+  // errorMessage: string | null = null;
 
   // Defines the registration form with validators for email, password, and display name
   registerForm: FormGroup = new FormGroup({
@@ -46,10 +46,10 @@ export class RegisterFormComponent {
       next: () => {
         console.log('Registration successful');
       },
-      error: (err) => {
-        // Set error message if registration fails
-        this.errorMessage = err.code;
-      }
+      // error: (err) => {
+      //   // Set error message if registration fails
+      //   this.errorMessage = err.code;
+      // }
     });
   }
 }
