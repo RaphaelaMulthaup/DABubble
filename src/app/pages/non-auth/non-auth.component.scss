@@ -22,3 +22,20 @@ header {
 footer {
     gap: 16px;
 }
+@import './../../../styles.scss';
+
+.logo-box{
+    width: 100vw;
+    height: 60px;
+    padding: 2px 0px 2px 0px;
+}
+
+.logo{
+    display: none;
+    width: 205px;
+    height: 56px;    
+}
+
+.show{
+    display: flex !important;
+}

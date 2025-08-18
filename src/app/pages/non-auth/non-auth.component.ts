@@ -9,10 +9,11 @@ import { map } from 'rxjs';
 import { RegisterFormComponent } from "./register-form/register-form.component";
 
 import { AuthService } from '../../services/auth.service';
+import { IntroComponent } from './intro/intro.component';
 
 @Component({
   selector: 'app-non-auth',
-  imports: [CommonModule, LoginFormComponent, RegisterFormComponent],
+  imports: [CommonModule, LoginFormComponent, RegisterFormComponent, IntroComponent],
   templateUrl: './non-auth.component.html',
   styleUrl: './non-auth.component.scss'
 })
@@ -53,11 +54,22 @@ export class NonAuthComponent {
    */
   ngOnInit() {
     const usersRef = collection(this.firestore, 'users');
+    this.showLogo();
 
     collectionData(usersRef).pipe(
       map((users: any[]) => users.map(user => user.name))
     ).subscribe(userNames => {
       console.log('User names from Firestore:', userNames);
     });
+  }
+
+  /**
+   * Repalced the animted logo with the actual one.
+   */
+  showLogo() {
+    let shownLogo = document.querySelector(".logo");
+    setTimeout(() => {
+      shownLogo?.classList.add("show");
+    }, 6000);
   }
 }
