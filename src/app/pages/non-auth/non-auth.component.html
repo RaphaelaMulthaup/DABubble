@@ -5,23 +5,23 @@
     <!-- <app-intro></app-intro> -->
 </header>
 
-<main class="flex place-content-center items-center">
+<main class="flex flex-col place-content-center items-center">
     <section class="non-auth-form flex flex-col items-center">
         @if(noAccount){
-        <!-- <app-register-form (showLogin)="noAccount = $event"/> -->
-        <app-avatar-selection></app-avatar-selection>
+        <app-register-form (showLogin)="noAccount = $event" />
+        <!-- <app-avatar-selection></app-avatar-selection> -->
         }@else {
         <app-login-form />
         }
     </section>
-</main>
 
-@if (!noAccount) {
-<div class="register flex flex-col items-center">
-    <p>Neu bei DABubble?</p>
-    <button class="btn-secondary" (click)="toggleNoAccount()">Konto erstellen</button>
-</div>
-}
+    @if (!noAccount) {
+    <div class="register flex flex-col items-center">
+        <p>Neu bei DABubble?</p>
+        <button class="btn-secondary" (click)="toggleNoAccount()">Konto erstellen</button>
+    </div>
+    }
+</main>
 
 <footer class="flex place-content-center">
     <a class="link" href="/">Impressum</a>
