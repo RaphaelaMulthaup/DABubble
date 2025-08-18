@@ -6,12 +6,12 @@ import { ChannelSelectionService } from '../../../../services/channel-selection.
 import { AuthService } from '../../../../services/auth.service';
 
 @Component({
-  selector: 'app-create-thread-form',
+  selector: 'app-current-message-input',
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './current-message-input.component.html',
   styleUrl: './current-message-input.component.scss'
 })
-export class currentMessageInput {
+export class CurrentMessageInput {
   private threadService = inject(ThreadService);
 
   // Inject ChannelSelectionService to manage selected channel

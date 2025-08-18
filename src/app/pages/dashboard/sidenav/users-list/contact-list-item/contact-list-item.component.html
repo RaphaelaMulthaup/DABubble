@@ -1,4 +1,6 @@
-<li (click)="wonnaBeFunction()">
+<li
+   (click)="handOverMessages()"
+>
     <div>
       <img src="" alt="Profilbild" />
       <svg
@@ -19,8 +21,8 @@
       </svg>
     </div>
     <span
-      >Name
-      <!-- {{ user.name }} -->
+      >
+      {{ user.name }}
     </span>
 
   <!-- @if(user.uid !== currentUserId ) { @if(isAlreadyContact(user.uid)) {
