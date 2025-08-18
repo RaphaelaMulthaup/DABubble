@@ -22,22 +22,26 @@ import { Reaction } from '../shared/models/reaction.interface';
 import { ChatInterface } from '../shared/models/chat.interface';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root', // Service is available globally in the application
 })
 export class MessageService {
+  // Inject Firestore instance
   private firestore: Firestore = inject(Firestore);
+
+  // BehaviorSubject holds the current list of messages for the displayed conversation
   private _messagesDisplayedConversation = new BehaviorSubject<
     MessageInterface[]
   >([]);
 
-  // Observable für andere Components
+  // Public observable that other components can subscribe to in order to receive updates
   messagesDisplayedConversation$ =
     this._messagesDisplayedConversation.asObservable();
+
   /**
-   * Sends a message to a subcollection
-   * @param parentPath e.g. "chats/{chatId}" or "threads/{threadId}"
-   * @param subcollectionName e.g. "messages" or "threadMessages"
-   * @param message Message data (createdAt is set automatically)
+   * Sends a message to a given subcollection (e.g. messages of a chat or thread)
+   * @param parentPath Path to the parent document (e.g. "chats/{chatId}")
+   * @param subcollectionName Name of the subcollection (e.g. "messages")
+   * @param message Message object without createdAt (timestamp is added automatically)
    */
   async sendMessage(
     parentPath: string,
@@ -50,13 +54,13 @@ export class MessageService {
     );
     await addDoc(messagesRef, {
       ...message,
-      createdAt: serverTimestamp(),
+      createdAt: serverTimestamp(), // Firestore server timestamp
     });
   }
 
   /**
-   * Fetches messages from a subcollection
-   * @returns Observable list of messages including their ID
+   * Fetches messages from a subcollection and listens for real-time updates
+   * @returns Observable of messages (including auto-generated document IDs)
    */
   getMessages<T extends MessageInterface>(
     parentPath: string,
@@ -66,17 +70,19 @@ export class MessageService {
       this.firestore,
       `${parentPath}/${subcollectionName}`
     );
-    const q = query(messagesRef, orderBy('createdAt', 'asc'));
+    const q = query(messagesRef, orderBy('createdAt', 'asc')); // Order by creation time ascending
     return collectionData(q, { idField: 'id' }) as Observable<
       (T & { id: string })[]
     >;
   }
 
   /**
-   * Adds or removes a reaction depending on whether the user already reacted
+   * Toggles a reaction for a given message
+   * - If user has already reacted with the emoji, remove them
+   * - Otherwise, add them
    * @param messageId ID of the message
-   * @param emojiName Name of the emoji
-   * @param userId ID of the user who reacts
+   * @param emojiName Emoji identifier (used as document ID in "reactions" subcollection)
+   * @param userId ID of the user reacting
    */
   async toggleReaction(
     parentPath: string,
@@ -97,15 +103,18 @@ export class MessageService {
       const users: string[] = data['users'] || [];
 
       if (users.includes(userId)) {
+        // User already reacted → remove their reaction
         await updateDoc(reactionRef, {
           users: arrayRemove(userId),
         });
       } else {
+        // User has not reacted → add their reaction
         await updateDoc(reactionRef, {
           users: arrayUnion(userId),
         });
       }
     } else {
+      // First reaction with this emoji → create document
       await setDoc(reactionRef, {
         emojiName,
         users: [userId],
@@ -114,9 +123,8 @@ export class MessageService {
   }
 
   /**
-   * Fetches all reactions of a message
-   * @param messageId ID of the message
-   * @returns Observable list of reactions
+   * Fetches all reactions of a message in real time
+   * @returns Observable list of reactions with user IDs
    */
   getReactions(
     parentPath: string,
@@ -133,8 +141,8 @@ export class MessageService {
   }
 
   /**
-   * Deletes a message
-   * @param messageId ID of the message to delete
+   * Deletes a message from Firestore
+   * @param messageId ID of the message
    */
   async deleteMessage(
     parentPath: string,
@@ -148,6 +156,10 @@ export class MessageService {
     await deleteDoc(messageRef);
   }
 
+  /**
+   * Loads messages for a selected conversation and updates the BehaviorSubject
+   * Always pushes the latest messages to subscribed components
+   */
   async provideMessages(
     selectedConversation: ChatInterface,
     typeOfConversation: string
@@ -159,9 +171,13 @@ export class MessageService {
         typeOfConversation
       );
     }
-    this._messagesDisplayedConversation.next(messages); // immer aktuelle Messages pushen
+    this._messagesDisplayedConversation.next(messages); // Push the current messages
   }
 
+  /**
+   * Loads all messages of a conversation once (no real-time updates)
+   * @returns Promise with messages including their IDs
+   */
   async loadMessages(
     conversationId: string,
     typeOfConversation: string
@@ -172,7 +188,7 @@ export class MessageService {
     );
     const snapshot = await getDocs(messagesRef);
     return snapshot.docs.map((d) => ({
-      id: d.id,
+      id: d.id, // Add Firestore document ID
       ...(d.data() as Omit<MessageInterface, 'id'>),
     }));
   }

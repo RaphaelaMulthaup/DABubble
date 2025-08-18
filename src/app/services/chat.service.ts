@@ -131,6 +131,12 @@ export class ChatService {
     );
   }
 
+   /**
+   * Finds the chat ID between two users if it already exists
+   * @param userId1 First user
+   * @param userId2 Second user
+   * @returns Chat ID or null if no chat exists
+   */
   async getChatId(userId1: string, userId2: string) {
     const chatsRef = collection(this.firestore, 'chats');    
     const q = query(chatsRef, where('userIds', 'array-contains', userId1));
