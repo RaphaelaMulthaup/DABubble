@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Auth } from '@angular/fire/auth';
@@ -17,7 +17,7 @@ import { IntroComponent } from './intro/intro.component';
   templateUrl: './non-auth.component.html',
   styleUrl: './non-auth.component.scss'
 })
-export class NonAuthComponent {
+export class NonAuthComponent implements OnInit {
   // Flag to toggle between login and register forms
   noAccount: boolean = false;
 
@@ -67,6 +67,7 @@ export class NonAuthComponent {
    * Repalced the animted logo with the actual one.
    */
   showLogo() {
+    console.log(1)
     let shownLogo = document.querySelector(".logo");
     setTimeout(() => {
       shownLogo?.classList.add("show");
