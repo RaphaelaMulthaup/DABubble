@@ -5,14 +5,13 @@
   <div>
     <img class="profilImg" [src]="senderPhotoUrl" alt="Profilbild" />
   </div>
-  <div>
+  <div class="messageContent">
     <div class="infosMessage">
       <h4>{{ senderName }}</h4>
       <span>{{ createdAtTime }}</span>
     </div>
-    <div>{{ message.text }}</div>
+    <div class="text">{{ message.text }}</div>
     <div></div>
   </div>
 </div>
 
-<!-- [ngStyle]="{'background-color': Bedingung ? FarbVariable1 : FarbVariable2}" -->

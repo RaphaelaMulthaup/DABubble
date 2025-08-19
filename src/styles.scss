@@ -23,6 +23,7 @@
   --color-white: #ffffff;
   --color-pink: #ed1e79;
   --color-green: #92c83e;
+  --color-blue: #1381FF;
 }
 
 button {
@@ -37,6 +38,7 @@ button {
   background-color: var(--color-purple-dark);
   font-size: 18px;
   font-weight: 700;
+  @include dFlex($g:10px);
 
   &:hover {
     background-color: var(--color-purple-light);
@@ -167,6 +169,7 @@ h1 {
 
 h2 {
   font-size: 24px;
+  font-weight: 700;
 }
 
 h3 {
