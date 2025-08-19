@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Output } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
 import { AuthState } from '../../../shared/auth-state.type';
 
@@ -8,7 +8,7 @@ import { AuthState } from '../../../shared/auth-state.type';
   templateUrl: './avatar-selection.component.html',
   styleUrl: './avatar-selection.component.scss'
 })
-export class AvatarSelectionComponent implements OnInit {
+export class AvatarSelectionComponent {
   authService = inject(AuthService);
   avatarOptions = [
     "avatar-option-1",
@@ -24,10 +24,6 @@ export class AvatarSelectionComponent implements OnInit {
   @Output() changeAuthState = new EventEmitter<AuthState>();
 
   constructor() { }
-
-  ngOnInit() {
-
-  }
 
   /**
   * This function emits the showLogin-variable to change the non-auth-components variable noAccount to false.

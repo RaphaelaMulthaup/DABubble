@@ -40,6 +40,7 @@ export class AuthService {
     displayName: '',
     email: '',
     password: '',
+    policyAccepted: false,
     photoURL: ''
   }
 

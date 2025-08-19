@@ -47,14 +47,14 @@
 
         <div class="flex w-full">
             <div class="checkbox-container flex relative">
-                <input (click)="toggleCheckboxChecked()" id="privacyPolicy" type="checkbox"
-                    formControlName="privacyPolicy" name="privacyPolicy" required>
-                <div [class.checkbox-checked]="checkboxChecked" class="checkbox absolute"></div>
+                <input (click)="toggleCheckboxChecked()" id="policyAccepted" type="checkbox"
+                    formControlName="policyAccepted" name="policyAccepted" required>
+                <div [class.checkbox-checked]="registerForm.value.policyAccepted" class="checkbox absolute"></div>
             </div>
             <div class="flex flex-col">
                 <p>Ich stimme der <a class="link">Datenschutzerklärung</a> zu.</p>
-                <p class="error-message">@if (registerForm.get('privacyPolicy')?.invalid &&
-                    registerForm.get('privacyPolicy')?.touched){Bitte stimme der Datenschutzerklärung zu.}</p>
+                <p class="error-message">@if (registerForm.get('policyAccepted')?.invalid &&
+                    registerForm.get('policyAccepted')?.touched){Bitte stimme der Datenschutzerklärung zu.}</p>
             </div>
         </div>
         <button class="btn-primary self-end" type="submit" [disabled]="!registerForm.valid">Weiter</button>
