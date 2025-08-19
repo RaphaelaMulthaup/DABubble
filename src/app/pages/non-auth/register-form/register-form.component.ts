@@ -10,12 +10,10 @@ import { AuthState } from '../../../shared/auth-state.type';
   styleUrl: './register-form.component.scss'
 })
 export class RegisterFormComponent {
+  // whether the privacy-policy is accepted or not
   checkboxChecked = false;
   // Injects the authentication service
   authService = inject(AuthService);
-
-  // // Holds any error messages during registration
-  // errorMessage: string | null = null;
 
   // Defines the registration form with validators for email, password, and display name
   registerForm: FormGroup = new FormGroup({
@@ -25,7 +23,7 @@ export class RegisterFormComponent {
     privacyPolicy: new FormControl(false, [Validators.required])
   });
 
-  @Output() showLogin = new EventEmitter<AuthState>();
+  @Output() changeAuthState = new EventEmitter<AuthState>();
 
   constructor() {
     // Constructor remains empty
@@ -35,7 +33,7 @@ export class RegisterFormComponent {
    * This function emits the showLogin-variable to change the non-auth-components variable noAccount to false.
    */
   backToLogin() {
-    this.showLogin.emit('login');
+    this.changeAuthState.emit('login');
   }
 
   /**
@@ -47,19 +45,19 @@ export class RegisterFormComponent {
 
   // Handles form submission
   onSubmit(): void {
-    // Get raw form values
     const thisForm = this.registerForm.value;
-    console.log(thisForm);
 
-    // Call the authentication service to register the user
-    this.authService.register(thisForm.email, thisForm.displayName, thisForm.password).subscribe({
-      next: () => {
-        console.log('Registration successful');
-      },
-      // error: (err) => {
-      //   // Set error message if registration fails
-      //   this.errorMessage = err.code;
-      // }
-    });
+    // // Call the authentication service to register the user
+    // this.authService.register(thisForm.email, thisForm.displayName, thisForm.password).subscribe({
+    //   next: () => {
+    //     console.log('Registration successful');
+    //   },
+    // });
+
+    this.authService.userToRegister.displayName = thisForm.displayName;
+    this.authService.userToRegister.email = thisForm.email;
+    this.authService.userToRegister.password = thisForm.password;
+    // console.log(this.authService.userToRegister)
+    this.changeAuthState.emit('registration-avatar');
   }
 }

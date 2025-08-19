@@ -20,11 +20,7 @@ import { AuthState } from '../../shared/auth-state.type';
   styleUrl: './non-auth.component.scss'
 })
 export class NonAuthComponent implements OnInit {
-  // // Flag to toggle between login and register forms
-  // registrationActive: boolean = false;
-  // // Flag to toggle between  register form and avatar selection (both part of the registration)
-  // avatarSelectionActive: boolean = false;
-
+  // the currently shown non-auth-component
   currentState: AuthState = 'login';
 
   // Firestore instance injected for database operations
@@ -45,13 +41,6 @@ export class NonAuthComponent implements OnInit {
         this.router.navigate(['/']);
       }
     });
-  }
-
-  /**
-   * Toggle the noAccount flag to switch between login and registration view
-   */
-  toggleNoAccount() {
-    //this.registrationActive = !this.registrationActive;
   }
 
   /**

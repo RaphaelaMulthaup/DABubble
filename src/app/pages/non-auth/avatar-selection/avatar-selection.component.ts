@@ -19,7 +19,7 @@ export class AvatarSelectionComponent {
 
   selectedAvatar: number = 0;
 
-  @Output() showRegistration = new EventEmitter<AuthState>();
+  @Output() changeAuthState = new EventEmitter<AuthState>();
 
   constructor() { }
 
@@ -27,7 +27,7 @@ export class AvatarSelectionComponent {
   * This function emits the showLogin-variable to change the non-auth-components variable noAccount to false.
   */
   backToRegistration() {
-    this.showRegistration.emit('registration-form');
+    this.changeAuthState.emit('registration-form');
   }
 
   selectAvatar(avatarOption: number) {

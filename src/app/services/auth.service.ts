@@ -36,6 +36,13 @@ export class AuthService {
   // Observable for external components to subscribe to user changes
   user$ = this.userSubject.asObservable();
 
+  userToRegister = {
+    displayName: '',
+    email: '',
+    password: '',
+    photoUrl: ''
+  }
+
   constructor(private auth: Auth, private firestore: Firestore) {
     // Listen to authentication state changes and update the userSubject
     onAuthStateChanged(this.auth, (user) => this.userSubject.next(user));

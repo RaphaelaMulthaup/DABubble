@@ -11,9 +11,9 @@
         @if (currentState === 'login') {
         <app-login-form/>
         } @else if (currentState === 'registration-form') {
-        <app-register-form (showLogin)="currentState = $event" />
+        <app-register-form (changeAuthState)="currentState = $event" />
         } @else if (currentState === 'registration-avatar') {
-        <app-avatar-selection (showRegistration)="currentState = $event" />
+        <app-avatar-selection (changeAuthState)="currentState = $event" />
         } @else if (currentState === 'reset-password-init') {
         <!-- reset-password(mail) component -->
         } @else if (currentState === 'reset-password-confirm') {
