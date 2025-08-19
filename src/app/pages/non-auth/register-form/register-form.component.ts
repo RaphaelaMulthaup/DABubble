@@ -34,6 +34,7 @@ export class RegisterFormComponent {
    */
   backToLogin() {
     this.changeAuthState.emit('login');
+    this.authService.emptyUserObject();
   }
 
   /**
@@ -45,16 +46,10 @@ export class RegisterFormComponent {
     this.registerForm.value.policyAccepted = !this.registerForm.value.policyAccepted;
   }
 
-  // Handles form submission
+  // Handles form submission. 
+  // On submit, the userToRegister-data is set to the input values.
   onSubmit(): void {
     const thisForm = this.registerForm.value;
-
-    // // Call the authentication service to register the user
-    // this.authService.register(thisForm.email, thisForm.displayName, thisForm.password).subscribe({
-    //   next: () => {
-    //     console.log('Registration successful');
-    //   },
-    // });
 
     this.authService.userToRegister.displayName = thisForm.displayName;
     this.authService.userToRegister.email = thisForm.email;

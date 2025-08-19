@@ -10,6 +10,8 @@ import { AuthState } from '../../../shared/auth-state.type';
 })
 export class AvatarSelectionComponent implements OnInit {
   authService = inject(AuthService);
+
+  //an array with all the names of the available avatar-options
   avatarOptions = [
     "avatar-option-1",
     "avatar-option-2",
@@ -19,6 +21,7 @@ export class AvatarSelectionComponent implements OnInit {
     "avatar-option-6",
   ]
 
+  //the number of the chosen avata-option or 0 for the no-avatar-image
   selectedAvatar: number = 0;
 
   @Output() changeAuthState = new EventEmitter<AuthState>();

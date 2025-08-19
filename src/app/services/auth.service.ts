@@ -36,6 +36,7 @@ export class AuthService {
   // Observable for external components to subscribe to user changes
   user$ = this.userSubject.asObservable();
 
+  //the data of the user in the registration-process
   userToRegister = {
     displayName: '',
     email: '',
@@ -138,7 +139,21 @@ export class AuthService {
       // Update the userSubject with the newly registered user
       this.userSubject.next(user);
     });
+    this.emptyUserObject();
     return from(promise);
+  }
+
+  /**
+   * sets the userToRegister-Object to default.
+   */
+  emptyUserObject() {
+    this.userToRegister = {
+      displayName: '',
+      email: '',
+      password: '',
+      policyAccepted: false,
+      photoURL: ''
+    }
   }
 
   /**
