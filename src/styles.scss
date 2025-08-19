@@ -87,9 +87,9 @@ button {
 }
 
 .btnDropDown {
-  @include dFlex($g: 12px);
+  @include dFlex($g: 10px);
 
-  svg:first-child {
+  img:first-child {
     margin-right: 5px;
   }
 }
