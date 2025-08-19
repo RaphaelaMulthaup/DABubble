@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Output } from '@angular/core';
+import { Component, EventEmitter, inject, OnInit, Output } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
 import { FormControl, FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthState } from '../../../shared/auth-state.type';
@@ -9,7 +9,7 @@ import { AuthState } from '../../../shared/auth-state.type';
   templateUrl: './register-form.component.html',
   styleUrl: './register-form.component.scss'
 })
-export class RegisterFormComponent {
+export class RegisterFormComponent implements OnInit {
   // whether the privacy-policy is accepted or not
   checkboxChecked = false;
   // Injects the authentication service
@@ -27,6 +27,9 @@ export class RegisterFormComponent {
 
   constructor() {
     // Constructor remains empty
+  }
+
+  ngOnInit() {
   }
 
   /**
@@ -57,7 +60,6 @@ export class RegisterFormComponent {
     this.authService.userToRegister.displayName = thisForm.displayName;
     this.authService.userToRegister.email = thisForm.email;
     this.authService.userToRegister.password = thisForm.password;
-    // console.log(this.authService.userToRegister)
     this.changeAuthState.emit('registration-avatar');
   }
 }

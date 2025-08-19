@@ -1,4 +1,5 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, inject, OnInit, Output } from '@angular/core';
+import { AuthService } from '../../../services/auth.service';
 import { AuthState } from '../../../shared/auth-state.type';
 
 @Component({
@@ -7,7 +8,8 @@ import { AuthState } from '../../../shared/auth-state.type';
   templateUrl: './avatar-selection.component.html',
   styleUrl: './avatar-selection.component.scss'
 })
-export class AvatarSelectionComponent {
+export class AvatarSelectionComponent implements OnInit {
+  authService = inject(AuthService);
   avatarOptions = [
     "avatar-option-1",
     "avatar-option-2",
@@ -23,6 +25,10 @@ export class AvatarSelectionComponent {
 
   constructor() { }
 
+  ngOnInit() {
+
+  }
+
   /**
   * This function emits the showLogin-variable to change the non-auth-components variable noAccount to false.
   */
@@ -30,7 +36,11 @@ export class AvatarSelectionComponent {
     this.changeAuthState.emit('registration-form');
   }
 
+  /**
+  * This function displays the selected avatar-option and updates the userToRegister-data
+  */
   selectAvatar(avatarOption: number) {
     this.selectedAvatar = avatarOption;
+    this.authService.userToRegister.photoURL = this.avatarOptions[avatarOption-1];
   }
 }

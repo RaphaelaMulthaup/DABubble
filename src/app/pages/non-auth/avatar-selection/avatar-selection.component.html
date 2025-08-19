@@ -20,5 +20,5 @@
         </div>
     </div>
 
-    <button class="submit-btn btn-primary self-end" [disabled]="selectedAvatar === 0">Weiter</button>
+    <button (click)="authService.register()" class="submit-btn btn-primary self-end" [disabled]="selectedAvatar === 0">Fertigstellen</button>
 </section>
