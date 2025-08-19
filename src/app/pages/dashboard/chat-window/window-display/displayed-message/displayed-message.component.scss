@@ -1,0 +1,28 @@
+@import "./../../../../../../styles.scss";
+
+.messageCard {
+  width: 100%;
+  @include dFlex($jc: flex-start, $g: 16px);
+}
+
+.messageCurrentUser {
+  flex-direction: row-reverse;
+  div:nth-child(2) {
+    display: flex;
+    align-items: flex-end;
+    flex-direction: column;
+    div:first-child {
+      flex-direction: row-reverse;
+    }
+  }
+}
+
+.profilImg {
+  height: 50px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+}
+
+.infosMessage {
+  @include dFlex($g: 20px);
+}
