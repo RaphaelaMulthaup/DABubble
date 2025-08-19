@@ -17,7 +17,7 @@
 <div>
   <div class="flex gap-[10px] ml-[25px]">
     <img class="w-[24px] h-[24px]" src="./assets/img/tag.svg" alt="" />
-    <span [routerLink]="['/dashboard', 'channel', channel.id]">
+    <span [routerLink]="['/dashboard', 'channel', channel.id]" class="cursor-pointer">
       {{ channel.name }}
     </span>
   </div>

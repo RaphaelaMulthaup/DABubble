@@ -3,6 +3,8 @@ import {
   Firestore,
   collection,
   collectionData,
+  doc,
+  docData,
 } from '@angular/fire/firestore';
 import { Observable, of, map } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
@@ -40,6 +42,14 @@ export class ChatActiveRouterService {
     } else if (type === 'chat') {
       const ref = collection(this.firestore, `chats/${id}/messages`);
       return collectionData(ref, { idField: 'id' }); // returnează direct mesajele
+    }
+    return of([]);
+  }
+
+  getChannelInfo(type:string, id: string): Observable<any> {
+    if(type === 'channel'){
+      const channelRef = doc(this.firestore, `channels/${id}`);
+      return docData(channelRef);
     }
     return of([]);
   }
