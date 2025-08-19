@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
 import { FormControl, FormsModule, ReactiveFormsModule, FormGroup, Validators } from '@angular/forms';
+import { AuthState } from '../../../shared/auth-state.type';
 
 @Component({
   selector: 'app-login-form',

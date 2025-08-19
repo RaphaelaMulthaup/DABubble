@@ -1,6 +1,7 @@
 import { Component, EventEmitter, inject, Output } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
 import { FormControl, FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AuthState } from '../../../shared/auth-state.type';
 
 @Component({
   selector: 'app-register-form',
@@ -24,7 +25,7 @@ export class RegisterFormComponent {
     privacyPolicy: new FormControl(false, [Validators.required])
   });
 
-  @Output() showLogin = new EventEmitter<boolean>();
+  @Output() showLogin = new EventEmitter<AuthState>();
 
   constructor() {
     // Constructor remains empty
@@ -34,7 +35,7 @@ export class RegisterFormComponent {
    * This function emits the showLogin-variable to change the non-auth-components variable noAccount to false.
    */
   backToLogin() {
-    this.showLogin.emit(false);
+    this.showLogin.emit('login');
   }
 
   /**

@@ -11,6 +11,7 @@ import { RegisterFormComponent } from "./register-form/register-form.component";
 import { AuthService } from '../../services/auth.service';
 import { IntroComponent } from './intro/intro.component';
 import { AvatarSelectionComponent } from "./avatar-selection/avatar-selection.component";
+import { AuthState } from '../../shared/auth-state.type';
 
 @Component({
   selector: 'app-non-auth',
@@ -19,8 +20,12 @@ import { AvatarSelectionComponent } from "./avatar-selection/avatar-selection.co
   styleUrl: './non-auth.component.scss'
 })
 export class NonAuthComponent implements OnInit {
-  // Flag to toggle between login and register forms
-  noAccount: boolean = false;
+  // // Flag to toggle between login and register forms
+  // registrationActive: boolean = false;
+  // // Flag to toggle between  register form and avatar selection (both part of the registration)
+  // avatarSelectionActive: boolean = false;
+
+  currentState: AuthState = 'login';
 
   // Firestore instance injected for database operations
   firestore: Firestore = inject(Firestore);
@@ -46,7 +51,7 @@ export class NonAuthComponent implements OnInit {
    * Toggle the noAccount flag to switch between login and registration view
    */
   toggleNoAccount() {
-    this.noAccount = !this.noAccount;
+    //this.registrationActive = !this.registrationActive;
   }
 
   /**

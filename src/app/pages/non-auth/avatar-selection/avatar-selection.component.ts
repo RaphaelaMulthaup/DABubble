@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
+import { AuthState } from '../../../shared/auth-state.type';
 
 @Component({
   selector: 'app-avatar-selection',
@@ -18,7 +19,16 @@ export class AvatarSelectionComponent {
 
   selectedAvatar: number = 0;
 
+  @Output() showRegistration = new EventEmitter<AuthState>();
+
   constructor() { }
+
+  /**
+  * This function emits the showLogin-variable to change the non-auth-components variable noAccount to false.
+  */
+  backToRegistration() {
+    this.showRegistration.emit('registration-form');
+  }
 
   selectAvatar(avatarOption: number) {
     this.selectedAvatar = avatarOption;
