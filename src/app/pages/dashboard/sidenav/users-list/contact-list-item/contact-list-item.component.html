@@ -1,29 +1,26 @@
-<li
-   (click)="handOverMessages()"
->
-    <div>
-      <img src="" alt="Profilbild" />
-      <svg
-        width="14"
-        height="14"
-        viewBox="0 0 14 14"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <circle
-          cx="7"
-          cy="7"
-          r="6"
-          fill="#92C83E"
-          stroke="white"
-          stroke-width="2"
-        />
-      </svg>
-    </div>
-    <span
-      >
-      {{ user.name }}
-    </span>
+<li (click)="handOverMessages()">
+  <div>
+    <img src="" alt="Profilbild" />
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 14 14"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <circle
+        cx="7"
+        cy="7"
+        r="6"
+        fill="#92C83E"
+        stroke="white"
+        stroke-width="2"
+      />
+    </svg>
+  </div>
+  <span>
+    {{ user.name }}
+  </span>
 
   <!-- @if(user.uid !== currentUserId ) { @if(isAlreadyContact(user.uid)) {
   <span>Already a contact</span>
@@ -32,13 +29,9 @@
   <button (click)="addContact(user.uid)">+</button>
   } -->
 
-
   <!-- @if(user.active) {
   <span class="bg-green-400 px-[8px] rounded-full"></span>
   }@else {
   <span class="bg-red-400 px-[8px] rounded-xl"></span>
   } -->
 </li>
-
-
-

@@ -6,6 +6,11 @@ import { NonAuthComponent } from './pages/non-auth/non-auth.component';
 export const routes: Routes = [
   { path: '', component: NonAuthComponent },
   {
+    path: 'dashboard/:type/:id',
+    component: DashboardComponent,
+    canActivate: [AuthGuard],
+  },
+  {
     path: 'dashboard',
     component: DashboardComponent,
     canActivate: [AuthGuard],
