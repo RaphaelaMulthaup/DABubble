@@ -1,0 +1,9 @@
+@import './../../styles.scss';
+
+header {
+    width: 100%;
+    @include dFlex($jc:space-between);
+    img {
+        cursor: pointer;
+    }
+}

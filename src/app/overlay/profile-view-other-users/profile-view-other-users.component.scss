@@ -1,0 +1,35 @@
+@import "./../../../styles.scss";
+
+.profileViewOtherUser {
+  @include dFlex($g:45px);
+  flex-direction: column;
+  width: 100%;
+}
+
+.nameAndStatus {
+  @include dFlex($ai: flex-start);
+  flex-direction: column;
+  width: 100%;
+}
+
+.status {
+  @include dFlex($g: 15px);
+  span {
+    color: var(--color-gray);
+  }
+}
+
+.mailInfo {
+  width: 100%;
+  @include dFlex($g: 15px);
+  flex-direction: column;
+}
+
+.mail-header {
+  @include dFlex($g: 20px, $ai: flex-start);
+}
+
+.mailAddress {
+  margin-left: 50px;
+  color: var(--color-blue);
+}

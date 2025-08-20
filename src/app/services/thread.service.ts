@@ -41,7 +41,7 @@ export class ThreadService {
     const threadId = newThreadRef.id; // ID of the newly created thread
 
     // Create the first message in the thread
-    const firstMessageId = await this.messageService.sendMessage(`threads/${threadId}`, 'threadMessages', {
+    const firstMessageId = await this.messageService.sendMessage(`threads/${threadId}`, 'messages', {
       senderId: startedBy,
       text
     });
@@ -59,16 +59,20 @@ export class ThreadService {
     return threadId; // Return the created thread ID
   }
 
-  /** 
-   * Fetch all threads for a specific channel
-   * @param channelId - ID of the channel
-   * @returns Observable of thread documents
-   */
-  getThreadsForChannel(channelId: string) {
-    const threadsRef = collection(this.firestore, 'threads'); // Reference to 'threads' collection
-    const q = query(threadsRef, where('channelId', '==', channelId)); // Query threads by channelId
-    return collectionData(q, { idField: 'id' }); // Return observable with thread data
-  }
+  // Das müssen wir andersherum suchen, weil wir keine ChannelId mehr im thread gespeichert haben.
+  // Wir müssen die threads, deren threadIds im Channel gespeichert sind, raussuchen, denke ich.
+  // So wie ich es sehe, wird die Funktion eh nirgendwo aufgerufen.
+
+  // /** 
+  //  * Fetch all threads for a specific channel
+  //  * @param channelId - ID of the channel
+  //  * @returns Observable of thread documents
+  //  */
+  // getThreadsForChannel(channelId: string) {
+  //   const threadsRef = collection(this.firestore, 'threads'); // Reference to 'threads' collection
+  //   const q = query(threadsRef, where('channelId', '==', channelId)); // Query threads by channelId
+  //   return collectionData(q, { idField: 'id' }); // Return observable with thread data
+  // }
 
   /** 
    * Send a message in a specific thread
@@ -81,7 +85,7 @@ export class ThreadService {
   ) {
     const messagesRef = collection(
       this.firestore,
-      `threads/${threadId}/threadMessages` // Reference to messages subcollection
+      `threads/${threadId}/messages` // Reference to messages subcollection
     );
     await addDoc(messagesRef, {
       ...message,
@@ -97,7 +101,7 @@ export class ThreadService {
   getThreadMessages(threadId: string) {
     return this.messageService.getMessages<MessageInterface>(
       `threads/${threadId}`,
-      'threadMessages'
+      'messages'
     );
   }
 
@@ -109,7 +113,7 @@ export class ThreadService {
    * @param userId - User ID performing the reaction
    */
   toggleReaction(threadId: string, messageId: string, emojiName: string, userId: string) {
-    return this.messageService.toggleReaction(`threads/${threadId}`, 'threadMessages', messageId, emojiName, userId);
+    return this.messageService.toggleReaction(`threads/${threadId}`, 'messages', messageId, emojiName, userId);
   }
 
   /** 
@@ -119,6 +123,6 @@ export class ThreadService {
    * @returns Observable of reactions
    */
   getReactions(threadId: string, messageId: string) {
-    return this.messageService.getReactions(`threads/${threadId}`, 'threadMessages', messageId);
+    return this.messageService.getReactions(`threads/${threadId}`, 'messages', messageId);
   }
 }

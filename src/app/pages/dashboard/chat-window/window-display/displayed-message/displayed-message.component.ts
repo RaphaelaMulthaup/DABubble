@@ -4,17 +4,21 @@ import { AuthService } from '../../../../../services/auth.service';
 import { UserInterface } from '../../../../../shared/models/user.interface';
 import { UserService } from '../../../../../services/user.service';
 import { Timestamp } from '@angular/fire/firestore';
+import { CommonModule } from '@angular/common';
+import { OverlayComponent } from '../../../../../overlay/overlay.component';
+import { OverlayService } from '../../../../../services/overlay.service';
 
 @Component({
   selector: 'app-displayed-message', // Component to display a single message in the conversation
-  imports: [], // No standalone imports required here
+  imports: [CommonModule, OverlayComponent], 
   templateUrl: './displayed-message.component.html', // External HTML template
   styleUrl: './displayed-message.component.scss', // SCSS styles for this component
 })
 export class DisplayedMessageComponent {
   // Inject AuthService to get the current user's ID
   private authService = inject(AuthService);
-
+  // Inject OverlayService to handle the overlays
+  public overlayService = inject(OverlayService);
   // Inject UserService to fetch sender information
   private userService = inject(UserService);
 
@@ -85,5 +89,9 @@ export class DisplayedMessageComponent {
         minute: '2-digit',
       });
     }
+  }
+
+  displayProfileViewOtherUser(){
+    this.overlayService.displayOverlay('profileViewOtherUsers');
   }
 }
