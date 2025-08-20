@@ -8,6 +8,7 @@ import { CommonModule } from '@angular/common';
 import { OverlayComponent } from '../../../../../overlay/overlay.component';
 import { OverlayService } from '../../../../../services/overlay.service';
 import { FormsModule } from "@angular/forms";
+import { ProfileViewOtherUsersComponent } from '../../../../../overlay/profile-view-other-users/profile-view-other-users.component';
 
 @Component({
   selector: 'app-displayed-message', // Component to display a single message in the conversation
@@ -92,7 +93,11 @@ export class DisplayedMessageComponent {
     }
   }
 
+  /**
+   * This method displays the profile view of another user.
+   * It triggers the overlay service to open the ProfileViewOtherUsersComponent.
+   */
   displayProfileViewOtherUser(){
-    this.overlayService.displayOverlay('profileViewOtherUsers');
+    this.overlayService.displayOverlay(ProfileViewOtherUsersComponent, 'Profil');
   }
 }

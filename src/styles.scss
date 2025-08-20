@@ -182,6 +182,7 @@ h2 {
 
 h3 {
   font-size: 20px;
+  font-weight: 700;
 }
 
 h4 {
@@ -206,16 +207,6 @@ app-overlay {
   height: 100vh;
   z-index: 9999;
   @include dFlex();
-}
-
-.overlayHidden {
-  opacity: 0;
-  visibility: hidden;
-}
-
-.overlayVisible {
-  opacity: 1;
-  visibility: visible;
 }
 
 .overlay {

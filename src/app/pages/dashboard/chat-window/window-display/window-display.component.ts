@@ -20,7 +20,6 @@ export class WindowDisplayComponent {
    * Subscribe to the BehaviorSubject from MessageService
    * Keeps 'messages' updated with the latest conversation in real-time
    */
-  //Hier weiter hat noch nicht funktioniert
   ngOnInit() {
     this.messageService.messagesDisplayedConversation$.subscribe((msgs) => {
       this.messages = [...msgs].sort((a, b) => a.createdAt - b.createdAt);
