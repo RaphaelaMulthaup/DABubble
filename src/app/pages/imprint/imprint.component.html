@@ -8,7 +8,7 @@
     <main class="flex flex-col place-content-center items-center">
 
         <section class="non-auth-form flex flex-col items-center">
-            <button class="btn-tertiary" (mouseenter)="arrowBackImg.src = './assets/img/arrow-back-hover.svg'"
+            <button routerLink="/" class="btn-back btn-tertiary" (mouseenter)="arrowBackImg.src = './assets/img/arrow-back-hover.svg'"
                 (mouseleave)="arrowBackImg.src = './assets/img/arrow-back.svg'">
                 <img #arrowBackImg src="./assets/img/arrow-back.svg" alt="go back to previous page">
             </button>

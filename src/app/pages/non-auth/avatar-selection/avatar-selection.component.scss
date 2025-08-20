@@ -1,17 +1,8 @@
-section,
-form {
-    background-color: var(--color-white);
-    gap: 20px;
-}
+@import "../../../shared/styles/outside-dashboard.scss";
 
-.headline {
-    gap: 15px;
-    text-align: center;
-
-    h1 {
-        flex: 1;
-        padding-right: 40px;
-    }
+h1 {
+    flex: 1;
+    padding-right: 40px;
 }
 
 .selected-avatar {
