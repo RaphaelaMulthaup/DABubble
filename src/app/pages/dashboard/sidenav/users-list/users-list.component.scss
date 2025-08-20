@@ -1,3 +1,19 @@
 app-contact-list-item {
     cursor: pointer;
 }
+
+.btn-dropdown {
+    gap: 12px;
+    color: var(--color-purple-medium);
+    filter: brightness(0);
+}
+
+.brightness-0 {
+    .arrow-dropdown {
+        rotate: -90deg;
+    }
+
+    &:hover {
+        filter: brightness(1);
+    }
+}

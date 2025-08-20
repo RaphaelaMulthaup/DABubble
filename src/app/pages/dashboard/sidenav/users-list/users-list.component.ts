@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { UserService } from '../../../../services/user.service';
 import { AuthService } from '../../../../services/auth.service';
 import { Observable } from 'rxjs';
@@ -9,7 +10,7 @@ import { ContactListItemComponent } from './contact-list-item/contact-list-item.
 
 @Component({
   selector: 'app-users-list',
-  imports: [AsyncPipe, ContactListItemComponent],
+  imports: [CommonModule, AsyncPipe, ContactListItemComponent],
   templateUrl: './users-list.component.html',
   styleUrl: './users-list.component.scss',
 })
@@ -25,6 +26,8 @@ export class UsersListComponent {
 
   // Object containing the contacts with userId and chatId for each contact
   contacts: { [contactId: string]: { userId: string; chatId: string } } = {};
+
+  directMessagesVisible: boolean = true;
 
   // Firestore instance
   private firestore: Firestore = inject(Firestore);
