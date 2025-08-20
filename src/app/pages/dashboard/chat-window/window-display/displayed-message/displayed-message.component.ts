@@ -92,6 +92,10 @@ export class DisplayedMessageComponent {
     }
   }
 
+  /**
+   * This method displays the profile view of another user.
+   * It triggers the overlay service to open the ProfileViewOtherUsersComponent.
+   */
   displayProfileViewOtherUser(){
     this.overlayService.displayOverlay(ProfileViewOtherUsersComponent);
   }
