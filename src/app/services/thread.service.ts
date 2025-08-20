@@ -15,6 +15,7 @@ import {
 import { MessageInterface } from '../shared/models/message.interface';
 import { MessageService } from './message.service';
 import { Observable } from 'rxjs';
+import { of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -25,7 +26,7 @@ export class ThreadService {
   // Inject MessageService instance to handle messages
   private messageService = inject(MessageService);
 
-  /** 
+  /**
    * Create a new thread and its first message
    * @param channelId - ID of the channel where the thread belongs
    * @param startedBy - User ID of the thread creator
@@ -33,48 +34,66 @@ export class ThreadService {
    * @param fileUrls - Optional array of file URLs attached to the message
    * @returns the ID of the created thread
    */
-  async createThreadWithFirstMessage(channelId: string, startedBy: string, text: string, fileUrls?: string[]) {
-    const threadsRef = collection(this.firestore, 'threads'); // Reference to 'threads' collection
-    
-    // Create a new thread document
-    const newThreadRef = await addDoc(threadsRef, { startedBy });
-    const threadId = newThreadRef.id; // ID of the newly created thread
 
-    // Create the first message in the thread
-    const firstMessageId = await this.messageService.sendMessage(`threads/${threadId}`, 'messages', {
-      senderId: startedBy,
-      text
-    });
-
-    // Update the channel document to add the new thread object
-    const channelRef = doc(this.firestore, `channels/${channelId}`);
-    const threadPathId = threadId; // Key to store in channel threads
-    await updateDoc(channelRef, {
-      [`threads.${threadPathId}`]: {
-        threadId,
-        titleMessageId: firstMessageId // Store the ID of the first message
-      }
-    });
-
-    return threadId; // Return the created thread ID
+  async createThreadWithFirstMessage(
+    channelId: string,
+    startedBy: string,
+    text: string,
+    type: string,
+    id: string
+  ) {
+    console.log(`id ${id} and type ${type}`);
+    if (type === 'channel') {
+      const firstMessageId = await this.messageService.sendMessage(
+        `channels/${id}`,
+        'threads',
+        {
+          senderId: startedBy,
+          text,
+        }
+      );
+    } else if (type === 'chat') {
+    }
+    return of([]);
   }
-
-  // Das müssen wir andersherum suchen, weil wir keine ChannelId mehr im thread gespeichert haben.
-  // Wir müssen die threads, deren threadIds im Channel gespeichert sind, raussuchen, denke ich.
-  // So wie ich es sehe, wird die Funktion eh nirgendwo aufgerufen.
-
-  // /** 
-  //  * Fetch all threads for a specific channel
-  //  * @param channelId - ID of the channel
-  //  * @returns Observable of thread documents
-  //  */
-  // getThreadsForChannel(channelId: string) {
+  // async createThreadWithFirstMessage(channelId: string, startedBy: string, text: string, fileUrls?: string[]) {
   //   const threadsRef = collection(this.firestore, 'threads'); // Reference to 'threads' collection
-  //   const q = query(threadsRef, where('channelId', '==', channelId)); // Query threads by channelId
-  //   return collectionData(q, { idField: 'id' }); // Return observable with thread data
+
+  //   // Create a new thread document
+  //   const newThreadRef = await addDoc(threadsRef, { startedBy });
+  //   const threadId = newThreadRef.id; // ID of the newly created thread
+
+  //   // Create the first message in the thread
+  //   const firstMessageId = await this.messageService.sendMessage(`threads/${threadId}`, 'threadMessages', {
+  //     senderId: startedBy,
+  //     text
+  //   });
+
+  //   // Update the channel document to add the new thread object
+  //   const channelRef = doc(this.firestore, `channels/${channelId}`);
+  //   const threadPathId = threadId; // Key to store in channel threads
+  //   await updateDoc(channelRef, {
+  //     [`threads.${threadPathId}`]: {
+  //       threadId,
+  //       titleMessageId: firstMessageId // Store the ID of the first message
+  //     }
+  //   });
+
+  //   return threadId; // Return the created thread ID
   // }
 
-  /** 
+  /**
+   * Fetch all threads for a specific channel
+   * @param channelId - ID of the channel
+   * @returns Observable of thread documents
+   */
+  getThreadsForChannel(channelId: string) {
+    const threadsRef = collection(this.firestore, 'threads'); // Reference to 'threads' collection
+    const q = query(threadsRef, where('channelId', '==', channelId)); // Query threads by channelId
+    return collectionData(q, { idField: 'id' }); // Return observable with thread data
+  }
+
+  /**
    * Send a message in a specific thread
    * @param threadId - ID of the thread
    * @param message - Message data (partial)
@@ -93,7 +112,7 @@ export class ThreadService {
     });
   }
 
-  /** 
+  /**
    * Get all messages of a thread (ordered by creation time)
    * @param threadId - ID of the thread
    * @returns Observable of messages
@@ -105,7 +124,7 @@ export class ThreadService {
     );
   }
 
-  /** 
+  /**
    * Toggle a reaction (like emoji) for a specific message in a thread
    * @param threadId - ID of the thread
    * @param messageId - ID of the message
@@ -116,7 +135,7 @@ export class ThreadService {
     return this.messageService.toggleReaction(`threads/${threadId}`, 'messages', messageId, emojiName, userId);
   }
 
-  /** 
+  /**
    * Get all reactions for a specific message in a thread
    * @param threadId - ID of the thread
    * @param messageId - ID of the message

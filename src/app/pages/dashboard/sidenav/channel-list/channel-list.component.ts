@@ -6,16 +6,20 @@ import { AsyncPipe } from '@angular/common';
 import { ChannelSelectionService } from '../../../../services/channel-selection.service';
 import { AuthService } from '../../../../services/auth.service';
 import { CreateChannelFormComponent } from '../../../../overlay/create-channel-form/create-channel-form.component';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-channel-list',
-  imports: [AsyncPipe, CreateChannelFormComponent],
+  imports: [AsyncPipe, CreateChannelFormComponent, RouterLink],
   templateUrl: './channel-list.component.html',
   styleUrl: './channel-list.component.scss',
 })
 export class ChannelListComponent {
   // Boolean to control the visibility of the popup form
   showPopup = false;
+
+  //With this variable show/hide channels from sidenav
+  showChannels: boolean = false;
 
   // Observable list of active channels for the current user
   channels$!: Observable<ChannelInterface[]>;
@@ -31,7 +35,7 @@ export class ChannelListComponent {
   private channnelsService = inject(ChannelsService);
   private authService = inject(AuthService);
 
-  constructor() {  }
+  constructor() {}
 
   /**
    * Lifecycle hook that initializes component data

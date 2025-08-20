@@ -15,6 +15,11 @@ export const routes: Routes = [
   { path: 'imprint', component: ImprintComponent },
   { path: 'privacy-policy', component: PrivacyPolicyComponent },
   {
+    path: 'dashboard/:type/:id',
+    component: DashboardComponent,
+    canActivate: [AuthGuard],
+  },
+  {
     path: 'dashboard',
     component: DashboardComponent,
     canActivate: [AuthGuard],

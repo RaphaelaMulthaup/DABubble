@@ -7,13 +7,14 @@ import { OverlayComponent } from '../../overlay/overlay.component';
 import { CommonModule } from '@angular/common';
 import { OverlayService } from '../../services/overlay.service';
 
+import { HeaderComponent } from '../../shared/components/header/header.component';
 
 @Component({
   selector: 'app-dashboard',
   // Import child components used in the dashboard
-  imports: [SidenavComponent, ChatWindowComponent, OverlayComponent, CommonModule],
+  imports: [SidenavComponent, ChatWindowComponent, OverlayComponent, CommonModule, HeaderComponent],
   templateUrl: './dashboard.component.html', // HTML template for the dashboard
-  styleUrl: './dashboard.component.scss' // Styles for the dashboard
+  styleUrl: './dashboard.component.scss', // Styles for the dashboard
 })
 export class DashboardComponent {
   // Inject OverlayService to handle the overlays
