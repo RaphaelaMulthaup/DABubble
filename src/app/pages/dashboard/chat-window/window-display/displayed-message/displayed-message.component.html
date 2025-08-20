@@ -8,6 +8,7 @@
       [ngClass]="
         (overlayService.overlayDisplayed | async) ? 'overlayVisible' : 'overlayHidden'
       "
+      (click)="overlayService.hideOverlay()"
     ></app-overlay>
   </div>
   <div class="messageContent">

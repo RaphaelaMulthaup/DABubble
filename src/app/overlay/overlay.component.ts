@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { OverlayService } from '../services/overlay.service';
 
 @Component({
   selector: 'app-overlay',
@@ -7,5 +8,7 @@ import { Component } from '@angular/core';
   styleUrl: './overlay.component.scss'
 })
 export class OverlayComponent {
+  // Inject OverlayService to handle the overlays
+  public overlayService = inject(OverlayService);
 
 }
