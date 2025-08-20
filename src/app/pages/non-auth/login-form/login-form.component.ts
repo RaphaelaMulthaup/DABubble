@@ -1,15 +1,19 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, Output, EventEmitter } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
 import { FormControl, FormsModule, ReactiveFormsModule, FormGroup, Validators } from '@angular/forms';
 import { AuthState } from '../../../shared/auth-state.type';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-login-form',
-  imports: [FormsModule, ReactiveFormsModule],
+  imports: [FormsModule, CommonModule, ReactiveFormsModule],
   templateUrl: './login-form.component.html',
   styleUrl: './login-form.component.scss'
 })
 export class LoginFormComponent {
+  @Output() forgotPassword = new EventEmitter<void>();
+  showLogin: boolean = true;
+
   // Injects the AuthService to handle authentication
   authService = inject(AuthService);
 
@@ -24,6 +28,11 @@ export class LoginFormComponent {
     // Password input with required and minimum length validators
     password: new FormControl('', [Validators.required, Validators.minLength(6)]),
   });
+
+  onForgotPassword() {
+    this.showLogin = false;
+    this.forgotPassword.emit();
+  }
 
   constructor() { }
 

@@ -5,7 +5,7 @@ import { Auth } from '@angular/fire/auth';
 import { onAuthStateChanged } from 'firebase/auth';
 import { LoginFormComponent } from './login-form/login-form.component';
 import { collection, collectionData, Firestore } from '@angular/fire/firestore';
-import { map } from 'rxjs';
+import { flatMap, map } from 'rxjs';
 import { RegisterFormComponent } from "./register-form/register-form.component";
 
 import { AuthService } from '../../services/auth.service';
@@ -14,10 +14,11 @@ import { AvatarSelectionComponent } from "./avatar-selection/avatar-selection.co
 import { AuthState } from '../../shared/auth-state.type';
 import { RouterLink } from '@angular/router';
 import { HeaderComponent } from '../../shared/components/header/header.component';
+import { ConfirmPasswordComponent } from './confirm-password/confirm-password.component';
 
 @Component({
   selector: 'app-non-auth',
-  imports: [CommonModule, LoginFormComponent, RegisterFormComponent, IntroComponent, AvatarSelectionComponent, RouterLink, HeaderComponent],
+  imports: [CommonModule, LoginFormComponent, RegisterFormComponent, IntroComponent, AvatarSelectionComponent, RouterLink, HeaderComponent, ConfirmPasswordComponent],
   templateUrl: './non-auth.component.html',
   styleUrl: './non-auth.component.scss'
 })
@@ -30,6 +31,9 @@ export class NonAuthComponent implements OnInit {
 
   // AuthService instance injected for authentication methods
   authService = inject(AuthService);
+
+  showConfirm: boolean = false;
+  showLogin: boolean = true;
 
   constructor(private auth: Auth, private router: Router) {
     // Listen for authentication state changes
@@ -68,5 +72,15 @@ export class NonAuthComponent implements OnInit {
     setTimeout(() => {
       shownLogo?.classList.add("show-logo");
     }, 5600);
+  }
+
+  togglePassConfirm() {
+    this.showConfirm = true;
+    this.showLogin = false;
+  }
+
+  hideConfirm() {
+    this.showConfirm = false;
+    this.showLogin = true;
   }
 }
