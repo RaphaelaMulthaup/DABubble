@@ -5,10 +5,10 @@ import { ActivatedRoute } from '@angular/router';
 import { ChatActiveRouterService } from '../../../services/chat-active-router.service';
 import { MessageInterface } from '../../../shared/models/message.interface';
 import { switchMap, map } from 'rxjs';
-
+import { CurrentThreadInputComponent } from './current-thread-input/current-thread-input.component';
 @Component({
   selector: 'app-thread-window',
-  imports: [CommonModule],
+  imports: [CommonModule, CurrentThreadInputComponent],
   templateUrl: './thread-window.component.html',
   styleUrl: './thread-window.component.scss'
 })

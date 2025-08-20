@@ -67,12 +67,12 @@ getMessageInfo(type: string, id: string, messageId: string) {
   if (type === 'channel') {
     const messageRef = doc(this.firestore, `channels/${id}/messages/${messageId}`);
     return docData(messageRef).pipe(
-      map(data => ({ id: messageRef.id, ...data })) // adaugă id-ul documentului
+      map(data => ({ id: messageRef.id, ...data })) 
     );
   } else if (type === 'chat') {
     const messageRef = doc(this.firestore, `chats/${id}/messages/${messageId}`);
     return docData(messageRef).pipe(
-      map(data => ({ id: messageRef.id, ...data })) // adaugă id-ul documentului
+      map(data => ({ id: messageRef.id, ...data })) 
     );
   }
   return of(null);

@@ -42,7 +42,6 @@ export class ThreadService {
     type: string,
     id: string
   ) {
-    console.log(`id ${id} and type ${type}`);
     if (type === 'channel') {
       const firstMessageId = await this.messageService.sendMessage(
         `channels/${id}`,
@@ -61,8 +60,10 @@ export class ThreadService {
   channelId: string,
   messageId: string,
   senderId: string,
-  text: string
+  text: string,
+  type:string
 ) {
+  if (type === 'channel') {
   const threadRef = collection(
     this.firestore,
     `channels/${channelId}/messages/${messageId}/messages`
@@ -73,6 +74,8 @@ export class ThreadService {
     createdAt: new Date()
   };
   return await addDoc(threadRef, newThreadMessage);
+  }
+ return of([]);
 }
 
 
