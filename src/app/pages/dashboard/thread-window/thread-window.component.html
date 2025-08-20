@@ -1,5 +1,12 @@
-@if (messageInfo$ | async; as message) {
-    {{message.text}}
-}
 
-<app-current-thread-input/>
+    @for(message of messageInfo$ | async; track $index ){
+        @if(message){
+            <div>{{message.text}}</div>
+        }@else {
+        <p>This message hat not threads</p>
+     }
+
+}
+ 
+     <app-current-thread-input/>
+

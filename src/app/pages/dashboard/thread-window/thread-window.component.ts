@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { combineLatest, Observable } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { ChatActiveRouterService } from '../../../services/chat-active-router.service';
-import { MessageInterface } from '../../../shared/models/message.interface';
 import { switchMap, map } from 'rxjs';
 import { CurrentThreadInputComponent } from './current-thread-input/current-thread-input.component';
 @Component({
@@ -39,13 +38,9 @@ messageInfo$!: Observable<any>;
 ngOnInit() {
   this.messageInfo$ = combineLatest([this.type$, this.channelId$, this.messageId$]).pipe(
     switchMap(([type, id, messageId]) => 
-      this.chatService.getMessageInfo(type, id, messageId)
+      this.chatService.getThreads(type, id, messageId),
     )
   );
 
-this.messageInfo$.subscribe(data => {
-  console.log("Message ID:", data.id);
-  console.log("Message Text:", data.text);
-});
 }
 }
