@@ -11,10 +11,10 @@ import { sendPasswordResetEmail } from 'firebase/auth';
   selector: 'app-confirm-password',
   imports: [FormsModule, ReactiveFormsModule],
   templateUrl: './confirm-password.component.html',
-  styleUrls: ['./confirm-password.component.scss']
+  styleUrl: './confirm-password.component.scss'
 })
 export class ConfirmPasswordComponent {
-  confirmForm: FormGroup = new FormGroup({
+ confirmForm: FormGroup = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email])
   });
   showErrorMessage: boolean = false;

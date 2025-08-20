@@ -12,8 +12,9 @@
         <app-register-form (showLogin)="noAccount = $event" />
         <!-- <app-avatar-selection></app-avatar-selection> -->
         }@else {
-        <app-login-form />
+        <app-login-form *ngIf="showLogin" (forgotPassword)="togglePassConfirm()"></app-login-form>
         }
+        <app-confirm-password *ngIf="showConfirm" (cloes)="hideConfirm()"></app-confirm-password>
     </section>
 
     @if (!noAccount) {
