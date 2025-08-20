@@ -3,6 +3,7 @@ import { UserInterface } from '../../../../../shared/models/user.interface';
 import { MessageService } from '../../../../../services/message.service';
 import { AuthService } from '../../../../../services/auth.service';
 import { ChatService } from '../../../../../services/chat.service';
+import { OverlayService } from '../../../../../services/overlay.service';
 
 @Component({
   selector: 'app-contact-list-item', // Component selector used in parent templates
@@ -26,6 +27,9 @@ export class ContactListItemComponent {
   // Inject ChatService instance to manage chat-related operations
   private chatService = inject(ChatService);
 
+  // Service to handle overlays
+  private overlayService = inject(OverlayService);
+
   constructor() {
     // Retrieve the currently logged-in user ID from AuthService
     this.currentUserId = this.authService.getCurrentUserId();
@@ -37,6 +41,7 @@ export class ContactListItemComponent {
    * - If a chat exists, retrieves it and provides its messages via MessageService
    */
   async handOverMessages() {
+    
     if (!this.currentUserId) return; // Stop if user is not logged in
 
     // Try to find a chat between the current user and the selected user
@@ -53,7 +58,6 @@ export class ContactListItemComponent {
         this.messageService.provideMessages(chat, 'chats');
       }
     });
+
   }
 }
-
-

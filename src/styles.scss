@@ -8,11 +8,6 @@
   gap: $g;
 }
 
-* {
-  box-sizing: border-box;
-  font-family: "Nunito";
-}
-
 :root {
   --color-purple-dark: #444df2;
   --color-purple-medium: #535af1;
@@ -23,7 +18,20 @@
   --color-white: #ffffff;
   --color-pink: #ed1e79;
   --color-green: #92c83e;
-  --color-blue: #1381FF;
+  --color-blue: #1381ff;
+}
+
+* {
+  box-sizing: border-box;
+  font-family: "Nunito";
+}
+
+html.overlayActive,
+body.overlayActive {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden; /* Verhindert das Scrollen */
 }
 
 button {
@@ -38,7 +46,7 @@ button {
   background-color: var(--color-purple-dark);
   font-size: 18px;
   font-weight: 700;
-  @include dFlex($g:10px);
+  @include dFlex($g: 10px);
 
   &:hover {
     background-color: var(--color-purple-light);
@@ -188,6 +196,33 @@ h4 {
   &:hover {
     color: var(--color-purple-medium);
   }
+}
+
+app-overlay {
+  position: fixed; /* Fixiert das Overlay auf der gesamten Seite */
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  @include dFlex();
+}
+
+.overlayHidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.overlayVisible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.overlay {
+  background-color: white;
+  border-radius: 30px;
+  box-shadow: 0px 6px 10px 0px #00000033;
+  padding: 40px 20px;
 }
 
 /* nunito-200 - latin */

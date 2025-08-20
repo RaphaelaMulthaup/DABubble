@@ -3,7 +3,12 @@
   [ngClass]="{ messageCurrentUser: senderIsCurrentUser }"
 >
   <div>
-    <img class="profilImg" [src]="senderPhotoUrl" alt="Profilbild" />
+    <img class="profilImg" [src]="senderPhotoUrl" alt="Profilbild" (click)="displayProfileViewOtherUser()"/>
+    <app-overlay
+      [ngClass]="
+        (overlayService.overlayDisplayed | async) ? 'overlayVisible' : 'overlayHidden'
+      "
+    ></app-overlay>
   </div>
   <div class="messageContent">
     <div class="infosMessage">
@@ -14,4 +19,3 @@
     <div></div>
   </div>
 </div>
-
