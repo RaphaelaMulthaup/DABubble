@@ -8,13 +8,13 @@ import { NgZone } from '@angular/core';
 import { sendPasswordResetEmail } from 'firebase/auth';
 
 @Component({
-  selector: 'app-confirm-password',
+  selector: 'app-confirm-password-alt',
   imports: [FormsModule, ReactiveFormsModule],
-  templateUrl: './confirm-password.component.html',
-  styleUrls: ['./confirm-password.component.scss']
+  templateUrl: './confirm-password-alt.component.html',
+  styleUrl: './confirm-password-alt.component.scss'
 })
-export class ConfirmPasswordComponent {
-  confirmForm: FormGroup = new FormGroup({
+export class ConfirmPasswordAltComponent {
+ confirmForm: FormGroup = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email])
   });
   showErrorMessage: boolean = false;
