@@ -26,8 +26,6 @@ export class WindowDisplayComponent {
   // Local array to hold the current list of messages
   messages: MessageInterface[] = [];
 
-
-
   /**
    * Subscribe to the BehaviorSubject from MessageService
    * Keeps 'messages' updated with the latest conversation in real-time
@@ -49,12 +47,5 @@ export class WindowDisplayComponent {
       tap((params) => console.log('PARAMS from service:', params)),
       switchMap(({ type, id }) => this.chatService.getMessages(type, id))
     );
-
-    //       this.messages$ = this.chatService
-    //     .getParams$()
-    //     .pipe(
-    //       switchMap(({ type, id }) => this.chatService.getMessages(type , id))
-    //     );
-    // }
   }
 }
