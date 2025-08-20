@@ -59,7 +59,7 @@ export class CurrentMessageInput {
 
     // Call the service to create a thread with the first message
     this.threadService
-      .createThreadWithFirstMessage(
+      .createMessage(
         channelId!,
         currentUserId!,
         message,

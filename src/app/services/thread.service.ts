@@ -35,7 +35,7 @@ export class ThreadService {
    * @returns the ID of the created thread
    */
 
-  async createThreadWithFirstMessage(
+  async createMessage(
     channelId: string,
     startedBy: string,
     text: string,
@@ -46,7 +46,7 @@ export class ThreadService {
     if (type === 'channel') {
       const firstMessageId = await this.messageService.sendMessage(
         `channels/${id}`,
-        'threads',
+        'messages',
         {
           senderId: startedBy,
           text,
@@ -56,6 +56,26 @@ export class ThreadService {
     }
     return of([]);
   }
+  
+  async createThreadMessage(
+  channelId: string,
+  messageId: string,
+  senderId: string,
+  text: string
+) {
+  const threadRef = collection(
+    this.firestore,
+    `channels/${channelId}/messages/${messageId}/messages`
+  );
+  const newThreadMessage = {
+    senderId,
+    text,
+    createdAt: new Date()
+  };
+  return await addDoc(threadRef, newThreadMessage);
+}
+
+
   // async createThreadWithFirstMessage(channelId: string, startedBy: string, text: string, fileUrls?: string[]) {
   //   const threadsRef = collection(this.firestore, 'threads'); // Reference to 'threads' collection
 
@@ -131,8 +151,19 @@ export class ThreadService {
    * @param emojiName - Name of the emoji
    * @param userId - User ID performing the reaction
    */
-  toggleReaction(threadId: string, messageId: string, emojiName: string, userId: string) {
-    return this.messageService.toggleReaction(`threads/${threadId}`, 'messages', messageId, emojiName, userId);
+  toggleReaction(
+    threadId: string,
+    messageId: string,
+    emojiName: string,
+    userId: string
+  ) {
+    return this.messageService.toggleReaction(
+      `threads/${threadId}`,
+      'messages',
+      messageId,
+      emojiName,
+      userId
+    );
   }
 
   /**
@@ -142,6 +173,10 @@ export class ThreadService {
    * @returns Observable of reactions
    */
   getReactions(threadId: string, messageId: string) {
-    return this.messageService.getReactions(`threads/${threadId}`, 'messages', messageId);
+    return this.messageService.getReactions(
+      `threads/${threadId}`,
+      'messages',
+      messageId
+    );
   }
 }

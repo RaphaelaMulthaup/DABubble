@@ -8,11 +8,19 @@ import { CommonModule } from '@angular/common';
 import { OverlayService } from '../../services/overlay.service';
 
 import { HeaderComponent } from '../../shared/components/header/header.component';
+import { ThreadWindowComponent } from './thread-window/thread-window.component';
 
 @Component({
   selector: 'app-dashboard',
   // Import child components used in the dashboard
-  imports: [SidenavComponent, ChatWindowComponent, OverlayComponent, CommonModule, HeaderComponent],
+  imports: [
+    SidenavComponent,
+    ChatWindowComponent,
+    OverlayComponent,
+    CommonModule,
+    HeaderComponent,
+    ThreadWindowComponent,
+  ],
   templateUrl: './dashboard.component.html', // HTML template for the dashboard
   styleUrl: './dashboard.component.scss', // Styles for the dashboard
 })

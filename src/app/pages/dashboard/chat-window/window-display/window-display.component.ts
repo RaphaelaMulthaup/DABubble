@@ -31,10 +31,10 @@ export class WindowDisplayComponent {
    * Keeps 'messages' updated with the latest conversation in real-time
    */
   ngOnInit() {
-    this.messageService.messagesDisplayedConversation$.subscribe((msgs) => {
-      this.messages = [...msgs].sort((a, b) => a.createdAt - b.createdAt);
-    });
-    
+    // this.messageService.messagesDisplayedConversation$.subscribe((msgs) => {
+    //   this.messages = [...msgs].sort((a, b) => a.createdAt - b.createdAt);
+    // });
+
     // this.messageService.messagesDisplayedConversation$.subscribe((msgs) => {
     //   this.messages = msgs; // Always store the latest messages
     // });
@@ -43,5 +43,6 @@ export class WindowDisplayComponent {
       tap((params) => console.log('PARAMS from service:', params)),
       switchMap(({ type, id }) => this.chatService.getMessages(type, id))
     );
+    
   }
 }

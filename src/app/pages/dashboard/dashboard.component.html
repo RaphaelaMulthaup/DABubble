@@ -2,7 +2,9 @@
   <app-header />
   <div class="flex w-full h-full w-max-[1920px] gap-[20px]">
     <app-sidenav></app-sidenav>
-    <app-chat-window></app-chat-window>
+    <app-chat-window class="flex w-[700px]"></app-chat-window>
+    <app-thread-window></app-thread-window>
+     <!-- <app-chat-window class="flex w-[700px]"></app-chat-window> -->
   </div>
   <button (click)="logout()">logout</button>
 </section>
