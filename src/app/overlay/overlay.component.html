@@ -1,9 +1,13 @@
 <div class="overlay" (click)="$event.stopPropagation()">
   <header>
     <h2>Platzhalterüberschrift</h2>
-    <img src="./../../assets/img/close.svg" alt="close" (click)="overlayService.hideOverlay()"/>
+    <img
+      src="./../../assets/img/close.svg"
+      alt="close"
+      (click)="overlayService.hideOverlay()"
+    />
   </header>
-  <main>
-    <router-outlet></router-outlet>
-  </main>
+  <ng-container
+    *ngComponentOutlet="overlayService.overlayComponent"
+  ></ng-container>
 </div>

@@ -208,16 +208,6 @@ app-overlay {
   @include dFlex();
 }
 
-.overlayHidden {
-  opacity: 0;
-  visibility: hidden;
-}
-
-.overlayVisible {
-  opacity: 1;
-  visibility: visible;
-}
-
 .overlay {
   background-color: white;
   border-radius: 30px;

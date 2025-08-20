@@ -4,12 +4,6 @@
 >
   <div>
     <img class="profilImg" [src]="senderPhotoUrl" alt="Profilbild" (click)="displayProfileViewOtherUser()"/>
-    <app-overlay
-      [ngClass]="
-        (overlayService.overlayDisplayed | async) ? 'overlayVisible' : 'overlayHidden'
-      "
-      (click)="overlayService.hideOverlay()"
-    ></app-overlay>
   </div>
   <div class="messageContent">
     <div class="infosMessage">

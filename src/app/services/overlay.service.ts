@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Type } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 
@@ -6,15 +6,17 @@ import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
   providedIn: 'root',
 })
 export class OverlayService {
-  overlayDisplayed = new BehaviorSubject<boolean>(false);
-  constructor(private router: Router) {}
+  private overlaySubject = new BehaviorSubject<boolean>(false);
+  overlayDisplayed = this.overlaySubject.asObservable();
+  overlayComponent: Type<any> | null = null;
 
-  displayOverlay(subRoute: string) {
-    this.overlayDisplayed.next(true);
-    this.router.navigate([{ outlets: { overlay: ['overlay', subRoute] } }]);
+  displayOverlay(component: Type<any>) {
+    this.overlayComponent = component;
+    this.overlaySubject.next(true);
   }
 
   hideOverlay() {
-    this.overlayDisplayed.next(false);
-  this.router.navigate([{ outlets: { overlay: null } }]);   }
+    this.overlaySubject.next(false);
+    this.overlayComponent = null;
+  }
 }

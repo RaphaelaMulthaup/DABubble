@@ -1,16 +1,17 @@
 import { Component, DOCUMENT, Inject, inject, Renderer2 } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { AsyncPipe } from '@angular/common';
+import { AsyncPipe, CommonModule } from '@angular/common';
 import { collection, collectionData, Firestore } from '@angular/fire/firestore';
 import { map, Subscription } from 'rxjs';
 import { UserService } from './services/user.service';
 import { ChatService } from './services/chat.service';
 import { ThreadService } from './services/thread.service';
 import { OverlayService } from './services/overlay.service';
+import { OverlayComponent } from './overlay/overlay.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, AsyncPipe],
+  imports: [RouterOutlet, AsyncPipe, OverlayComponent, CommonModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
@@ -32,7 +33,7 @@ export class AppComponent {
   private threadService = inject(ThreadService);
 
   // Service to handle overlays
-  private overlayService = inject(OverlayService);
+  public overlayService = inject(OverlayService);
 
   constructor(
     private renderer: Renderer2,
