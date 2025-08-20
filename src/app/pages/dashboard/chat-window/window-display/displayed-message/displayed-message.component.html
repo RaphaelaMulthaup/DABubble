@@ -1,7 +1,4 @@
-<div
-  class="messageCard"
-  [ngClass]="{ messageCurrentUser: senderIsCurrentUser }"
->
+<div class="messageCard" [ngClass]="{ messageCurrentUser: senderIsCurrentUser }">
   <div>
     <img class="profilImg" [src]="senderPhotoUrl? '../../../../../../assets/img/' + senderPhotoUrl + '.svg': '../../../../../../assets/img/no-avatar.svg'" alt="Profilbild" (click)="displayProfileViewOtherUser()"/>
     <app-overlay
@@ -17,6 +14,5 @@
       <span>{{ createdAtTime }}</span>
     </div>
     <div class="text">{{ message.text }}</div>
-    <div></div>
   </div>
 </div>
