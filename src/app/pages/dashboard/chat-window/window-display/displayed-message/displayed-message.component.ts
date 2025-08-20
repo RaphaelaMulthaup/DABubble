@@ -92,6 +92,6 @@ export class DisplayedMessageComponent {
   }
 
   displayProfileViewOtherUser(){
-    this.overlayService.displayOverlay();
+    this.overlayService.displayOverlay('profileViewOtherUsers');
   }
 }
