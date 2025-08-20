@@ -13,10 +13,11 @@ import { IntroComponent } from './intro/intro.component';
 import { AvatarSelectionComponent } from "./avatar-selection/avatar-selection.component";
 import { AuthState } from '../../shared/auth-state.type';
 import { RouterLink } from '@angular/router';
+import { HeaderComponent } from '../../shared/components/header/header.component';
 
 @Component({
   selector: 'app-non-auth',
-  imports: [CommonModule, LoginFormComponent, RegisterFormComponent, IntroComponent, AvatarSelectionComponent, RouterLink],
+  imports: [CommonModule, LoginFormComponent, RegisterFormComponent, IntroComponent, AvatarSelectionComponent, RouterLink, HeaderComponent],
   templateUrl: './non-auth.component.html',
   styleUrl: './non-auth.component.scss'
 })
