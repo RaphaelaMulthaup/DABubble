@@ -16,10 +16,8 @@ export class RegisterFormComponent {
   authService = inject(AuthService);
   userService = inject(UserService);
 
+  // whether the entered emai-exists or not (checked onblur of the mail input)
   emailExists: boolean = false;
-
-  // //users: UserInterface[] = [];
-  // userEmails: string[] = [];
 
   // Defines the registration form with validators for email, password, and display name
   registerForm: FormGroup = new FormGroup({
@@ -35,16 +33,6 @@ export class RegisterFormComponent {
     // Constructor remains empty
   }
 
-  // /**
-  //  * OnInit the userEmails-string is filled with all user-emails.
-  //  */
-  // ngOnInit() {
-  //   this.userService.getAllUsers().subscribe(userData => {
-  //     userData.forEach((user) => this.userEmails.push(user.email))
-  //   });
-  //   console.log(this.userEmails)
-  // }
-
   /**
    * This function emits the showLogin-variable to change the non-auth-components variable noAccount to false.
    */
@@ -54,12 +42,9 @@ export class RegisterFormComponent {
   }
 
   /**
- * This function checks if the entered email already exists as a user. If so, the corresponding error message is shown.
+ * This function sets the emailExists-variable.
  */
   async checkForExistingUser() {
-    // const emailExists = await this.userService.checkForExistingUser(this.registerForm.value.email);
-    // if (emailExists) return true;
-    // return false;
     this.emailExists = await this.userService.checkForExistingUser(this.registerForm.value.email);
   }
 
