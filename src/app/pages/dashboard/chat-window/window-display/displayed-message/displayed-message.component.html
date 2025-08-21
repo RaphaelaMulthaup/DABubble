@@ -3,6 +3,13 @@
   [ngClass]="{ 'message-current-user': senderIsCurrentUser$ | async }"
 >
   <div>
+    <!-- <img
+      class="profil-img"
+      [src]="senderPhotoUrl$ | async"
+      alt="Profilbild"
+      (click)="displayProfileViewOtherUser()"
+    /> -->
+
     <img
       class="profil-img"
       [src]="

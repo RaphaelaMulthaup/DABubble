@@ -68,7 +68,10 @@ export class DisplayedMessageComponent {
         } else {
           date = new Date(ts);
         }
-        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        return date.toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+        });
       })
     );
   }
@@ -84,7 +87,14 @@ export class DisplayedMessageComponent {
  * It triggers the overlay service to open the ProfileViewOtherUsersComponent.
  */
   displayProfileViewOtherUser() {
-    this.overlayService.displayOverlay(ProfileViewOtherUsersComponent, 'Profil');
+    const user$ = this.userService.getUserById(this.message.senderId);
+    this.overlayService.displayOverlay(
+      ProfileViewOtherUsersComponent,
+      'Profil',
+      {
+        user$: user$,
+      }
+    );
   }
 
   // ngOnInit() {
