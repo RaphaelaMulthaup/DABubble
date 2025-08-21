@@ -1,5 +1,5 @@
 <div *ngIf="showLogin">
-   <section class="flex flex-col items-center">
+    <section class="flex flex-col items-center">
         <div class="headline flex flex-col">
             <h1>Anmeldung</h1>
             <p>Wir empfehlen dir, die E-Mail-Adresse zu nutzen, die du bei der Arbeit verwendest.</p>
@@ -7,25 +7,23 @@
         <form action="" [formGroup]="loginForm" (ngSubmit)="onSubmit()"
             class="form-group flex flex-col items-center w-full">
             <div class="input-container flex flex-col w-full">
-                <div>
+                <div class="mb-[16px]">
                     <div class="flex items-center relative">
                         <img class="input-icon absolute" src="./assets/img/mail.svg" alt="mail">
                         <input class="input-primary" id="emailId" type="text" placeholder="beispielname@email.com"
                             formControlName="email" name="email" required>
                     </div>
-                    @if (showErrorMessage)
-                    {<p class="error-message">Diese E-Mail-Addresse ist ungültig.</p>}
                 </div>
-
                 <div>
                     <div class="flex items-center relative">
                         <img class="input-icon absolute" src="./assets/img/lock.svg" alt="lock">
                         <input class="input-primary" id="passwordId" type="password" placeholder="Passwort"
                             formControlName="password" name="password" required>
                     </div>
-                    @if (showErrorMessage)
-                    {<p class="error-message">Falsches Passwort.</p>}
                 </div>
+                <p class="error-message">
+                    @if (showErrorMessage){E-Mail und Passwort stimmen nicht überein.}
+                </p>
             </div>
 
             <button type="button" class="link" (click)="onForgotPassword()">Passwort vergessen?</button>

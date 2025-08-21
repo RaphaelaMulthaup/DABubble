@@ -32,7 +32,7 @@ export class AuthService {
   provider = new GoogleAuthProvider();
 
   // BehaviorSubject to hold the current user state
-  private userSubject = new BehaviorSubject<User | null>(null);
+  public userSubject = new BehaviorSubject<User | null>(null);
   // Observable for external components to subscribe to user changes
   user$ = this.userSubject.asObservable();
 

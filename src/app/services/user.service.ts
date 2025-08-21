@@ -9,6 +9,9 @@ import {
   arrayRemove,
   setDoc,
   deleteField,
+  query,
+  where,
+  getDocs,
 } from '@angular/fire/firestore';
 import { UserInterface } from '../shared/models/user.interface';
 import { Observable } from 'rxjs';
@@ -27,9 +30,7 @@ export class UserService {
    */
   getAllUsers(): Observable<UserInterface[]> {
     const usersCollection = collection(this.firestore, 'users'); // Reference to 'users' collection
-    return collectionData(usersCollection, { idField: 'uid' }) as Observable<
-      UserInterface[]
-    >;
+    return collectionData(usersCollection, { idField: 'uid' }) as Observable<UserInterface[]>;
   }
 
   /** 
@@ -92,5 +93,12 @@ export class UserService {
     await updateDoc(userRef, {
       active: isActive,
     });
+  }
+
+  async checkForExistingUser(inputEmail:string): Promise<boolean>{
+    const usersCollection = collection(this.firestore, 'users'); // Reference to 'users' collection
+    const emailQuery = query(usersCollection, where('email', '==', inputEmail));
+    const querySnapshot = await getDocs(emailQuery);
+    return !querySnapshot.empty;
   }
 }

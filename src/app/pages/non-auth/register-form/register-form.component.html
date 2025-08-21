@@ -1,7 +1,8 @@
 <section class="flex flex-col items-center">
     <div class="headline flex flex-col">
         <div class="flex place-content-center w-full">
-            <button (click)="backToLogin()" class="btn-back btn-tertiary" (mouseenter)="arrowBackImg.src = './assets/img/arrow-back-hover.svg'"
+            <button (click)="backToLogin()" class="btn-back btn-tertiary"
+                (mouseenter)="arrowBackImg.src = './assets/img/arrow-back-hover.svg'"
                 (mouseleave)="arrowBackImg.src = './assets/img/arrow-back.svg'">
                 <img #arrowBackImg src="./assets/img/arrow-back.svg" alt="go back to previous page">
             </button>
@@ -26,12 +27,16 @@
             <div>
                 <div class="flex items-center relative">
                     <img class="input-icon absolute" src="./assets/img/mail.svg" alt="mail">
-                    <input class="input-primary" id="email" type="text" placeholder="beispielname@email.com"
-                        formControlName="email" name="email" required>
+                    <input (blur)="checkForExistingUser()" class="input-primary" id="email" type="text"
+                        placeholder="beispielname@email.com" formControlName="email" name="email" required pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}">
                 </div>
 
-                <p class="error-message">@if (registerForm.get('email')?.invalid &&
-                    registerForm.get('email')?.touched){Bitte gib eine gültige E-Mail-Addresse ein.}</p>
+                <p class="error-message">
+                    @if (registerForm.get('email')?.touched && registerForm.get('email')?.invalid)
+                        {Bitte gib eine gültige E-Mail-Addresse ein.}
+                    @else if (emailExists)
+                        {Diese E-Mail-Addresse existiert bereits.}
+                </p>
             </div>
 
             <div>
