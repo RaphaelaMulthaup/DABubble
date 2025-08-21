@@ -30,13 +30,16 @@ export class OverlayService {
   /** The headline for the overlay. */
   headline: string = '';
 
+  overlayInputs: Record<string, any> = {};
+
   /**
    * Method to display the overlay with the provided component and associated headline.
    * Sets the component to be displayed and updates the overlay visibility to 'true'.
    */
-  displayOverlay(component: Type<any>, headline: string) {
+  displayOverlay(component: Type<any>, headline: string, inputs?: Record<string, any>) {
     this.headline = headline;
     this.overlayComponent = component; // Set the component to be displayed in the overlay
+    this.overlayInputs = inputs || {};
     this.overlaySubject.next(true); // Update the visibility to 'true' (show overlay)
   }
 
@@ -47,5 +50,6 @@ export class OverlayService {
   hideOverlay() {
     this.overlaySubject.next(false); // Set visibility to 'false' (hide overlay)
     this.overlayComponent = null; // Clear the component being displayed
+    this.overlayInputs = {};
   }
 }

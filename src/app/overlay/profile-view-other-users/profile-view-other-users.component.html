@@ -1,7 +1,7 @@
 <div class="profile-view-other-user">
   <img src="" alt="" />
   <div class="name-and-status">
-    <h1>Name Name</h1>
+    <h1>{{ (user$ | async)?.name }}</h1>
     <div class="status">
       <img src="./../../../assets/img/status.svg" alt="status" />
       <span>Aktiv/Abwesend</span>

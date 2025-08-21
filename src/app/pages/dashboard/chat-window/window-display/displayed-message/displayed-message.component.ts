@@ -11,7 +11,7 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-displayed-message',
-    imports: [CommonModule], 
+  imports: [CommonModule],
 
   templateUrl: './displayed-message.component.html',
   styleUrls: ['./displayed-message.component.scss'],
@@ -52,12 +52,22 @@ export class DisplayedMessageComponent {
         } else {
           date = new Date(ts);
         }
-        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        return date.toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+        });
       })
     );
   }
 
   displayProfileViewOtherUser() {
-    this.overlayService.displayOverlay(ProfileViewOtherUsersComponent, 'Profil');
+    const user$ = this.userService.getUserById(this.message.senderId);
+    this.overlayService.displayOverlay(
+      ProfileViewOtherUsersComponent,
+      'Profil',
+      {
+        user$: user$,
+      }
+    );
   }
 }
