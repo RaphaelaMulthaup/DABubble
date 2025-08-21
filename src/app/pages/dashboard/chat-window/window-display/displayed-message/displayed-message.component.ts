@@ -46,6 +46,14 @@ export class DisplayedMessageComponent {
   senderIsCurrentUser$!: Observable<boolean>;
   createdAtTime$!: Observable<string>;
 
+  ngOnInit() {
+    // this.senderId = this.message.senderId; // Extract sender ID from the message
+    this.chatActiveRoute.getParams$(this.route).subscribe(({ type, id }) => {
+      this.currentType = type;
+      this.currentChannelId = id;
+    });
+  }
+
   ngOnChanges() {
     if (!this.message) return;
     // Prüfen, ob der Sender aktuell ist
@@ -97,18 +105,6 @@ export class DisplayedMessageComponent {
     );
   }
 
-  // ngOnInit() {
-
-  //   this.senderId = this.message.senderId; // Extract sender ID from the message
-  //   // this.checkIfSenderIsCurrentUser(); // Check if the sender is the logged-in user
-  //   // this.loadSenderInfo(); // Load sender's profile info (name, photo)
-  //   // this.formatCreatedAt(); // Format timestamp into a readable time
-  //   this.chatActiveRoute.getParams$(this.route).subscribe(({ type, id }) => {
-  //   this.currentType = type;
-  //   this.currentChannelId = id;
-  // });
-  // }
-
   // /**
   //  * Checks if the message was sent by the currently logged-in user
   //  * Used to adjust styling (e.g., alignment or colors)
@@ -158,5 +154,4 @@ export class DisplayedMessageComponent {
   //     });
   //   }
   // }
-
 }

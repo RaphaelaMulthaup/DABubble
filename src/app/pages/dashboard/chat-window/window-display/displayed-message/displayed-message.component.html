@@ -13,6 +13,12 @@
     </div>
     <div class="text">{{ message.text }}</div>
 
+    <!-- if-query to check if there are any answers and only show if true-->
+    <div class="thread-answers flex flex-row">
+      <button class="link" (click)="openThread(message.id!)">x Antworten</button>
+      <span class="message-time">Letzte Antwort {{ createdAtTime$ | async }} Uhr</span>
+    </div>
+
     <div class="interactions flex flex-row">
       <!-- if-query to check if there are any reactions and only show if true-->
       <div class="reaction flex place-items-center">
@@ -24,12 +30,6 @@
         (mouseleave)="addReactionsImg.src = './assets/img/add-reaction.svg'">
         <img #addReactionsImg src="./assets/img/add-reaction.svg" alt="add reaction">
       </button>
-    </div>
-
-    <!-- if-query to check if there are any answers and only show if true-->
-    <div class="thread-answers flex flex-row">
-      <button class="link" (click)="openThread(message.id!)">x Antworten</button>
-      <span class="message-time">Letzte Antwort {{ createdAtTime$ | async }} Uhr</span>
     </div>
   </div>
 </div>
