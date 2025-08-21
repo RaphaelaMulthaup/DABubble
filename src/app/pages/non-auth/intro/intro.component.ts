@@ -23,7 +23,7 @@ export class IntroComponent implements OnInit {
     setTimeout(() => {
       logoContainer?.classList.add("container-transperent");
       this.moveUp();
-      this.getRid();
+     // this.getRid();
     }, 4000);
   }
 
