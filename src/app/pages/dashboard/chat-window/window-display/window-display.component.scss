@@ -1,5 +1,21 @@
-
 app-displayed-message {
     display: flex;
     width: 500px;
+}
+
+.seperator-container {
+    width: 100%;
+    margin: 4px 0;
+
+    .seperator {
+        width: 100%;
+        height: 2px;
+        background-color: var(--color-purple-white);
+    }
+
+    p {
+        padding: 6px 16px;
+        border: 2px solid var(--color-purple-white);
+        border-radius: 30px;
+    }
 }
