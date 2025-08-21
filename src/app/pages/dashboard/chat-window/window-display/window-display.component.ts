@@ -4,7 +4,7 @@ import { MessageService } from '../../../../services/message.service';
 import { DisplayedMessageComponent } from './displayed-message/displayed-message.component';
 import { MessageInterface } from '../../../../shared/models/message.interface';
 import { ActivatedRoute } from '@angular/router';
-import { Observable, switchMap } from 'rxjs';
+import { map, Observable, switchMap } from 'rxjs';
 import { ChatActiveRouterService } from '../../../../services/chat-active-router.service';
 import { tap } from 'rxjs';
 
@@ -23,25 +23,21 @@ export class WindowDisplayComponent {
   private route = inject(ActivatedRoute);
   private chatService = inject(ChatActiveRouterService);
 
-  // Local array to hold the current list of messages
-  messages: MessageInterface[] = [];
-
   /**
    * Subscribe to the BehaviorSubject from MessageService
    * Keeps 'messages' updated with the latest conversation in real-time
+   * sorts the messages chronologically
    */
   ngOnInit() {
-    this.messageService.messagesDisplayedConversation$.subscribe((msgs) => {
-      this.messages = [...msgs].sort((a, b) => a.createdAt - b.createdAt);
-    });
-    
-    // this.messageService.messagesDisplayedConversation$.subscribe((msgs) => {
-    //   this.messages = msgs; // Always store the latest messages
-    // });
-
     this.messages$ = this.chatService.getParams$(this.route).pipe(
       tap((params) => console.log('PARAMS from service:', params)),
-      switchMap(({ type, id }) => this.chatService.getMessages(type, id))
+      switchMap(({ type, id }) =>
+        this.chatService
+          .getMessages(type, id)
+          .pipe(
+            map((msgs) => [...msgs].sort((a, b) => a.createdAt - b.createdAt))
+          )
+      )
     );
   }
 }

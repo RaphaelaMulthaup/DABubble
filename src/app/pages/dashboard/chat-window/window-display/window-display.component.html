@@ -1,9 +1,3 @@
-<!-- @for (message of messages; track $index) {
+@for (message of messages$ | async; track $index) {
     <app-displayed-message [message]="message"></app-displayed-message>
-} -->
-
-@for(msg of messages$ | async; track $index){
-<div>
-  {{ msg.text }}
-</div>
 }
