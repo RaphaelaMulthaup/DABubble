@@ -27,9 +27,7 @@ export class UserService {
    */
   getAllUsers(): Observable<UserInterface[]> {
     const usersCollection = collection(this.firestore, 'users'); // Reference to 'users' collection
-    return collectionData(usersCollection, { idField: 'uid' }) as Observable<
-      UserInterface[]
-    >;
+    return collectionData(usersCollection, { idField: 'uid' }) as Observable<UserInterface[]>;
   }
 
   /** 

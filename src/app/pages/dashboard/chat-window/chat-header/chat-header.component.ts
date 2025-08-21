@@ -2,15 +2,19 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ChatActiveRouterService } from '../../../../services/chat-active-router.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { UserService } from '../../../../services/user.service';
+import { SearchBarHeaderComponent } from "./search-bar-header/search-bar-header.component";
 
 
 @Component({
   selector: 'app-chat-header',
-  imports: [CommonModule],
+  imports: [CommonModule, SearchBarHeaderComponent],
   templateUrl: './chat-header.component.html',
   styleUrl: './chat-header.component.scss',
 })
 export class ChatHeaderComponent {
+
+  private userService = inject(UserService);
 
   type!: string;
   conversationId!: string;
@@ -32,6 +36,7 @@ export class ChatHeaderComponent {
       this.replyToMessageId = msgId; 
           console.log(` aici messageid    |  ${this.replyToMessageId}`);
     });
+
   }
 
   redirectTo(type:string, id:string){

@@ -5,7 +5,6 @@
     <div [class.disabled]="msgId$  | async">
       <app-chat-window [data$]="messages$" class="flex w-[700px] "></app-chat-window>
     </div>
-
     @if(msgId$ | async; as msgId){
       <app-chat-window [data$]="threads$" class="flex w-[700px]"></app-chat-window>
     }
