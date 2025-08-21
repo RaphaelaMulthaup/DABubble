@@ -74,13 +74,11 @@ export class NonAuthComponent implements OnInit {
     }, 5600);
   }
 
-  togglePassConfirm() {
-    this.showConfirm = true;
-    this.showLogin = false;
+  onForgotPassword() {
+    this.currentState = 'reset-password-init';
   }
 
-  hideConfirm() {
-    this.showConfirm = false;
-    this.showLogin = true;
+  hideResetPassword() {
+    this.currentState = 'login';
   }
 }

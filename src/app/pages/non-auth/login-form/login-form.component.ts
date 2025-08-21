@@ -29,10 +29,10 @@ export class LoginFormComponent {
     password: new FormControl('', [Validators.required, Validators.minLength(6)]),
   });
 
-  onForgotPassword() {
-    this.showLogin = false;
-    this.forgotPassword.emit();
-  }
+ onForgotPassword() {
+  this.showLogin = false;
+  this.forgotPassword.emit();
+}
 
   constructor() { }
 
@@ -69,4 +69,5 @@ export class LoginFormComponent {
       }
     });
   }
+  
 }
