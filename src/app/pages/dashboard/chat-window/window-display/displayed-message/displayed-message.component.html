@@ -1,34 +1,25 @@
 <div
-  class="messageCard"
-  [ngClass]="{ messageCurrentUser: senderIsCurrentUser }"
+  class="message-card"
+  [ngClass]="{ 'message-current-user': senderIsCurrentUser$ | async }"
 >
   <div>
     <img
-      class="profilImg"
+      class="profil-img"
       [src]="
-        senderPhotoUrl
-          ? '../../../../../../assets/img/' + senderPhotoUrl + '.svg'
+        (senderPhotoUrl$ | async)
+          ? '../../../../../../assets/img/' + (senderPhotoUrl$ | async) + '.svg'
           : '../../../../../../assets/img/no-avatar.svg'
       "
       alt="Profilbild"
       (click)="displayProfileViewOtherUser()"
     />
-    <!-- <app-overlay
-      [ngClass]="
-        (overlayService.overlayDisplayed | async)
-          ? 'overlayVisible'
-          : 'overlayHidden'
-      "
-      (click)="overlayService.hideOverlay()"
-    ></app-overlay> -->
   </div>
-  <div class="messageContent">
-    <div class="infosMessage">
-      <h4>{{ senderName }}</h4>
-      <span>{{ createdAtTime }}</span>
+  <div class="message-content">
+    <div class="infos-message">
+      <h4>{{ senderName$ | async }}</h4>
+      <span>{{ createdAtTime$ | async }}</span>
     </div>
     <div class="text">{{ message.text }}</div>
       <button class="messageContent" (click)="openThread(message.id!)">AddThread</button>
   </div>
 </div>
-

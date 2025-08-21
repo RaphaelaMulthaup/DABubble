@@ -4,6 +4,7 @@ import { MessageService } from '../../../../../services/message.service';
 import { AuthService } from '../../../../../services/auth.service';
 import { ChatService } from '../../../../../services/chat.service';
 import { OverlayService } from '../../../../../services/overlay.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-contact-list-item', // Component selector used in parent templates
@@ -30,18 +31,16 @@ export class ContactListItemComponent {
   // Service to handle overlays
   private overlayService = inject(OverlayService);
 
-  constructor() {
+  constructor(private router: Router) {
     // Retrieve the currently logged-in user ID from AuthService
     this.currentUserId = this.authService.getCurrentUserId();
   }
 
   /**
-   * Loads messages for the selected contact
-   * - Finds or checks for an existing chat between the current user and the selected user
-   * - If a chat exists, retrieves it and provides its messages via MessageService
+   * Finds a chat between the current user and a selected user,
+   * then navigates to it if it exists.
    */
-  async handOverMessages() {
-    
+  async pickOutAndNavigateToChat() {
     if (!this.currentUserId) return; // Stop if user is not logged in
 
     // Try to find a chat between the current user and the selected user
@@ -51,13 +50,6 @@ export class ContactListItemComponent {
     );
 
     if (!chatId) return; // No chat found → exit
-
-    // Subscribe to chat updates and provide its messages
-    this.chatService.getChatById(chatId).subscribe((chat) => {
-      if (chat) {
-        this.messageService.provideMessages(chat, 'chats');
-      }
-    });
-
+    this.router.navigate(['/dashboard', 'chat', chatId]);
   }
 }

@@ -26,8 +26,8 @@
   font-family: "Nunito";
 }
 
-html.overlayActive,
-body.overlayActive {
+html.overlay-active,
+body.overlay-active {
   margin: 0;
   padding: 0;
   height: 100%;
@@ -97,13 +97,13 @@ button {
   }
 }
 
-.btnDropDown {
-  @include dFlex($g: 10px);
+// .btnDropDown {
+//   @include dFlex($g: 10px);
 
-  img:first-child {
-    margin-right: 5px;
-  }
-}
+//   img:first-child {
+//     margin-right: 5px;
+//   }
+// }
 
 input {
   width: 100%;

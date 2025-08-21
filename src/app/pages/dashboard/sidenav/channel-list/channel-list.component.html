@@ -15,11 +15,12 @@
 </div>
 @for (channel of channels$ | async; track $index) {
 <div>
-  <div class="flex gap-[10px] ml-[25px]">
-    <span
-      [routerLink]="['/dashboard', 'channel', channel.id]"
-      class="cursor-pointer"
-    >
+  <div
+    class="flex gap-[10px] ml-[25px] cursor-pointer"
+    [routerLink]="['/dashboard', 'channel', channel.id]"
+  >
+    <img class="w-[24px] h-[24px]" alt="" />
+    <span>
       {{ channel.name }}
     </span>
   </div>

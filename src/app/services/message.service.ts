@@ -156,40 +156,42 @@ export class MessageService {
     await deleteDoc(messageRef);
   }
 
-  /**
-   * Loads messages for a selected conversation and updates the BehaviorSubject
-   * Always pushes the latest messages to subscribed components
-   */
-  async provideMessages(
-    selectedConversation: ChatInterface,
-    typeOfConversation: string
-  ) {
-    let messages: MessageInterface[] = [];
-    if (selectedConversation.id) {
-      messages = await this.loadMessages(
-        selectedConversation.id,
-        typeOfConversation
-      );
-    }
-    this._messagesDisplayedConversation.next(messages); // Push the current messages
-  }
+  //Es kann sein, dass wir das hier gar nicht mehr brauchen, jetzt wo wir Andreis Activated Routs nutzen.
+  // /**
+  //  * Loads messages for a selected conversation and updates the BehaviorSubject
+  //  * Always pushes the latest messages to subscribed components
+  //  */
+  // async provideMessages(
+  //   selectedConversation: ChatInterface,
+  //   typeOfConversation: string
+  // ) {
+  //   let messages: MessageInterface[] = [];
+  //   if (selectedConversation.id) {
+  //     messages = await this.loadMessages(
+  //       selectedConversation.id,
+  //       typeOfConversation
+  //     );
+  //   }
+  //   this._messagesDisplayedConversation.next(messages); // Push the current messages
+  // }
 
-  /**
-   * Loads all messages of a conversation once (no real-time updates)
-   * @returns Promise with messages including their IDs
-   */
-  async loadMessages(
-    conversationId: string,
-    typeOfConversation: string
-  ): Promise<MessageInterface[]> {
-    const messagesRef = collection(
-      this.firestore,
-      `${typeOfConversation}/${conversationId}/messages`
-    );
-    const snapshot = await getDocs(messagesRef);
-    return snapshot.docs.map((d) => ({
-      id: d.id, // Add Firestore document ID
-      ...(d.data() as Omit<MessageInterface, 'id'>),
-    }));
-  }
+  //Es kann sein, dass wir das hier gar nicht mehr brauchen, jetzt wo wir Andreis Activated Routs nutzen.
+  // /**
+  //  * Loads all messages of a conversation once (no real-time updates)
+  //  * @returns Promise with messages including their IDs
+  //  */
+  // async loadMessages(
+  //   conversationId: string,
+  //   typeOfConversation: string
+  // ): Promise<MessageInterface[]> {
+  //   const messagesRef = collection(
+  //     this.firestore,
+  //     `${typeOfConversation}/${conversationId}/messages`
+  //   );
+  //   const snapshot = await getDocs(messagesRef);
+  //   return snapshot.docs.map((d) => ({
+  //     id: d.id, // Add Firestore document ID
+  //     ...(d.data() as Omit<MessageInterface, 'id'>),
+  //   }));
+  // }
 }
