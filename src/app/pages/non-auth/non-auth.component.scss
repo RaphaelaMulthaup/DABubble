@@ -1,32 +1,15 @@
-* {
-    background-color: var(--color-purple-white);
-}
+@import "../../shared/styles/outside-dashboard.scss";
+@import "../../shared/components/header/header.component.scss";
 
-header {
-    padding: 75px;
-    padding-bottom: 0;
+// header {
+//     .logo{
+//         visibility: hidden;
+//     }
 
-    .logo{
-        visibility: hidden;
-        height: 70px;
-    }
-
-    .show-logo{
-        visibility: visible;
-    }
-}
-
-main {
-    padding: 30px 16px;
-
-    .non-auth-form {
-        //padding: 50px 60px; for desktop
-        padding: 35px 20px;
-        border-radius: 30px;
-        background-color: var(--color-white);
-        box-shadow: 0px 2px 10px 0px #00000014;
-    }
-}
+//     .show-logo{
+//         visibility: visible;
+//     }
+// }
 
 footer {
     padding-bottom: 16px;

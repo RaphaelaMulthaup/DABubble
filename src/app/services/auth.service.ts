@@ -36,6 +36,15 @@ export class AuthService {
   // Observable for external components to subscribe to user changes
   user$ = this.userSubject.asObservable();
 
+  //the data of the user in the registration-process
+  userToRegister = {
+    displayName: '',
+    email: '',
+    password: '',
+    policyAccepted: false,
+    photoURL: ''
+  }
+
   constructor(private auth: Auth, private firestore: Firestore) {
     // Listen to authentication state changes and update the userSubject
     onAuthStateChanged(this.auth, (user) => this.userSubject.next(user));
@@ -82,32 +91,69 @@ export class AuthService {
     }
   }
 
+  // /**
+  //  * Registers a new user with email and password
+  //  * @param email User's email
+  //  * @param displayName User's display name
+  //  * @param password User's password
+  //  * @returns Observable<void>
+  //  */
+  // register(
+  //   email: string,
+  //   displayName: string,
+  //   password: string
+  // ): Observable<void> {
+  //   const promise = createUserWithEmailAndPassword(
+  //     this.auth,
+  //     email,
+  //     password
+  //   ).then(async (response) => {
+  //     const user = response.user;
+  //     // Update the user's display name in Firebase Auth
+  //     await updateProfile(user, { displayName });
+  //     // Create or update the user document in Firestore
+  //     await this.createOrUpdateUserInFirestore(user, 'password', displayName);
+  //     // Update the userSubject with the newly registered user
+  //     this.userSubject.next(user);
+  //   });
+  //   return from(promise);
+  // }
+
   /**
-   * Registers a new user with email and password
-   * @param email User's email
-   * @param displayName User's display name
-   * @param password User's password
-   * @returns Observable<void>
+   * Registers a new user with name, email, password and avatar
    */
-  register(
-    email: string,
-    displayName: string,
-    password: string
-  ): Observable<void> {
+  register(): Observable<void> {
     const promise = createUserWithEmailAndPassword(
       this.auth,
-      email,
-      password
+      this.userToRegister.email,
+      this.userToRegister.password
     ).then(async (response) => {
       const user = response.user;
-      // Update the user's display name in Firebase Auth
-      await updateProfile(user, { displayName });
+      console.log(user)
+      //Update the user's display name in Firebase Auth
+      let displayName = this.userToRegister.displayName;
+      let photoURL = this.userToRegister.photoURL;
+      await updateProfile(user, { displayName, photoURL });
       // Create or update the user document in Firestore
-      await this.createOrUpdateUserInFirestore(user, 'password', displayName);
+      await this.createOrUpdateUserInFirestore(user, 'password', this.userToRegister.password);
       // Update the userSubject with the newly registered user
       this.userSubject.next(user);
     });
+    this.emptyUserObject();
     return from(promise);
+  }
+
+  /**
+   * sets the userToRegister-Object to default.
+   */
+  emptyUserObject() {
+    this.userToRegister = {
+      displayName: '',
+      email: '',
+      password: '',
+      policyAccepted: false,
+      photoURL: ''
+    }
   }
 
   /**

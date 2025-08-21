@@ -1,11 +1,13 @@
-<button class="btnDropDown">
-  <img src="./../../../../../assets/img/arrow-drop-down.svg" alt="arrow-drop-down">
+<button (click)="directMessagesVisible = !directMessagesVisible" [class.brightness-0]="!directMessagesVisible" class="btn-dropdown flex place-items-center">
+  <img class="arrow-dropdown" src="./../../../../../assets/img/arrow-drop-down.svg" alt="arrow-drop-down">
   <img src="./../../../../../assets/img/account-circle.svg" alt="account-circle">
   <span>Direktnachrichten</span>
 </button>
 
+@if (directMessagesVisible) {
 <ul>
   @for (user of users$ | async; track $index) {
-    <app-contact-list-item [user]="user"></app-contact-list-item>
-   }
+  <app-contact-list-item [user]="user"></app-contact-list-item>
+  }
 </ul>
+}

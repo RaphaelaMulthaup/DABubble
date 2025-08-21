@@ -1,16 +1,29 @@
 <div>
-  <h2 class="font-bold text-xl">Channels</h2>
-  <button (click)="openPopup()">+</button>
+  <div class="flex justify-around">
+    <div>
+      <button><img src="" alt="" /></button>
+      <div>
+        <img src="" alt="" />
+        <h2 class="font-bold text-xl">Channels</h2>
+      </div>
+    </div>
+    <button (click)="openPopup()">+</button>
+  </div>
   @if(showPopup){
   <app-create-channel-form (close)="closePopup()" />
   }
 </div>
 @for (channel of channels$ | async; track $index) {
-<div class="flex gap-[32px] border-b border-gray-300 py-2 w-[300px]">
-  <div class="flex flex-col gap-[16px] w-full">
-    <span class="cursor-pointer" (click)="selectChannel(channel)">{{
-      channel.name
-    }}</span>
+<div>
+  <div class="flex gap-[10px] ml-[25px]">
+    <img class="w-[24px] h-[24px]" alt="" />
+    <span
+      [routerLink]="['/dashboard', 'channel', channel.id]"
+      class="cursor-pointer"
+    >
+      {{ channel.name }}
+    </span>
   </div>
 </div>
 }
+<button (click)="openPopup()">Channel hinzufügen</button>

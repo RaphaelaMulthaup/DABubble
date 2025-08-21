@@ -7,11 +7,12 @@ import { Timestamp } from '@angular/fire/firestore';
 import { CommonModule } from '@angular/common';
 import { OverlayComponent } from '../../../../../overlay/overlay.component';
 import { OverlayService } from '../../../../../services/overlay.service';
+import { FormsModule } from "@angular/forms";
 import { ProfileViewOtherUsersComponent } from '../../../../../overlay/profile-view-other-users/profile-view-other-users.component';
 
 @Component({
   selector: 'app-displayed-message', // Component to display a single message in the conversation
-  imports: [CommonModule, OverlayComponent], 
+  imports: [CommonModule, OverlayComponent, FormsModule], 
   templateUrl: './displayed-message.component.html', // External HTML template
   styleUrl: './displayed-message.component.scss', // SCSS styles for this component
 })

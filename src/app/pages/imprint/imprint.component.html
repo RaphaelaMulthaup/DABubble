@@ -1,1 +1,24 @@
-<p>imprint works!</p>
+<body>
+    <app-header />
+
+    <main class="flex flex-col place-content-center items-center">
+
+        <section class="non-auth-form flex flex-col items-center">
+            <button routerLink="/" class="btn-back btn-tertiary"
+                (mouseenter)="arrowBackImg.src = './assets/img/arrow-back-hover.svg'"
+                (mouseleave)="arrowBackImg.src = './assets/img/arrow-back.svg'">
+                <img #arrowBackImg src="./assets/img/arrow-back.svg" alt="go back to previous page">
+            </button>
+            <h1>Impressum</h1>
+
+            <p>[Student Names List]
+                [Address of the DABubble operator - e.g. one of the students]
+                [Postcode and city]
+            </p>
+
+            <h2>Contact:</h2>
+
+            <p>Email: [Dein email]</p>
+        </section>
+    </main>
+</body>
