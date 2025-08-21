@@ -12,13 +12,13 @@
     <main class="flex flex-col place-content-center items-center">
         <section class="non-auth-form flex flex-col items-center">
             @if (currentState === 'login') {
-            <app-login-form />
+            <app-login-form (forgotPassword)="onForgotPassword()"></app-login-form> />
             } @else if (currentState === 'registration-form') {
             <app-register-form (changeAuthState)="currentState = $event" />
             } @else if (currentState === 'registration-avatar') {
             <app-avatar-selection (changeAuthState)="currentState = $event" />
             } @else if (currentState === 'reset-password-init') {
-            <app-confirm-password *ngIf="showConfirm" (cloes)="hideConfirm()"></app-confirm-password>
+            <app-confirm-password *ngIf="currentState === 'reset-password-init'" (close)="hideResetPassword()"></app-confirm-password>
             } @else if (currentState === 'reset-password-confirm') {
             <!-- reset-password(new password) component -->
             }
