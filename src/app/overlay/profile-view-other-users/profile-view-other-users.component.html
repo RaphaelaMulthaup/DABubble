@@ -23,7 +23,7 @@
     </div>
     <span class="mail-address">{{ (user$ | async)?.email }}</span>
   </div>
-  <button class="btn-primary">
+  <button class="btn-primary" (click)="openChat()">
     <img src="./../../../assets/img/mode-comment.svg" alt="mode-comment" />
     <h4>Nachricht</h4>
   </button>
