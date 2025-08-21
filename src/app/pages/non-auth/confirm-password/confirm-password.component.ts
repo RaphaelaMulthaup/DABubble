@@ -13,7 +13,8 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-confirm-password',
-  imports: [FormsModule,
+  imports: [
+    FormsModule,
     ReactiveFormsModule,
     CommonModule
   ],

@@ -12,7 +12,7 @@
     <main class="flex flex-col place-content-center items-center">
         <section class="non-auth-form flex flex-col items-center">
             @if (currentState === 'login') {
-            <app-login-form (forgotPassword)="onForgotPassword()"></app-login-form> />
+            <app-login-form (forgotPassword)="onForgotPassword()"></app-login-form>
             } @else if (currentState === 'registration-form') {
             <app-register-form (changeAuthState)="currentState = $event" />
             } @else if (currentState === 'registration-avatar') {
