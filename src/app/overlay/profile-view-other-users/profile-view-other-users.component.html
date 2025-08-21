@@ -1,10 +1,19 @@
 <div class="profile-view-other-user">
-  <img src="" alt="" />
+  <img src="./../../../assets/img/portrait-9134409_1280.png" alt="Profilbild" />
   <div class="name-and-status">
     <h1>{{ (user$ | async)?.name }}</h1>
     <div class="status">
-      <img src="./../../../assets/img/status.svg" alt="status" />
-      <span>Aktiv/Abwesend</span>
+      <img
+        [src]="
+          (user$ | async)?.active
+            ? './../../../assets/img/online.svg'
+            : './../../../assets/img/offline.svg'
+        "
+        alt="Status"
+      />
+      <span>
+        {{ (user$ | async)?.active ? "Aktiv" : "Abwesend" }}
+      </span>
     </div>
   </div>
   <div class="mail-info">
@@ -12,9 +21,9 @@
       <img src="./../../../assets/img/mail-profil-view.svg" alt="mail" />
       <h3>E-Mail-Adresse</h3>
     </div>
-    <span class="mail-address">bespiel@email.com</span>
+    <span class="mail-address">{{ (user$ | async)?.email }}</span>
   </div>
-  <button class="btn-primary">
+  <button class="btn-primary" (click)="openChat()">
     <img src="./../../../assets/img/mode-comment.svg" alt="mode-comment" />
     <h4>Nachricht</h4>
   </button>
