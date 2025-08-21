@@ -20,5 +20,6 @@
       <span>{{ createdAtTime$ | async }}</span>
     </div>
     <div class="text">{{ message.text }}</div>
+      <button class="messageContent" (click)="openThread(message.id!)">AddThread</button>
   </div>
 </div>

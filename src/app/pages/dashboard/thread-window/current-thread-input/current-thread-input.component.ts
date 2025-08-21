@@ -1,20 +1,21 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ThreadService } from '../../../../services/thread.service';
 import { ChannelSelectionService } from '../../../../services/channel-selection.service';
-import { AuthService } from '../../../../services/auth.service';
 import { ActivatedRoute } from '@angular/router';
 import { ChatActiveRouterService } from '../../../../services/chat-active-router.service';
+import { AuthService } from '../../../../services/auth.service';
+import { FormControl, FormGroup } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-current-message-input',
+  selector: 'app-current-thread-input',
   imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './current-message-input.component.html',
-  styleUrl: './current-message-input.component.scss',
+  templateUrl: './current-thread-input.component.html',
+  styleUrl: './current-thread-input.component.scss'
 })
-export class CurrentMessageInput {
+export class CurrentThreadInputComponent {
   private threadService = inject(ThreadService);
 
   // Inject ChannelSelectionService to manage selected channel
@@ -41,37 +42,22 @@ export class CurrentMessageInput {
    * Handles form submission to create a new thread
    */
   async onSubmit(): Promise<void> {
+
+    //Get the id from Channel
     const id = await firstValueFrom(this.chatService.getId$(this.route));
+    //Get the type from url
     const type = await firstValueFrom(this.chatService.getType$(this.route));
+    const messageId = await firstValueFrom(this.chatService.getMessageId$(this.route));
     // Get the message value from the form
     const message = this.createThreadFrom.get('message')?.value;
-
-    // Get the currently selected channel synchronously
-    const selectedChannel =
-      this.channelSelectionService.getSelectedChannelSync();
-
-    // Get the selected channel ID
-    const channelId: string | null =
-      this.channelSelectionService.getSelectedChannelId();
 
     // Get the ID of the current user
     const currentUserId: string | null = this.authService.getCurrentUserId();
 
     // Call the service to create a thread with the first message
-    this.threadService
-      .createMessage(
-        channelId!,
-        currentUserId!,
-        message,
-        type,
-        id
-      )
+    this.threadService.createThreadMessage(id,messageId,currentUserId!,message,type)
       .then((threadId) => {
         console.log('Thread created with ID:', threadId);
-
-        // Re-trigger channel selection to refresh the view
-        this.channelSelectionService.selectChannel(selectedChannel);
-
         // Reset the form after successful submission
         this.createThreadFrom.reset();
       })

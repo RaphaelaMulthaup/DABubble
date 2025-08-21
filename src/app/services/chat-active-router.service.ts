@@ -26,6 +26,12 @@ export class ChatActiveRouterService {
     return route.paramMap.pipe(map((params) => params.get('type')!));
   }
 
+
+    // expui un observable pentru type
+  getMessageId$(route: ActivatedRoute): Observable<string> {
+    return route.paramMap.pipe(map((params) => params.get('messageId')!));
+  }
+
   getParams$(route: ActivatedRoute): Observable<{ type: string; id: string }> {
     return route.paramMap.pipe(
       map((params) => ({
@@ -37,7 +43,7 @@ export class ChatActiveRouterService {
 
   getMessages(type: string, id: string): Observable<any[]> {
     if (type === 'channel') {
-      const channelRef = collection(this.firestore, `channels/${id}/threads`);
+      const channelRef = collection(this.firestore, `channels/${id}/messages`);
       return collectionData(channelRef, { idField: 'id' });
     } else if (type === 'chat') {
       const ref = collection(this.firestore, `chats/${id}/messages`);
@@ -46,8 +52,34 @@ export class ChatActiveRouterService {
     return of([]);
   }
 
-  getChannelInfo(type:string, id: string): Observable<any> {
-    if(type === 'channel'){
+  getThreads(type: string, id: string, messageId: string): Observable<any[]> {
+   if (type === 'channel') {
+    const threadRef = collection(this.firestore, `channels/${id}/messages/${messageId}/messages`);
+    return collectionData(threadRef, { idField: 'id' });
+  } else if (type === 'chat') {
+    const threadRef = collection(this.firestore, `chats/${id}/messages/${messageId}/messages`);
+    return collectionData(threadRef, { idField: 'id' });
+  }
+  return of([]);
+}
+
+getMessageInfo(type: string, id: string, messageId: string) {
+  if (type === 'channel') {
+    const messageRef = doc(this.firestore, `channels/${id}/messages/${messageId}`);
+    return docData(messageRef).pipe(
+      map(data => ({ id: messageRef.id, ...data })) 
+    );
+  } else if (type === 'chat') {
+    const messageRef = doc(this.firestore, `chats/${id}/messages/${messageId}`);
+    return docData(messageRef).pipe(
+      map(data => ({ id: messageRef.id, ...data })) 
+    );
+  }
+  return of(null);
+}
+
+  getChannelInfo(type: string, id: string): Observable<any> {
+    if (type === 'channel') {
       const channelRef = doc(this.firestore, `channels/${id}`);
       return docData(channelRef);
     }

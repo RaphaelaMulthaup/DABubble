@@ -20,9 +20,31 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
   },
   {
+    path: 'dashboard/:type/:id/messages/:messageId',
+    component: DashboardComponent,
+    canActivate: [AuthGuard],
+  },
+  {
     path: 'dashboard',
     component: DashboardComponent,
     canActivate: [AuthGuard],
   },
   { path: '**', redirectTo: '' },
+  { path: 'confirm', component: ConfirmPasswordComponent },
+  { path: 'reset', component: ResetPasswordComponent },
+  {
+    path: 'overlay',
+    component: OverlayComponent,
+    outlet: 'overlay', // ← Named-Outlet hinzufügen
+    children: [
+      {
+        path: 'profileViewOtherUsers',
+        component: ProfileViewOtherUsersComponent,
+      },
+      {
+        path: 'createChannelFormComponent',
+        component: CreateChannelFormComponent,
+      },
+    ],
+  },
 ];

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MessageService } from '../../../../services/message.service';
 import { DisplayedMessageComponent } from './displayed-message/displayed-message.component';
@@ -17,6 +17,7 @@ import { tap } from 'rxjs';
 export class WindowDisplayComponent {
   // Inject MessageService to receive and manage displayed messages
   messageService = inject(MessageService);
+
 
   //hier is a stream of messages
   messages$!: Observable<MessageInterface[]>;
@@ -39,5 +40,6 @@ export class WindowDisplayComponent {
           )
       )
     );
+    
   }
 }
