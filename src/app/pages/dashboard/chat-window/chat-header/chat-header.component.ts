@@ -13,15 +13,14 @@ import { ChannelInterface } from '../../../../shared/models/channel.interface';
   styleUrl: './chat-header.component.scss',
 })
 export class ChatHeaderComponent {
-  channelData!: ChannelInterface;
-  private route = inject(ActivatedRoute);
-  private chatService = inject(ChatActiveRouterService);
-
-  ngOnInit() {
-    this.chatService
-      .getParams$(this.route)
-      .pipe(
-        switchMap(({ type, id }) => this.chatService.getChannelInfo(type, id))
-      );
-  }
+  // channelData!: ChannelInterface;
+  // private route = inject(ActivatedRoute);
+  // private chatService = inject(ChatActiveRouterService);
+  // ngOnInit() {
+  //   this.chatService
+  //     .getParams$(this.route)
+  //     .pipe(
+  //       switchMap(({ type, id }) => this.chatService.getChannelInfo(type, id))
+  //     );
+  // }
 }

@@ -1,18 +1,41 @@
-<div class="messageCard" [ngClass]="{ messageCurrentUser: senderIsCurrentUser }">
+<div class="message-card" [ngClass]="{ 'message-current-user': senderIsCurrentUser$ | async }">
   <div>
-    <img class="profilImg" [src]="senderPhotoUrl? '../../../../../../assets/img/' + senderPhotoUrl + '.svg': '../../../../../../assets/img/no-avatar.svg'" alt="Profilbild" (click)="displayProfileViewOtherUser()"/>
-    <app-overlay
-      [ngClass]="
-        (overlayService.overlayDisplayed | async) ? 'overlayVisible' : 'overlayHidden'
-      "
-      (click)="overlayService.hideOverlay()"
-    ></app-overlay>
+    <img class="profil-img" [src]="
+        (senderPhotoUrl$ | async)
+          ? './assets/img/' + (senderPhotoUrl$ | async) + '.svg'
+          : './assets/img/no-avatar.svg'
+      " alt="Profilbild" (click)="displayProfileViewOtherUser()" />
   </div>
-  <div class="messageContent">
-    <div class="infosMessage">
-      <h4>{{ senderName }}</h4>
-      <span>{{ createdAtTime }}</span>
+  <div class="message-content">
+    <div class="infos-message">
+      <h4>{{ senderName$ | async }}</h4>
+      <span class="message-time">{{ createdAtTime$ | async }} Uhr</span>
     </div>
     <div class="text">{{ message.text }}</div>
+
+    <!-- if-query to check if there are any answers and only show if true-->
+    <div class="thread-answers flex flex-row">
+      <button class="link" (click)="openThread(message.id!)">x Antworten</button>
+      <span class="message-time">Letzte Antwort {{ createdAtTime$ | async }} Uhr</span>
+    </div>
+
+    <div class="interactions flex flex-row">
+      <!-- if-query to check if there are any reactions and only show if true-->
+      <div class="reaction flex place-items-center">
+        <img class="reaction-img" src="./assets/img/reaction-thumbs-up.svg">
+        <p>1</p>
+      </div>
+
+      <button class="btn-tertiary" (mouseenter)="addReactionsImg.src = './assets/img/add-reaction-hover.svg'"
+        (mouseleave)="addReactionsImg.src = './assets/img/add-reaction.svg'">
+        <img #addReactionsImg src="./assets/img/add-reaction.svg" alt="add reaction">
+      </button>
+    </div>
   </div>
 </div>
+
+<!-- btn to add an answer -->
+<!-- <button class="btn-tertiary" (mouseenter)="addAnswerImg.src = './assets/img/add-answer-hover.svg'"
+  (mouseleave)="addAnswerImg.src = './assets/img/add-answer.svg'">
+  <img #addAnswerImg src="./assets/img/add-answer.svg" alt="add answer">
+</button> -->

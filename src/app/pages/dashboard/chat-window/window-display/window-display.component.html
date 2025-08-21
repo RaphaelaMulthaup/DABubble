@@ -1,9 +1,8 @@
-<!-- @for (message of messages; track $index) {
+@for (message of messages$ | async; track $index) {
+    <div class="seperator-container flex flex-row place-items-center">
+        <div class="seperator"></div>
+        <p>Heute</p>
+        <div class="seperator"></div>
+    </div>
     <app-displayed-message [message]="message"></app-displayed-message>
-} -->
-
-@for(msg of messages$ | async; track $index){
-<div>
-  {{ msg.text }}
-</div>
 }

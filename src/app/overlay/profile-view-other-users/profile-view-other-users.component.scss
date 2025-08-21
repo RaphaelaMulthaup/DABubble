@@ -1,13 +1,17 @@
 @import "./../../../styles.scss";
 
-.profileViewOtherUser {
+.profile-view-other-user {
   @include dFlex($g: 45px);
   flex-direction: column;
   width: 358px;
   margin-top: 45px;
+  >img {
+    width: 200px;
+    aspect-ratio: 1;
+  }
 }
 
-.nameAndStatus {
+.name-and-status {
   @include dFlex($ai: flex-start, $g: 15px);
   flex-direction: column;
   width: 100%;
@@ -24,7 +28,7 @@
   }
 }
 
-.mailInfo {
+.mail-info {
   width: 100%;
   @include dFlex($g: 15px, $ai: flex-start);
   flex-direction: column;
@@ -34,7 +38,7 @@
   @include dFlex($g: 20px, $ai: flex-start);
 }
 
-.mailAddress {
+.mail-address {
   margin-left: 50px;
   color: var(--color-blue);
   font-size: 18px;
