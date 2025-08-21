@@ -14,13 +14,4 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
   },
   { path: '**', redirectTo: '' },
-
-{
-  path: 'overlay',
-  component: OverlayComponent,
-  outlet: 'overlay', // ← Named-Outlet hinzufügen
-  children: [
-    { path: 'profileViewOtherUsers', component: ProfileViewOtherUsersComponent },
-    { path: 'createChannelFormComponent', component: CreateChannelFormComponent },
-  ],
-}];
+];
