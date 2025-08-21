@@ -1,11 +1,11 @@
 @import "./../../../../../../styles.scss";
 
-.messageCard {
+.message-card {
   width: 100%;
   @include dFlex($jc: flex-start, $ai: flex-start, $g: 16px);
 }
 
-.profilImg {
+.profil-img {
   min-width: 50px;
   width: 50px;
   aspect-ratio: 1;
@@ -13,12 +13,12 @@
   cursor: pointer;
 }
 
-.messageContent {
+.message-content {
   @include dFlex($g: 8px, $ai: flex-start);
   flex-direction: column;
 }
 
-.infosMessage {
+.infos-message {
   @include dFlex($g: 20px);
 
   span {
@@ -33,10 +33,10 @@
   border-radius: 0 30px 30px 30px;
 }
 
-.messageCurrentUser {
+.message-current-user {
   flex-direction: row-reverse;
 
-  .messageContent {
+  .message-content {
     @include dFlex($g: 8px, $ai: flex-end);
     flex-direction: column;
 

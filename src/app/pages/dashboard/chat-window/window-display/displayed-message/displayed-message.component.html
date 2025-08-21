@@ -1,6 +1,6 @@
-<div class="messageCard" [ngClass]="{ messageCurrentUser: senderIsCurrentUser }">
+<div class="message-card" [ngClass]="{ 'message-current-user': senderIsCurrentUser }">
   <div>
-    <img class="profilImg" [src]="senderPhotoUrl? '../../../../../../assets/img/' + senderPhotoUrl + '.svg': '../../../../../../assets/img/no-avatar.svg'" alt="Profilbild" (click)="displayProfileViewOtherUser()"/>
+    <img class="profil-img" [src]="senderPhotoUrl? '../../../../../../assets/img/' + senderPhotoUrl + '.svg': '../../../../../../assets/img/no-avatar.svg'" alt="Profilbild" (click)="displayProfileViewOtherUser()"/>
     <app-overlay
       [ngClass]="
         (overlayService.overlayDisplayed | async) ? 'overlayVisible' : 'overlayHidden'
@@ -8,8 +8,8 @@
       (click)="overlayService.hideOverlay()"
     ></app-overlay>
   </div>
-  <div class="messageContent">
-    <div class="infosMessage">
+  <div class="message-content">
+    <div class="infos-message">
       <h4>{{ senderName }}</h4>
       <span>{{ createdAtTime }}</span>
     </div>

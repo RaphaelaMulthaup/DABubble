@@ -83,13 +83,13 @@ export class AppComponent {
       const bodyEl = this.document.body;
 
       if (overlayDisplayed) {
-        // If overlay is displayed, add 'overlayActive' class to HTML and body elements
-        this.renderer.addClass(htmlEl, 'overlayActive');
-        this.renderer.addClass(bodyEl, 'overlayActive');
+        // If overlay is displayed, add 'overlay-active' class to HTML and body elements
+        this.renderer.addClass(htmlEl, 'overlay-active');
+        this.renderer.addClass(bodyEl, 'overlay-active');
       } else {
-        // If overlay is hidden, remove 'overlayActive' class from HTML and body elements
-        this.renderer.removeClass(htmlEl, 'overlayActive');
-        this.renderer.removeClass(bodyEl, 'overlayActive');
+        // If overlay is hidden, remove 'overlay-active' class from HTML and body elements
+        this.renderer.removeClass(htmlEl, 'overlay-active');
+        this.renderer.removeClass(bodyEl, 'overlay-active');
       }
     });
   }
