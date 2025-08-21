@@ -6,9 +6,13 @@ import { ChatWindowComponent } from './chat-window/chat-window.component';
 import { OverlayComponent } from '../../overlay/overlay.component';
 import { CommonModule } from '@angular/common';
 import { OverlayService } from '../../services/overlay.service';
-
+import { map, switchMap } from 'rxjs/operators';
 import { HeaderComponent } from '../../shared/components/header/header.component';
 import { ThreadWindowComponent } from './thread-window/thread-window.component';
+import { ChatActiveRouterService } from '../../services/chat-active-router.service';
+import { ActivatedRoute } from '@angular/router';
+import { Observable, throwError } from 'rxjs';
+import { HttpParams } from '@angular/common/http';
 
 @Component({
   selector: 'app-dashboard',
@@ -30,6 +34,33 @@ export class DashboardComponent {
 
   // Inject the authentication service to manage user login/logout
   private authService = inject(AuthService);
+  private chatService = inject(ChatActiveRouterService);
+  private route = inject(ActivatedRoute)
+
+
+
+
+   messages$ = this.route.paramMap.pipe(
+    switchMap(params =>
+      this.chatService.getMessages(params.get('type')!, params.get('id')!)
+    )
+  );
+
+  threads$ = this.route.paramMap.pipe(
+    switchMap(params =>
+      this.chatService.getThreads(
+        params.get('type')!,
+        params.get('id')!,
+        params.get('messageId')!
+      )
+    )
+  );
+
+
+  msgId$ = this.route.paramMap.pipe(
+    map(params => params.get('messageId'))
+  );
+
 
   /**
    * Logs out the current user

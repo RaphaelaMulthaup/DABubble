@@ -40,11 +40,11 @@ export class ThreadService {
     startedBy: string,
     text: string,
     type: string,
-    id: string
+
   ) {
     if (type === 'channel') {
       const firstMessageId = await this.messageService.sendMessage(
-        `channels/${id}`,
+        `channels/${channelId}`,
         'messages',
         {
           senderId: startedBy,
