@@ -2,8 +2,8 @@
   <div>
     <img class="profil-img" [src]="
         (senderPhotoUrl$ | async)
-          ? '../../../../../../assets/img/' + (senderPhotoUrl$ | async) + '.svg'
-          : '../../../../../../assets/img/no-avatar.svg'
+          ? './assets/img/' + (senderPhotoUrl$ | async) + '.svg'
+          : './assets/img/no-avatar.svg'
       " alt="Profilbild" (click)="displayProfileViewOtherUser()" />
   </div>
   <div class="message-content">
@@ -12,6 +12,20 @@
       <span class="message-time">{{ createdAtTime$ | async }} Uhr</span>
     </div>
     <div class="text">{{ message.text }}</div>
+
+    <div class="interactions flex flex-row">
+      <!-- if-query to check if there are any reactions and only show if true-->
+      <div class="reaction flex place-items-center">
+        <img class="reaction-img" src="./assets/img/reaction-thumbs-up.svg">
+        <p>1</p>
+      </div>
+
+      <button class="btn-tertiary" (mouseenter)="addReactionsImg.src = './assets/img/add-reaction-hover.svg'"
+        (mouseleave)="addReactionsImg.src = './assets/img/add-reaction.svg'">
+        <img #addReactionsImg src="./assets/img/add-reaction.svg" alt="add reaction">
+      </button>
+    </div>
+
     <!-- if-query to check if there are any answers and only show if true-->
     <div class="thread-answers flex flex-row">
       <button class="link" (click)="openThread(message.id!)">x Antworten</button>
@@ -19,3 +33,9 @@
     </div>
   </div>
 </div>
+
+<!-- btn to add an answer -->
+<!-- <button class="btn-tertiary" (mouseenter)="addAnswerImg.src = './assets/img/add-answer-hover.svg'"
+  (mouseleave)="addAnswerImg.src = './assets/img/add-answer.svg'">
+  <img #addAnswerImg src="./assets/img/add-answer.svg" alt="add answer">
+</button> -->

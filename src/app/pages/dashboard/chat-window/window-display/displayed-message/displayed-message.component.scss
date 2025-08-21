@@ -39,6 +39,27 @@
   cursor: pointer;
 }
 
+.interactions {
+  gap: 16px;
+
+  .reaction {
+    padding: 4px 12px;
+    border: 2px solid var(--color-purple-white);
+    border-radius: 30px;
+    flex-direction: row !important;
+    gap: 8px;
+
+    &:hover {
+      background-color: var(--color-purple-white);
+      cursor: pointer;
+
+      .reaction-img {
+        transform: scale(1.1);
+      }
+    }
+  }
+}
+
 .thread-answers {
   gap: 20px;
 }
