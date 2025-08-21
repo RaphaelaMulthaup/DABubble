@@ -22,7 +22,7 @@ import { ConfirmPasswordComponent } from './confirm-password/confirm-password.co
   templateUrl: './non-auth.component.html',
   styleUrl: './non-auth.component.scss'
 })
-export class NonAuthComponent implements OnInit {
+export class NonAuthComponent {
   // the currently shown non-auth-component
   currentState: AuthState = 'login';
 

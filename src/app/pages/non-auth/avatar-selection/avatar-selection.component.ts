@@ -13,12 +13,12 @@ export class AvatarSelectionComponent implements OnInit {
 
   //an array with all the names of the available avatar-options
   avatarOptions = [
-    "avatar-option-1",
-    "avatar-option-2",
-    "avatar-option-3",
-    "avatar-option-4",
-    "avatar-option-5",
-    "avatar-option-6",
+    "./assets/img/avatar-option-1.svg",
+    "./assets/img/avatar-option-2.svg",
+    "./assets/img/avatar-option-3.svg",
+    "./assets/img/avatar-option-4.svg",
+    "./assets/img/avatar-option-5.svg",
+    "./assets/img/avatar-option-6.svg",
   ]
 
   //the number of the chosen avata-option or 0 for the no-avatar-image

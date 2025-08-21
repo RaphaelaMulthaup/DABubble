@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import {
   Auth,
   createUserWithEmailAndPassword,
@@ -23,6 +23,7 @@ import { from, Observable } from 'rxjs';
 import { BehaviorSubject } from 'rxjs';
 
 import { UserInterface } from '../shared/models/user.interface';
+import { UserService } from './user.service';
 
 @Injectable({
   providedIn: 'root',
@@ -35,6 +36,8 @@ export class AuthService {
   public userSubject = new BehaviorSubject<User | null>(null);
   // Observable for external components to subscribe to user changes
   user$ = this.userSubject.asObservable();
+
+  userService=inject(UserService);
 
   //the data of the user in the registration-process
   userToRegister = {
@@ -129,20 +132,18 @@ export class AuthService {
       this.userToRegister.password
     ).then(async (response) => {
       const user = response.user;
-      console.log(user)
-      //Update the user's display name in Firebase Auth
-      let displayName = this.userToRegister.displayName;
-      let photoURL = this.userToRegister.photoURL;
-      await updateProfile(user, { displayName, photoURL });
+      //console.log(this.userToRegister.displayName, this.userToRegister.photoURL)
+      // await updateProfile(user, { displayName, photoURL });
       // Create or update the user document in Firestore
       await this.createOrUpdateUserInFirestore(user, 'password', this.userToRegister.password);
+      await this.userService.updateUser(user.uid, {name: this.userToRegister.displayName, photoUrl: this.userToRegister.photoURL});
       // Update the userSubject with the newly registered user
       this.userSubject.next(user);
     });
-    this.emptyUserObject();
     return from(promise);
   }
 
+  //!!! Diese Funktion muss nach register ausgeführt werden, aber ich musste sie da entfernen, da es sonst mit dem eintragen von name und photourl nicht geklappt hätte.
   /**
    * sets the userToRegister-Object to default.
    */

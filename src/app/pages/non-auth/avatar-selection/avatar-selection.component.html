@@ -10,12 +10,12 @@
     </div>
 
     <div class="flex flex-col items-center">
-        <img class="selected-avatar" [src]="selectedAvatar >0 ? './assets/img/avatar-option-'+ selectedAvatar +'.svg': './assets/img/no-avatar.svg'" alt="currently selected avatar">
+        <img class="selected-avatar" [src]="selectedAvatar >0 ? avatarOptions[selectedAvatar-1]: './assets/img/no-avatar.svg'" alt="currently selected avatar">
         <p class="user-name">Vorname Nachname</p>
         <p class="choose-avatar-explanation w-full">Wähle einen Avatar aus der Liste</p>
         <div class="avatar-list flex items-center place-content-between w-full">
             @for (img of avatarOptions; track $index) {
-            <img (click)="selectAvatar($index + 1)" src="./assets/img/{{img}}.svg" alt="{{img}}">
+            <img (click)="selectAvatar($index + 1)" src="{{img}}" alt="avatar option">
             }
         </div>
     </div>
