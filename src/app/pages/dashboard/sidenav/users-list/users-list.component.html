@@ -5,7 +5,7 @@
 </button>
 
 @if (directMessagesVisible) {
-<ul>
+<ul class="users-list">
   @for (user of users$ | async; track $index) {
   <app-contact-list-item [user]="user"></app-contact-list-item>
   }
