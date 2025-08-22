@@ -18,9 +18,9 @@
             } @else if (currentState === 'registration-avatar') {
             <app-avatar-selection (changeAuthState)="currentState = $event" />
             } @else if (currentState === 'reset-password-init') {
-            <app-confirm-password *ngIf="currentState === 'reset-password-init'" (close)="hideResetPassword()"></app-confirm-password>
+            <app-confirm-password (changeAuthState)="currentState = $event"></app-confirm-password>
             } @else if (currentState === 'reset-password-confirm') {
-            <!-- reset-password(new password) component -->
+            <app-reset-password></app-reset-password>
             }
         </section>
 

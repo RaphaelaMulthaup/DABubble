@@ -1,15 +1,11 @@
-import { Component, EventEmitter, inject, Output } from '@angular/core';
+import { Component, EventEmitter, inject, OnInit, Output } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
 import { FormControl, FormsModule, ReactiveFormsModule, FormGroup, Validators } from '@angular/forms';
-import { Firestore, collection, collectionData, query, where, getDocs } from '@angular/fire/firestore';
-import { Auth, user } from '@angular/fire/auth';
-import { NgZone } from '@angular/core';
 
-import { AngularFirestore } from '@angular/fire/compat/firestore'; // falls du compat benutzt
-import { Injectable } from '@angular/core';
+import { UserService } from '../../../services/user.service';
 
-import { sendPasswordResetEmail } from 'firebase/auth';
 import { CommonModule } from '@angular/common';
+import { AuthState } from '../../../shared/auth-state.type';
 
 @Component({
   selector: 'app-confirm-password',
@@ -21,48 +17,51 @@ import { CommonModule } from '@angular/common';
   templateUrl: './confirm-password.component.html',
   styleUrl: './confirm-password.component.scss'
 })
-export class ConfirmPasswordComponent {
-  @Output() close = new EventEmitter<void>();
+export class ConfirmPasswordComponent implements OnInit {
+  @Output() changeAuthState = new EventEmitter<AuthState>();
 
- confirmForm: FormGroup = new FormGroup({
+  authService = inject(AuthService);
+  showErrorMessage: boolean = false;
+  emailList: string[] = [];
+  userColl: any;
+
+  confirmForm: FormGroup = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email])
   });
-  showErrorMessage: boolean = false;
 
-  private firestore: Firestore = inject(Firestore);
-  private auth: Auth = inject(Auth);
+  constructor(private userService: UserService) { }
 
-  constructor(private zone: NgZone) { }
+  /**
+   * Get on init list of all emails from firestore
+   */
+  ngOnInit(): void {
+      this.userService.getAllUserEmails().subscribe((users: any[]) => {
+        this.emailList = users.map(user => user.email);
+        this.emailList.forEach(email => {
+          console.log(`Email: ${email}`);
+        })
+      })
+  }
 
-async onSubmit() {
-  this.showErrorMessage = false;
-
-  this.zone.run(async () => {
-    let email = this.confirmForm.get('email')?.value;
-    email = email.trim().toLowerCase(); // Kleinbuchstaben & trim
-
-    console.log('Gesuchte E-Mail:', email);
-
-    try {
-      const userRef = collection(this.firestore, 'users');
-      const q = query(userRef, where('email', '==', email));
-      const querySnapshot = await getDocs(q);
-      console.log('Anzahl gefundener Dokumente:', querySnapshot.size);
-
-      if (querySnapshot.empty) {
-        console.log('E-Mail NICHT vorhanden');
-      } else {
-        console.log('E-Mail vorhanden');
-        // Optional: Infos der gefundenen Dokumente
-        querySnapshot.forEach(doc => {
-          console.log('Gefundenes Dokument:', doc.id, doc.data());
-        });
-      }
-    } catch (error) {
-      console.error('Fehler bei der Überprüfung:', error);
+  /**
+   * Compares email from input with emails from loaded mail list.
+   * Throws error message if no matching mail
+   */
+  onSubmit() {
+    console.log('onSub');
+    let inputMail = this.confirmForm.get('email')?.value;
+    if (this.emailList.includes(inputMail)) {
+      console.log('E-mail vorhanden');
+    } else {
       this.showErrorMessage = true;
     }
-  });
-}
+  }
 
+  /**
+   * This function emits the showLogin-variable to change the non-auth-components variable noAccount to false.
+   */
+  backToLogin() {
+    this.changeAuthState.emit('login');
+    this.authService.emptyUserObject();
+  }
 }

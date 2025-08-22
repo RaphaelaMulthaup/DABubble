@@ -11,7 +11,7 @@ import {
   deleteField,
 } from '@angular/fire/firestore';
 import { UserInterface } from '../shared/models/user.interface';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { docData } from '@angular/fire/firestore';
 
 @Injectable({
@@ -92,5 +92,21 @@ export class UserService {
     await updateDoc(userRef, {
       active: isActive,
     });
+  }
+
+
+  /**
+   * 
+   * Get all email-addresses from collection. Creates objects containing "email".
+   * Creates an Observable, thats subscribeable in "confirm-password.ts".
+   */
+  getAllUserEmails(): Observable<{ email: string }[]> {
+    const userColl = collection(this.firestore, 'users');
+    return collectionData(userColl).pipe(
+      map((users: any[]) => 
+        users.map(user => ({
+          email: user.email
+        })))
+    );
   }
 }
