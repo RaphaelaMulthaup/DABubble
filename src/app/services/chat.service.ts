@@ -9,6 +9,7 @@ import {
   getDocs,
   query,
   serverTimestamp,
+  setDoc,
   updateDoc,
   where,
 } from '@angular/fire/firestore';
@@ -31,11 +32,9 @@ export class ChatService {
    * @returns The newly created chat document
    */
   async createChat(userId1: string, userId2: string) {
-    const chatsRef = collection(this.firestore, 'chats');
-    return await addDoc(chatsRef, {
-      userIds: [userId1, userId2],
-      lastMessageAt: serverTimestamp(),
-    });
+    const chatId = await this.getChatId(userId1, userId2);
+    const chatRef = doc(this.firestore, 'chats', chatId);
+    await setDoc(chatRef, {}, { merge: true });
   }
 
   /**
@@ -131,26 +130,18 @@ export class ChatService {
     );
   }
 
-   /**
-   * Finds the chat ID between two users if it already exists
-   * @param userId1 First user
-   * @param userId2 Second user
-   * @returns Chat ID or null if no chat exists
-   */
-  async getChatId(userId1: string, userId2: string) {
-    const chatsRef = collection(this.firestore, 'chats');    
-    const q = query(chatsRef, where('userIds', 'array-contains', userId1));
-    const snapshot = await getDocs(q);
-
-    // Jetzt alle Ergebnisse filtern, die auch userId2 enthalten
-    let chatId: string | null = null;
-    snapshot.forEach((doc) => {
-      const data = doc.data() as any;
-      if (data.userIds.includes(userId2)) {
-        chatId = doc.id; // <- das ist dein chatId
-      }
-    });
-
-    return chatId;
+/**
+ * Generates a unique chat ID for two users.
+ *
+ * The chat ID is created by sorting the two user IDs alphabetically
+ * and joining them with an underscore. This ensures that the order
+ * of user IDs does not affect the resulting chat ID.
+ *
+ * @param userId1 - The first user's ID.
+ * @param userId2 - The second user's ID.
+ * @returns A string representing the unique chat ID for the two users.
+ */  async getChatId(userId1: string, userId2: string) {
+    const sortedIds = [userId1, userId2].sort();
+    return `${sortedIds[0]}_${sortedIds[1]}`;
   }
 }

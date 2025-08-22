@@ -29,6 +29,11 @@ import { UserService } from './user.service';
   providedIn: 'root',
 })
 export class AuthService {
+  // Holds the current user state (null if not logged in)
+  private currentUserSubject = new BehaviorSubject<UserInterface | null>(null);
+  // Observable stream of the current user
+  currentUser$ = this.currentUserSubject.asObservable();
+
   // Google authentication provider
   provider = new GoogleAuthProvider();
 
@@ -37,7 +42,8 @@ export class AuthService {
   // Observable for external components to subscribe to user changes
   user$ = this.userSubject.asObservable();
 
-  userService=inject(UserService);
+  // Injected user service for fetching user data
+  userService = inject(UserService);
 
   //the data of the user in the registration-process
   userToRegister = {
@@ -45,13 +51,49 @@ export class AuthService {
     email: '',
     password: '',
     policyAccepted: false,
-    photoURL: ''
-  }
+    photoURL: '',
+  };
 
+  /**
+   * AuthService constructor.
+   *
+   * Initializes the service by listening to Firebase authentication state changes.
+   * When a user is authenticated, their data is loaded from Firestore via `userService`
+   * and emitted through `currentUserSubject`. If no user is logged in, `currentUserSubject`
+   * is set to null.
+   *
+   * @param auth - The Firebase Auth instance used for authentication state tracking.
+   * @param firestore - The Firestore instance used to fetch user data.
+   */
   constructor(private auth: Auth, private firestore: Firestore) {
     // Listen to authentication state changes and update the userSubject
-    onAuthStateChanged(this.auth, (user) => this.userSubject.next(user));
+    onAuthStateChanged(this.auth, (user) => {
+      if (user) {
+        // Firestore-User laden
+        this.userService.getUserById(user.uid).subscribe((userData) => {
+          this.currentUserSubject.next(userData);
+        });
+      } else {
+        this.currentUserSubject.next(null);
+      }
+    });
   }
+
+  /**
+   * Gets the currently authenticated user.
+   *
+   * @returns The current user object (`UserInterface`) if logged in, otherwise `null`.
+   */
+  get currentUser(): UserInterface | null {
+    return this.currentUserSubject.value;
+  }
+
+  //   /**
+  //  * Returns the current logged-in Firebase user
+  //  */
+  // get currentUser(): User | null {
+  //   return this.auth.currentUser;
+  // }
 
   /**
    * Returns the current user's ID or null if no user is logged in
@@ -135,8 +177,15 @@ export class AuthService {
       //console.log(this.userToRegister.displayName, this.userToRegister.photoURL)
       // await updateProfile(user, { displayName, photoURL });
       // Create or update the user document in Firestore
-      await this.createOrUpdateUserInFirestore(user, 'password', this.userToRegister.password);
-      await this.userService.updateUser(user.uid, {name: this.userToRegister.displayName, photoUrl: this.userToRegister.photoURL});
+      await this.createOrUpdateUserInFirestore(
+        user,
+        'password',
+        this.userToRegister.password
+      );
+      await this.userService.updateUser(user.uid, {
+        name: this.userToRegister.displayName,
+        photoUrl: this.userToRegister.photoURL,
+      });
       // Update the userSubject with the newly registered user
       this.userSubject.next(user);
     });
@@ -153,8 +202,8 @@ export class AuthService {
       email: '',
       password: '',
       policyAccepted: false,
-      photoURL: ''
-    }
+      photoURL: '',
+    };
   }
 
   /**
@@ -194,13 +243,6 @@ export class AuthService {
       });
 
     return from(promise) as Observable<void>;
-  }
-
-  /**
-   * Returns the current logged-in Firebase user
-   */
-  get currentUser(): User | null {
-    return this.auth.currentUser;
   }
 
   /**

@@ -40,7 +40,7 @@ export class ContactListItemComponent {
    * Finds a chat between the current user and a selected user,
    * then navigates to it if it exists.
    */
-  async pickOutAndNavigateToChat() {
+  async pickOutAndNavigateToChat() {    
     if (!this.currentUserId) return; // Stop if user is not logged in
 
     // Try to find a chat between the current user and the selected user
@@ -48,6 +48,7 @@ export class ContactListItemComponent {
       this.currentUserId,
       this.user.uid
     );
+  
 
     if (!chatId) return; // No chat found → exit
     this.router.navigate(['/dashboard', 'chat', chatId]);
