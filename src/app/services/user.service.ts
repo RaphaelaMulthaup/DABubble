@@ -100,11 +100,12 @@ export class UserService {
    * Get all email-addresses from collection. Creates objects containing "email".
    * Creates an Observable, thats subscribeable in "confirm-password.ts".
    */
-  getAllUserEmails(): Observable<{ email: string }[]> {
+  getAllUserEmails(): Observable<{ uid: string, email: string }[]> {
     const userColl = collection(this.firestore, 'users');
     return collectionData(userColl).pipe(
       map((users: any[]) => 
         users.map(user => ({
+          uid: user.uid,
           email: user.email
         })))
     );

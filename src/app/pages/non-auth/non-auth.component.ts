@@ -92,4 +92,8 @@ export class NonAuthComponent implements OnInit {
   hideResetPassword() {
     this.currentState = 'login';
   }
+
+  procedToReset() {
+    this.currentState = 'reset-password-confirm'
+  }
 }
