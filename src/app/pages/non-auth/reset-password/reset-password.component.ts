@@ -38,6 +38,9 @@ export class ResetPasswordComponent implements OnInit{
     this.checkPasswords();
   }
 
+  /**
+   * check if input is valid
+   */
   checkPasswords() {
     let password = this.registerForm.get('password')?.value
     let passwordConfirm = this.registerForm.get('passwordConfirm')?.value;
@@ -49,6 +52,9 @@ export class ResetPasswordComponent implements OnInit{
     }
   }
 
+  /**
+   * function prototype top change user password
+   */
   onPasswordChange() {
     const newPassword = this.registerForm.get('password')?.value;
     this.autService.updateUserPassword(this.uid, newPassword).subscribe(() => {
