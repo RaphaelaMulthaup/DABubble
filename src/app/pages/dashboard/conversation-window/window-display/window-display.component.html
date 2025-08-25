@@ -3,7 +3,15 @@
     @for (message of messages; track $index) {
       <div class="seperator-container flex flex-row place-items-center">
         <div class="seperator"></div>
-        <p class="date">{{message.createdAt.toDate().getDate()}}. {{message.createdAt.toDate().toLocaleString('default', { month: 'long' })}}</p>
+        <p class="date">
+          @if(messageCreatedToday($index)) {
+            Heute
+          } @else {
+            {{days[message.createdAt.toDate().getDay()]}},
+            {{message.createdAt.toDate().getDate()}}. 
+            {{message.createdAt.toDate().toLocaleString('de-DE', { month: 'long' })}}
+          }
+        </p>
         <div class="seperator"></div>
       </div>
       <app-displayed-post [message]="message"></app-displayed-post>

@@ -16,7 +16,7 @@ export class ConversationWindowComponent {
 
 ngOnInit(){
     this.data$.subscribe(messages => {
-    console.log('here are data from conversation-windows', messages);
+    //console.log('here are data from conversation-windows', messages);
   });
 }
 }

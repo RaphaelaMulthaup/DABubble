@@ -25,13 +25,24 @@ export class WindowDisplayComponent {
 
   @Input() messages$!: Observable<MessageInterface[]>;
 
+  messageInfo!: any;
+
+  days = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag']
+
   /**
    * Subscribe to the BehaviorSubject from MessageService
    * Keeps 'messages' updated with the latest conversation in real-time
    */
   ngOnInit() {
     this.messages$.subscribe((data) => {
-      console.log('here are data from Window-Display', data);
+      this.messageInfo = data;
+      this.messageInfo.sort((a:any, b:any) => {
+        return a.createdAt - b.createdAt;
+      });
+      //console.log('here are data from Window-Display', data);
+      // console.log(data);
+      // console.log(data[0].createdAt.toDate().setHours(0, 0, 0, 0))
+      // console.log(new Date().setHours(0, 0, 0, 0))
     })
   }
 
@@ -41,4 +52,16 @@ export class WindowDisplayComponent {
   //     switchMap(({ type, id }) => this.chatService.getMessages(type, id))
   //   );
   // }
+
+  /**
+ * This function compares the date, a message was created with today.
+ * It returns true or false, depending on those are the same or not.
+ * 
+ * @param index the index of the message
+ */
+  messageCreatedToday(index: number) {
+    let messageDate = this.messageInfo[index].createdAt.toDate().setHours(0, 0, 0, 0);
+    let today = new Date().setHours(0, 0, 0, 0);
+    return messageDate == today;
+  }
 }

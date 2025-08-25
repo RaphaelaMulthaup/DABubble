@@ -42,15 +42,15 @@ export class CurrentPostInput {
   ngOnInit() {
     this.chatActiveRouterService.getType$(this.route).subscribe(t => {
       this.type = t;
-      console.log(`aici trebuie tip  |  ${this.type} `);
+      //console.log(`aici trebuie tip  |  ${this.type} `);
     });
     this.chatActiveRouterService.getId$(this.route).subscribe(id => {
       this.conversationId = id;
-      console.log(`aici channelid    | ${this.conversationId}`);
+      //console.log(`aici channelid    | ${this.conversationId}`);
     });
     this.chatActiveRouterService.getMessageId$(this.route).subscribe(msgId => {
       this.messageToReplyId = msgId;
-      console.log(` aici messageid    |  ${this.messageToReplyId}`);
+      //console.log(` aici messageid    |  ${this.messageToReplyId}`);
     });
   }
 
