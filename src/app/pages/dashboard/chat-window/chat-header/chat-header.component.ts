@@ -22,24 +22,44 @@ export class ChatHeaderComponent {
 
   private chatService = inject(ChatActiveRouterService);
   private route = inject(ActivatedRoute);
-  private router =inject(Router);
-    ngOnInit() {
+  private router = inject(Router);
+  
+  ngOnInit() {
     this.chatService.getType$(this.route).subscribe(t => {
       this.type = t;
-          console.log(`aici trebuie tip  |  ${this.type } `);
+      console.log(`aici trebuie tip  |  ${this.type} `);
     });
     this.chatService.getId$(this.route).subscribe(id => {
       this.conversationId = id;
-          console.log(`aici channelid    | ${this.conversationId}`);
+      console.log(`aici channelid    | ${this.conversationId}`);
     });
     this.chatService.getMessageId$(this.route).subscribe(msgId => {
-      this.replyToMessageId = msgId; 
-          console.log(` aici messageid    |  ${this.replyToMessageId}`);
+      this.replyToMessageId = msgId;
+      console.log(` aici messageid    |  ${this.replyToMessageId}`);
     });
 
   }
 
-  redirectTo(type:string, id:string){
-        this.router.navigate(['/dashboard', type, id]);
+  redirectTo(type: string, id: string) {
+    this.router.navigate(['/dashboard', type, id]);
   }
+
+  // channelTyp!: string;
+  // // channelData!: ChannelInterface;
+  // //inject ActivatedRoute to get current url
+  // private route = inject(ActivatedRoute);
+  // private chatActiveRouterService = inject(ChatActiveRouterService);
+  // // ngOnInit() {
+  // //   this.chatActiveRouterService
+  // //     .getParams$(this.route)
+  // //     .pipe(
+  // //       switchMap(({ type, id }) => this.chatActiveRouterService.getChannelInfo(type, id))
+  // //     );
+  // // }
+  // onChange() {
+  //   this.chatActiveRouterService.getType$(this.route).subscribe((type) => {
+  //     this.channelTyp = type;
+  //     console.log('type:', type);
+  //   });
+
 }

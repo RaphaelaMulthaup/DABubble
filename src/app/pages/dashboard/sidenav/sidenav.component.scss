@@ -1,11 +1,19 @@
-section{
+section {
   background-color: var(--color-white);
   height: 100%;
-  max-width: 336px;
+  // max-width: 336px;
   border-radius: 30px;
   padding-top: 32px;
   padding-right: 30px;
   padding-bottom: 32px;
   padding-left: 30px;
   gap: 25px;
+}
+
+app-channel-list {
+  width: 100%;
+}
+
+app-users-list {
+  width: 100%;
 }

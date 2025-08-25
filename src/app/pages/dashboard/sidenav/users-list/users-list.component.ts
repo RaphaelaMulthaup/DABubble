@@ -15,7 +15,7 @@ import { ContactListItemComponent } from './contact-list-item/contact-list-item.
   styleUrl: './users-list.component.scss',
 })
 export class UsersListComponent {
-  // Observable containing the list of all users
+  // Observable containing the list of all users  //Das dürfen dann später nur die Kontakte des Currentusers sein
   users$: Observable<UserInterface[]>;
 
   // ID of the currently logged-in user
@@ -36,7 +36,7 @@ export class UsersListComponent {
     private userService: UserService,
     private authService: AuthService
   ) {
-    // Fetch all users
+    // Fetch all users //Das dürfen dann später nur die Kontakte des Currentusers sein
     this.users$ = this.userService.getAllUsers();
 
     // Subscribe to the current authenticated user

@@ -29,30 +29,75 @@ export class CurrentMessageInput {
   private route = inject(ActivatedRoute);
 
   //Inject route. with this we have acces to type and id
-  private chatService = inject(ChatActiveRouterService);
+  private chatActiveRouterService = inject(ChatActiveRouterService);
 
   // Stores any error message to display in the form
   errorMessage: string | null = null;
 
   // Reactive form for creating a new thread with a first message
-  createThreadFrom: FormGroup = new FormGroup({
+  createThreadForm: FormGroup = new FormGroup({
     message: new FormControl('', []), // Form control for the thread's first message
   });
 
-    ngOnInit() {
+  ngOnInit() {
     this.chatService.getType$(this.route).subscribe(t => {
       this.type = t;
-          console.log(`aici trebuie tip  |  ${this.type } `);
+      console.log(`aici trebuie tip  |  ${this.type} `);
     });
     this.chatService.getId$(this.route).subscribe(id => {
       this.conversationId = id;
-          console.log(`aici channelid    | ${this.conversationId}`);
+      console.log(`aici channelid    | ${this.conversationId}`);
     });
     this.chatService.getMessageId$(this.route).subscribe(msgId => {
-      this.replyToMessageId = msgId; 
-          console.log(` aici messageid    |  ${this.replyToMessageId}`);
+      this.replyToMessageId = msgId;
+      console.log(` aici messageid    |  ${this.replyToMessageId}`);
     });
   }
+
+  // /**
+  //  * Handles form submission to create a new thread
+  //  */
+  // async onSubmit(): Promise<void> {
+  //   const id = await firstValueFrom(this.chatActiveRouterService.getId$(this.route));
+  //   const type = await firstValueFrom(this.chatActiveRouterService.getType$(this.route));
+
+  //   // Get the message value from the form
+  //   const message = this.createThreadForm.get('message')?.value;
+
+  //           // Get the currently selected channel synchronously
+  //           const selectedChannel =
+  //             this.channelSelectionService.getSelectedChannelSync();
+
+  //           // Get the selected channel ID
+  //           const channelId: string | null =
+  //             this.channelSelectionService.getSelectedChannelId();
+
+  //   // Get the ID of the current user
+  //   const currentUserId: string | null = this.authService.getCurrentUserId();
+
+  //   // Call the service to create a thread with the first message
+  //   this.threadService
+  //     .createMessage(
+  //       channelId!,
+  //       currentUserId!,
+  //       message,
+  //       type,
+  //       id
+  //     )
+  //     .then((threadId) => {
+  //       console.log('Thread created with ID:', threadId);
+
+  //       // Re-trigger channel selection to refresh the view
+  //       this.channelSelectionService.selectChannel(selectedChannel);
+
+  //       // Reset the form after successful submission
+  //       this.createThreadForm.reset();
+  //     })
+  //     .catch((error) => {
+  //       // Set and log error message if thread creation fails
+  //       this.errorMessage = error.message;
+  //       console.error('Error creating thread:', error);
+  //     });
 
   onSubmit() {
     const message = this.createThreadFrom.get('message')?.value;
