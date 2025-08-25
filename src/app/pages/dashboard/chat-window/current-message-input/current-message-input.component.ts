@@ -100,17 +100,14 @@ export class CurrentMessageInput {
   //     });
 
   onSubmit() {
-    const message = this.postForm.get('text')?.value;
+    const post = this.postForm.get('text')?.value;
     const currentUserId: string | null = this.authService.getCurrentUserId();
     if (this.messageToReplyId) {
-      this.messageService.createAnswer(this.conversationId, this.messageToReplyId, currentUserId!, message, this.type);
+      this.messageService.createAnswer(this.conversationId, this.messageToReplyId, currentUserId!, post, this.type);
     } else {
-
-      this.messageService.createMessage(this.conversationId, currentUserId!, message, this.type);
+      this.messageService.createMessage(this.conversationId, currentUserId!, post, this.type);
     }
-
     this.postForm.reset();
-
   }
   
   //     .then((threadId) => {
