@@ -20,7 +20,7 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
   },
   {
-    path: 'dashboard/:type/:id/messages/:messageId',
+    path: 'dashboard/:type/:id/answers/:messageId',
     component: DashboardComponent,
     canActivate: [AuthGuard],
   },
