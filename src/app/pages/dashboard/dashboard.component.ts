@@ -8,7 +8,6 @@ import { CommonModule } from '@angular/common';
 import { OverlayService } from '../../services/overlay.service';
 import { map, switchMap } from 'rxjs/operators';
 import { HeaderComponent } from '../../shared/components/header/header.component';
-import { ThreadWindowComponent } from './thread-window/thread-window.component';
 import { ChatActiveRouterService } from '../../services/chat-active-router.service';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, throwError } from 'rxjs';
@@ -23,7 +22,6 @@ import { HttpParams } from '@angular/common/http';
     OverlayComponent,
     CommonModule,
     HeaderComponent,
-    ThreadWindowComponent,
   ],
   templateUrl: './dashboard.component.html', // HTML template for the dashboard
   styleUrl: './dashboard.component.scss', // Styles for the dashboard
@@ -46,9 +44,9 @@ export class DashboardComponent {
     )
   );
 
-  threads$ = this.route.paramMap.pipe(
+  answers$ = this.route.paramMap.pipe(
     switchMap(params =>
-      this.chatService.getThreads(
+      this.chatService.getAnswers(
         params.get('type')!,
         params.get('id')!,
         params.get('messageId')!

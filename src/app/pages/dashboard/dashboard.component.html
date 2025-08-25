@@ -6,13 +6,12 @@
       <app-chat-window [data$]="messages$" class="flex w-[700px] "></app-chat-window>
     </div>
     @if(msgId$ | async; as msgId){
-      <app-chat-window [data$]="threads$" class="flex w-[700px]"></app-chat-window>
+      <app-chat-window [data$]="answers$" class="flex w-[700px]"></app-chat-window>
     }
   </div>
 </section>
 
 <button (click)="logout()">logout</button>
-    <!-- <app-thread-window></app-thread-window> -->
 <!-- <section >
   <div class="w-[300px] bg-white h-full">
     <app-sidenav />

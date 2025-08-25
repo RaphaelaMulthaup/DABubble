@@ -13,7 +13,6 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ChatActiveRouterService } from '../../../../../services/chat-active-router.service';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
-import { ThreadService } from '../../../../../services/thread.service';
 
 
 @Component({
@@ -29,7 +28,6 @@ export class DisplayedMessageComponent {
 
   private route = inject(ActivatedRoute);
   private router = inject(Router);
-  private threadService = inject(ThreadService);
 
   private chatActiveRoute = inject(ChatActiveRouterService);
 
@@ -84,10 +82,10 @@ export class DisplayedMessageComponent {
     );
   }
 
-  openThread(messageId: string) {
+  openAnswers(messageId: string) {
     const type = this.currentType;
     const id = this.currentChannelId;
-    this.router.navigate(['/dashboard', type, id, 'messages', messageId]);
+    this.router.navigate(['/dashboard', type, id, 'answers', messageId]);
   }
 
   /**

@@ -18,8 +18,8 @@
     <div class="text">{{ message.text }}</div>
 
     <!-- if-query to check if there are any answers and only show if true-->
-    <div class="thread-answers flex flex-row">
-      <button class="link" (click)="openThread(message.id!)">
+    <div class="answers flex flex-row">
+      <button class="link" (click)="openAnswers(message.id!)">
         x Antworten
       </button>
       <span class="message-time"

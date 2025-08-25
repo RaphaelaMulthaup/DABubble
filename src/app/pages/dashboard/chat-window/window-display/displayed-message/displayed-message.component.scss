@@ -60,7 +60,7 @@
   }
 }
 
-.thread-answers {
+.answers {
   gap: 20px;
 }
 
@@ -82,7 +82,7 @@
       color: var(--color-white);
     }
 
-    .thread-answers {
+    .answers {
       flex-direction: row-reverse;
     }
   }

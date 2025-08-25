@@ -13,7 +13,6 @@ import {
 import { map, Subscription } from 'rxjs';
 import { UserService } from './services/user.service';
 import { ChatService } from './services/chat.service';
-import { ThreadService } from './services/thread.service';
 import { OverlayService } from './services/overlay.service';
 import { OverlayComponent } from './overlay/overlay.component';
 
@@ -54,11 +53,6 @@ export class AppComponent {
    */
   private chatService = inject(ChatService);
 
-  /**
-   * ThreadService for managing thread-related operations.
-   * Injected into the component.
-   */
-  private threadService = inject(ThreadService);
 
   /**
    * OverlayService for managing overlays (showing/hiding overlays).

@@ -73,7 +73,6 @@ export class ChannelsService {
       description,
       memberIds: [user.uid],
       name,
-      threads: {},
       deleted: false,
       createdAt: new Date(),
     };

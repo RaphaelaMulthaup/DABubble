@@ -117,20 +117,6 @@ export class ChatService {
   }
 
   /**
-   * Retrieves all reactions for a message
-   * @param chatId ID of the chat
-   * @param messageId ID of the message
-   * @returns Observable list of reactions
-   */
-  getReactions(chatId: string, messageId: string) {
-    return this.messageService.getReactions(
-      `chats/${chatId}`,
-      'messages',
-      messageId
-    );
-  }
-
-  /**
    * Generates a unique chat ID for two users.
    *
    * The chat ID is created by sorting the two user IDs alphabetically
