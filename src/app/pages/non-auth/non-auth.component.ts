@@ -15,10 +15,21 @@ import { AuthState } from '../../shared/auth-state.type';
 import { RouterLink } from '@angular/router';
 import { HeaderComponent } from '../../shared/components/header/header.component';
 import { ConfirmPasswordComponent } from './confirm-password/confirm-password.component';
+import { ResetPasswordComponent } from './reset-password/reset-password.component';
 
 @Component({
   selector: 'app-non-auth',
-  imports: [CommonModule, LoginFormComponent, RegisterFormComponent, IntroComponent, AvatarSelectionComponent, RouterLink, HeaderComponent, ConfirmPasswordComponent],
+  imports: [
+    CommonModule,
+    LoginFormComponent,
+    RegisterFormComponent,
+    IntroComponent,
+    AvatarSelectionComponent,
+    RouterLink,
+    HeaderComponent,
+    ConfirmPasswordComponent,
+    ResetPasswordComponent
+  ],
   templateUrl: './non-auth.component.html',
   styleUrl: './non-auth.component.scss'
 })
@@ -80,5 +91,9 @@ export class NonAuthComponent {
 
   hideResetPassword() {
     this.currentState = 'login';
+  }
+
+  procedToReset() {
+    this.currentState = 'reset-password-confirm'
   }
 }

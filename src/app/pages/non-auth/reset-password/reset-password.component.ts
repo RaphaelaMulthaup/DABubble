@@ -1,10 +1,11 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
 import { AuthState } from '../../../shared/auth-state.type';
 import { FormControl, FormsModule, ReactiveFormsModule, FormGroup, Validators } from '@angular/forms';
 import { Firestore, collection, collectionData, query, where, getDocs } from '@angular/fire/firestore';
 import { Auth, user } from '@angular/fire/auth';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-reset-password',
@@ -12,19 +13,24 @@ import { CommonModule } from '@angular/common';
   templateUrl: './reset-password.component.html',
   styleUrls: ['./reset-password.component.scss']
 })
-export class ResetPasswordComponent {
+export class ResetPasswordComponent implements OnInit{
   registerForm!: FormGroup;
   showErrorMessage: boolean = false;
+  uid!: string;
 
-  constructor(private autService : AuthService) {
-    this.registerForm = new FormGroup({
-      password: new FormControl('', [Validators.required, Validators.minLength(6)]),
-      passwordConfirm: new FormControl('', [Validators.required, Validators.minLength(6)])
-    });
+  constructor(
+    private autService : AuthService,
+    private router: Router
+  ) {
+      const navigation = this.router.getCurrentNavigation();
+      this.uid = navigation?.extras.state?.['uid'];
+  }
 
-    this.registerForm.valueChanges.subscribe(() => {
-      this.checkPasswords();
-    })
+  ngOnInit(): void {
+      this.registerForm = new FormGroup({
+        password: new FormControl('', [Validators.required, Validators.minLength(6)]),
+        passwordConfirm: new FormControl('', [Validators.required, Validators.minLength(6)])
+      })
   }
 
   onSubmit() {
@@ -32,6 +38,9 @@ export class ResetPasswordComponent {
     this.checkPasswords();
   }
 
+  /**
+   * check if input is valid
+   */
   checkPasswords() {
     let password = this.registerForm.get('password')?.value
     let passwordConfirm = this.registerForm.get('passwordConfirm')?.value;
@@ -41,5 +50,15 @@ export class ResetPasswordComponent {
     } else {
       this.showErrorMessage = false;
     }
+  }
+
+  /**
+   * function prototype top change user password
+   */
+  onPasswordChange() {
+    const newPassword = this.registerForm.get('password')?.value;
+    this.autService.updateUserPassword(this.uid, newPassword).subscribe(() => {
+      this.router.navigate(['/login']);
+    })
   }
 }

@@ -14,7 +14,7 @@ import {
   getDocs,
 } from '@angular/fire/firestore';
 import { UserInterface } from '../shared/models/user.interface';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { docData } from '@angular/fire/firestore';
 
 @Injectable({
@@ -99,10 +99,26 @@ export class UserService {
    * This function checks for alle the user-emails in Firestore whether they are the same as the given inputEmail.
    * It returns true/or false
    */
-  async checkForExistingUser(inputEmail:string): Promise<boolean>{
+  async checkForExistingUser(inputEmail: string): Promise<boolean> {
     const usersCollection = collection(this.firestore, 'users'); // Reference to 'users' collection
     const emailQuery = query(usersCollection, where('email', '==', inputEmail));
     const querySnapshot = await getDocs(emailQuery);
-    return !querySnapshot.empty; //true when the inputEmail already exists in firestore
+    return !querySnapshot.empty; //true when the inputEmail already exists in firestore 
+  }
+
+  /**
+   *
+   * Get all email-addresses from collection. Creates objects containing "email".
+   * Creates an Observable, thats subscribeable in "confirm-password.ts".
+   */
+  getAllUserEmails(): Observable<{ uid: string, email: string }[]> {
+    const userColl = collection(this.firestore, 'users');
+    return collectionData(userColl).pipe(
+      map((users: any[]) =>
+        users.map(user => ({
+          uid: user.uid,
+          email: user.email
+        })))
+    );
   }
 }
