@@ -1,7 +1,7 @@
 import { Component, inject, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MessageService } from '../../../../services/message.service';
-import { DisplayedMessageComponent } from './displayed-message/displayed-message.component';
+import { DisplayedPostComponent } from './displayed-post/displayed-post.component';
 import { MessageInterface } from '../../../../shared/models/message.interface';
 import { ActivatedRoute } from '@angular/router';
 import { map, Observable, switchMap } from 'rxjs';
@@ -10,7 +10,7 @@ import { tap } from 'rxjs';
 
 @Component({
   selector: 'app-window-display', // Component selector used in parent templates
-  imports: [DisplayedMessageComponent, CommonModule], // Imports child component to display individual messages
+  imports: [DisplayedPostComponent, CommonModule], // Imports child component to display individual messages
   templateUrl: './window-display.component.html', // External HTML template
   styleUrl: './window-display.component.scss', // SCSS styles for this component
 })

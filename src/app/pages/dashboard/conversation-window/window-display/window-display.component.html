@@ -6,7 +6,7 @@
         <p class="date">{{message.createdAt.toDate().getDate()}}. {{message.createdAt.toDate().toLocaleString('default', { month: 'long' })}}</p>
         <div class="seperator"></div>
       </div>
-      <app-displayed-message [message]="message"></app-displayed-message>
+      <app-displayed-post [message]="message"></app-displayed-post>
     }
   } @else {
     <span>Noch keine Messages vorhanden</span>

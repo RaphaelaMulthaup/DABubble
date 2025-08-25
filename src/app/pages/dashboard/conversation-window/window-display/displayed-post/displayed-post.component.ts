@@ -16,12 +16,12 @@ import { Router } from '@angular/router';
 
 
 @Component({
-  selector: 'app-displayed-message', // Component to display a single message in the conversation
+  selector: 'app-displayed-post', // Component to display a single message in the conversation
   imports: [CommonModule, OverlayComponent, FormsModule, RouterLink],
-  templateUrl: './displayed-message.component.html', // External HTML template
-  styleUrl: './displayed-message.component.scss', // SCSS styles for this component
+  templateUrl: './displayed-post.component.html', // External HTML template
+  styleUrl: './displayed-post.component.scss', // SCSS styles for this component
 })
-export class DisplayedMessageComponent {
+export class DisplayedPostComponent {
   private authService = inject(AuthService);
   private userService = inject(UserService);
   public overlayService = inject(OverlayService);

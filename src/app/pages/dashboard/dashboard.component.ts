@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { inject } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { SidenavComponent } from './sidenav/sidenav.component';
-import { ChatWindowComponent } from './chat-window/chat-window.component';
+import { ConversationWindowComponent } from './conversation-window/conversation-window.component';
 import { OverlayComponent } from '../../overlay/overlay.component';
 import { CommonModule } from '@angular/common';
 import { OverlayService } from '../../services/overlay.service';
@@ -18,7 +18,7 @@ import { HttpParams } from '@angular/common/http';
   // Import child components used in the dashboard
   imports: [
     SidenavComponent,
-    ChatWindowComponent,
+    ConversationWindowComponent,
     OverlayComponent,
     CommonModule,
     HeaderComponent,
