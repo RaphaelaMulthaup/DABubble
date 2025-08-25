@@ -9,12 +9,12 @@ import { Router } from '@angular/router';
 import { MessageService } from '../../../../services/message.service';
 
 @Component({
-  selector: 'app-current-message-input',
+  selector: 'app-current-post-input',
   imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './current-message-input.component.html',
-  styleUrl: './current-message-input.component.scss',
+  templateUrl: './current-post-input.component.html',
+  styleUrl: './current-post-input.component.scss',
 })
-export class CurrentMessageInput {
+export class CurrentPostInput {
 
   type!: string;
   conversationId!: string;

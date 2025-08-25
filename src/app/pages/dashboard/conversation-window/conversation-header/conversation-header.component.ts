@@ -3,16 +3,16 @@ import { CommonModule } from '@angular/common';
 import { ChatActiveRouterService } from '../../../../services/chat-active-router.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from '../../../../services/user.service';
-import { SearchBarHeaderComponent } from "./search-bar-header/search-bar-header.component";
+import { ConversationSearchbarComponent } from "./conversation-searchbar/conversation-searchbar.component";
 
 
 @Component({
-  selector: 'app-chat-header',
-  imports: [CommonModule, SearchBarHeaderComponent],
-  templateUrl: './chat-header.component.html',
-  styleUrl: './chat-header.component.scss',
+  selector: 'app-conversation-header',
+  imports: [CommonModule, ConversationSearchbarComponent],
+  templateUrl: './conversation-header.component.html',
+  styleUrl: './conversation-header.component.scss',
 })
-export class ChatHeaderComponent {
+export class ConversationHeaderComponent {
 
   private userService = inject(UserService);
 
