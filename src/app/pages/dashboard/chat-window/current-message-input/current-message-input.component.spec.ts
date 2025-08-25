@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CreateThreadFormComponent } from './current-message-input.component';
+import { postFormComponent } from './current-message-input.component';
 
-describe('CreateThreadFormComponent', () => {
-  let component: CreateThreadFormComponent;
-  let fixture: ComponentFixture<CreateThreadFormComponent>;
+describe('postFormComponent', () => {
+  let component: postFormComponent;
+  let fixture: ComponentFixture<postFormComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CreateThreadFormComponent]
+      imports: [postFormComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(CreateThreadFormComponent);
+    fixture = TestBed.createComponent(postFormComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

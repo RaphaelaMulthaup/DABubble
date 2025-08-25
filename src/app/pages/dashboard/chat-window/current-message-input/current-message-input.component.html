@@ -1,9 +1,19 @@
-<form [formGroup]="createThreadForm" (ngSubmit)="onSubmit()">
-    <div>
-        <label for="messageId"></label>
-        <input  id="messageId"     type="text" formControlName="message"  name="message"  placeholder="Enter thread title" required >
-    </div>
-        <button class="bg-red-500"   [ngStyle]="{
-        'background-color': replyToMessageId ? 'red' : 'lightgray'
-        }" type="submit" >Send</button>
+<form [formGroup]="postForm" (ngSubmit)="onSubmit()">
+  <div>
+    <label for="postId"></label>
+    <input
+      id="postId"
+      type="text"
+      formControlName="text"
+      name="text"
+      placeholder="Text einfügen"
+      required
+    />
+  </div>
+  <button
+    class="bg-red-500"
+    type="submit"
+  >
+    Send
+  </button>
 </form>

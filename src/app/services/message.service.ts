@@ -16,7 +16,7 @@ import {
   setDoc,
   updateDoc,
 } from '@angular/fire/firestore';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { MessageInterface } from '../shared/models/message.interface';
 import { Reaction } from '../shared/models/reaction.interface';
 import { ChatInterface } from '../shared/models/chat.interface';
@@ -154,6 +154,57 @@ export class MessageService {
       `${parentPath}/${subcollectionName}/${messageId}`
     );
     await deleteDoc(messageRef);
+  }
+
+  /**
+   * Create a new thread and its first message
+   * @param channelId - ID of the channel where the thread belongs
+   * @param startedBy - User ID of the thread creator
+   * @param text - Text content of the first message
+   * @param fileUrls - Optional array of file URLs attached to the message
+   * @returns the ID of the created thread
+   */
+
+  async createMessage(
+    channelId: string,
+    startedBy: string,
+    text: string,
+    type: string
+  ) {
+    if (type === 'channel') {
+      const firstMessageId = await this.sendMessage(
+        `channels/${channelId}`,
+        'messages',
+        {
+          senderId: startedBy,
+          text,
+        }
+      );
+    } else if (type === 'chat') {
+    }
+    return of([]);
+  }
+
+  async createAnswer(
+    channelId: string,
+    messageId: string,
+    senderId: string,
+    text: string,
+    type: string
+  ) {
+    if (type === 'channel') {
+      const answerRef = collection(
+        this.firestore,
+        `channels/${channelId}/messages/${messageId}/answers`
+      );
+      const newAnswer = {
+        senderId,
+        text,
+        createdAt: new Date(),
+      };
+      return await addDoc(answerRef, newAnswer);
+    }
+    return of([]);
   }
 
   //Es kann sein, dass wir das hier gar nicht mehr brauchen, jetzt wo wir Andreis Activated Routs nutzen.

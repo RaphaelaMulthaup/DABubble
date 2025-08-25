@@ -18,7 +18,7 @@ export class ChatHeaderComponent {
 
   type!: string;
   conversationId!: string;
-  replyToMessageId: string | null = null;
+  messageToReplyId: string | null = null;
 
   private chatService = inject(ChatActiveRouterService);
   private route = inject(ActivatedRoute);
@@ -34,8 +34,8 @@ export class ChatHeaderComponent {
       console.log(`aici channelid    | ${this.conversationId}`);
     });
     this.chatService.getMessageId$(this.route).subscribe(msgId => {
-      this.replyToMessageId = msgId;
-      console.log(` aici messageid    |  ${this.replyToMessageId}`);
+      this.messageToReplyId = msgId;
+      console.log(` aici messageid    |  ${this.messageToReplyId}`);
     });
 
   }

@@ -1,12 +1,12 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { ThreadService } from '../../../../services/thread.service';
 import { ChannelSelectionService } from '../../../../services/channel-selection.service';
 import { AuthService } from '../../../../services/auth.service';
 import { ActivatedRoute } from '@angular/router';
 import { ChatActiveRouterService } from '../../../../services/chat-active-router.service';
 import { Router } from '@angular/router';
+import { MessageService } from '../../../../services/message.service';
 
 @Component({
   selector: 'app-current-message-input',
@@ -18,9 +18,9 @@ export class CurrentMessageInput {
 
   type!: string;
   conversationId!: string;
-  replyToMessageId: string | null = null;
+  messageToReplyId: string | null = null;
 
-  private threadService = inject(ThreadService);
+  private messageService = inject(MessageService);
 
   // Inject AuthService to get current user information
   private authService = inject(AuthService);
@@ -35,22 +35,22 @@ export class CurrentMessageInput {
   errorMessage: string | null = null;
 
   // Reactive form for creating a new thread with a first message
-  createThreadForm: FormGroup = new FormGroup({
-    message: new FormControl('', []), // Form control for the thread's first message
+  postForm: FormGroup = new FormGroup({
+    text: new FormControl('', []), // Form control for the thread's first message
   });
 
   ngOnInit() {
-    this.chatService.getType$(this.route).subscribe(t => {
+    this.chatActiveRouterService.getType$(this.route).subscribe(t => {
       this.type = t;
       console.log(`aici trebuie tip  |  ${this.type} `);
     });
-    this.chatService.getId$(this.route).subscribe(id => {
+    this.chatActiveRouterService.getId$(this.route).subscribe(id => {
       this.conversationId = id;
       console.log(`aici channelid    | ${this.conversationId}`);
     });
-    this.chatService.getMessageId$(this.route).subscribe(msgId => {
-      this.replyToMessageId = msgId;
-      console.log(` aici messageid    |  ${this.replyToMessageId}`);
+    this.chatActiveRouterService.getMessageId$(this.route).subscribe(msgId => {
+      this.messageToReplyId = msgId;
+      console.log(` aici messageid    |  ${this.messageToReplyId}`);
     });
   }
 
@@ -62,7 +62,7 @@ export class CurrentMessageInput {
   //   const type = await firstValueFrom(this.chatActiveRouterService.getType$(this.route));
 
   //   // Get the message value from the form
-  //   const message = this.createThreadForm.get('message')?.value;
+  //   const message = this.postForm.get('message')?.value;
 
   //           // Get the currently selected channel synchronously
   //           const selectedChannel =
@@ -91,7 +91,7 @@ export class CurrentMessageInput {
   //       this.channelSelectionService.selectChannel(selectedChannel);
 
   //       // Reset the form after successful submission
-  //       this.createThreadForm.reset();
+  //       this.postForm.reset();
   //     })
   //     .catch((error) => {
   //       // Set and log error message if thread creation fails
@@ -100,16 +100,16 @@ export class CurrentMessageInput {
   //     });
 
   onSubmit() {
-    const message = this.createThreadFrom.get('message')?.value;
+    const message = this.postForm.get('message')?.value;
     const currentUserId: string | null = this.authService.getCurrentUserId();
-    if (this.replyToMessageId) {
-      this.threadService.createThreadMessage(this.conversationId, this.replyToMessageId, currentUserId!, message, this.type);
+    if (this.messageToReplyId) {
+      this.messageService.createAnswer(this.conversationId, this.messageToReplyId, currentUserId!, message, this.type);
     } else {
 
-      this.threadService.createMessage(this.conversationId, currentUserId!, message, this.type);
+      this.messageService.createMessage(this.conversationId, currentUserId!, message, this.type);
     }
 
-    this.createThreadFrom.reset();
+    this.postForm.reset();
 
   }
   //     .then((threadId) => {

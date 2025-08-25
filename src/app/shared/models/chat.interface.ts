@@ -5,11 +5,5 @@ export interface ChatInterface {
   // brauche wir die UserID überhaupt, wenn die Chat id aus den user ids besteht?
   userIds?: string[];
   lastMessageAt?: any;
-  messages?: MessageInterface[];
-  threads?: {
-    [threadPathId: string]: {
-      threadId: string;
-      titleMessageId: string;
-    };
-  };
+  // messages?: MessageInterface[];
 }

@@ -67,13 +67,13 @@ export class ChatActiveRouterService {
     return of([]);
   }
 
-  getThreads(type: string, id: string, messageId: string): Observable<MessageInterface[]> {
+  getAnswers(type: string, id: string, messageId: string): Observable<MessageInterface[]> {
    if (type === 'channel') {
-    const threadRef = collection(this.firestore, `channels/${id}/messages/${messageId}/messages`);
-    return collectionData(threadRef, { idField: 'id' }) as Observable<MessageInterface[]>;
+    const answersRef = collection(this.firestore, `channels/${id}/messages/${messageId}/answers`);
+    return collectionData(answersRef, { idField: 'id' }) as Observable<MessageInterface[]>;
   } else if (type === 'chat') {
-    const threadRef = collection(this.firestore, `chats/${id}/messages/${messageId}/messages`);
-    return collectionData(threadRef, { idField: 'id' }) as Observable<MessageInterface[]>;
+    const answersRef = collection(this.firestore, `chats/${id}/messages/${messageId}/answers`);
+    return collectionData(answersRef, { idField: 'id' }) as Observable<MessageInterface[]>;
   }
   return of([]);
 }
