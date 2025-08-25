@@ -15,30 +15,38 @@ import { tap } from 'rxjs';
   styleUrl: './window-display.component.scss', // SCSS styles for this component
 })
 export class WindowDisplayComponent {
-  // Inject MessageService to receive and manage displayed messages
-  messageService = inject(MessageService);
+  // // Inject MessageService to receive and manage displayed messages
+  // messageService = inject(MessageService);
 
-  //hier is a stream of messages
-  messages$!: Observable<MessageInterface[]>;
-  private route = inject(ActivatedRoute);
-  private chatService = inject(ChatActiveRouterService);
 
+  // //hier is a stream of messages
+  // messages$!: Observable<MessageInterface[]>;
+  // private route = inject(ActivatedRoute);
+  // private chatService = inject(ChatActiveRouterService);
+  
+  @Input() messages$!: Observable<MessageInterface[]>;
+
+  ngOnInit(){
+    this.messages$.subscribe((data)=>{
+      console.log('here are data from Window-Display',data);
+    })
+  }
   /**
    * Subscribe to the BehaviorSubject from MessageService
    * Keeps 'messages' updated with the latest conversation in real-time
    * sorts the messages chronologically
    */
-  ngOnInit() {
-    this.messages$ = this.chatService.getParams$(this.route).pipe(
-      tap((params) => console.log('PARAMS from service:', params)),
-      switchMap(({ type, id }) =>
-        this.chatService
-          .getMessages(type, id)
-          .pipe(
-            map((msgs) => [...msgs].sort((a, b) => a.createdAt - b.createdAt))
-          )
-      )
-    );
+  // ngOnInit() {
+  //   this.messages$ = this.chatService.getParams$(this.route).pipe(
+  //     tap((params) => console.log('PARAMS from service:', params)),
+  //     switchMap(({ type, id }) =>
+  //       this.chatService
+  //         .getMessages(type, id)
+  //         .pipe(
+  //           map((msgs) => [...msgs].sort((a, b) => a.createdAt - b.createdAt))
+  //         )
+  //     )
+  //   );
     
-  }
+  // }
 }

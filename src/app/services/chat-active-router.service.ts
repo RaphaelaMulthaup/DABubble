@@ -8,6 +8,7 @@ import {
 } from '@angular/fire/firestore';
 import { Observable, of, map } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
+import { MessageInterface } from '../shared/models/message.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -41,24 +42,38 @@ export class ChatActiveRouterService {
     );
   }
 
-  getMessages(type: string, id: string): Observable<any[]> {
+  getMessages(type: string, id: string): Observable<MessageInterface[]> {
     if (type === 'channel') {
       const channelRef = collection(this.firestore, `channels/${id}/messages`);
-      return collectionData(channelRef, { idField: 'id' });
+      return collectionData(channelRef, { idField: 'id' }).pipe(
+        map(docs =>
+          docs.map(doc => ({
+            channelId: id,  
+            ...doc
+          } as MessageInterface))
+        )
+      );
     } else if (type === 'chat') {
       const ref = collection(this.firestore, `chats/${id}/messages`);
-      return collectionData(ref, { idField: 'id' }); // returnează direct mesajele
+      return collectionData(ref, { idField: 'id' }).pipe(
+        map(docs =>
+          docs.map(doc => ({
+            channelId: id, 
+            ...doc
+          } as MessageInterface))
+        )
+      );
     }
     return of([]);
   }
 
-  getThreads(type: string, id: string, messageId: string): Observable<any[]> {
+  getThreads(type: string, id: string, messageId: string): Observable<MessageInterface[]> {
    if (type === 'channel') {
     const threadRef = collection(this.firestore, `channels/${id}/messages/${messageId}/messages`);
-    return collectionData(threadRef, { idField: 'id' });
+    return collectionData(threadRef, { idField: 'id' }) as Observable<MessageInterface[]>;
   } else if (type === 'chat') {
     const threadRef = collection(this.firestore, `chats/${id}/messages/${messageId}/messages`);
-    return collectionData(threadRef, { idField: 'id' });
+    return collectionData(threadRef, { idField: 'id' }) as Observable<MessageInterface[]>;
   }
   return of([]);
 }

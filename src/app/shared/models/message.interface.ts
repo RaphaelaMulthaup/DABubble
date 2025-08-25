@@ -3,4 +3,6 @@ export interface MessageInterface {
   text: string;
   createdAt: any;
   id?: string;
+  channelId?:string;
+  chatId?:string;
 }

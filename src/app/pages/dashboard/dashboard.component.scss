@@ -8,3 +8,8 @@ section{
   justify-content: space-between;
   padding: 25px 20px;
 }
+
+.disabled {
+  pointer-events: none;
+  opacity: 0.6;
+}
