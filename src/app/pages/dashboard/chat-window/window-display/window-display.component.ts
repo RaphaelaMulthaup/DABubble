@@ -18,7 +18,6 @@ export class WindowDisplayComponent {
   // Inject MessageService to receive and manage displayed messages
   messageService = inject(MessageService);
 
-
   //hier is a stream of messages
   messages$!: Observable<MessageInterface[]>;
   private route = inject(ActivatedRoute);

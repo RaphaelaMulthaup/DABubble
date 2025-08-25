@@ -1,7 +1,7 @@
 @for (message of messages$ | async; track $index) {
     <div class="seperator-container flex flex-row place-items-center">
         <div class="seperator"></div>
-        <p>Heute</p>
+        <p class="date">{{message.createdAt.toDate().getDate()}}. {{message.createdAt.toDate().toLocaleString('default', { month: 'long' })}}</p>
         <div class="seperator"></div>
     </div>
     <app-displayed-message [message]="message"></app-displayed-message>
