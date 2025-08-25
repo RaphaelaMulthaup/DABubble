@@ -13,14 +13,22 @@ import { ChannelInterface } from '../../../../shared/models/channel.interface';
   styleUrl: './chat-header.component.scss',
 })
 export class ChatHeaderComponent {
+  channelTyp!: string;
   // channelData!: ChannelInterface;
-  // private route = inject(ActivatedRoute);
-  // private chatService = inject(ChatActiveRouterService);
+  //inject ActivatedRoute to get current url
+  private route = inject(ActivatedRoute);
+  private chatActiveRouterService = inject(ChatActiveRouterService);
   // ngOnInit() {
-  //   this.chatService
+  //   this.chatActiveRouterService
   //     .getParams$(this.route)
   //     .pipe(
-  //       switchMap(({ type, id }) => this.chatService.getChannelInfo(type, id))
+  //       switchMap(({ type, id }) => this.chatActiveRouterService.getChannelInfo(type, id))
   //     );
   // }
+  onChange() {
+    this.chatActiveRouterService.getType$(this.route).subscribe((type) => {
+      this.channelTyp = type;
+      console.log('type:', type);
+    });
+  }
 }

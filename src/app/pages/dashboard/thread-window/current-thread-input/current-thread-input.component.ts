@@ -34,7 +34,7 @@ export class CurrentThreadInputComponent {
   errorMessage: string | null = null;
 
   // Reactive form for creating a new thread with a first message
-  createThreadFrom: FormGroup = new FormGroup({
+  createThreadForm: FormGroup = new FormGroup({
     message: new FormControl('', []), // Form control for the thread's first message
   });
 
@@ -49,7 +49,7 @@ export class CurrentThreadInputComponent {
     const type = await firstValueFrom(this.chatService.getType$(this.route));
     const messageId = await firstValueFrom(this.chatService.getMessageId$(this.route));
     // Get the message value from the form
-    const message = this.createThreadFrom.get('message')?.value;
+    const message = this.createThreadForm.get('message')?.value;
 
     // Get the ID of the current user
     const currentUserId: string | null = this.authService.getCurrentUserId();
@@ -59,7 +59,7 @@ export class CurrentThreadInputComponent {
       .then((threadId) => {
         console.log('Thread created with ID:', threadId);
         // Reset the form after successful submission
-        this.createThreadFrom.reset();
+        this.createThreadForm.reset();
       })
       .catch((error) => {
         // Set and log error message if thread creation fails

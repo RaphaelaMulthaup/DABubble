@@ -130,17 +130,18 @@ export class ChatService {
     );
   }
 
-/**
- * Generates a unique chat ID for two users.
- *
- * The chat ID is created by sorting the two user IDs alphabetically
- * and joining them with an underscore. This ensures that the order
- * of user IDs does not affect the resulting chat ID.
- *
- * @param userId1 - The first user's ID.
- * @param userId2 - The second user's ID.
- * @returns A string representing the unique chat ID for the two users.
- */  async getChatId(userId1: string, userId2: string) {
+  /**
+   * Generates a unique chat ID for two users.
+   *
+   * The chat ID is created by sorting the two user IDs alphabetically
+   * and joining them with an underscore. This ensures that the order
+   * of user IDs does not affect the resulting chat ID.
+   *
+   * @param userId1 - The first user's ID.
+   * @param userId2 - The second user's ID.
+   * @returns A string representing the unique chat ID for the two users.
+   */ 
+  async getChatId(userId1: string, userId2: string) {
     const sortedIds = [userId1, userId2].sort();
     return `${sortedIds[0]}_${sortedIds[1]}`;
   }

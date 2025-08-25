@@ -27,13 +27,13 @@ export class CurrentMessageInput {
   private route = inject(ActivatedRoute);
 
   //Inject route. with this we have acces to type and id
-  private chatService = inject(ChatActiveRouterService);
+  private chatActiveRouterService = inject(ChatActiveRouterService);
 
   // Stores any error message to display in the form
   errorMessage: string | null = null;
 
   // Reactive form for creating a new thread with a first message
-  createThreadFrom: FormGroup = new FormGroup({
+  createThreadForm: FormGroup = new FormGroup({
     message: new FormControl('', []), // Form control for the thread's first message
   });
 
@@ -41,18 +41,19 @@ export class CurrentMessageInput {
    * Handles form submission to create a new thread
    */
   async onSubmit(): Promise<void> {
-    const id = await firstValueFrom(this.chatService.getId$(this.route));
-    const type = await firstValueFrom(this.chatService.getType$(this.route));
+    const id = await firstValueFrom(this.chatActiveRouterService.getId$(this.route));
+    const type = await firstValueFrom(this.chatActiveRouterService.getType$(this.route));
+
     // Get the message value from the form
-    const message = this.createThreadFrom.get('message')?.value;
+    const message = this.createThreadForm.get('message')?.value;
 
-    // Get the currently selected channel synchronously
-    const selectedChannel =
-      this.channelSelectionService.getSelectedChannelSync();
+            // Get the currently selected channel synchronously
+            const selectedChannel =
+              this.channelSelectionService.getSelectedChannelSync();
 
-    // Get the selected channel ID
-    const channelId: string | null =
-      this.channelSelectionService.getSelectedChannelId();
+            // Get the selected channel ID
+            const channelId: string | null =
+              this.channelSelectionService.getSelectedChannelId();
 
     // Get the ID of the current user
     const currentUserId: string | null = this.authService.getCurrentUserId();
@@ -73,7 +74,7 @@ export class CurrentMessageInput {
         this.channelSelectionService.selectChannel(selectedChannel);
 
         // Reset the form after successful submission
-        this.createThreadFrom.reset();
+        this.createThreadForm.reset();
       })
       .catch((error) => {
         // Set and log error message if thread creation fails
