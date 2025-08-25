@@ -40,15 +40,15 @@ export class CurrentMessageInput {
   });
 
   ngOnInit() {
-    this.chatService.getType$(this.route).subscribe(t => {
+    this.chatActiveRouterService.getType$(this.route).subscribe(t => {
       this.type = t;
       console.log(`aici trebuie tip  |  ${this.type} `);
     });
-    this.chatService.getId$(this.route).subscribe(id => {
+    this.chatActiveRouterService.getId$(this.route).subscribe(id => {
       this.conversationId = id;
       console.log(`aici channelid    | ${this.conversationId}`);
     });
-    this.chatService.getMessageId$(this.route).subscribe(msgId => {
+    this.chatActiveRouterService.getMessageId$(this.route).subscribe(msgId => {
       this.replyToMessageId = msgId;
       console.log(` aici messageid    |  ${this.replyToMessageId}`);
     });
@@ -100,18 +100,16 @@ export class CurrentMessageInput {
   //     });
 
   onSubmit() {
-    const message = this.createThreadFrom.get('message')?.value;
+    const message = this.createThreadForm.get('message')?.value;
     const currentUserId: string | null = this.authService.getCurrentUserId();
     if (this.replyToMessageId) {
       this.threadService.createThreadMessage(this.conversationId, this.replyToMessageId, currentUserId!, message, this.type);
     } else {
-
       this.threadService.createMessage(this.conversationId, currentUserId!, message, this.type);
     }
-
-    this.createThreadFrom.reset();
-
+    this.createThreadForm.reset();
   }
+  
   //     .then((threadId) => {
   //       console.log('Thread created with ID:', threadId);
   //       // Re-trigger channel selection to refresh the view
