@@ -49,20 +49,20 @@ export class DisplayedPostComponent {
   reactions$!: Observable<ReactionInterface[]>;
   reactions: ReactionInterface[] = [];
 
-  ngOnInit() {
+  ngOnInit() {}
+
+  ngOnChanges() {
     // this.senderId = this.message.senderId; // Extract sender ID from the message
     this.chatActiveRoute.getParams$(this.route).subscribe(({ type, id }) => {
       this.currentType = type;
       this.currentChannelId = id;
     });
 
-    this.reactions$ = this.messageService.getReactions('/channels/' + this.currentChannelId, 'messages', this.message.id!);
+    this.reactions$ = this.messageService.getReactions('/' + this.currentType + 's/' + this.currentChannelId, 'messages', this.message.id!);
     this.reactions$.subscribe(data => {
       this.reactions = data;
     });
-  }
 
-  ngOnChanges() {
     if (!this.message) return;
     // Prüfen, ob der Sender aktuell ist
     this.senderIsCurrentUser$ = of(
@@ -71,8 +71,8 @@ export class DisplayedPostComponent {
 
     // Userdaten laden
     const user$ = this.userService.getUserById(this.message.senderId);
-    this.senderName$ = user$.pipe(map((u) => u?.name?? ''));
-    this.senderPhotoUrl$ = user$.pipe(map((u) => u?.photoUrl?? ''));
+    this.senderName$ = user$.pipe(map((u) => u?.name ?? ''));
+    this.senderPhotoUrl$ = user$.pipe(map((u) => u?.photoUrl ?? ''));
 
     // Zeit formatieren
     this.createdAtTime$ = of(this.message.createdAt).pipe(
