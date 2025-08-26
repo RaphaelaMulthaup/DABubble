@@ -48,7 +48,7 @@
 @if(reactionSelectionVisible) {
   <div class="reaction-options flex justify-center">
     @for (img of emojis; track $index) {
-      <img class="reaction-img" [src]="emojis[$index]" [alt]="emojis[$index]">
+      <img (click)="reactToPost($index)" class="reaction-img" [src]="emojis[$index]" [alt]="emojis[$index]">
     }
   </div>
 }
