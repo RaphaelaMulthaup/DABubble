@@ -58,23 +58,25 @@ export class MessageService {
     });
   }
 
-  /**
-   * Fetches messages from a subcollection and listens for real-time updates
-   * @returns Observable of messages (including auto-generated document IDs)
-   */
-  getMessages<T extends MessageInterface>(
-    parentPath: string,
-    subcollectionName: string
-  ): Observable<(T & { id: string })[]> {
-    const messagesRef = collection(
-      this.firestore,
-      `${parentPath}/${subcollectionName}`
-    );
-    const q = query(messagesRef, orderBy('createdAt', 'asc')); // Order by creation time ascending
-    return collectionData(q, { idField: 'id' }) as Observable<
-      (T & { id: string })[]
-    >;
-  }
+
+      // Ich denke, dass wir diese Funktion nicht mehr brauchen, weil wir jetzt einen ähnliche in chat-active-router.service nutzten.
+          // /**
+          //  * Fetches messages from a subcollection and listens for real-time updates
+          //  * @returns Observable of messages (including auto-generated document IDs)
+          //  */
+          // getMessages<T extends MessageInterface>(
+          //   parentPath: string,
+          //   subcollectionName: string
+          // ): Observable<(T & { id: string })[]> {
+          //   const messagesRef = collection(
+          //     this.firestore,
+          //     `${parentPath}/${subcollectionName}`
+          //   );
+          //   const q = query(messagesRef, orderBy('createdAt', 'asc')); // Order by creation time ascending
+          //   return collectionData(q, { idField: 'id' }) as Observable<
+          //     (T & { id: string })[]
+          //   >;
+          // }
 
   /**
    * Toggles a reaction for a given message
