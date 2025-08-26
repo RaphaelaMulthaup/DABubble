@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Inject, Injectable, inject } from '@angular/core';
 import {
   Firestore,
   collectionData,
@@ -14,8 +14,9 @@ import {
   getDocs,
 } from '@angular/fire/firestore';
 import { UserInterface } from '../shared/models/user.interface';
-import { map, Observable } from 'rxjs';
+import { map, Observable, of, switchMap } from 'rxjs';
 import { docData } from '@angular/fire/firestore';
+// import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root',
@@ -23,17 +24,27 @@ import { docData } from '@angular/fire/firestore';
 export class UserService {
   // Inject Firestore instance
   private firestore: Firestore = inject(Firestore);
-
-  /** 
-   * Fetch all users from the 'users' collection 
+  // authService = inject(AuthService);
+  /**
+   * Fetch all users from the 'users' collection
    * Returns an Observable of an array of UserInterface
    */
   getAllUsers(): Observable<UserInterface[]> {
     const usersCollection = collection(this.firestore, 'users'); // Reference to 'users' collection
-    return collectionData(usersCollection, { idField: 'uid' }) as Observable<UserInterface[]>;
+    return collectionData(usersCollection, { idField: 'uid' }) as Observable<
+      UserInterface[]
+    >;
   }
 
-  /** 
+  // getContacts(): Observable<UserInterface[]> {
+  //   const currentUser$ = this.authService.currentUser$;
+  //   const contactsCollection = collection(this.firestore, 'users'); // Reference to 'users' collection
+  //   return collectionData(contactsCollection, { idField: 'uid' }) as Observable<
+  //     UserInterface[]
+  //   >;
+  // }
+
+  /**
    * Add a contact to a specific user
    * @param userId - ID of the user to update
    * @param contactId - ID of the contact to add
@@ -51,7 +62,7 @@ export class UserService {
     });
   }
 
-  /** 
+  /**
    * Remove a contact from a specific user
    * @param userId - ID of the user to update
    * @param contactId - ID of the contact to remove
@@ -63,7 +74,7 @@ export class UserService {
     });
   }
 
-  /** 
+  /**
    * Fetch a single user by UID
    * @param uid - User ID
    * Returns an Observable of UserInterface
@@ -73,7 +84,7 @@ export class UserService {
     return docData(userDocRef) as Observable<UserInterface>;
   }
 
-  /** 
+  /**
    * Update or overwrite a user (not currently used)
    * @param userId - User ID
    * @param data - Partial data to update
@@ -83,7 +94,7 @@ export class UserService {
     await updateDoc(userRef, { ...data });
   }
 
-  /** 
+  /**
    * Set online/offline status for a user (not currently used)
    * @param userId - User ID
    * @param isActive - Boolean status
@@ -103,7 +114,7 @@ export class UserService {
     const usersCollection = collection(this.firestore, 'users'); // Reference to 'users' collection
     const emailQuery = query(usersCollection, where('email', '==', inputEmail));
     const querySnapshot = await getDocs(emailQuery);
-    return !querySnapshot.empty; //true when the inputEmail already exists in firestore 
+    return !querySnapshot.empty; //true when the inputEmail already exists in firestore
   }
 
   /**
@@ -111,14 +122,15 @@ export class UserService {
    * Get all email-addresses from collection. Creates objects containing "email".
    * Creates an Observable, thats subscribeable in "confirm-password.ts".
    */
-  getAllUserEmails(): Observable<{ uid: string, email: string }[]> {
+  getAllUserEmails(): Observable<{ uid: string; email: string }[]> {
     const userColl = collection(this.firestore, 'users');
     return collectionData(userColl).pipe(
       map((users: any[]) =>
-        users.map(user => ({
+        users.map((user) => ({
           uid: user.uid,
-          email: user.email
-        })))
+          email: user.email,
+        }))
+      )
     );
   }
 }

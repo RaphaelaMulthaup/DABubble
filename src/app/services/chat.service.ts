@@ -3,6 +3,7 @@ import {
   addDoc,
   collection,
   collectionData,
+  collectionSnapshots,
   doc,
   docData,
   Firestore,
@@ -34,7 +35,14 @@ export class ChatService {
   async createChat(userId1: string, userId2: string) {
     const chatId = await this.getChatId(userId1, userId2);
     const chatRef = doc(this.firestore, 'chats', chatId);
-    await setDoc(chatRef, {}, { merge: true });
+
+    await setDoc(
+      chatRef,
+      {
+        chatId: chatId, // ChatId auch im Dokument speichern
+      },
+      { merge: true }
+    );
   }
 
   /**
@@ -42,14 +50,53 @@ export class ChatService {
    * @param userId ID of the user
    * @returns Observable list of chats including their IDs
    */
-  getChatsForUser(
-    userId: string
-  ): Observable<(ChatInterface[] & { id: string })[]> {
+  getChatsForUser(userId: string): Observable<ChatInterface[]> {
     const chatsRef = collection(this.firestore, 'chats');
-    return collectionData(chatsRef, { idField: 'id' }).pipe(
-      map((chats) => chats.filter((c) => c['userIds'].includes(userId)))
-    ) as Observable<(ChatInterface[] & { id: string })[]>;
+
+    return collectionSnapshots(chatsRef).pipe(
+      map((snaps) =>
+        snaps
+          // nur die Chats behalten, deren ID den userId enthält
+          .filter((snap) => snap.id.includes(userId))
+          .map((snap) => {
+            const data = snap.data() as Omit<ChatInterface, 'id'>;
+            const id = snap.id; // Dokument-ID mit den beiden User-IDs
+            return { id, ...data };
+          })
+      )
+    );
   }
+  // getChatsForUser(userId: string): Observable<ChatInterface[]> {
+  //   const chatsRef = collection(this.firestore, 'chats');
+  //   return collectionData(chatsRef, { idField: 'id' }).pipe(
+  //     map((chats) =>
+  //       (chats as (ChatInterface & { id: string })[])
+  //         .filter((c) => c.id.includes(userId))
+  //         .map(({ id, ...chat }) => chat as ChatInterface)
+  //     )
+  //   );
+  // }
+
+  // getChatsForUser(userId: string): Observable<ChatInterface[]> {
+  //   console.log('1');
+
+  //   const chatsRef = collection(this.firestore, 'chats');
+  //   const q = query(chatsRef, where('participants', 'array-contains', userId));
+  //   // oder falls du "iduser1" / "iduser2" hast → Query anpassen
+
+  //   // Variante mit snapshotChanges → gibt auch die Dokument-ID zurück
+  //   return collectionSnapshots(q).pipe(
+  //     map(snaps =>
+  //       snaps.map(snap => {
+  //   console.log('2');
+
+  //         const data = snap.data() as Omit<ChatInterface, 'id'>; // nur die Felder
+  //         const id = snap.id; // Dokument-ID
+  //         return { id, ...data }; // ChatInterface mit id
+  //       })
+  //     )
+  //   );
+  // }
 
   /**
    * Retrieves a single chat by its ID
@@ -82,18 +129,18 @@ export class ChatService {
     await updateDoc(chatRef, { lastMessageAt: serverTimestamp() });
   }
 
-       // Ich denke, dass wir diese Funktion nicht mehr brauchen, weil wir jetzt einen ähnliche in chat-active-router.service nutzten.
-            // /**
-            //  * Retrieves all messages from a specific chat
-            //  * @param chatId ID of the chat
-            //  * @returns Observable list of messages
-            //  */
-            // getMessages(chatId: string) {
-            //   return this.messageService.getMessages<MessageInterface>(
-            //     `chats/${chatId}`,
-            //     'messages'
-            //   );
-            // }
+  // Ich denke, dass wir diese Funktion nicht mehr brauchen, weil wir jetzt einen ähnliche in chat-active-router.service nutzten.
+  // /**
+  //  * Retrieves all messages from a specific chat
+  //  * @param chatId ID of the chat
+  //  * @returns Observable list of messages
+  //  */
+  // getMessages(chatId: string) {
+  //   return this.messageService.getMessages<MessageInterface>(
+  //     `chats/${chatId}`,
+  //     'messages'
+  //   );
+  // }
 
   /**
    * Adds or removes a reaction to a message
@@ -127,9 +174,14 @@ export class ChatService {
    * @param userId1 - The first user's ID.
    * @param userId2 - The second user's ID.
    * @returns A string representing the unique chat ID for the two users.
-   */ 
+   */
   async getChatId(userId1: string, userId2: string) {
     const sortedIds = [userId1, userId2].sort();
     return `${sortedIds[0]}_${sortedIds[1]}`;
+  }
+
+  getOtherUserId(chatId: string, currentUserId: string): string {    
+    const [userA, userB] = chatId.split('_');
+    return userA === currentUserId ? userB : userA;
   }
 }

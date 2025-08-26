@@ -84,7 +84,10 @@ export class AuthService {
    *
    * @returns The current user object (`UserInterface`) if logged in, otherwise `null`.
    */
-  get currentUser(): UserInterface | null {
+  get currentUser(): UserInterface {
+    if (!this.currentUserSubject.value) {
+      throw new Error('Kein User eingeloggt!');
+    }
     return this.currentUserSubject.value;
   }
 
@@ -259,15 +262,14 @@ export class AuthService {
 
   updateUserPassword(uid: string, newPassword: string): Observable<void> {
     const userRef = doc(this.firestore, `users/${uid}`);
-    return new Observable(oberver => {
-    // Nutzer anhand UID im Firebase Auth besorgen (falls authentifiziert),
-    // oder Admin-privilegierte Methode verwenden.
-    // Für Sicherheitszwecke in Firebase nur mit Admin-Rechten möglich.
-    
-    // Beispiel: Falls du admin Zugriff hast, kannst du mit Admin SDK das Passwort setzen.
-    // Ohne Admin SDK (z.B. im Client) ist es nicht möglich, das Passwort eines Nutzers
-    // direkt zu ändern, wenn du nicht eingeloggt bist.
-    // Daher sollte diese Funktion im Backend umgesetzt werden, z.B. mit Cloud Functions.
+    return new Observable((oberver) => {
+      // Nutzer anhand UID im Firebase Auth besorgen (falls authentifiziert),
+      // oder Admin-privilegierte Methode verwenden.
+      // Für Sicherheitszwecke in Firebase nur mit Admin-Rechten möglich.
+      // Beispiel: Falls du admin Zugriff hast, kannst du mit Admin SDK das Passwort setzen.
+      // Ohne Admin SDK (z.B. im Client) ist es nicht möglich, das Passwort eines Nutzers
+      // direkt zu ändern, wenn du nicht eingeloggt bist.
+      // Daher sollte diese Funktion im Backend umgesetzt werden, z.B. mit Cloud Functions.
     });
   }
 }

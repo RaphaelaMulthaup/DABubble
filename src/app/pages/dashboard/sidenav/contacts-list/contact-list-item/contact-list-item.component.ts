@@ -34,6 +34,8 @@ export class ContactListItemComponent {
   constructor(private router: Router) {
     // Retrieve the currently logged-in user ID from AuthService
     this.currentUserId = this.authService.getCurrentUserId();
+    // console.log('USER', this.user);
+    
   }
 
   /**
