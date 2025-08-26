@@ -7,6 +7,7 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
+import { OverlayService } from '../../services/overlay.service';
 
 @Component({
   selector: 'app-create-channel-form',
@@ -36,6 +37,9 @@ export class CreateChannelFormComponent {
     description: new FormControl(''),
   });
 
+
+    private overlayService = inject(OverlayService);
+  
   constructor() {}
 
   /**
@@ -62,12 +66,16 @@ export class CreateChannelFormComponent {
         console.log('Channel created successfully');
         this.errorMessage = null;
         this.createChannel.reset();
-        this.close.emit(); // Emit event to close the form
+        this.overlayService.hideOverlay();
       },
       error: (err: { code: string | null }) => {
         this.errorMessage = err.code; // Set error message from backend
       },
     });
+  }
+
+    hideOverlay(){
+    this.overlayService.hideOverlay();
   }
 
   /**
