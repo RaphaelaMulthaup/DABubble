@@ -63,8 +63,7 @@ export class ChannelListComponent {
     this.overlayService.displayOverlay(
       CreateChannelFormComponent,
       'Channel erstellen',
-      {
-      }
+      {}
     );
   }
 
