@@ -1,6 +1,10 @@
 <div class="message-card" [ngClass]="{ 'message-current-user': senderIsCurrentUser$ | async }">
   <div>
+    @if(senderPhotoUrl$ | async; as photoUrl) {
     <img class="profil-img" [src]="senderPhotoUrl$ | async" alt="Profilbild" (click)="displayProfileViewOtherUser()" />
+    } @else {
+    <img class="profil-img" src="/assets/img/no-avatar.svg" alt="Profilbild">
+    }
   </div>
   <div class="message-content">
     <div class="infos-message">
@@ -18,11 +22,12 @@
     </div>
 
     <div class="interactions flex flex-row">
-      <!-- if-query to check if there are any reactions and only show if true-->
-      <div class="reaction flex place-items-center">
+
+      <!-- if-query to check if there are any reactions and only show if true -->
+      <!-- <div class="reaction flex place-items-center">
         <img class="reaction-img" src="./assets/img/emojis/thumbs-up.svg"/>
         <p>1</p>
-      </div>
+      </div> -->
 
       <button class="btn-tertiary" (mouseenter)="addReactionsImg.src = './assets/img/add-reaction-hover.svg'"
         (mouseleave)="addReactionsImg.src = './assets/img/add-reaction.svg'">

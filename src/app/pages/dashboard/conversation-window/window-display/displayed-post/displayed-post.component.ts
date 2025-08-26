@@ -43,6 +43,8 @@ export class DisplayedPostComponent {
   senderPhotoUrl$!: Observable<string | undefined>;
   senderIsCurrentUser$!: Observable<boolean>;
   createdAtTime$!: Observable<string>;
+  reactions$!: Observable<any>;
+
 
   ngOnInit() {
     // this.senderId = this.message.senderId; // Extract sender ID from the message
@@ -64,6 +66,7 @@ export class DisplayedPostComponent {
 
     this.senderName$ = user$.pipe(map((u) => u.name));
     this.senderPhotoUrl$ = user$.pipe(map((u) => u.photoUrl));
+    //this.reactions$ = ;
 
     // Zeit formatieren
     this.createdAtTime$ = of(this.message.createdAt).pipe(
