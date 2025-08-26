@@ -58,25 +58,24 @@ export class MessageService {
     });
   }
 
-
-      // Ich denke, dass wir diese Funktion nicht mehr brauchen, weil wir jetzt einen ähnliche in chat-active-router.service nutzten.
-          // /**
-          //  * Fetches messages from a subcollection and listens for real-time updates
-          //  * @returns Observable of messages (including auto-generated document IDs)
-          //  */
-          // getMessages<T extends MessageInterface>(
-          //   parentPath: string,
-          //   subcollectionName: string
-          // ): Observable<(T & { id: string })[]> {
-          //   const messagesRef = collection(
-          //     this.firestore,
-          //     `${parentPath}/${subcollectionName}`
-          //   );
-          //   const q = query(messagesRef, orderBy('createdAt', 'asc')); // Order by creation time ascending
-          //   return collectionData(q, { idField: 'id' }) as Observable<
-          //     (T & { id: string })[]
-          //   >;
-          // }
+  // Ich denke, dass wir diese Funktion nicht mehr brauchen, weil wir jetzt einen ähnliche in chat-active-router.service nutzten.
+  // /**
+  //  * Fetches messages from a subcollection and listens for real-time updates
+  //  * @returns Observable of messages (including auto-generated document IDs)
+  //  */
+  // getMessages<T extends MessageInterface>(
+  //   parentPath: string,
+  //   subcollectionName: string
+  // ): Observable<(T & { id: string })[]> {
+  //   const messagesRef = collection(
+  //     this.firestore,
+  //     `${parentPath}/${subcollectionName}`
+  //   );
+  //   const q = query(messagesRef, orderBy('createdAt', 'asc')); // Order by creation time ascending
+  //   return collectionData(q, { idField: 'id' }) as Observable<
+  //     (T & { id: string })[]
+  //   >;
+  // }
 
   /**
    * Toggles a reaction for a given message
@@ -159,34 +158,27 @@ export class MessageService {
   }
 
   /**
-   * Create a new thread and its first message
-   * @param channelId - ID of the channel where the thread belongs
+   * Create a new message
+   * @param conversationId - ID of the channel where the thread belongs
    * @param startedBy - User ID of the thread creator
    * @param text - Text content of the first message
-   * @param fileUrls - Optional array of file URLs attached to the message
+   * @param type - type of the conversation (chat or channel)
    * @returns the ID of the created thread
    */
 
   async createMessage(
-    channelId: string,
+    conversationId: string,
     startedBy: string,
     text: string,
-    type: string
+    type: 'channel' | 'chat'
   ) {
-    if (type === 'channel') {
-      const firstMessageId = await this.sendMessage(
-        `channels/${channelId}`,
-        'messages',
-        {
-          senderId: startedBy,
-          text,
-        }
-      );
-    } else if (type === 'chat') {
-    }
+    await this.sendMessage(`${type}s/${conversationId}`, 'messages', {
+      senderId: startedBy,
+      text,
+    });
     return of([]);
   }
-
+  
   async createAnswer(
     channelId: string,
     messageId: string,
