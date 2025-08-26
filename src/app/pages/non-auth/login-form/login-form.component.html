@@ -22,7 +22,7 @@
                     </div>
                 </div>
                 <p class="error-message">
-                    @if (showErrorMessage){E-Mail und Passwort stimmen nicht überein.}
+                    @if (showErrorMessage && !isSubmittingWithGoogle){E-Mail und Passwort stimmen nicht überein.}
                 </p>
             </div>
 
@@ -38,6 +38,7 @@
                 <img src="./assets/img/google.svg" alt="Google icon">
                 <p>Anmelden mit Google</p>
             </button>
+
             <div class="submit-btns flex">
                 <button class="btn-primary" type="submit" [disabled]="!loginForm.valid">Anmelden</button>
                 <button class="btn-secondary">Gäste-Login</button>

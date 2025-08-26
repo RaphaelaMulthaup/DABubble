@@ -22,6 +22,6 @@
 
 <div class="test flex">
   @for (img of emojis; track $index) {
-    <img [src]="emojis[$index]">
+    <img [src]="emojis[$index]" [alt]="emojis[$index]">
   }
 </div>

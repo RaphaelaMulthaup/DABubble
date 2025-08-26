@@ -17,6 +17,9 @@ export class LoginFormComponent {
   // Injects the AuthService to handle authentication
   authService = inject(AuthService);
 
+  // turns true, if loginWithGoogle() is executed and therefor disabling the error-message;
+  isSubmittingWithGoogle: boolean = false;
+
   // Stores error messages during login
   showErrorMessage: boolean = false;
 
@@ -29,10 +32,10 @@ export class LoginFormComponent {
     password: new FormControl('', [Validators.required, Validators.minLength(6)]),
   });
 
- onForgotPassword() {
-  this.showLogin = false;
-  this.forgotPassword.emit();
-}
+  onForgotPassword() {
+    this.showLogin = false;
+    this.forgotPassword.emit();
+  }
 
   constructor() { }
 
@@ -44,7 +47,6 @@ export class LoginFormComponent {
   onSubmit(): void {
     const email = this.loginForm.get('email')?.value;
     const password = this.loginForm.get('password')?.value;
-
     this.authService.login(email, password).subscribe({
       next: () => {
         console.log('Login successful');
@@ -60,14 +62,16 @@ export class LoginFormComponent {
  * Login using Google OAuth via AuthService
  */
   loginWithGoogle() {
+    this.isSubmittingWithGoogle = true;
     this.authService.loginWithGoogle().subscribe({
       next: () => {
         console.log('Login with Google successful');
       },
       error: (err) => {
         console.error('Login with Google failed', err);
+        this.isSubmittingWithGoogle = false;
       }
     });
   }
-  
+
 }
