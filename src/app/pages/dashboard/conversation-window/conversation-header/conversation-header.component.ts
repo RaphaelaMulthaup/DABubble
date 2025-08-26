@@ -20,20 +20,20 @@ export class ConversationHeaderComponent {
   conversationId!: string;
   messageToReplyId: string | null = null;
 
-  private chatService = inject(ChatActiveRouterService);
+  private chatActiveRouterService = inject(ChatActiveRouterService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   
   ngOnInit() {
-    this.chatService.getType$(this.route).subscribe(t => {
+    this.chatActiveRouterService.getType$(this.route).subscribe(t => {
       this.type = t;
       //console.log(`aici trebuie tip  |  ${this.type} `);
     });
-    this.chatService.getId$(this.route).subscribe(id => {
+    this.chatActiveRouterService.getId$(this.route).subscribe(id => {
       this.conversationId = id;
       //console.log(`aici channelid    | ${this.conversationId}`);
     });
-    this.chatService.getMessageId$(this.route).subscribe(msgId => {
+    this.chatActiveRouterService.getMessageId$(this.route).subscribe(msgId => {
       this.messageToReplyId = msgId;
       //console.log(` aici messageid    |  ${this.messageToReplyId}`);
     });

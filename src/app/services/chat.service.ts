@@ -82,17 +82,18 @@ export class ChatService {
     await updateDoc(chatRef, { lastMessageAt: serverTimestamp() });
   }
 
-  /**
-   * Retrieves all messages from a specific chat
-   * @param chatId ID of the chat
-   * @returns Observable list of messages
-   */
-  getMessages(chatId: string) {
-    return this.messageService.getMessages<MessageInterface>(
-      `chats/${chatId}`,
-      'messages'
-    );
-  }
+       // Ich denke, dass wir diese Funktion nicht mehr brauchen, weil wir jetzt einen ähnliche in chat-active-router.service nutzten.
+            // /**
+            //  * Retrieves all messages from a specific chat
+            //  * @param chatId ID of the chat
+            //  * @returns Observable list of messages
+            //  */
+            // getMessages(chatId: string) {
+            //   return this.messageService.getMessages<MessageInterface>(
+            //     `chats/${chatId}`,
+            //     'messages'
+            //   );
+            // }
 
   /**
    * Adds or removes a reaction to a message

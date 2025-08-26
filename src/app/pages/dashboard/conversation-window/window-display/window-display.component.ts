@@ -21,7 +21,7 @@ export class WindowDisplayComponent {
   // //hier is a stream of messages
   // messages$!: Observable<MessageInterface[]>;
   // private route = inject(ActivatedRoute);
-  // private chatService = inject(ChatActiveRouterService);
+  // private chatActiveRouterService = inject(ChatActiveRouterService);
 
   @Input() messages$!: Observable<MessageInterface[]>;
 
@@ -47,9 +47,9 @@ export class WindowDisplayComponent {
   }
 
   // ngOnInit() {
-  //   this.messages$ = this.chatService.getParams$(this.route).pipe(
+  //   this.messages$ = this.chatActiveRouterService.getParams$(this.route).pipe(
   //     tap((params) => console.log('PARAMS from service:', params)),
-  //     switchMap(({ type, id }) => this.chatService.getMessages(type, id))
+  //     switchMap(({ type, id }) => this.chatActiveRouterService.getMessages(type, id))
   //   );
   // }
 
