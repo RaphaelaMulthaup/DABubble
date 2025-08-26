@@ -18,7 +18,7 @@ import {
 } from '@angular/fire/firestore';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { MessageInterface } from '../shared/models/message.interface';
-import { Reaction } from '../shared/models/reaction.interface';
+import { ReactionInterface } from '../shared/models/reaction.interface';
 import { ChatInterface } from '../shared/models/chat.interface';
 
 @Injectable({
@@ -82,19 +82,19 @@ export class MessageService {
    * - If user has already reacted with the emoji, remove them
    * - Otherwise, add them
    * @param messageId ID of the message
-   * @param emojiName Emoji identifier (used as document ID in "reactions" subcollection)
+   * @param emoji Emoji identifier (used as document ID in "reactions" subcollection)
    * @param userId ID of the user reacting
    */
   async toggleReaction(
     parentPath: string,
     subcollectionName: string,
     messageId: string,
-    emojiName: string,
+    emoji: string,
     userId: string
   ) {
     const reactionRef = doc(
       this.firestore,
-      `${parentPath}/${subcollectionName}/${messageId}/reactions/${emojiName}`
+      `${parentPath}/${subcollectionName}/${messageId}/reactions/${emoji}`
     );
 
     const reactionSnap = await getDoc(reactionRef);
@@ -117,7 +117,7 @@ export class MessageService {
     } else {
       // First reaction with this emoji → create document
       await setDoc(reactionRef, {
-        emojiName,
+        emoji,
         users: [userId],
       });
     }
@@ -131,13 +131,13 @@ export class MessageService {
     parentPath: string,
     subcollectionName: string,
     messageId: string
-  ): Observable<Reaction[]> {
+  ): Observable<ReactionInterface[]> {
     const reactionsRef = collection(
       this.firestore,
       `${parentPath}/${subcollectionName}/${messageId}/reactions`
     );
     return collectionData(reactionsRef, { idField: 'id' }) as Observable<
-      Reaction[]
+      ReactionInterface[]
     >;
   }
 

@@ -23,11 +23,14 @@
 
     <div class="interactions flex flex-row">
 
-      <!-- if-query to check if there are any reactions and only show if true -->
-      <!-- <div class="reaction flex place-items-center">
-        <img class="reaction-img" src="./assets/img/emojis/thumbs-up.svg"/>
-        <p>1</p>
-      </div> -->
+      @if ( reactions.length > 0) {
+        <div class="reaction flex place-items-center">
+          @for (reaction of reactions; track $index) {
+            <img class="reaction-img" [src]="reaction.emoji"/>
+            <p>{{ reaction.users.length }}</p>
+          }
+        </div>
+      }
 
       <button class="btn-tertiary" (mouseenter)="addReactionsImg.src = './assets/img/add-reaction-hover.svg'"
         (mouseleave)="addReactionsImg.src = './assets/img/add-reaction.svg'">

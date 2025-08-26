@@ -95,27 +95,28 @@ export class ChatService {
             //   );
             // }
 
-  /**
-   * Adds or removes a reaction to a message
-   * @param chatId ID of the chat
-   * @param messageId ID of the message
-   * @param emojiName Name of the emoji
-   * @param userId ID of the user reacting
-   */
-  toggleReaction(
-    chatId: string,
-    messageId: string,
-    emojiName: string,
-    userId: string
-  ) {
-    return this.messageService.toggleReaction(
-      `chats/${chatId}`,
-      'messages',
-      messageId,
-      emojiName,
-      userId
-    );
-  }
+  //Diese Funktion ist auch in der message.service.ts --> ein versehen?          
+  // /**
+  //  * Adds or removes a reaction to a message
+  //  * @param chatId ID of the chat
+  //  * @param messageId ID of the message
+  //  * @param emojiName Name of the emoji
+  //  * @param userId ID of the user reacting
+  //  */
+  // toggleReaction(
+  //   chatId: string,
+  //   messageId: string,
+  //   emojiName: string,
+  //   userId: string
+  // ) {
+  //   return this.messageService.toggleReaction(
+  //     `chats/${chatId}`,
+  //     'messages',
+  //     messageId,
+  //     emojiName,
+  //     userId
+  //   );
+  // }
 
   /**
    * Generates a unique chat ID for two users.

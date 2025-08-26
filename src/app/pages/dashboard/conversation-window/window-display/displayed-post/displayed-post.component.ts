@@ -13,6 +13,8 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ChatActiveRouterService } from '../../../../../services/chat-active-router.service';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
+import { ReactionInterface } from '../../../../../shared/models/reaction.interface';
+import { MessageService } from '../../../../../services/message.service';
 
 
 @Component({
@@ -25,6 +27,7 @@ export class DisplayedPostComponent {
   private authService = inject(AuthService);
   private userService = inject(UserService);
   public overlayService = inject(OverlayService);
+  public messageService = inject(MessageService);
 
   private route = inject(ActivatedRoute);
   private router = inject(Router);
@@ -43,14 +46,19 @@ export class DisplayedPostComponent {
   senderPhotoUrl$!: Observable<string | undefined>;
   senderIsCurrentUser$!: Observable<boolean>;
   createdAtTime$!: Observable<string>;
-  reactions$!: Observable<any>;
-
+  reactions$!: Observable<ReactionInterface[]>;
+  reactions: ReactionInterface[] = [];
 
   ngOnInit() {
     // this.senderId = this.message.senderId; // Extract sender ID from the message
     this.chatActiveRoute.getParams$(this.route).subscribe(({ type, id }) => {
       this.currentType = type;
       this.currentChannelId = id;
+    });
+
+    this.reactions$ = this.messageService.getReactions('/channels/' + this.currentChannelId, 'messages', this.message.id!);
+    this.reactions$.subscribe(data => {
+      this.reactions = data;
     });
   }
 
@@ -63,10 +71,8 @@ export class DisplayedPostComponent {
 
     // Userdaten laden
     const user$ = this.userService.getUserById(this.message.senderId);
-
-    this.senderName$ = user$.pipe(map((u) => u.name));
-    this.senderPhotoUrl$ = user$.pipe(map((u) => u.photoUrl));
-    //this.reactions$ = ;
+    this.senderName$ = user$.pipe(map((u) => u?.name?? ''));
+    this.senderPhotoUrl$ = user$.pipe(map((u) => u?.photoUrl?? ''));
 
     // Zeit formatieren
     this.createdAtTime$ = of(this.message.createdAt).pipe(

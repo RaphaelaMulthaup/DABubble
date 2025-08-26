@@ -1,4 +1,4 @@
-export interface Reaction {
-  emojiName: string;
+export interface ReactionInterface {
+  emoji: string;
   users: string[];
 }
