@@ -170,7 +170,8 @@ export class MessageService {
     conversationId: string,
     startedBy: string,
     text: string,
-    type: 'channel' | 'chat'
+    // type: 'channel' | 'chat'
+    type: string
   ) {
     await this.sendMessage(`${type}s/${conversationId}`, 'messages', {
       senderId: startedBy,
@@ -178,7 +179,7 @@ export class MessageService {
     });
     return of([]);
   }
-  
+
   async createAnswer(
     channelId: string,
     messageId: string,

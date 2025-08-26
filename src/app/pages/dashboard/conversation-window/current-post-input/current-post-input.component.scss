@@ -1,0 +1,46 @@
+@import "./../../../../../styles.scss";
+
+.current-post-input {
+  border-radius: 20px;
+  width: 100%;
+  padding: 20px;
+  @include dFlex($g: 15px);
+  flex-direction: column;
+  border: 1px solid var(--color-purple-light-lines);
+
+  &:hover {
+    border: 1px solid var(--color-purple-light);
+  }
+
+  &:focus-within {
+    border: 1px solid var(--color-purple-medium);
+  }
+}
+
+.textarea-wrapper {
+  width: 100%;
+  textarea {
+    width: 100%;
+    font-size: 18px;
+    resize: none;
+    overflow: auto;
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+      width: 0;
+      height: 0;
+    }
+    &::placeholder {
+      color: var(--color-gray);
+    }
+    &:focus {
+      outline: none; /* entfernt den blauen Rahmen */
+      box-shadow: none; /* entfernt Schatten, falls Browser ihn setzen */
+      border-color: #ccc;
+    }
+  }
+}
+
+.buttons {
+  width: 100%;
+  @include dFlex($jc: space-between);
+}

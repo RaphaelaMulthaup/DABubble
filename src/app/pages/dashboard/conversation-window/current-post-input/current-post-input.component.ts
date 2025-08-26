@@ -16,7 +16,9 @@ import { MessageService } from '../../../../services/message.service';
 })
 export class CurrentPostInput {
 
-  type!: string;
+  // type!:  'channel' | 'chat';
+
+  type!:  string;
   conversationId!: string;
   messageToReplyId: string | null = null;
 
