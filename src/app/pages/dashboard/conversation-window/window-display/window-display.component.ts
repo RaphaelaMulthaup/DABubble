@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MessageService } from '../../../../services/message.service';
 import { DisplayedPostComponent } from './displayed-post/displayed-post.component';
 import { MessageInterface } from '../../../../shared/models/message.interface';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { map, Observable, switchMap } from 'rxjs';
 import { ChatActiveRouterService } from '../../../../services/chat-active-router.service';
 import { tap } from 'rxjs';
@@ -17,7 +17,6 @@ import { tap } from 'rxjs';
 export class WindowDisplayComponent {
   // // Inject MessageService to receive and manage displayed messages
   // messageService = inject(MessageService);
-
   // //hier is a stream of messages
   // messages$!: Observable<MessageInterface[]>;
   // private route = inject(ActivatedRoute);
@@ -25,9 +24,11 @@ export class WindowDisplayComponent {
 
   @Input() messages$!: Observable<MessageInterface[]>;
 
-  messageInfo!: any;
+  //an array with all posts in this conversation
+  postInfo!: any[];
 
-  days = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag']
+  //an array with all the days of the week, to show that one a post was created
+  days = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
 
   /**
    * Subscribe to the BehaviorSubject from MessageService
@@ -35,14 +36,10 @@ export class WindowDisplayComponent {
    */
   ngOnInit() {
     this.messages$.subscribe((data) => {
-      this.messageInfo = data;
-      this.messageInfo.sort((a:any, b:any) => {
+      this.postInfo = data;
+      this.postInfo.sort((a: any, b: any) => {
         return a.createdAt - b.createdAt;
       });
-      //console.log('here are data from Window-Display', data);
-      // console.log(data);
-      // console.log(data[0].createdAt.toDate().setHours(0, 0, 0, 0))
-      // console.log(new Date().setHours(0, 0, 0, 0))
     })
   }
 
@@ -54,14 +51,29 @@ export class WindowDisplayComponent {
   // }
 
   /**
- * This function compares the date, a message was created with today.
+* This function returns true when the creation-date of a post is not equal to the creation-date of the previous post.
+* This way, the creation-date is only shown, when a message is the first one with that creation-date.
+* 
+* @param index the index of the post
+*/
+  shouldShowDate(index: number): boolean {
+    if (index > 0) {
+      let currentPostDate = this.postInfo[index].createdAt.toDate().toISOString().split('T')[0];
+      let previousPostDate = this.postInfo[(index - 1)].createdAt.toDate().toISOString().split('T')[0];
+      return currentPostDate !== previousPostDate;
+    }
+    return true;
+  }
+
+  /**
+ * This function compares the date, a post was created with today.
  * It returns true or false, depending on those are the same or not.
  * 
- * @param index the index of the message
+ * @param index the index of the post
  */
-  messageCreatedToday(index: number) {
-    let messageDate = this.messageInfo[index].createdAt.toDate().setHours(0, 0, 0, 0);
+  postCreatedToday(index: number): boolean {
+    let postDate = this.postInfo[index].createdAt.toDate().setHours(0, 0, 0, 0);
     let today = new Date().setHours(0, 0, 0, 0);
-    return messageDate == today;
+    return postDate == today;
   }
 }

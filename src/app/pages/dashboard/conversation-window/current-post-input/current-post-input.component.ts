@@ -16,7 +16,7 @@ import { MessageService } from '../../../../services/message.service';
 })
 export class CurrentPostInput {
 
-  type!: string;
+  type!: any;
   conversationId!: string;
   messageToReplyId: string | null = null;
 
@@ -109,7 +109,7 @@ export class CurrentPostInput {
     }
     this.postForm.reset();
   }
-  
+
   //     .then((threadId) => {
   //       console.log('Thread created with ID:', threadId);
   //       // Re-trigger channel selection to refresh the view
