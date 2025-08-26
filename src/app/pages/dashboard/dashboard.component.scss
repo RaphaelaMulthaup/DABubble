@@ -1,4 +1,4 @@
-section{
+section {
   background-color: var(--color-purple-white);
   height: 100dvh;
   width: 100%;
@@ -12,4 +12,13 @@ section{
 .disabled {
   pointer-events: none;
   opacity: 0.6;
+}
+
+.test {
+  width: 400px;
+  flex-wrap: wrap;
+
+  img {
+    height: 80px;
+  }
 }

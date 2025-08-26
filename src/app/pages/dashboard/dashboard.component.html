@@ -19,3 +19,9 @@
   <div class="w-[700px] bg-white h-full"></div>
   <div class="w-[300px] bg-white h-full"></div>
 </section> -->
+
+<div class="test flex">
+  @for (img of emojis; track $index) {
+    <img [src]="emojis[$index]">
+  }
+</div>
