@@ -22,7 +22,6 @@
     </div>
 
     <div class="interactions flex flex-row">
-
       @if ( reactions.length > 0) {
         <div class="reaction flex place-items-center">
           @for (reaction of reactions; track $index) {
@@ -32,7 +31,7 @@
         </div>
       }
 
-      <button class="btn-tertiary" (mouseenter)="addReactionsImg.src = './assets/img/add-reaction-hover.svg'"
+      <button (click)="reactionSelectionVisible = !reactionSelectionVisible" class="btn-tertiary" (mouseenter)="addReactionsImg.src = './assets/img/add-reaction-hover.svg'"
         (mouseleave)="addReactionsImg.src = './assets/img/add-reaction.svg'">
         <img #addReactionsImg src="./assets/img/add-reaction.svg" alt="add reaction" />
       </button>
@@ -45,3 +44,11 @@
   (mouseleave)="addAnswerImg.src = './assets/img/add-answer.svg'">
   <img #addAnswerImg src="./assets/img/add-answer.svg" alt="add answer">
 </button> -->
+
+@if(reactionSelectionVisible) {
+  <div class="reaction-options flex justify-center">
+    @for (img of emojis; track $index) {
+      <img class="reaction-img" [src]="emojis[$index]" [alt]="emojis[$index]">
+    }
+  </div>
+}
