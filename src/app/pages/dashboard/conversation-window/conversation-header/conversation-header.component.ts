@@ -3,12 +3,11 @@ import { CommonModule } from '@angular/common';
 import { ChatActiveRouterService } from '../../../../services/chat-active-router.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from '../../../../services/user.service';
-import { ConversationSearchbarComponent } from "./conversation-searchbar/conversation-searchbar.component";
 
 
 @Component({
   selector: 'app-conversation-header',
-  imports: [CommonModule, ConversationSearchbarComponent],
+  imports: [CommonModule],
   templateUrl: './conversation-header.component.html',
   styleUrl: './conversation-header.component.scss',
 })
