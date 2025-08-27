@@ -1,32 +1,24 @@
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5);
+
+.input-gap{
   display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
+  padding-left: 58px;
+  padding: 20px 20px 20px 58px;
 }
 
-.popup {
-  background: white;
-  padding: 2rem;
-  border-radius: 8px;
-  width: 400px;
-  max-width: 90%;
+span{
+  color: var(--color-gray);
 }
 
-.error {
-  color: red;
-  margin-top: 10px;
+.input-wrapper {
+    display: flex;
+    align-items: center; /* centrează pe verticală */
+  position: relative;
 }
 
-.actions {
-  margin-top: 20px;
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
+.prefix {
+  position: absolute;
+  color: gray;
+  padding-left: 20px;
+  font-size: 16px;
+  pointer-events: none; /* prevents blocking typing */
 }

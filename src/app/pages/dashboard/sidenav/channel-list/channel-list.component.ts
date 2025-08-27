@@ -7,6 +7,8 @@ import { ChannelSelectionService } from '../../../../services/channel-selection.
 import { AuthService } from '../../../../services/auth.service';
 import { CreateChannelFormComponent } from '../../../../overlay/create-channel-form/create-channel-form.component';
 import { RouterLink } from '@angular/router';
+import { UserService } from '../../../../services/user.service';
+import { OverlayService } from '../../../../services/overlay.service';
 
 @Component({
   selector: 'app-channel-list',
@@ -34,7 +36,7 @@ export class ChannelListComponent {
   private channelSelectionService = inject(ChannelSelectionService);
   private channnelsService = inject(ChannelsService);
   private authService = inject(AuthService);
-
+  private overlayService = inject(OverlayService);
   constructor() {}
 
   /**
@@ -57,15 +59,18 @@ export class ChannelListComponent {
     this.channelSelectionService.selectChannel(channel);
   }
 
-  /** Opens the create channel popup */
-  openPopup() {
-    this.showPopup = true;
+ displayCreateChannelForm() {
+    this.overlayService.displayOverlay(
+      CreateChannelFormComponent,
+      'Channel erstellen',
+      {}
+    );
   }
 
-  /** Closes the create channel popup */
-  closePopup() {
-    this.showPopup = false;
+  hideOverlay(){
+    this.overlayService.hideOverlay();
   }
+
 
   /**
    * Deletes a channel by its ID

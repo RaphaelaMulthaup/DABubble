@@ -7,11 +7,8 @@
         <h2 class="font-bold text-xl">Channels</h2>
       </div>
     </div>
-    <button (click)="openPopup()">+</button>
+    <button (click)=" displayCreateChannelForm()">+</button>
   </div>
-  @if(showPopup){
-  <app-create-channel-form (close)="closePopup()" />
-  }
 </div>
 @for (channel of channels$ | async; track $index) {
 <div>
@@ -26,4 +23,4 @@
   </div>
 </div>
 }
-<button (click)="openPopup()">Channel hinzufügen</button>
+<button (click)=" displayCreateChannelForm()">Channel hinzufügen</button>
