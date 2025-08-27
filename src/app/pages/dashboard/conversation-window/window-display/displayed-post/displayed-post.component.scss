@@ -64,6 +64,10 @@
       height: 24px;
     }
   }
+
+  // .add-reaction {
+  //   position: relative;
+  // }
 }
 
 .answers {
@@ -91,30 +95,5 @@
     .answers {
       flex-direction: row-reverse;
     }
-  }
-}
-
-.reaction-options {
-  margin: 0 32px;
-  padding: 16px;
-  flex-wrap: wrap;
-  position: absolute;
-  border-radius: 20px 0 20px 20px;
-  background-color: var(--color-purple-white);
-  box-shadow: 0px 2px 10px 0px #00000014;
-
-  .reaction-img {
-    width: 48px;
-    height: 48px;
-    padding: 2px;
-
-    &:hover {
-      cursor: pointer;
-      transform: scale(1.1);
-    }
-  }
-
-  &:last-child {
-    justify-content: flex-start;
   }
 }
