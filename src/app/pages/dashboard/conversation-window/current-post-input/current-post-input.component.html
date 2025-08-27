@@ -1,19 +1,30 @@
-<form [formGroup]="postForm" (ngSubmit)="onSubmit()">
-  <div>
+<form class="current-post-input" [formGroup]="postForm" (ngSubmit)="onSubmit()">
+  <div class="textarea-wrapper">
     <label for="postId"></label>
-    <input
+    <textarea
       id="postId"
       type="text"
       formControlName="text"
       name="text"
       placeholder="Text einfügen"
       required
-    />
+    ></textarea>
   </div>
-  <button
-    class="bg-red-500"
-    type="submit"
-  >
-    Send
-  </button>
+  <div class="buttons">
+    <div>
+      <button class="btn-tertiary">
+        <img
+          src="./../../../../../assets/img/sentiment-satisfied-gray.svg"
+          alt=""
+        />
+      </button>
+      <button class="btn-tertiary">
+        <img
+          src="./../../../../../assets/img/alternate-email-gray.svg"
+          alt=""
+        />
+      </button>
+    </div>
+    <button type="submit"><img src="./../../../../../assets/img/send-icon.svg" alt=""></button>
+  </div>
 </form>

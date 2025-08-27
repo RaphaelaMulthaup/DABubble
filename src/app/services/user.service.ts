@@ -5,9 +5,6 @@ import {
   collection,
   doc,
   updateDoc,
-  arrayUnion,
-  arrayRemove,
-  setDoc,
   deleteField,
   query,
   where,
@@ -24,16 +21,18 @@ export class UserService {
   // Inject Firestore instance
   private firestore: Firestore = inject(Firestore);
 
-  /** 
-   * Fetch all users from the 'users' collection 
+  /**
+   * Fetch all users from the 'users' collection
    * Returns an Observable of an array of UserInterface
    */
   getAllUsers(): Observable<UserInterface[]> {
     const usersCollection = collection(this.firestore, 'users'); // Reference to 'users' collection
-    return collectionData(usersCollection, { idField: 'uid' }) as Observable<UserInterface[]>;
+    return collectionData(usersCollection, { idField: 'uid' }) as Observable<
+      UserInterface[]
+    >;
   }
 
-  /** 
+  /**
    * Add a contact to a specific user
    * @param userId - ID of the user to update
    * @param contactId - ID of the contact to add
@@ -51,19 +50,7 @@ export class UserService {
     });
   }
 
-  /** 
-   * Remove a contact from a specific user
-   * @param userId - ID of the user to update
-   * @param contactId - ID of the contact to remove
-   */
-  removeContactFromUser(userId: string, contactId: string): Promise<void> {
-    const userDocRef = doc(this.firestore, `users/${userId}`); // Reference to the specific user document
-    return updateDoc(userDocRef, {
-      [`contacts.${contactId}`]: deleteField(), // Delete the contact field
-    });
-  }
-
-  /** 
+  /**
    * Fetch a single user by UID
    * @param uid - User ID
    * Returns an Observable of UserInterface
@@ -73,7 +60,7 @@ export class UserService {
     return docData(userDocRef) as Observable<UserInterface>;
   }
 
-  /** 
+  /**
    * Update or overwrite a user (not currently used)
    * @param userId - User ID
    * @param data - Partial data to update
@@ -81,18 +68,6 @@ export class UserService {
   async updateUser(userId: string, data: Partial<UserInterface>) {
     const userRef = doc(this.firestore, `users/${userId}`);
     await updateDoc(userRef, { ...data });
-  }
-
-  /** 
-   * Set online/offline status for a user (not currently used)
-   * @param userId - User ID
-   * @param isActive - Boolean status
-   */
-  async setActiveStatus(userId: string, isActive: boolean) {
-    const userRef = doc(this.firestore, `users/${userId}`);
-    await updateDoc(userRef, {
-      active: isActive,
-    });
   }
 
   /**
@@ -103,7 +78,7 @@ export class UserService {
     const usersCollection = collection(this.firestore, 'users'); // Reference to 'users' collection
     const emailQuery = query(usersCollection, where('email', '==', inputEmail));
     const querySnapshot = await getDocs(emailQuery);
-    return !querySnapshot.empty; //true when the inputEmail already exists in firestore 
+    return !querySnapshot.empty; //true when the inputEmail already exists in firestore
   }
 
   /**
@@ -111,14 +86,15 @@ export class UserService {
    * Get all email-addresses from collection. Creates objects containing "email".
    * Creates an Observable, thats subscribeable in "confirm-password.ts".
    */
-  getAllUserEmails(): Observable<{ uid: string, email: string }[]> {
+  getAllUserEmails(): Observable<{ uid: string; email: string }[]> {
     const userColl = collection(this.firestore, 'users');
     return collectionData(userColl).pipe(
       map((users: any[]) =>
-        users.map(user => ({
+        users.map((user) => ({
           uid: user.uid,
-          email: user.email
-        })))
+          email: user.email,
+        }))
+      )
     );
   }
 }

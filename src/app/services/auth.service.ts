@@ -2,7 +2,6 @@ import { inject, Injectable } from '@angular/core';
 import {
   Auth,
   createUserWithEmailAndPassword,
-  updateProfile,
   onAuthStateChanged,
   signOut,
   User,
@@ -21,7 +20,6 @@ import { getAuth, signInWithPopup, GoogleAuthProvider, sendPasswordResetEmail } 
 
 import { from, Observable } from 'rxjs';
 import { BehaviorSubject } from 'rxjs';
-
 import { UserInterface } from '../shared/models/user.interface';
 import { UserService } from './user.service';
 
@@ -84,16 +82,12 @@ export class AuthService {
    *
    * @returns The current user object (`UserInterface`) if logged in, otherwise `null`.
    */
-  get currentUser(): UserInterface | null {
+  get currentUser(): UserInterface {
+    if (!this.currentUserSubject.value) {
+      throw new Error('Kein User eingeloggt!');
+    }
     return this.currentUserSubject.value;
   }
-
-  //   /**
-  //  * Returns the current logged-in Firebase user
-  //  */
-  // get currentUser(): User | null {
-  //   return this.auth.currentUser;
-  // }
 
   /**
    * Returns the current user's ID or null if no user is logged in
@@ -135,34 +129,6 @@ export class AuthService {
       await updateDoc(userRef, { active: true });
     }
   }
-
-  // /**
-  //  * Registers a new user with email and password
-  //  * @param email User's email
-  //  * @param displayName User's display name
-  //  * @param password User's password
-  //  * @returns Observable<void>
-  //  */
-  // register(
-  //   email: string,
-  //   displayName: string,
-  //   password: string
-  // ): Observable<void> {
-  //   const promise = createUserWithEmailAndPassword(
-  //     this.auth,
-  //     email,
-  //     password
-  //   ).then(async (response) => {
-  //     const user = response.user;
-  //     // Update the user's display name in Firebase Auth
-  //     await updateProfile(user, { displayName });
-  //     // Create or update the user document in Firestore
-  //     await this.createOrUpdateUserInFirestore(user, 'password', displayName);
-  //     // Update the userSubject with the newly registered user
-  //     this.userSubject.next(user);
-  //   });
-  //   return from(promise);
-  // }
 
   /**
    * Registers a new user with name, email, password and avatar
@@ -278,4 +244,17 @@ export class AuthService {
     const auth = getAuth();
     return sendPasswordResetEmail(auth, email);
   }
+
+  // updateUserPassword(uid: string, newPassword: string): Observable<void> {
+  //   const userRef = doc(this.firestore, `users/${uid}`);
+  //   return new Observable((oberver) => {
+  //     // Nutzer anhand UID im Firebase Auth besorgen (falls authentifiziert),
+  //     // oder Admin-privilegierte Methode verwenden.
+  //     // Für Sicherheitszwecke in Firebase nur mit Admin-Rechten möglich.
+  //     // Beispiel: Falls du admin Zugriff hast, kannst du mit Admin SDK das Passwort setzen.
+  //     // Ohne Admin SDK (z.B. im Client) ist es nicht möglich, das Passwort eines Nutzers
+  //     // direkt zu ändern, wenn du nicht eingeloggt bist.
+  //     // Daher sollte diese Funktion im Backend umgesetzt werden, z.B. mit Cloud Functions.
+  //   });
+  // }
 }
