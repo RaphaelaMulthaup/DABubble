@@ -1,5 +1,5 @@
 <div class="profile-view-other-user">
-  <img src="./../../../assets/img/portrait-9134409_1280.png" alt="Profilbild" />
+  <img class="profil-img" [src]="(user$ | async)?.photoUrl" alt="Profilbild" />
   <div class="name-and-status">
     <h1>{{ (user$ | async)?.name }}</h1>
     <div class="status">
