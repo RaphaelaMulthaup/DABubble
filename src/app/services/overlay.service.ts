@@ -35,10 +35,10 @@ export class OverlayService {
   overlayInputs: Record<string, any> = {};
 
   private overlayRef?: OverlayRef;
-  private overlay:any = inject(Overlay);
-  private injector:any = inject(Injector);
+  private overlay: any = inject(Overlay);
+  private injector: any = inject(Injector);
 
-  constructor() {}
+  constructor() { }
 
   /**
    * Method to display the overlay with the provided component and associated headline.
@@ -61,7 +61,7 @@ export class OverlayService {
     this.overlayInputs = {};
   }
 
-   openComponent<T>(origin: HTMLElement, component: Type<T>): ComponentRef<T>|undefined {
+  openComponent<T>(origin: HTMLElement, component: Type<T>): ComponentRef<T> | undefined {
     this.close(); // falls schon ein Overlay offen ist
 
     const positionStrategy = this.overlay.position()
@@ -74,11 +74,14 @@ export class OverlayService {
     this.overlayRef = this.overlay.create({
       positionStrategy,
       hasBackdrop: true,
-      backdropClass: 'cdk-overlay-transparent-backdrop'
+      backdropClass: 'cdk-overlay-dark-backdrop' // bzw 'cdk-overlay-transparent-backdrop' für transparentes
     });
 
     const portal = new ComponentPortal(component, null, this.injector);
     const componentRef = this.overlayRef?.attach(portal);
+
+    // Body scroll sperren
+    document.body.style.overflow = 'hidden';
 
     // Klick außerhalb schließt Overlay
     this.overlayRef?.backdropClick().subscribe(() => this.close());
@@ -93,6 +96,9 @@ export class OverlayService {
     if (this.overlayRef) {
       this.overlayRef.dispose();
       this.overlayRef = undefined;
+
+      // Body scroll wieder freigeben
+      document.body.style.overflow = '';
     }
   }
 

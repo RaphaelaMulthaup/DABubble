@@ -1,10 +1,12 @@
 .reaction-options {
-    width: 400px;
+    width: 464px;
     padding: 16px;
-    flex-wrap: wrap;
     border-radius: 0 20px 20px 20px;
     background-color: var(--color-purple-white);
     box-shadow: 0px 2px 10px 0px #00000014;
+    display: grid;
+    justify-content: center;
+    grid-template-columns: repeat(8, 1fr);
 
     .reaction-img {
         width: 48px;
@@ -15,10 +17,6 @@
             cursor: pointer;
             transform: scale(1.1);
         }
-    }
-
-    &:last-child {
-        justify-content: flex-start;
     }
 }
 
