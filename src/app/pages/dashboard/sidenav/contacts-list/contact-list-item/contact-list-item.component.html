@@ -11,7 +11,12 @@
       alt="Status"
     />
   </div>
-  <span>
-    {{ user.name }}
-  </span>
+  <div>
+    <span>
+      {{ user.name }}
+    </span>
+    @if (currentUserId == user.uid) {
+    <span>(Du)</span>
+    }
+  </div>
 </li>
