@@ -32,38 +32,28 @@ export class ContactsListComponent implements OnInit {
    * Subscribes to the authenticated user stream and loads the user's contacts.
    */
   ngOnInit(): void {
-    // Wait for the logged-in user
-    this.authService.user$.subscribe((user) => {
-      if (!user) {
-        // If there is no logged-in user, reset state
-        this.currentUserId = null;
-        this.contacts$ = of([]);
-        return;
-      }
+    this.contacts$ = this.authService.user$.pipe(
+      switchMap((user) => {
+        if (!user) {
+          return of([]);
+        }
 
-      this.currentUserId = user.uid;
-
-      // Load contacts for the current user
-      this.contacts$ = this.chatService
-        .getChatsForUser(this.currentUserId)
-        .pipe(
-          // Extract the IDs of the other users in each chat
+        return this.chatService.getChatsForUser(user.uid).pipe(
           map((chats) =>
             chats.map((chat) =>
-              this.chatService.getOtherUserId(chat.id!, this.currentUserId!)
+              this.chatService.getOtherUserId(chat.id!, user.uid)
             )
           ),
-          // For each contact ID, fetch the full user details
           switchMap((contactIds) => {
-            console.log(contactIds);
-
             if (contactIds.length === 0) return of([]);
-            // Combine all user detail observables into one stream
+            // combineLatest sorgt dafür, dass sich die Liste aktualisiert,
+            // sobald sich bei einem Kontakt was ändert (Name, Status etc.)
             return combineLatest(
               contactIds.map((id) => this.userService.getUserById(id))
             );
           })
         );
-    });
+      })
+    );
   }
 }
