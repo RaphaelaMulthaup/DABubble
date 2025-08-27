@@ -17,6 +17,7 @@ import { BehaviorSubject, Observable, of } from 'rxjs';
 import { MessageInterface } from '../shared/models/message.interface';
 import { ReactionInterface } from '../shared/models/reaction.interface';
 import { ChatInterface } from '../shared/models/chat.interface';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root', // Service is available globally in the application
@@ -24,6 +25,7 @@ import { ChatInterface } from '../shared/models/chat.interface';
 export class MessageService {
   // Inject Firestore instance
   private firestore: Firestore = inject(Firestore);
+  private authService = inject(AuthService);
 
   // Holds the current list of messages for the displayed conversation
   private _messagesDisplayedConversation = new BehaviorSubject<
@@ -46,7 +48,7 @@ export class MessageService {
   async sendMessage(
     parentPath: string,
     subcollectionName: string,
-    message: Omit<MessageInterface, 'createdAt'>
+    message: Omit<MessageInterface,'createdAt'>
   ) {
     const messagesRef = collection(
       this.firestore,
@@ -69,7 +71,6 @@ export class MessageService {
    * @param subcollectionName - Name of the subcollection (e.g. "messages").
    * @param messageId - ID of the message being reacted to.
    * @param emoji - Emoji identifier (used as document ID in "reactions" subcollection).
-   * @param userId - ID of the user reacting.
    * @returns A Promise that resolves once the reaction update has been applied.
    */
   async toggleReaction(
@@ -77,12 +78,11 @@ export class MessageService {
     subcollectionName: string,
     messageId: string,
     emoji: string,
-    userId: string
   ) {
-    //userId muss nicht übergeben werden, sondern kann sich die funktion hier selbst holen (aus authservice, damit es nicht current-post machen muss)
+    let userId = this.authService.getCurrentUserId()!;
     const reactionRef = doc(
       this.firestore,
-      `${parentPath}/${subcollectionName}/${messageId}/reactions/${emoji}`
+      `${parentPath}/${subcollectionName}/${messageId}/reactions/`
     );
 
     const reactionSnap = await getDoc(reactionRef);
@@ -166,7 +166,7 @@ export class MessageService {
     conversationId: string,
     startedBy: string,
     text: string,
-     // type: 'channel' | 'chat'
+    // type: 'channel' | 'chat'
     type: string
   ) {
     await this.sendMessage(`${type}s/${conversationId}`, 'messages', {

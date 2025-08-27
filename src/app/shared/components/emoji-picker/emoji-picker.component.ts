@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'app-emoji-picker',
@@ -64,11 +64,12 @@ export class EmojiPickerComponent {
   ]
 
   @Input() messageFromCurrentUser = false;
+  @Output() selectedEmoji = new EventEmitter<string>();
 
   /**
   * This function uses the chosen emoji and the userId to react to a post
   */
-  reactToPost(index: number) {
-    console.log(this.emojis[index]);
+  reactToPost(index: number) { 
+    this.selectedEmoji.emit(this.emojis[index]);
   }
 }

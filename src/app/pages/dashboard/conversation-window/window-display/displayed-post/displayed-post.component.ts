@@ -49,8 +49,8 @@ export class DisplayedPostComponent {
   reactions$!: Observable<ReactionInterface[]>;
   reactions: ReactionInterface[] = [];
 
-  // reactionSelectionVisible: boolean = false;
   isMessageFromCurrentUser!: boolean;
+
   @ViewChild('overlayTemplate') overlayTemplate!: TemplateRef<any>;
   private vcr = inject(ViewContainerRef);
 
@@ -59,7 +59,6 @@ export class DisplayedPostComponent {
   }
 
   ngOnChanges() {
-    // this.senderId = this.message.senderId; // Extract sender ID from the message
     this.chatActiveRoute.getParams$(this.route).subscribe(({ type, id }) => {
       this.currentType = type;
       this.currentChannelId = id;
@@ -119,12 +118,31 @@ export class DisplayedPostComponent {
     );
   }
 
+  /**
+   * This functions opens the emoji-picker overlay and transmits the isMessageFromCurrentUser-variable.
+   * The overlay possibly emits an emoji and this emoji is used to react to the post.
+   */
   openEmojiPickerOverlay(event: MouseEvent) {
     const origin = event.currentTarget as HTMLElement;
     const ref = this.overlayService.openComponent(origin, EmojiPickerComponent);
     ref!.instance.messageFromCurrentUser = this.isMessageFromCurrentUser;
+
+    //das abonniert den event emitter vom emoji-picker component
+    ref!.instance.selectedEmoji.subscribe((emoji: string) => {
+      // console.log('Emoji ausgewählt:', emoji);
+      this.messageService.toggleReaction(
+        '/' + this.currentType + 's/' + this.currentChannelId,
+        'messages',
+        this.message.id!,
+        emoji
+      )
+      this.overlayService.close();
+    });
   }
 
+  /**
+   * This functions closese the emoji-picker-overlay
+   */
   closeEmojiPickerOverlay() {
     this.overlayService.close();
   }
