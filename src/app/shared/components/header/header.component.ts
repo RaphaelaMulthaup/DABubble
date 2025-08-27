@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { CreateAccountBtnComponent } from '../create-account-btn/create-account-btn.component';
 
 @Component({
   selector: 'app-header',
-  imports: [],
+  imports: [CreateAccountBtnComponent],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss'
 })
