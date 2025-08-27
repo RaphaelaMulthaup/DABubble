@@ -56,9 +56,6 @@ export class ResetPasswordComponent implements OnInit{
    * function prototype top change user password
    */
   onPasswordChange() {
-    const newPassword = this.registerForm.get('password')?.value;
-    this.autService.updateUserPassword(this.uid, newPassword).subscribe(() => {
-      this.router.navigate(['/login']);
-    })
+
   }
 }

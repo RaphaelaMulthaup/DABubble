@@ -7,7 +7,7 @@ import {
   signOut,
   User,
 } from '@angular/fire/auth';
-import { signInWithEmailAndPassword, updatePassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, updatePassword, sendEmailVerification, ActionCodeSettings } from 'firebase/auth';
 
 import {
   Firestore,
@@ -17,7 +17,7 @@ import {
   updateDoc,
 } from '@angular/fire/firestore';
 
-import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { getAuth, signInWithPopup, GoogleAuthProvider, sendPasswordResetEmail } from 'firebase/auth';
 
 import { from, Observable } from 'rxjs';
 import { BehaviorSubject } from 'rxjs';
@@ -257,17 +257,25 @@ export class AuthService {
     return updateDoc(userRef, { active: false }).then(() => signOut(this.auth));
   }
 
-  updateUserPassword(uid: string, newPassword: string): Observable<void> {
-    const userRef = doc(this.firestore, `users/${uid}`);
-    return new Observable(oberver => {
-    // Nutzer anhand UID im Firebase Auth besorgen (falls authentifiziert),
-    // oder Admin-privilegierte Methode verwenden.
-    // Für Sicherheitszwecke in Firebase nur mit Admin-Rechten möglich.
-    
-    // Beispiel: Falls du admin Zugriff hast, kannst du mit Admin SDK das Passwort setzen.
-    // Ohne Admin SDK (z.B. im Client) ist es nicht möglich, das Passwort eines Nutzers
-    // direkt zu ändern, wenn du nicht eingeloggt bist.
-    // Daher sollte diese Funktion im Backend umgesetzt werden, z.B. mit Cloud Functions.
-    });
+  /**
+   * Atempt to send link with selfmade url 
+   */
+  // sendPasswordRessetEmail(email: string) {
+  //   const auth = getAuth();
+  //   const actionCodeSettings: ActionCodeSettings = {
+  //     url: 'https://nicolaus-feldtmann.de/',
+  //     handleCodeInApp: false,
+  //   };
+  //   return sendPasswordResetEmail(auth, email, actionCodeSettings);
+  // }
+
+  /**
+   * 
+   * Sends link to firesore mail reset url 
+   * 
+   */
+  sendPasswordRessetEmail(email: string): Promise<void> {
+    const auth = getAuth();
+    return sendPasswordResetEmail(auth, email);
   }
 }

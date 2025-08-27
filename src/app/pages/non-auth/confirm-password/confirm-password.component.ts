@@ -7,7 +7,7 @@ import { AngularFireFunctions } from '@angular/fire/compat/functions';
 
 import { CommonModule } from '@angular/common';
 import { AuthState } from '../../../shared/auth-state.type';
-import { user } from '@angular/fire/auth';
+import { user, getAuth, sendEmailVerification } from '@angular/fire/auth';
 import { flatMap } from 'rxjs';
 
 import { Router } from '@angular/router';
@@ -63,12 +63,16 @@ export class ConfirmPasswordComponent implements OnInit {
     console.log('onSub');
     let inputMail = this.confirmForm.get('email')?.value;
     if (this.emailList.includes(inputMail)) {
-      console.log('E-mail vorhanden');
+     this.authService.sendPasswordRessetEmail(inputMail).then(() => {
       this.waveFlag();
       setTimeout(() => {
-        //this.sendEmail(inputMail);
-        this.procedToReset();
+        console.log('Mail erfolgreich gesendet');
+        this.backToLogin();
       }, 1500);
+     }).catch((error) => {
+      console.error('Password_rest E-Mail konnte nicht gesendet werden', error);
+      this.showErrorMessage = true;
+     });
     } else {
       this.showErrorMessage = true;
     }
@@ -97,15 +101,14 @@ export class ConfirmPasswordComponent implements OnInit {
     wavieFlagie?.classList.add('showFlag');
   }
 
-  // sendEmail(email: string) {
-  //   const callable = this.functions.httpsCallable('sendEmail')({ email: email, link: 'https://nicolaus-feldtmann.de'})
-  //     .subscribe(
-  //       (result: any) => {
-  //         console.log('Anzeige is raus!', result);
-  //       },
-  //       (error: any) => {
-  //         console.error('Das war wohl nix', error);
-  //       }
-  //     ) 
-  // }
+  /**
+  * Sends linkt to reset password to found email
+  */
+  sendPasswortResset(email: string) {
+    this.authService.sendPasswordRessetEmail(email).then(() => {
+      this.waveFlag();
+    }).catch((error) => {
+      console.error('Fehler beim senden der Reset-Mail', error);
+    })
+  }
 }
