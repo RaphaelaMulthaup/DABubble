@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
 import { AuthState } from '../../../shared/auth-state.type';
 import { FormControl, FormsModule, ReactiveFormsModule, FormGroup, Validators } from '@angular/forms';
-import { Firestore, collection, collectionData, query, where, getDocs } from '@angular/fire/firestore';
+import { Firestore, collection, collectionData, query, where, getDocs, doc, getDoc } from '@angular/fire/firestore';
 import { Auth, user } from '@angular/fire/auth';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -22,11 +22,14 @@ import { HeaderComponent } from '../../../shared/components/header/header.compon
   styleUrls: ['./reset-password.component.scss']
 })
 export class ResetPasswordComponent implements OnInit{
+  firestore: Firestore = inject(Firestore);
   registerForm!: FormGroup;
   showErrorMessage: boolean = false;
   uid!: string;
+  email: any;
 
   constructor(
+    private route: ActivatedRoute,
     private autService : AuthService,
     private router: Router
   ) {
@@ -39,6 +42,15 @@ export class ResetPasswordComponent implements OnInit{
         password: new FormControl('', [Validators.required, Validators.minLength(6)]),
         passwordConfirm: new FormControl('', [Validators.required, Validators.minLength(6)])
       })
+  }
+
+  async fetchUserEmail() {
+    const usersRef = doc(this.firestore, 'users', this.uid);
+    const userSnap = await getDoc(usersRef);
+      if (userSnap.exists()) {
+        const userData = userSnap.data();
+        this.email = userData['email'];
+      }
   }
 
   onSubmit() {

@@ -1,6 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Auth } from '@angular/fire/auth';
 import { onAuthStateChanged } from 'firebase/auth';
 import { LoginFormComponent } from './login-form/login-form.component';
@@ -16,6 +16,8 @@ import { RouterLink } from '@angular/router';
 import { HeaderComponent } from '../../shared/components/header/header.component';
 import { ConfirmPasswordComponent } from './confirm-password/confirm-password.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
+import { FormControl, FormGroup } from '@angular/forms';
+
 
 @Component({
   selector: 'app-non-auth',
@@ -45,8 +47,15 @@ export class NonAuthComponent {
 
   showConfirm: boolean = false;
   showLogin: boolean = true;
+showIntro: any;
 
-  constructor(private auth: Auth, private router: Router) {
+  constructor(
+    private auth: Auth,
+    private router: Router,
+    private route: ActivatedRoute
+  ) {
+    const navaigation = this.router.getCurrentNavigation();
+    const uid = navaigation?.extras.state?.['uid'];
     // Listen for authentication state changes
     onAuthStateChanged(this.auth, user => {
       if (user) {
@@ -65,15 +74,24 @@ export class NonAuthComponent {
    * Fetches all users from Firestore and logs their names
    */
   ngOnInit() {
-    const usersRef = collection(this.firestore, 'users');
-    this.showLogo();
+  const usersRef = collection(this.firestore, 'users');
+  this.showLogo();
 
-    collectionData(usersRef).pipe(
-      map((users: any[]) => users.map(user => user.name))
-    ).subscribe(userNames => {
-      //console.log('User names from Firestore:', userNames);
-    });
-  }
+  // URL-Parameter abfragen
+  this.route.queryParams.subscribe(params => {
+    const uid = params['uid'];
+    if (uid) {
+      // Es wurde ein uid-Parameter erkannt, also gehe in den 'reset-password' Modus
+      this.currentState = 'reset-password-confirm';
+    }
+  });
+
+  collectionData(usersRef).pipe(
+    map((users: any[]) => users.map(user => user.name))
+  ).subscribe(userNames => {
+    //console.log('User names from Firestore:', userNames);
+  });
+}
 
   /**
    * Repalced the animted logo with the actual one.
