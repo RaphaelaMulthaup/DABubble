@@ -9,9 +9,6 @@ import {
   doc,
   Firestore,
   getDoc,
-  getDocs,
-  orderBy,
-  query,
   serverTimestamp,
   setDoc,
   updateDoc,
@@ -19,7 +16,6 @@ import {
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { MessageInterface } from '../shared/models/message.interface';
 import { Reaction } from '../shared/models/reaction.interface';
-import { ChatInterface } from '../shared/models/chat.interface';
 
 @Injectable({
   providedIn: 'root', // Service is available globally in the application
@@ -28,20 +24,23 @@ export class MessageService {
   // Inject Firestore instance
   private firestore: Firestore = inject(Firestore);
 
-  // BehaviorSubject holds the current list of messages for the displayed conversation
+  // Holds the current list of messages for the displayed conversation
   private _messagesDisplayedConversation = new BehaviorSubject<
     MessageInterface[]
   >([]);
 
-  // Public observable that other components can subscribe to in order to receive updates
+  // Public observable for components to subscribe to
   messagesDisplayedConversation$ =
     this._messagesDisplayedConversation.asObservable();
 
   /**
-   * Sends a message to a given subcollection (e.g. messages of a chat or thread)
-   * @param parentPath Path to the parent document (e.g. "chats/{chatId}")
-   * @param subcollectionName Name of the subcollection (e.g. "messages")
-   * @param message Message object without createdAt (timestamp is added automatically)
+   * Sends a message to a given subcollection (e.g. messages of a chat or thread).
+   * Automatically sets the `createdAt` field to the server timestamp.
+   *
+   * @param parentPath - Path to the parent document (e.g. "chats/{chatId}").
+   * @param subcollectionName - Name of the subcollection (e.g. "messages").
+   * @param message - Message object without `createdAt` (timestamp is added automatically).
+   * @returns A Promise that resolves once the message has been written.
    */
   async sendMessage(
     parentPath: string,
@@ -58,32 +57,19 @@ export class MessageService {
     });
   }
 
-  // Ich denke, dass wir diese Funktion nicht mehr brauchen, weil wir jetzt einen ähnliche in chat-active-router.service nutzten.
-  // /**
-  //  * Fetches messages from a subcollection and listens for real-time updates
-  //  * @returns Observable of messages (including auto-generated document IDs)
-  //  */
-  // getMessages<T extends MessageInterface>(
-  //   parentPath: string,
-  //   subcollectionName: string
-  // ): Observable<(T & { id: string })[]> {
-  //   const messagesRef = collection(
-  //     this.firestore,
-  //     `${parentPath}/${subcollectionName}`
-  //   );
-  //   const q = query(messagesRef, orderBy('createdAt', 'asc')); // Order by creation time ascending
-  //   return collectionData(q, { idField: 'id' }) as Observable<
-  //     (T & { id: string })[]
-  //   >;
-  // }
-
   /**
-   * Toggles a reaction for a given message
-   * - If user has already reacted with the emoji, remove them
-   * - Otherwise, add them
-   * @param messageId ID of the message
-   * @param emojiName Emoji identifier (used as document ID in "reactions" subcollection)
-   * @param userId ID of the user reacting
+   * Toggles a reaction for a given message.
+   *
+   * - If the user has already reacted with the emoji, their ID will be removed.
+   * - Otherwise, their ID will be added.
+   * - If the emoji does not exist yet, a new reaction document is created.
+   *
+   * @param parentPath - Path to the parent document (e.g. "chats/{chatId}").
+   * @param subcollectionName - Name of the subcollection (e.g. "messages").
+   * @param messageId - ID of the message being reacted to.
+   * @param emojiName - Emoji identifier (used as document ID in "reactions" subcollection).
+   * @param userId - ID of the user reacting.
+   * @returns A Promise that resolves once the reaction update has been applied.
    */
   async toggleReaction(
     parentPath: string,
@@ -124,8 +110,12 @@ export class MessageService {
   }
 
   /**
-   * Fetches all reactions of a message in real time
-   * @returns Observable list of reactions with user IDs
+   * Fetches all reactions of a message in real time.
+   *
+   * @param parentPath - Path to the parent document (e.g. "chats/{chatId}").
+   * @param subcollectionName - Name of the subcollection (e.g. "messages").
+   * @param messageId - ID of the message whose reactions should be fetched.
+   * @returns Observable that emits the list of reactions (with emoji name and user IDs).
    */
   getReactions(
     parentPath: string,
@@ -142,8 +132,12 @@ export class MessageService {
   }
 
   /**
-   * Deletes a message from Firestore
-   * @param messageId ID of the message
+   * Deletes a message from Firestore.
+   *
+   * @param parentPath - Path to the parent document (e.g. "chats/{chatId}").
+   * @param subcollectionName - Name of the subcollection (e.g. "messages").
+   * @param messageId - ID of the message to be deleted.
+   * @returns A Promise that resolves once the message has been removed.
    */
   async deleteMessage(
     parentPath: string,
@@ -158,19 +152,18 @@ export class MessageService {
   }
 
   /**
-   * Create a new message
-   * @param conversationId - ID of the channel where the thread belongs
-   * @param startedBy - User ID of the thread creator
-   * @param text - Text content of the first message
-   * @param type - type of the conversation (chat or channel)
-   * @returns the ID of the created thread
+   * Creates a new message inside a conversation.
+   *
+   * @param conversationId - ID of the conversation (chat or channel).
+   * @param startedBy - User ID of the sender.
+   * @param text - Text content of the message.
+   * @param type - Type of conversation ("chat" or "channel").
+   * @returns An observable placeholder (currently resolves to an empty array).
    */
-
   async createMessage(
     conversationId: string,
     startedBy: string,
     text: string,
-    // type: 'channel' | 'chat'
     type: string
   ) {
     await this.sendMessage(`${type}s/${conversationId}`, 'messages', {
@@ -180,6 +173,16 @@ export class MessageService {
     return of([]);
   }
 
+  /**
+   * Creates an answer (reply) to an existing message inside a channel thread.
+   *
+   * @param channelId - ID of the channel.
+   * @param messageId - ID of the parent message being replied to.
+   * @param senderId - ID of the replying user.
+   * @param text - Text content of the reply.
+   * @param type - Type of conversation (currently only supports "channel").
+   * @returns A Promise with the created answer document reference, or an empty observable if not in a channel.
+   */
   async createAnswer(
     channelId: string,
     messageId: string,
@@ -201,43 +204,4 @@ export class MessageService {
     }
     return of([]);
   }
-
-  //Es kann sein, dass wir das hier gar nicht mehr brauchen, jetzt wo wir Andreis Activated Routs nutzen.
-  // /**
-  //  * Loads messages for a selected conversation and updates the BehaviorSubject
-  //  * Always pushes the latest messages to subscribed components
-  //  */
-  // async provideMessages(
-  //   selectedConversation: ChatInterface,
-  //   typeOfConversation: string
-  // ) {
-  //   let messages: MessageInterface[] = [];
-  //   if (selectedConversation.id) {
-  //     messages = await this.loadMessages(
-  //       selectedConversation.id,
-  //       typeOfConversation
-  //     );
-  //   }
-  //   this._messagesDisplayedConversation.next(messages); // Push the current messages
-  // }
-
-  //Es kann sein, dass wir das hier gar nicht mehr brauchen, jetzt wo wir Andreis Activated Routs nutzen.
-  // /**
-  //  * Loads all messages of a conversation once (no real-time updates)
-  //  * @returns Promise with messages including their IDs
-  //  */
-  // async loadMessages(
-  //   conversationId: string,
-  //   typeOfConversation: string
-  // ): Promise<MessageInterface[]> {
-  //   const messagesRef = collection(
-  //     this.firestore,
-  //     `${typeOfConversation}/${conversationId}/messages`
-  //   );
-  //   const snapshot = await getDocs(messagesRef);
-  //   return snapshot.docs.map((d) => ({
-  //     id: d.id, // Add Firestore document ID
-  //     ...(d.data() as Omit<MessageInterface, 'id'>),
-  //   }));
-  // }
 }

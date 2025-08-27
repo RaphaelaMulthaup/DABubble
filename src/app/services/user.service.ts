@@ -1,22 +1,18 @@
-import { Inject, Injectable, inject } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   Firestore,
   collectionData,
   collection,
   doc,
   updateDoc,
-  arrayUnion,
-  arrayRemove,
-  setDoc,
   deleteField,
   query,
   where,
   getDocs,
 } from '@angular/fire/firestore';
 import { UserInterface } from '../shared/models/user.interface';
-import { map, Observable, of, switchMap } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { docData } from '@angular/fire/firestore';
-// import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root',
@@ -24,7 +20,7 @@ import { docData } from '@angular/fire/firestore';
 export class UserService {
   // Inject Firestore instance
   private firestore: Firestore = inject(Firestore);
-  // authService = inject(AuthService);
+
   /**
    * Fetch all users from the 'users' collection
    * Returns an Observable of an array of UserInterface
@@ -35,14 +31,6 @@ export class UserService {
       UserInterface[]
     >;
   }
-
-  // getContacts(): Observable<UserInterface[]> {
-  //   const currentUser$ = this.authService.currentUser$;
-  //   const contactsCollection = collection(this.firestore, 'users'); // Reference to 'users' collection
-  //   return collectionData(contactsCollection, { idField: 'uid' }) as Observable<
-  //     UserInterface[]
-  //   >;
-  // }
 
   /**
    * Add a contact to a specific user
@@ -59,18 +47,6 @@ export class UserService {
     // Set a single field in the 'contacts' subfield
     return updateDoc(userDocRef, {
       [`contacts.${contactId}`]: contactData,
-    });
-  }
-
-  /**
-   * Remove a contact from a specific user
-   * @param userId - ID of the user to update
-   * @param contactId - ID of the contact to remove
-   */
-  removeContactFromUser(userId: string, contactId: string): Promise<void> {
-    const userDocRef = doc(this.firestore, `users/${userId}`); // Reference to the specific user document
-    return updateDoc(userDocRef, {
-      [`contacts.${contactId}`]: deleteField(), // Delete the contact field
     });
   }
 
@@ -92,18 +68,6 @@ export class UserService {
   async updateUser(userId: string, data: Partial<UserInterface>) {
     const userRef = doc(this.firestore, `users/${userId}`);
     await updateDoc(userRef, { ...data });
-  }
-
-  /**
-   * Set online/offline status for a user (not currently used)
-   * @param userId - User ID
-   * @param isActive - Boolean status
-   */
-  async setActiveStatus(userId: string, isActive: boolean) {
-    const userRef = doc(this.firestore, `users/${userId}`);
-    await updateDoc(userRef, {
-      active: isActive,
-    });
   }
 
   /**

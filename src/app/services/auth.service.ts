@@ -2,13 +2,11 @@ import { inject, Injectable } from '@angular/core';
 import {
   Auth,
   createUserWithEmailAndPassword,
-  updateProfile,
   onAuthStateChanged,
   signOut,
   User,
 } from '@angular/fire/auth';
-import { signInWithEmailAndPassword, updatePassword } from 'firebase/auth';
-
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import {
   Firestore,
   doc,
@@ -16,12 +14,9 @@ import {
   setDoc,
   updateDoc,
 } from '@angular/fire/firestore';
-
 import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
-
 import { from, Observable } from 'rxjs';
 import { BehaviorSubject } from 'rxjs';
-
 import { UserInterface } from '../shared/models/user.interface';
 import { UserService } from './user.service';
 
@@ -91,13 +86,6 @@ export class AuthService {
     return this.currentUserSubject.value;
   }
 
-  //   /**
-  //  * Returns the current logged-in Firebase user
-  //  */
-  // get currentUser(): User | null {
-  //   return this.auth.currentUser;
-  // }
-
   /**
    * Returns the current user's ID or null if no user is logged in
    */
@@ -138,34 +126,6 @@ export class AuthService {
       await updateDoc(userRef, { active: true });
     }
   }
-
-  // /**
-  //  * Registers a new user with email and password
-  //  * @param email User's email
-  //  * @param displayName User's display name
-  //  * @param password User's password
-  //  * @returns Observable<void>
-  //  */
-  // register(
-  //   email: string,
-  //   displayName: string,
-  //   password: string
-  // ): Observable<void> {
-  //   const promise = createUserWithEmailAndPassword(
-  //     this.auth,
-  //     email,
-  //     password
-  //   ).then(async (response) => {
-  //     const user = response.user;
-  //     // Update the user's display name in Firebase Auth
-  //     await updateProfile(user, { displayName });
-  //     // Create or update the user document in Firestore
-  //     await this.createOrUpdateUserInFirestore(user, 'password', displayName);
-  //     // Update the userSubject with the newly registered user
-  //     this.userSubject.next(user);
-  //   });
-  //   return from(promise);
-  // }
 
   /**
    * Registers a new user with name, email, password and avatar
