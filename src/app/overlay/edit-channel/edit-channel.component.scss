@@ -1,0 +1,13 @@
+@import './../../../styles.scss';
+.container{
+     @include dFlex($g: 20px, $ai: flex-start);
+     flex-direction: column;
+    border: 1px solid #ADB0D9;
+    width: 792;
+    height: 114;
+    opacity: 1;
+    border-radius: 20px;
+    border-width: 1px;
+    gap: 20px;
+    padding: 20px;
+}

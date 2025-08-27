@@ -1,4 +1,3 @@
-import { MessageInterface } from './message.interface';
 
 export interface ChannelInterface {
   id?: string; // Optional for Firestore documents
