@@ -32,14 +32,12 @@
       }
 
       <div class="relative">
-        <button (click)="reactionSelectionVisible = !reactionSelectionVisible" class="add-reaction btn-tertiary"
+        <button #addReactionBtn (click)="openEmojiPickerOverlay($event)" class="add-reaction btn-tertiary"
           (mouseenter)="addReactionsImg.src = './assets/img/add-reaction-hover.svg'"
           (mouseleave)="addReactionsImg.src = './assets/img/add-reaction.svg'">
           <img #addReactionsImg src="./assets/img/add-reaction.svg" alt="add reaction" />
         </button>
-          @if(reactionSelectionVisible) {
-            <app-emoji-picker [messageFromCurrentUser]="isMessageFromCurrentUser"/>
-          }
+            <!-- <app-emoji-picker [messageFromCurrentUser]="isMessageFromCurrentUser"/> -->
       </div>
 
     </div>

@@ -1,6 +1,8 @@
-import { Injectable, Type } from '@angular/core';
+import { inject, Injectable, Type, TemplateRef, ViewContainerRef, Injector, ComponentRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
+import { Overlay, OverlayRef, FlexibleConnectedPositionStrategy } from '@angular/cdk/overlay';
+import { ComponentPortal, TemplatePortal } from '@angular/cdk/portal';
 
 /**
  * OverlayService is responsible for controlling the visibility and content of an overlay.
@@ -32,6 +34,12 @@ export class OverlayService {
 
   overlayInputs: Record<string, any> = {};
 
+  private overlayRef?: OverlayRef;
+  private overlay:any = inject(Overlay);
+  private injector:any = inject(Injector);
+
+  constructor() {}
+
   /**
    * Method to display the overlay with the provided component and associated headline.
    * Sets the component to be displayed and updates the overlay visibility to 'true'.
@@ -51,5 +59,47 @@ export class OverlayService {
     this.overlaySubject.next(false); // Set visibility to 'false' (hide overlay)
     this.overlayComponent = null; // Clear the component being displayed
     this.overlayInputs = {};
+  }
+
+   openComponent<T>(origin: HTMLElement, component: Type<T>): ComponentRef<T>|undefined {
+    this.close(); // falls schon ein Overlay offen ist
+
+    const positionStrategy = this.overlay.position()
+      .flexibleConnectedTo(origin)
+      .withPositions([
+        { originX: 'end', originY: 'top', overlayX: 'start', overlayY: 'top' },
+        { originX: 'start', originY: 'top', overlayX: 'end', overlayY: 'top' }
+      ]);
+
+    this.overlayRef = this.overlay.create({
+      positionStrategy,
+      hasBackdrop: true,
+      backdropClass: 'cdk-overlay-transparent-backdrop'
+    });
+
+    const portal = new ComponentPortal(component, null, this.injector);
+    const componentRef = this.overlayRef?.attach(portal);
+
+    // Klick außerhalb schließt Overlay
+    this.overlayRef?.backdropClick().subscribe(() => this.close());
+
+    return componentRef;
+  }
+
+  /**
+   * Overlay schließen
+   */
+  close(): void {
+    if (this.overlayRef) {
+      this.overlayRef.dispose();
+      this.overlayRef = undefined;
+    }
+  }
+
+  /**
+   * Prüfen, ob Overlay aktuell offen ist
+   */
+  isOpen(): boolean {
+    return !!this.overlayRef;
   }
 }

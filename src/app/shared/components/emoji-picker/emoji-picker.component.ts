@@ -7,7 +7,7 @@ import { Component, Input } from '@angular/core';
   styleUrl: './emoji-picker.component.scss'
 })
 export class EmojiPickerComponent {
- emojis = [
+  emojis = [
     'assets/img/emojis/grinning-face.svg',
     'assets/img/emojis/beaming-face.svg',
     'assets/img/emojis/face-with-tears-of-joy.svg',
@@ -63,7 +63,7 @@ export class EmojiPickerComponent {
     'assets/img/emojis/cross-mark.svg',
   ]
 
-  @Input()messageFromCurrentUser = false;
+  @Input() messageFromCurrentUser = false;
 
   /**
   * This function uses the chosen emoji and the userId to react to a post

@@ -1,4 +1,4 @@
-import { Component, Input, inject } from '@angular/core';
+import { Component, Input, TemplateRef, ViewChild, ViewContainerRef, inject } from '@angular/core';
 import { MessageInterface } from '../../../../../shared/models/message.interface';
 import { AuthService } from '../../../../../services/auth.service';
 import { UserService } from '../../../../../services/user.service';
@@ -16,7 +16,6 @@ import { Router } from '@angular/router';
 import { ReactionInterface } from '../../../../../shared/models/reaction.interface';
 import { MessageService } from '../../../../../services/message.service';
 import { EmojiPickerComponent } from '../../../../../shared/components/emoji-picker/emoji-picker.component';
-
 
 @Component({
   selector: 'app-displayed-post', // Component to display a single message in the conversation
@@ -50,12 +49,13 @@ export class DisplayedPostComponent {
   reactions$!: Observable<ReactionInterface[]>;
   reactions: ReactionInterface[] = [];
 
-  reactionSelectionVisible: boolean = false;
+  // reactionSelectionVisible: boolean = false;
   isMessageFromCurrentUser!: boolean;
+  @ViewChild('overlayTemplate') overlayTemplate!: TemplateRef<any>;
+  private vcr = inject(ViewContainerRef);
 
   ngOnInit() {
-    console.log(this.authService.getCurrentUserId());
-    this.isMessageFromCurrentUser= this.message.senderId === this.authService.getCurrentUserId();
+    this.isMessageFromCurrentUser = this.message.senderId === this.authService.getCurrentUserId();
   }
 
   ngOnChanges() {
@@ -119,8 +119,16 @@ export class DisplayedPostComponent {
     );
   }
 
+  openEmojiPickerOverlay(event: MouseEvent) {
+    const origin = event.currentTarget as HTMLElement;
+    const ref = this.overlayService.openComponent(origin, EmojiPickerComponent);
+    ref!.instance.messageFromCurrentUser = this.isMessageFromCurrentUser;
+  }
 
-  
+  closeEmojiPickerOverlay() {
+    this.overlayService.close();
+  }
+
   // /**
   //  * Checks if the message was sent by the currently logged-in user
   //  * Used to adjust styling (e.g., alignment or colors)
