@@ -2,6 +2,15 @@
 
 .contact-list-item {
   @include dFlex($jc: flex-start, $g: 15px);
+  border-radius: 35px;
+  padding: 4px 20px;
+  &:hover {
+    background-color: var(--color-purple-white);
+    span {
+      color: var(--color-purple-medium);
+      font-weight: 700;
+    }
+  }
   span {
     white-space: nowrap;
     font-size: 17px;

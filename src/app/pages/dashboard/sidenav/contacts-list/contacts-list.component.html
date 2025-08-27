@@ -7,7 +7,6 @@
 @if (directMessagesVisible) {
 <ul class="contacts-list">
   @for (user of contacts$ | async; track $index) {
-    {{user.name}}
   <app-contact-list-item [user]="user"></app-contact-list-item>
   }
 </ul>
