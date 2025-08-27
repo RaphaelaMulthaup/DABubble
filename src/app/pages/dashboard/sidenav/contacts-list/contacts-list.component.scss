@@ -9,16 +9,14 @@ app-contact-list-item {
     color: var(--color-purple-medium);
     filter: brightness(0);
     height: 46px;
-}
-
-.brightness-0 {
-    .arrow-dropdown {
-        rotate: -90deg;
-    }
 
     &:hover {
         filter: brightness(1);
     }
+}
+
+.arrow-rotate {
+    rotate: -90deg;
 }
 
 .contacts-list {
