@@ -7,13 +7,23 @@
   /><img class="search-icon" src="./../../../../assets/img/search.svg" alt="" />
 </div>
 
-<ul>
-  @for (result of results; track $index) {
-  <li>
-    <strong>{{ result.type }}</strong
-    >: {{ result.name || result.text }} @if(result.email){
-    <span>({{ result.email }})</span>
+
+
+@if (results().length > 0) {
+  <ul class="results-list">
+    @for (item of results(); track item.id) {
+      <li>
+        @switch (item.type) {
+          @case ('user') { 👤 {{ item.name }} ({{ item.email }}) }
+          @case ('channel') { # {{ item.name }} }
+          @case ('chatMessage') { 💬 {{ item.text }} }
+          @case ('channelMessage') { 💬 [Channel] {{ item.text }} }
+          @case ('answer') { ↪ {{ item.text }} }
+          @default { {{ item | json }} }
+        }
+      </li>
     }
-  </li>
-  }
-</ul>
+  </ul>
+} @else {
+  <div>Keine Treffer</div>
+}

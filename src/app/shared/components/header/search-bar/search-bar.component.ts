@@ -1,35 +1,31 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { debounceTime } from 'rxjs';
+import { debounceTime, startWith, map, Observable } from 'rxjs';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { SearchService } from '../../../../services/search.service';
+import { JsonPipe } from '@angular/common';
 
 @Component({
   selector: 'app-search-bar',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, JsonPipe ],
   templateUrl: './search-bar.component.html',
   styleUrls: ['./search-bar.component.scss'],
 })
 export class SearchBarComponent {
-  searchControl = new FormControl('');
-  results: any[] = [];
-
+    // Falls du noch andere Dinge injizierst:
   searchService = inject(SearchService);
-  constructor() {}
+  // Non-nullable => valueChanges ist Observable<string> (kein null mehr)
+  searchControl = new FormControl<string>('', { nonNullable: true });
 
-  async ngOnInit() {
-    // Daten laden
-    await this.searchService.loadData();
+  private term$: Observable<string> = this.searchControl.valueChanges.pipe(
+    startWith(this.searchControl.value),
+    debounceTime(300),
+    map(v => v.trim())
+  );
 
-    // Live-Suche mit Debounce
-    this.searchControl.valueChanges
-      .pipe(debounceTime(300))
-      .subscribe((term) => {
-        if (term && term.trim() !== '') {
-          this.results = this.searchService.search(term);
-        } else {
-          this.results = [];
-        }
-      });
-  }
+  // results als Signal via toSignal – keine manuellen Subscribes nötig
+  results = toSignal(this.searchService.search(this.term$), { initialValue: [] });
+
+
 }
