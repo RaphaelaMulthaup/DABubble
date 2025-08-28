@@ -1,6 +1,18 @@
 import { Injectable } from '@angular/core';
-import { Firestore, collection, collectionData } from '@angular/fire/firestore';
-import { BehaviorSubject, combineLatest, map, Observable } from 'rxjs';
+import {
+  Firestore,
+  collection,
+  collectionData,
+  CollectionReference,
+  DocumentData,
+} from '@angular/fire/firestore';
+import {
+  BehaviorSubject,
+  combineLatest,
+  map,
+  Observable,
+  switchMap,
+} from 'rxjs';
 
 interface User {
   id: string;
@@ -25,6 +37,13 @@ interface Answer extends Message {
   parentMessageId: string;
 }
 
+type SearchResult =
+  | (User & { type: 'user' })
+  | (Channel & { type: 'channel' })
+  | (Message & { type: 'chatMessage' })
+  | (Message & { type: 'channelMessage' })
+  | (Answer & { type: 'answer' });
+
 @Injectable({ providedIn: 'root' })
 export class SearchService {
   private users$ = new BehaviorSubject<User[]>([]);
@@ -37,6 +56,7 @@ export class SearchService {
     this.listenToUsers();
     this.listenToChannels();
     this.listenToChats();
+    this.listenToChannelMessages();
   }
 
   private listenToUsers() {
@@ -53,94 +73,106 @@ export class SearchService {
     );
   }
 
-  private async listenToChats() {
+  private listenToChats() {
     const chatsCol = collection(this.firestore, 'chats');
-    collectionData(chatsCol, { idField: 'id' }).subscribe(async (chats) => {
-      const chatMsgs: Message[] = [];
-      const ans: Answer[] = [];
-      const channelMsgs: Message[] = [];
-
-      for (const chat of chats as any[]) {
-        // Chat-Messages
+    collectionData(chatsCol, { idField: 'id' }).subscribe((chats: any[]) => {
+      chats.forEach((chat) => {
         const msgCol = collection(this.firestore, `chats/${chat.id}/messages`);
-        const msgs = await collectionData(msgCol, {
-          idField: 'id',
-        }).toPromise();
-        for (const m of msgs as any[]) {
-          chatMsgs.push({ ...m, chatId: chat.id });
-          // Answers
-          const ansCol = collection(
-            this.firestore,
-            `chats/${chat.id}/messages/${m.id}/answers`
-          );
-          const answersData = (await collectionData(ansCol, {
-            idField: 'id',
-          }).toPromise()) as Answer[];
-          answersData.forEach((a) =>
-            ans.push({ ...a, parentMessageId: m.id, chatId: chat.id })
-          );
-        }
-      }
+        collectionData(msgCol, { idField: 'id' }).subscribe((msgs: any[]) => {
+          const enriched = msgs.map((m) => ({ ...m, chatId: chat.id }));
+          this.chatMessages$.next([...this.chatMessages$.value, ...enriched]);
 
-      // Channel-Messages
-      const channels = this.channels$.value;
-      for (const channel of channels) {
+          // für jede Message Answers anhören
+          msgs.forEach((m) => {
+            const ansCol = collection(
+              this.firestore,
+              `chats/${chat.id}/messages/${m.id}/answers`
+            );
+            collectionData(ansCol, { idField: 'id' }).subscribe(
+              (ans: any[]) => {
+                const enrichedAns = ans.map((a) => ({
+                  ...a,
+                  parentMessageId: m.id,
+                  chatId: chat.id,
+                }));
+                this.answers$.next([...this.answers$.value, ...enrichedAns]);
+              }
+            );
+          });
+        });
+      });
+    });
+  }
+
+  private listenToChannelMessages() {
+    this.channels$.subscribe((channels) => {
+      channels.forEach((channel) => {
         const msgCol = collection(
           this.firestore,
           `channels/${channel.id}/messages`
         );
-        const msgs = await collectionData(msgCol, {
-          idField: 'id',
-        }).toPromise();
-        for (const m of msgs as any[]) {
-          channelMsgs.push({ ...m, channelId: channel.id });
-          const ansCol = collection(
-            this.firestore,
-            `channels/${channel.id}/messages/${m.id}/answers`
-          );
-          const answersData = (await collectionData(ansCol, {
-            idField: 'id',
-          }).toPromise()) as Answer[];
-          answersData.forEach((a) =>
-            ans.push({ ...a, parentMessageId: m.id, channelId: channel.id })
-          );
-        }
-      }
+        collectionData(msgCol, { idField: 'id' }).subscribe((msgs: any[]) => {
+          const enriched = msgs.map((m) => ({ ...m, channelId: channel.id }));
+          this.channelMessages$.next([
+            ...this.channelMessages$.value,
+            ...enriched,
+          ]);
 
-      this.chatMessages$.next(chatMsgs);
-      this.channelMessages$.next(channelMsgs);
-      this.answers$.next(ans);
+          msgs.forEach((m) => {
+            const ansCol = collection(
+              this.firestore,
+              `channels/${channel.id}/messages/${m.id}/answers`
+            );
+            collectionData(ansCol, { idField: 'id' }).subscribe(
+              (ans: any[]) => {
+                const enrichedAns = ans.map((a) => ({
+                  ...a,
+                  parentMessageId: m.id,
+                  channelId: channel.id,
+                }));
+                this.answers$.next([...this.answers$.value, ...enrichedAns]);
+              }
+            );
+          });
+        });
+      });
     });
   }
 
-  // Reaktive Suche: Observable, das auf Änderungen reagiert
- search(term$: Observable<string>) {
+  search(term$: Observable<string>): Observable<SearchResult[]> {
     return combineLatest([
       term$,
       this.users$,
       this.channels$,
       this.chatMessages$,
       this.channelMessages$,
-      this.answers$
+      this.answers$,
     ]).pipe(
       map(([term, users, channels, chatMessages, channelMessages, answers]) => {
         const t = (term ?? '').toLowerCase();
-        if (!t) return [];
+        if (!t) return [] as SearchResult[];
 
-        const results: any[] = [];
-        results.push(
-          ...users.filter(u => u.name?.toLowerCase().includes(t) || u.email?.toLowerCase().includes(t))
-                  .map(u => ({ type: 'user', ...u })),
-          ...channels.filter(c => c.name?.toLowerCase().includes(t))
-                     .map(c => ({ type: 'channel', ...c })),
-          ...chatMessages.filter(m => m.text?.toLowerCase().includes(t))
-                         .map(m => ({ type: 'chatMessage', ...m })),
-          ...channelMessages.filter(m => m.text?.toLowerCase().includes(t))
-                            .map(m => ({ type: 'channelMessage', ...m })),
-          ...answers.filter(a => a.text?.toLowerCase().includes(t))
-                    .map(a => ({ type: 'answer', ...a }))
-        );
-        return results;
+        return [
+          ...users
+            .filter(
+              (u) =>
+                u.name?.toLowerCase().includes(t) ||
+                u.email?.toLowerCase().includes(t)
+            )
+            .map((u) => ({ type: 'user' as const, ...u })), // <--- hier
+          ...channels
+            .filter((c) => c.name?.toLowerCase().includes(t))
+            .map((c) => ({ type: 'channel' as const, ...c })), // <--- hier
+          ...chatMessages
+            .filter((m) => m.text?.toLowerCase().includes(t))
+            .map((m) => ({ type: 'chatMessage' as const, ...m })), // <--- hier
+          ...channelMessages
+            .filter((m) => m.text?.toLowerCase().includes(t))
+            .map((m) => ({ type: 'channelMessage' as const, ...m })), // <--- hier
+          ...answers
+            .filter((a) => a.text?.toLowerCase().includes(t))
+            .map((a) => ({ type: 'answer' as const, ...a })), // <--- hier
+        ] as SearchResult[];
       })
     );
   }
