@@ -1,14 +1,46 @@
+@import "./../../../../styles.scss";
+
 header {
+    //nonAuth
   padding: 75px;
   padding-bottom: 0;
+
+  @include dFlex($g: 20px);
 
   .logoFinal {
     height: 70px;
     width: 241px;
-    // visibility: hidden;
+    visibility: hidden;
   }
 
   .showLogo {
     visibility: visible;
+  }
+}
+
+.header-on-dashboard {
+    padding: ;
+}
+
+input {
+  width: unset;
+  flex: 1;
+}
+
+.current-user {
+  @include dFlex($jc: flex-end, $g: 20px);
+}
+
+h1 {
+  white-space: nowrap;
+  color: var(--color-black);
+}
+
+.arrow-down {
+  height: 30px;
+  aspect-ratio: 1;
+  background-image: url("./../../../../assets/img/keyboard-arrow-down-black.svg");
+  &:hover {
+    background-image: url("./../../../../assets/img/keyboard-arrow-down-blue.svg");
   }
 }

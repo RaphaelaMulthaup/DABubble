@@ -3,9 +3,9 @@
         <img class="logoFinal" src="assets/img/logo.png" alt="Logo DABubble">
     </div>
     <input type="text" class="input-secondary">
-    <div>
-        <span></span>
-        <img src="" alt="">
-        <img src="" alt="">
+    <div class="current-user">
+        <h1>{{ (currentUser$ | async)?.name }}</h1>
+        <img [src]="(currentUser$ | async)?.photoUrl" alt="Profilbild">
+        <button class="arrow-down"></button>
     </div>
 </header>
