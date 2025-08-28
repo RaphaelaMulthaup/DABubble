@@ -12,6 +12,7 @@ import { ChatActiveRouterService } from '../../services/chat-active-router.servi
 import { ActivatedRoute } from '@angular/router';
 import { Observable, throwError } from 'rxjs';
 import { HttpParams } from '@angular/common/http';
+import { MobileDashboardState } from '../../shared/mobile-dashboard-state.type';
 
 @Component({
   selector: 'app-dashboard',
@@ -21,7 +22,7 @@ import { HttpParams } from '@angular/common/http';
     ConversationWindowComponent,
     OverlayComponent,
     CommonModule,
-    HeaderComponent,
+    HeaderComponent
   ],
   templateUrl: './dashboard.component.html', // HTML template for the dashboard
   styleUrl: './dashboard.component.scss', // Styles for the dashboard
@@ -34,6 +35,8 @@ export class DashboardComponent {
   private authService = inject(AuthService);
   private chatActiveRouterService = inject(ChatActiveRouterService);
   private route = inject(ActivatedRoute);
+
+  currentState: MobileDashboardState='message-window';
 
   messages$ = this.route.paramMap.pipe(
     switchMap((params) =>

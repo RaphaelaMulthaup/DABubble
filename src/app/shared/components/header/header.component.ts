@@ -1,8 +1,9 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, EventEmitter, inject, OnInit, Output } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
 import { Observable } from 'rxjs';
 import { UserInterface } from '../../models/user.interface';
 import { AsyncPipe } from '@angular/common';
+import { MobileDashboardState } from '../../mobile-dashboard-state.type';
 
 @Component({
   selector: 'app-header',
@@ -14,6 +15,8 @@ export class HeaderComponent implements OnInit {
   private authService = inject(AuthService);
 
   currentUser$?: Observable<UserInterface | null>;
+
+  @Output() changeMobileDashboardState = new EventEmitter<MobileDashboardState>();
 
   ngOnInit(): void {
     //wenn noch nicht eingeloggt
@@ -30,5 +33,9 @@ export class HeaderComponent implements OnInit {
   showFinalLogo() {
     let finalLogo = document.querySelector('.logo-final');
     finalLogo?.classList.add('showLogo');
+  }
+
+  backToSidenav() {
+    this.changeMobileDashboardState.emit('sidenav');
   }
 }
