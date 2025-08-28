@@ -70,7 +70,7 @@ export class MessageService {
    * @param parentPath - Path to the parent document (e.g. "chats/{chatId}").
    * @param subcollectionName - Name of the subcollection (e.g. "messages").
    * @param messageId - ID of the message being reacted to.
-   * @param emoji - Emoji identifier (used as document ID in "reactions" subcollection).
+   * @param emoji - the image-path for the chosen emoji.
    * @returns A Promise that resolves once the reaction update has been applied.
    */
   async toggleReaction(
@@ -96,6 +96,7 @@ export class MessageService {
         // User already reacted → remove their reaction
         await updateDoc(reactionRef, {
           users: arrayRemove(userId),
+          //maybe add to delete doc in firestore, if there are no users with this reactin left?
         });
       } else {
         // User has not reacted → add their reaction
@@ -112,6 +113,12 @@ export class MessageService {
     }
   }
 
+  /**
+   * This functions uses the emoji to convert it to a proper reaction-id.
+   *
+   * @param emoji - the image-path for the chosen emoji.
+   * @returns an adjusted string (the name of the emoji with '_' instead of '-')
+   */
   getReactionId(emoji: string):string {
     return emoji.substring(18, emoji.length-4).replace(/-/g, '_');
   }

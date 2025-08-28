@@ -129,7 +129,6 @@ export class DisplayedPostComponent {
 
     //das abonniert den event emitter vom emoji-picker component
     ref!.instance.selectedEmoji.subscribe((emoji: string) => {
-      // console.log(emoji);
       this.messageService.toggleReaction(
         '/' + this.currentType + 's/' + this.currentChannelId,
         'messages',
@@ -147,53 +146,17 @@ export class DisplayedPostComponent {
     this.overlayService.close();
   }
 
-  // /**
-  //  * Checks if the message was sent by the currently logged-in user
-  //  * Used to adjust styling (e.g., alignment or colors)
-  //  */
-  // checkIfSenderIsCurrentUser() {
-  //   if (this.message && this.senderId == this.authService.getCurrentUserId()) {
-  //     this.senderIsCurrentUser = true;
-  //   }
-  // }
-
-  // /**
-  //  * Fetches sender information (name, photo) from Firestore
-  //  * Subscribes to updates in case the user data changes
-  //  */
-  // loadSenderInfo() {
-  //   this.userService.getUserById(this.senderId).subscribe({
-  //     next: (user) => {
-  //       this.senderPhotoUrl = user.photoUrl;
-  //       this.senderName = user.name;
-  //     },
-  //     error: (err) => {
-  //       console.error('Error loading user', err);
-  //     },
-  //   });
-  // }
-
-  // /**
-  //  * Formats the createdAt timestamp into a human-readable HH:mm format
-  //  * Supports both Firestore Timestamp and plain Date/number values
-  //  */
-  // formatCreatedAt() {
-  //   if (this.message?.createdAt) {
-  //     let date: Date;
-
-  //     if (this.message.createdAt instanceof Timestamp) {
-  //       // Firestore Timestamp → convert to JS Date
-  //       date = this.message.createdAt.toDate();
-  //     } else {
-  //       // Fallback if createdAt is already a Date or number
-  //       date = new Date(this.message.createdAt);
-  //     }
-
-  //     // Format into local time string (HH:mm)
-  //     this.createdAtTime = date.toLocaleTimeString([], {
-  //       hour: '2-digit',
-  //       minute: '2-digit',
-  //     });
-  //   }
-  // }
+  /**
+   * This functions toggles the users reaction, if the users clicks on an already chosen emoji (by any user) in the reactions-div
+   * 
+   *  @param emoji - the image-path for the chosen emoji.
+   */
+  toggleExistingReaction(emoji:string) {
+    this.messageService.toggleReaction(
+      '/' + this.currentType + 's/' + this.currentChannelId,
+      'messages',
+      this.message.id!,
+      emoji
+    )
+  }
 }
