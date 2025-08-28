@@ -1,14 +1,15 @@
 @import "./../../../../styles.scss";
 
 header {
-  @include dFlex($g: 20px);
+  // @include dFlex($g: 20px);
   background-color: var(--color-purple-white);
 }
 
 .header-on-non-auth {
   padding: 75px;
   padding-bottom: 0;
-  .logoFinal {
+
+  .logo-final {
     height: 70px;
     width: 241px;
     visibility: hidden;
@@ -20,10 +21,33 @@ header {
 }
 
 .header-on-dashboard {
-  padding: 25px 34px 20px 50px;
-  .logoFinal {
-    width: 242px;
-    height: 70px;
+  // padding: 25px 34px 20px 50px;
+  padding: 16px;
+
+  .logo-box {
+
+    .logo-final {
+      // width: 242px;
+      // height: 70px;
+      width: 162px;
+      height: 45px;
+    }
+
+    .logo-channel {
+      gap: 4px;
+
+      img {
+        height: 50px;
+        aspect-ratio: 1;
+        border-radius: 50%;
+      }
+
+      p {
+        padding-left: 4px;
+        font-size: 20px;
+        font-weight: 700;
+      }
+    }
   }
 }
 
@@ -35,7 +59,6 @@ header {
 }
 
 input {
-  //   width: 100%;
   flex: 1;
   height: 100%;
   border-radius: 42px;
@@ -46,8 +69,8 @@ input {
 }
 
 .search-icon {
-    position: absolute;
-    right: 45px;
+  position: absolute;
+  right: 45px;
 }
 
 .current-user {
@@ -57,19 +80,27 @@ input {
 h1 {
   white-space: nowrap;
   color: var(--color-black);
+  // display: block;
+  display: none;
 }
 
 .profil-img {
-  height: 70px;
+  // height: 70px;
+  height: 50px;
   aspect-ratio: 1;
   border-radius: 50%;
 }
 
-.arrow-down {
+.arrow-btn {
   height: 30px;
   aspect-ratio: 1;
   background-image: url("./../../../../assets/img/keyboard-arrow-down-black.svg");
+
   &:hover {
     background-image: url("./../../../../assets/img/keyboard-arrow-down-blue.svg");
   }
+}
+
+.arrow-back {
+  rotate: 90deg;
 }

@@ -28,7 +28,7 @@ export class HeaderComponent implements OnInit {
    * Shows Logo in the final position of the intro animation
    */
   showFinalLogo() {
-    let finalLogo = document.querySelector('.logoFinal');
+    let finalLogo = document.querySelector('.logo-final');
     finalLogo?.classList.add('showLogo');
   }
 }

@@ -16,13 +16,13 @@ app-conversation-header {
 app-window-display {
   overflow-y: auto;
   margin-top: 68px;
-  margin-bottom: 196px;
+  margin-bottom: 172px;
   padding: 0 16px;
 }
 
 app-current-post-input {
   position: absolute;
-  bottom: 24px;
+  bottom: 0px;
   right: 16px;
   left: 16px;
   background-color: var(--color-white);
