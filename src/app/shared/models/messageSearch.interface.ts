@@ -5,4 +5,5 @@ export interface MessageSearchInterface
   senderId: string;
   chatId?: string;
   channelId?: string;
+  channelName?: string;
 }

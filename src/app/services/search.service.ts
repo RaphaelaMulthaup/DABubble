@@ -76,40 +76,45 @@ export class SearchService {
     });
   }
 
-  private listenToChannelMessages() {
-    this.channels$.subscribe((channels) => {
-      channels.forEach((channel) => {
-        const msgCol = collection(
-          this.firestore,
-          `channels/${channel.id}/messages`
-        );
-        collectionData(msgCol, { idField: 'id' }).subscribe((msgs: any[]) => {
-          const enriched = msgs.map((m) => ({ ...m, channelId: channel.id }));
-          this.channelMessages$.next([
-            ...this.channelMessages$.value,
-            ...enriched,
-          ]);
+private listenToChannelMessages() {
+  this.channels$.subscribe((channels) => {
+    channels.forEach((channel) => {
+      const msgCol = collection(
+        this.firestore,
+        `channels/${channel.id}/messages`
+      );
+      collectionData(msgCol, { idField: 'id' }).subscribe((msgs: any[]) => {
+        const enriched = msgs.map((m) => ({
+          ...m,
+          channelId: channel.id,
+          channelName: channel.name, // <-- Channelname hinzufügen
+        }));
+        this.channelMessages$.next([
+          ...this.channelMessages$.value,
+          ...enriched,
+        ]);
 
-          msgs.forEach((m) => {
-            const ansCol = collection(
-              this.firestore,
-              `channels/${channel.id}/messages/${m.id}/answers`
-            );
-            collectionData(ansCol, { idField: 'id' }).subscribe(
-              (ans: any[]) => {
-                const enrichedAns = ans.map((a) => ({
-                  ...a,
-                  parentMessageId: m.id,
-                  channelId: channel.id,
-                }));
-                this.answers$.next([...this.answers$.value, ...enrichedAns]);
-              }
-            );
-          });
+        msgs.forEach((m) => {
+          const ansCol = collection(
+            this.firestore,
+            `channels/${channel.id}/messages/${m.id}/answers`
+          );
+          collectionData(ansCol, { idField: 'id' }).subscribe(
+            (ans: any[]) => {
+              const enrichedAns = ans.map((a) => ({
+                ...a,
+                parentMessageId: m.id,
+                channelId: channel.id,
+                channelName: channel.name, // <-- Channelname hinzufügen
+              }));
+              this.answers$.next([...this.answers$.value, ...enrichedAns]);
+            }
+          );
         });
       });
     });
-  }
+  });
+}
 
   search(term$: Observable<string>): Observable<SearchResult[]> {
     return combineLatest([

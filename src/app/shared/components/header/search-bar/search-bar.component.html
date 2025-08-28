@@ -16,9 +16,9 @@
           @case ('user') { 👤 {{ item.name }} }
           @case ('channel') { # {{ item.name }} }
           @case ('chatMessage') { 💬 {{ item.text }} }
-          @case ('channelMessage') { 💬 [Channel] {{ item.text }} }
-          @case ('answer') { ↪ {{ item.text }} }
-          @default { {{ item | json }} }
+          @case ('channelMessage') { 💬 #{{ item.channelName }} {{ item.text }} }
+          @case ('answer') { ↪ #{{ item.channelName }} {{ item.text }} }          
+        @default { {{ item | json }} }
         }
       </li>
     }
