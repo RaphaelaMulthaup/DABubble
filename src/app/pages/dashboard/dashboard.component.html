@@ -1,5 +1,5 @@
 <section class="dashboard w-full">
-  <app-header (changeMobileDashboardState)="currentState = $event"/>
+  <app-header [currentMobileDashboardState]="currentState" (changeMobileDashboardState)="currentState = $event"/>
 
   <div class="w-full h-full">
     @if (currentState == 'sidenav') {

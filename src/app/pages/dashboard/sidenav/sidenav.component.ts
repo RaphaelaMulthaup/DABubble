@@ -11,7 +11,7 @@ import { MobileDashboardState } from '../../../shared/mobile-dashboard-state.typ
   styleUrl: './sidenav.component.scss'
 })
 export class SidenavComponent {
-  
+
   /** AuthService instance for authentication-related operations */
   private authService = inject(AuthService);
 
@@ -29,5 +29,10 @@ export class SidenavComponent {
     this.user$.subscribe(user => {
       this.userDisplayName = user?.displayName ?? null;
     });
+  }
+
+  //needs to be connected to channels- and contacts-list
+  goToMessageWindow() {
+    this.changeMobileDashboardState.emit('message-window');
   }
 }

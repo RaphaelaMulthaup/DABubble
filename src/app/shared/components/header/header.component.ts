@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
 import { Observable } from 'rxjs';
 import { UserInterface } from '../../models/user.interface';
@@ -16,6 +16,7 @@ export class HeaderComponent implements OnInit {
 
   currentUser$?: Observable<UserInterface | null>;
 
+  @Input() currentMobileDashboardState: MobileDashboardState = 'sidenav';
   @Output() changeMobileDashboardState = new EventEmitter<MobileDashboardState>();
 
   ngOnInit(): void {
