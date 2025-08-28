@@ -1,3 +1,29 @@
-section{
+.conversation-window {
+  max-height: calc(100vh - 115px);
+  background-color: var(--color-white);
+  position: relative;
+  // >* {
+  //   padding: 0 16px;
+  // }
+}
+
+app-conversation-header {
+  background-color: var(--color-white);
+  position: absolute;
+  top: 0;
+}
+
+app-window-display {
+  overflow-y: auto;
+  margin-top: 68px;
+  margin-bottom: 196px;
+  padding: 0 16px;
+}
+
+app-current-post-input {
+  position: absolute;
+  bottom: 24px;
+  right: 16px;
+  left: 16px;
   background-color: var(--color-white);
 }

@@ -1,4 +1,4 @@
-<div class="message-card" [ngClass]="{ 'message-current-user': senderIsCurrentUser$ | async }">
+<div class="message-card w-full" [ngClass]="{ 'message-current-user': senderIsCurrentUser$ | async }">
   <div>
     @if(senderPhotoUrl$ | async; as photoUrl) {
     <img class="profil-img" [src]="senderPhotoUrl$ | async" alt="Profilbild" (click)="displayProfileViewOtherUser()" />
@@ -14,11 +14,11 @@
     <div class="text">{{ message.text }}</div>
 
     <!-- if-query to check if there are any answers and only show if true-->
-    <div class="answers flex flex-row">
-      <button class="link" (click)="openAnswers(message.id!)">
+    <div class="answers flex flex-col items-start">
+      <button class="link w-full" (click)="openAnswers(message.id!)">
         x Antworten
       </button>
-      <span class="message-time">Letzte Antwort {{ createdAtTime$ | async }} Uhr</span>
+      <span class="message-time w-full">Letzte Antwort {{ createdAtTime$ | async }} Uhr</span>
     </div>
 
     <div class="interactions flex flex-row">

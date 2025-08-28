@@ -1,7 +1,6 @@
 @import "./../../../../../../styles.scss";
 
 .message-card {
-  width: 100%;
   padding: 16px 48px 16px 16px;
   @include dFlex($jc: flex-start, $ai: flex-start, $g: 16px);
 }
@@ -60,18 +59,17 @@
     }
 
     .reaction-img {
-      width: 24px;
-      height: 24px;
+      width: 32px;
+      height: 32px;
     }
   }
-
-  // .add-reaction {
-  //   position: relative;
-  // }
 }
 
 .answers {
-  gap: 20px;
+  gap: 4px;
+  button {
+    text-align: left;
+  }
 }
 
 .message-current-user {
@@ -93,7 +91,10 @@
     }
 
     .answers {
-      flex-direction: row-reverse;
+      // flex-direction: row-reverse;
+      button {
+        text-align: right;
+      }
     }
   }
 }

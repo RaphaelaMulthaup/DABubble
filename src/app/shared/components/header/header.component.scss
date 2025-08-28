@@ -2,6 +2,7 @@
 
 header {
   @include dFlex($g: 20px);
+  background-color: var(--color-purple-white);
 }
 
 .header-on-non-auth {
