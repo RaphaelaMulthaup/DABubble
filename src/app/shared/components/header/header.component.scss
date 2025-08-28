@@ -1,12 +1,12 @@
 @import "./../../../../styles.scss";
 
 header {
-    //nonAuth
+  @include dFlex($g: 20px);
+}
+
+.header-on-non-auth {
   padding: 75px;
   padding-bottom: 0;
-
-  @include dFlex($g: 20px);
-
   .logoFinal {
     height: 70px;
     width: 241px;
@@ -19,12 +19,34 @@ header {
 }
 
 .header-on-dashboard {
-    padding: ;
+  padding: 25px 34px 20px 50px;
+  .logoFinal {
+    width: 242px;
+    height: 70px;
+  }
+}
+
+.input-wrapper {
+  height: 70px;
+  flex: 1;
+  @include dFlex();
+  position: relative;
 }
 
 input {
-  width: unset;
+  //   width: 100%;
   flex: 1;
+  height: 100%;
+  border-radius: 42px;
+  width: unset;
+  padding: 0 80px 0 45px;
+  line-height: 70px;
+  font-size: 24px;
+}
+
+.search-icon {
+    position: absolute;
+    right: 45px;
 }
 
 .current-user {
@@ -34,6 +56,12 @@ input {
 h1 {
   white-space: nowrap;
   color: var(--color-black);
+}
+
+.profil-img {
+  height: 70px;
+  aspect-ratio: 1;
+  border-radius: 50%;
 }
 
 .arrow-down {
