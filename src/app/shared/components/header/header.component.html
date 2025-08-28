@@ -2,6 +2,7 @@
   <div class="logo-box flex justify-center">
     <img class="logoFinal" src="assets/img/logo.png" alt="Logo DABubble" />
   </div>
+  @if (currentUser$ | async) {
   <app-search-bar></app-search-bar>
   <div class="current-user">
     <h1>{{ (currentUser$ | async)?.name }}</h1>
@@ -12,4 +13,5 @@
     />
     <button class="arrow-down"></button>
   </div>
+  }
 </header>
