@@ -1,0 +1,19 @@
+<div class="input-wrapper">
+  <input
+    type="text"
+    class="input-secondary"
+    placeholder="Devspace durchsuchen"
+    [formControl]="searchControl"
+  /><img class="search-icon" src="./../../../../assets/img/search.svg" alt="" />
+</div>
+
+<ul>
+  @for (result of results; track $index) {
+  <li>
+    <strong>{{ result.type }}</strong
+    >: {{ result.name || result.text }} @if(result.email){
+    <span>({{ result.email }})</span>
+    }
+  </li>
+  }
+</ul>

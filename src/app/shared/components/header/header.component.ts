@@ -3,10 +3,11 @@ import { AuthService } from '../../../services/auth.service';
 import { Observable } from 'rxjs';
 import { UserInterface } from '../../models/user.interface';
 import { AsyncPipe } from '@angular/common';
+import { SearchBarComponent } from './search-bar/search-bar.component';
 
 @Component({
   selector: 'app-header',
-  imports: [AsyncPipe],
+  imports: [AsyncPipe, SearchBarComponent],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss',
 })
