@@ -14,10 +14,26 @@
       <li>
         @switch (item.type) {
           @case ('user') { 👤 {{ item.name }} }
-          @case ('channel') { # {{ item.name }} }
-          @case ('chatMessage') { 💬 {{ item.text }} }
-          @case ('channelMessage') { 💬 #{{ item.channelName }} {{ item.text }} }
-          @case ('answer') { ↪ #{{ item.channelName }} {{ item.text }} }          
+          @case ('channel') { 
+            <div class="tag"></div>
+            {{ item.name }} 
+          }
+          @case ('chatMessage') { 
+            <div class="chat-bubble"></div>
+            {{ item.text }}
+          }
+          @case ('channelMessage') { 
+            <div class="chat-bubble"></div>
+            <div class="tag"></div>
+            <span class="channel-name">{{ item.channelName }}:</span>
+            {{ item.text }}
+          }
+          @case ('answer') { 
+            <div class="chat-bubble"></div>
+            <div class="tag"></div>
+            <span class="channel-name">{{ item.channelName }}:</span>
+            {{ item.text }}
+          }          
         @default { {{ item | json }} }
         }
       </li>

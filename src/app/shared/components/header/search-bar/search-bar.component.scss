@@ -1,4 +1,4 @@
-@import './../../../../../styles.scss';
+@import "./../../../../../styles.scss";
 
 .input-wrapper {
   height: 70px;
@@ -17,6 +17,29 @@ input {
 }
 
 .search-icon {
-    position: absolute;
-    right: 45px;
+  position: absolute;
+  right: 45px;
+}
+
+//später in andere Conponent in overlay
+.tag {
+  width: 24px;
+  aspect-ratio: 1;
+  background-image: url("./../../../../../assets/img/tag-black.svg");
+  // &:hover{
+
+  // }
+}
+
+.chat-bubble {
+  width: 24px;
+  aspect-ratio: 1;
+  background-image: url("./../../../../../assets/img/chat-bubble-black.svg");
+  background-repeat: no-repeat;  
+  background-position: center; 
+  background-size: auto;
+}
+
+.channel-name {
+  font-weight: 700;
 }
