@@ -1,19 +1,10 @@
 import { Injectable } from '@angular/core';
-import {
-  Firestore,
-  collection,
-  collectionData,
-} from '@angular/fire/firestore';
-import {
-  BehaviorSubject,
-  combineLatest,
-  map,
-  Observable,
-} from 'rxjs';
-import { UserSearchInterface } from '../shared/models/userSearch.interface'
-import { ChannelSearchInterface } from '../shared/models/channelSearch.interface'
-import { MessageSearchInterface } from '../shared/models/messageSearch.interface'
-import { AnswerSearchInterface } from '../shared/models/answerSearch.interface'
+import { Firestore, collection, collectionData } from '@angular/fire/firestore';
+import { BehaviorSubject, combineLatest, map, Observable } from 'rxjs';
+import { UserSearchInterface } from '../shared/models/userSearch.interface';
+import { ChannelSearchInterface } from '../shared/models/channelSearch.interface';
+import { MessageSearchInterface } from '../shared/models/messageSearch.interface';
+import { AnswerSearchInterface } from '../shared/models/answerSearch.interface';
 import { SearchResult } from '../shared/search-result.type';
 import { AuthService } from './auth.service';
 
@@ -39,33 +30,43 @@ export class SearchService {
     );
   }
 
-private listenToChannels() {
-  const currentUserId = this.authService.currentUser?.uid;
+  private listenToChannels() {
+    const currentUserId = this.authService.currentUser?.uid;
 
-  const channelsCol = collection(this.firestore, 'channels');
-  collectionData(channelsCol, { idField: 'id' }).subscribe((data: any[]) => {
-    if (!currentUserId) {
-      this.channels$.next([]);
-      return;
-    }
+    const channelsCol = collection(this.firestore, 'channels');
+    collectionData(channelsCol, { idField: 'id' }).subscribe((data: any[]) => {
+      if (!currentUserId) {
+        this.channels$.next([]);
+        return;
+      }
 
-    const userChannels = data.filter(channel =>
-      channel.memberIds?.includes(currentUserId)
-    );
+      const userChannels = data.filter((channel) =>
+        channel.memberIds?.includes(currentUserId)
+      );
 
-    this.channels$.next(userChannels as ChannelSearchInterface[]);
-  });
-}
+      this.channels$.next(userChannels as ChannelSearchInterface[]);
+    });
+  }
   private listenToChats() {
+    const currentUserId = this.authService.currentUser?.uid;
+    if (!currentUserId) return;
+
     const chatsCol = collection(this.firestore, 'chats');
     collectionData(chatsCol, { idField: 'id' }).subscribe((chats: any[]) => {
-      chats.forEach((chat) => {
+      // Filter nur die Chats, in denen der User ist
+      const userChats = chats.filter((chat) => {
+        const [user1, user2] = chat.id.split('_');
+        return user1 === currentUserId || user2 === currentUserId;
+      });
+
+      userChats.forEach((chat) => {
         const msgCol = collection(this.firestore, `chats/${chat.id}/messages`);
         collectionData(msgCol, { idField: 'id' }).subscribe((msgs: any[]) => {
+          // Nur Messages, die vom User gesendet wurden oder für den User relevant sind
           const enriched = msgs.map((m) => ({ ...m, chatId: chat.id }));
           this.chatMessages$.next([...this.chatMessages$.value, ...enriched]);
 
-          // für jede Message Answers anhören
+          // Answers nur für diesen Chat anhören
           msgs.forEach((m) => {
             const ansCol = collection(
               this.firestore,
@@ -87,34 +88,45 @@ private listenToChannels() {
     });
   }
 
-private listenToChannelMessages() {
-  this.channels$.subscribe((channels) => {
-    channels.forEach((channel) => {
-      const msgCol = collection(this.firestore, `channels/${channel.id}/messages`);
-      collectionData(msgCol, { idField: 'id' }).subscribe((msgs: any[]) => {
-        const enriched = msgs.map((m) => ({
-          ...m,
-          channelId: channel.id,
-          channelName: channel.name,
-        }));
-        this.channelMessages$.next([...this.channelMessages$.value, ...enriched]);
+  private listenToChannelMessages() {
+    this.channels$.subscribe((channels) => {
+      channels.forEach((channel) => {
+        const msgCol = collection(
+          this.firestore,
+          `channels/${channel.id}/messages`
+        );
+        collectionData(msgCol, { idField: 'id' }).subscribe((msgs: any[]) => {
+          const enriched = msgs.map((m) => ({
+            ...m,
+            channelId: channel.id,
+            channelName: channel.name,
+          }));
+          this.channelMessages$.next([
+            ...this.channelMessages$.value,
+            ...enriched,
+          ]);
 
-        msgs.forEach((m) => {
-          const ansCol = collection(this.firestore, `channels/${channel.id}/messages/${m.id}/answers`);
-          collectionData(ansCol, { idField: 'id' }).subscribe((ans: any[]) => {
-            const enrichedAns = ans.map((a) => ({
-              ...a,
-              parentMessageId: m.id,
-              channelId: channel.id,
-              channelName: channel.name,
-            }));
-            this.answers$.next([...this.answers$.value, ...enrichedAns]);
+          msgs.forEach((m) => {
+            const ansCol = collection(
+              this.firestore,
+              `channels/${channel.id}/messages/${m.id}/answers`
+            );
+            collectionData(ansCol, { idField: 'id' }).subscribe(
+              (ans: any[]) => {
+                const enrichedAns = ans.map((a) => ({
+                  ...a,
+                  parentMessageId: m.id,
+                  channelId: channel.id,
+                  channelName: channel.name,
+                }));
+                this.answers$.next([...this.answers$.value, ...enrichedAns]);
+              }
+            );
           });
         });
       });
     });
-  });
-}
+  }
 
   search(term$: Observable<string>): Observable<SearchResult[]> {
     return combineLatest([
