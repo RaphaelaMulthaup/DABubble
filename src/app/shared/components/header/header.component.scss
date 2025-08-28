@@ -73,6 +73,10 @@ input {
   right: 45px;
 }
 
+app-search-bar {
+  flex: 1;
+}
+
 .current-user {
   @include dFlex($jc: flex-end, $g: 20px);
 }
