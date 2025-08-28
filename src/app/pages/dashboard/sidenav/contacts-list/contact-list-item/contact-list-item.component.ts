@@ -10,7 +10,10 @@ import { Router } from '@angular/router';
   selector: 'app-contact-list-item', // Component selector used in parent templates
   imports: [], // No standalone Angular imports here
   templateUrl: './contact-list-item.component.html', // External HTML template
-  styleUrl: './contact-list-item.component.scss', // SCSS styles for this component
+  styleUrls: [
+    './contact-list-item.component.scss',
+    './../../../../../shared/styles/list-item.scss',
+  ],
 })
 export class ContactListItemComponent {
   // Input property that receives a user object from the parent component

@@ -1,11 +1,9 @@
-<div>
-  <div
-    class="flex gap-[10px] ml-[25px] cursor-pointer"
-    [routerLink]="['/dashboard', 'channel', channel.id]"
-  >
-    <div class="tag"></div>
-    <span>
-      {{ channel.name }}
-    </span>
-  </div>
+<div
+  class="list-item channel-list-item"
+  [routerLink]="['/dashboard', 'channel', channel.id]"
+>
+  <div class="tag"></div>
+  <span>
+    {{ channel.name }}
+  </span>
 </div>

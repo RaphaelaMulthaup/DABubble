@@ -6,7 +6,8 @@ import { RouterLink } from '@angular/router';
   selector: 'app-channel-list-item',
   imports: [RouterLink],
   templateUrl: './channel-list-item.component.html',
-  styleUrl: './channel-list-item.component.scss'
+  styleUrls: [ './channel-list-item.component.scss',
+    './../../../shared/styles/list-item.scss'],
 })
 export class ChannelListItemComponent {
   @Input() channel!: ChannelInterface;
