@@ -34,9 +34,9 @@ export class ContactsListComponent implements OnInit {
    */
   ngOnInit(): void {
     this.authService.currentUser$
-    .pipe(filter((user): user is UserInterface => user !== null))
-    .subscribe(user => this.currentUser = user);
-    
+      .pipe(filter((user): user is UserInterface => user !== null))
+      .subscribe((user) => (this.currentUser = user));
+
     this.contacts$ = this.authService.user$.pipe(
       switchMap((user) => {
         if (!user) {
@@ -51,12 +51,11 @@ export class ContactsListComponent implements OnInit {
           ),
           switchMap((contactIds) => {
             if (contactIds.length === 0) return of([]);
-            // combineLatest sorgt dafür, dass sich die Liste aktualisiert,
-            // sobald sich bei einem Kontakt was ändert (Name, Status etc.)
             return combineLatest(
               contactIds.map((id) => this.userService.getUserById(id))
             );
-          })
+          }),
+          map((users) => users.filter((u) => u.uid !== this.currentUser.uid)) // 🔑 Filter raus
         );
       })
     );
