@@ -3,7 +3,7 @@
     @if(senderPhotoUrl$ | async; as photoUrl) {
     <img class="profil-img" [src]="senderPhotoUrl$ | async" alt="Profilbild" (click)="displayProfileViewOtherUser()" />
     } @else {
-    <img class="profil-img" src="/assets/img/no-avatar.svg" alt="Profilbild">
+    <img class="profil-img" src="/assets/img/no-avatar.svg" alt="Profilbild" (click)="displayProfileViewOtherUser()">
     }
   </div>
   <div class="message-content">

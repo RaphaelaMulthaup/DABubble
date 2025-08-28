@@ -1,9 +1,10 @@
 <div class="overlay" (click)="$event.stopPropagation()">
   <header>
     <h2>{{ overlayService.headline }}</h2>
-    <button class="btn-tertiary" (click)="overlayService.hideOverlay()">
-      <img src="./../../assets/img/close.svg" alt="close" />
-    </button>
+    <button
+      class="btn-tertiary close"
+      (click)="overlayService.hideOverlay()"
+    ></button>
   </header>
   <ng-container
     *ngComponentOutlet="overlayService.overlayComponent"

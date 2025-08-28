@@ -11,20 +11,12 @@
       alt="Status"
     />
   </div>
-  <span>
-    {{ user.name }}
-  </span>
-
-  <!-- @if(user.uid !== currentUserId ) { @if(isAlreadyContact(user.uid)) {
-  <span>Already a contact</span>
-  <button (click)="removeContact(user.uid)">-</button>
-  }@else {
-  <button (click)="addContact(user.uid)">+</button>
-  } -->
-
-  <!-- @if(user.active) {
-  <span class="bg-green-400 px-[8px] rounded-full"></span>
-  }@else {
-  <span class="bg-red-400 px-[8px] rounded-xl"></span>
-  } -->
+  <div>
+    <span>
+      {{ user.name }}
+    </span>
+    @if (currentUserId == user.uid) {
+    <span>(Du)</span>
+    }
+  </div>
 </li>

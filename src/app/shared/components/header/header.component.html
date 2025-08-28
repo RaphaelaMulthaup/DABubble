@@ -1,8 +1,17 @@
-<header class="flex place-content-between items-center">
-    <div class="logo-box flex justify-center">
-        <img class="logoFinal" src="assets/img/logo.png" alt="Logo DABubble">
-    </div>
-
-    <!-- this is here only for desktop, if current page is non-auth and if login is active-->
-    <!-- <app-create-account-btn></app-create-account-btn> -->
+<header class="flex place-content-between items-center header-on-dashboard">
+  <div class="logo-box flex justify-center">
+    <img class="logoFinal" src="assets/img/logo.png" alt="Logo DABubble" />
+  </div>
+  <div class="input-wrapper">
+    <input type="text" class="input-secondary" placeholder="Devspace durchsuchen" /><img class="search-icon"
+      src="./../../../../assets/img/search.svg" alt="" />
+  </div>
+  <div class="current-user">
+    <h1>{{ (currentUser$ | async)?.name }}</h1>
+    <img class="profil-img" [src]="(currentUser$ | async)?.photoUrl" alt="Profilbild" />
+    <button class="arrow-down"></button>
+  </div>
 </header>
+
+<!-- this is here only for desktop, if current page is non-auth and if login is active-->
+<!-- <app-create-account-btn></app-create-account-btn> -->
