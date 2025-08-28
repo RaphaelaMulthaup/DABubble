@@ -13,44 +13,19 @@ import {
   Observable,
   switchMap,
 } from 'rxjs';
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-}
-
-interface Channel {
-  id: string;
-  name: string;
-}
-
-interface Message {
-  id: string;
-  text: string;
-  senderId: string;
-  chatId?: string;
-  channelId?: string;
-}
-
-interface Answer extends Message {
-  parentMessageId: string;
-}
-
-type SearchResult =
-  | (User & { type: 'user' })
-  | (Channel & { type: 'channel' })
-  | (Message & { type: 'chatMessage' })
-  | (Message & { type: 'channelMessage' })
-  | (Answer & { type: 'answer' });
+import { UserSearchInterface } from '../shared/models/userSearch.interface'
+import { ChannelSearchInterface } from '../shared/models/channelSearch.interface'
+import { MessageSearchInterface } from '../shared/models/messageSearch.interface'
+import { AnswerSearchInterface } from '../shared/models/answerSearch.interface'
+import { SearchResult } from '../shared/search-result.type';
 
 @Injectable({ providedIn: 'root' })
 export class SearchService {
-  private users$ = new BehaviorSubject<User[]>([]);
-  private channels$ = new BehaviorSubject<Channel[]>([]);
-  private chatMessages$ = new BehaviorSubject<Message[]>([]);
-  private channelMessages$ = new BehaviorSubject<Message[]>([]);
-  private answers$ = new BehaviorSubject<Answer[]>([]);
+  private users$ = new BehaviorSubject<UserSearchInterface[]>([]);
+  private channels$ = new BehaviorSubject<ChannelSearchInterface[]>([]);
+  private chatMessages$ = new BehaviorSubject<MessageSearchInterface[]>([]);
+  private channelMessages$ = new BehaviorSubject<MessageSearchInterface[]>([]);
+  private answers$ = new BehaviorSubject<AnswerSearchInterface[]>([]);
 
   constructor(private firestore: Firestore) {
     this.listenToUsers();
@@ -62,14 +37,14 @@ export class SearchService {
   private listenToUsers() {
     const usersCol = collection(this.firestore, 'users');
     collectionData(usersCol, { idField: 'id' }).subscribe((data) =>
-      this.users$.next(data as User[])
+      this.users$.next(data as UserSearchInterface[])
     );
   }
 
   private listenToChannels() {
     const channelsCol = collection(this.firestore, 'channels');
     collectionData(channelsCol, { idField: 'id' }).subscribe((data) =>
-      this.channels$.next(data as Channel[])
+      this.channels$.next(data as ChannelSearchInterface[])
     );
   }
 
