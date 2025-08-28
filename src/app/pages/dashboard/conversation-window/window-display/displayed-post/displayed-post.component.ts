@@ -129,7 +129,7 @@ export class DisplayedPostComponent {
 
     //das abonniert den event emitter vom emoji-picker component
     ref!.instance.selectedEmoji.subscribe((emoji: string) => {
-      // console.log('Emoji ausgewählt:', emoji);
+      // console.log(emoji);
       this.messageService.toggleReaction(
         '/' + this.currentType + 's/' + this.currentChannelId,
         'messages',

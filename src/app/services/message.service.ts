@@ -48,7 +48,7 @@ export class MessageService {
   async sendMessage(
     parentPath: string,
     subcollectionName: string,
-    message: Omit<MessageInterface,'createdAt'>
+    message: Omit<MessageInterface, 'createdAt'>
   ) {
     const messagesRef = collection(
       this.firestore,
@@ -80,9 +80,10 @@ export class MessageService {
     emoji: string,
   ) {
     let userId = this.authService.getCurrentUserId()!;
+    let reactionId = this.getReactionId(emoji);
     const reactionRef = doc(
       this.firestore,
-      `${parentPath}/${subcollectionName}/${messageId}/reactions/`
+      `${parentPath}/${subcollectionName}/${messageId}/reactions/${reactionId}`
     );
 
     const reactionSnap = await getDoc(reactionRef);
@@ -109,6 +110,10 @@ export class MessageService {
         users: [userId],
       });
     }
+  }
+
+  getReactionId(emoji: string):string {
+    return emoji.substring(18, emoji.length-4).replace(/-/g, '_');
   }
 
   /**
