@@ -3,15 +3,12 @@ import {
   Firestore,
   collection,
   collectionData,
-  CollectionReference,
-  DocumentData,
 } from '@angular/fire/firestore';
 import {
   BehaviorSubject,
   combineLatest,
   map,
   Observable,
-  switchMap,
 } from 'rxjs';
 import { UserSearchInterface } from '../shared/models/userSearch.interface'
 import { ChannelSearchInterface } from '../shared/models/channelSearch.interface'

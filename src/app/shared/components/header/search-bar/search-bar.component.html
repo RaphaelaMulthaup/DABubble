@@ -13,7 +13,7 @@
     @for (item of results(); track item.id) {
       <li>
         @switch (item.type) {
-          @case ('user') { 👤 {{ item.name }} ({{ item.email }}) }
+          @case ('user') { 👤 {{ item.name }} }
           @case ('channel') { # {{ item.name }} }
           @case ('chatMessage') { 💬 {{ item.text }} }
           @case ('channelMessage') { 💬 [Channel] {{ item.text }} }
