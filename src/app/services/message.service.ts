@@ -119,8 +119,8 @@ export class MessageService {
    * @param emoji - the image-path for the chosen emoji.
    * @returns an adjusted string (the name of the emoji with '_' instead of '-')
    */
-  getReactionId(emoji: string):string {
-    return emoji.substring(18, emoji.length-4).replace(/-/g, '_');
+  getReactionId(emoji: string): string {
+    return emoji.substring(18, emoji.length - 4).replace(/-/g, '_');
   }
 
   /**
@@ -142,6 +142,28 @@ export class MessageService {
     );
     return collectionData(reactionsRef, { idField: 'id' }) as Observable<
       ReactionInterface[]
+    >;
+  }
+
+  /**
+ * Fetches all answers of a message in real time.
+ *
+ * @param parentPath - Path to the parent document (e.g. "chats/{chatId}").
+ * @param subcollectionName - Name of the subcollection (e.g. "messages").
+ * @param messageId - ID of the message whose reactions should be fetched.
+ * @returns Observable that emits the list of reactions (with emoji name and user IDs).
+ */
+  getAnswers(
+    parentPath: string,
+    subcollectionName: string,
+    messageId: string
+  ): Observable<MessageInterface[]> {
+    const reactionsRef = collection(
+      this.firestore,
+      `${parentPath}/${subcollectionName}/${messageId}/answers`
+    );
+    return collectionData(reactionsRef, { idField: 'id' }) as Observable<
+      MessageInterface[]
     >;
   }
 

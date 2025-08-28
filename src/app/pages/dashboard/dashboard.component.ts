@@ -13,6 +13,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Observable, throwError } from 'rxjs';
 import { HttpParams } from '@angular/common/http';
 import { MobileDashboardState } from '../../shared/mobile-dashboard-state.type';
+import { ChatService } from '../../services/chat.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -33,6 +34,7 @@ export class DashboardComponent {
 
   // Inject the authentication service to manage user login/logout
   private authService = inject(AuthService);
+  // private chatService = inject(ChatService);
   private chatActiveRouterService = inject(ChatActiveRouterService);
   private route = inject(ActivatedRoute);
 

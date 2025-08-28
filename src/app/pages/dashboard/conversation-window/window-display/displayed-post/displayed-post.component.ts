@@ -48,6 +48,8 @@ export class DisplayedPostComponent {
   createdAtTime$!: Observable<string>;
   reactions$!: Observable<ReactionInterface[]>;
   reactions: ReactionInterface[] = [];
+  answers$!: Observable<MessageInterface[]>;
+  answers: MessageInterface[] = [];
 
   isMessageFromCurrentUser!: boolean;
 
@@ -67,6 +69,11 @@ export class DisplayedPostComponent {
     this.reactions$ = this.messageService.getReactions('/' + this.currentType + 's/' + this.currentChannelId, 'messages', this.message.id!);
     this.reactions$.subscribe(data => {
       this.reactions = data;
+    });
+
+    this.answers$ = this.messageService.getAnswers('/' + this.currentType + 's/' + this.currentChannelId, 'messages', this.message.id!);
+    this.answers$.subscribe(data => {
+      this.answers = data;
     });
 
     if (!this.message) return;
@@ -151,7 +158,7 @@ export class DisplayedPostComponent {
    * 
    *  @param emoji - the image-path for the chosen emoji.
    */
-  toggleExistingReaction(emoji:string) {
+  toggleExistingReaction(emoji: string) {
     this.messageService.toggleReaction(
       '/' + this.currentType + 's/' + this.currentChannelId,
       'messages',

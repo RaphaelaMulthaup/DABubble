@@ -13,22 +13,23 @@
     </div>
     <div class="text">{{ message.text }}</div>
 
-    <!-- if-query to check if there are any answers and only show if true-->
+    @if (answers.length > 0) {
     <div class="answers flex flex-col items-start">
       <button class="link w-full" (click)="openAnswers(message.id!)">
-        x Antworten
+        {{answers.length}} {{answers.length > 1? 'Antworten': 'Antwort'}}
       </button>
-      <span class="message-time w-full">Letzte Antwort {{ createdAtTime$ | async }} Uhr</span>
+      <span class="message-time w-full">Letzte Antwort 00:00 Uhr</span>
     </div>
+    }
 
     <div class="interactions flex flex-row">
       @for (reaction of reactions; track $index) {
-        @if(reaction.users.length > 0) {
-          <div (click)="toggleExistingReaction(reaction.emoji)" class="reaction flex place-items-center">
-            <img class="reaction-img" [src]="reaction.emoji" />
-            <p>{{ reaction.users.length }}</p>
-          </div>
-        }
+      @if(reaction.users.length > 0) {
+      <div (click)="toggleExistingReaction(reaction.emoji)" class="reaction flex place-items-center">
+        <img class="reaction-img" [src]="reaction.emoji" />
+        <p>{{ reaction.users.length }}</p>
+      </div>
+      }
       }
 
       <div class="relative">
