@@ -47,7 +47,7 @@ export class NonAuthComponent {
 
   showConfirm: boolean = false;
   showLogin: boolean = true;
-showIntro: any;
+  showIntro: any;
 
   constructor(
     private auth: Auth,
