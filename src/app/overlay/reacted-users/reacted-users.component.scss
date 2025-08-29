@@ -1,0 +1,18 @@
+.reacted-users {
+    width: fit-content;
+    padding: 10px;
+    gap: 6px;
+    border-radius: 30px;
+    border-bottom-left-radius: 0;
+    color: var(--color-white);
+    background-color: var(--color-purple-dark);
+
+    img {
+        width: 40px;
+    }
+
+    p {
+        font-size: 18px;
+        font-weight: 700;
+    }
+}
