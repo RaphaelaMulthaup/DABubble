@@ -9,36 +9,31 @@
 </div>
 
 @if (results().length > 0) {
-  <ul class="results-list">
-    @for (item of results(); track item.id) {
-      <li>
-        @switch (item.type) {
-          @case ('user') { 👤 {{ item.name }} }
-          @case ('channel') { 
-            <div class="tag"></div>
-            {{ item.name }} 
-          }
-          @case ('chatMessage') { 
-            <div class="chat-bubble"></div>
-            {{ item.text }}
-          }
-          @case ('channelMessage') { 
-            <div class="chat-bubble"></div>
-            <div class="tag"></div>
-            <span class="channel-name">{{ item.channelName }}:</span>
-            {{ item.text }}
-          }
-          @case ('answer') { 
-            <div class="chat-bubble"></div>
-            <div class="tag"></div>
-            <span class="channel-name">{{ item.channelName }}:</span>
-            {{ item.text }}
-          }          
-        @default { {{ item | json }} }
-        }
-      </li>
-    }
-  </ul>
+<ul class="results-list">
+  @for (item of results(); track $index) {
+  <li>
+    @switch (item.type) { @case ('user') {
+    <app-contact-list-item [user]="item"></app-contact-list-item>} @case
+    ('channel') {
+    <div class="tag"></div>
+    {{ item.name }}
+    } @case ('chatMessage') {
+    <div class="chat-bubble"></div>
+    {{ item.text }}
+    } @case ('channelMessage') {
+    <div class="chat-bubble"></div>
+    <div class="tag"></div>
+    <span class="channel-name">{{ item.channelName }}:</span>
+    {{ item.text }}
+    } @case ('answer') {
+    <div class="chat-bubble"></div>
+    <div class="tag"></div>
+    <span class="channel-name">{{ item.channelName }}:</span>
+    {{ item.text }}
+    } @default { {{ item | json }} } }
+  </li>
+  }
+</ul>
 } @else {
-  <div>Keine Treffer</div>
+<div>Keine Treffer</div>
 }

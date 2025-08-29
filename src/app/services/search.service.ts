@@ -7,11 +7,12 @@ import { MessageSearchInterface } from '../shared/models/messageSearch.interface
 import { AnswerSearchInterface } from '../shared/models/answerSearch.interface';
 import { SearchResult } from '../shared/search-result.type';
 import { AuthService } from './auth.service';
+import { UserInterface } from '../shared/models/user.interface';
 
 @Injectable({ providedIn: 'root' })
 export class SearchService {
   // Local state managed with BehaviorSubjects for real-time updates
-  private users$ = new BehaviorSubject<UserSearchInterface[]>([]);
+  private users$ = new BehaviorSubject<UserInterface[]>([]);
   private channels$ = new BehaviorSubject<ChannelSearchInterface[]>([]);
   private chatMessages$ = new BehaviorSubject<MessageSearchInterface[]>([]);
   private channelMessages$ = new BehaviorSubject<MessageSearchInterface[]>([]);
@@ -30,8 +31,8 @@ export class SearchService {
    */
   private listenToUsers() {
     const usersCol = collection(this.firestore, 'users');
-    collectionData(usersCol, { idField: 'id' }).subscribe((data) =>
-      this.users$.next(data as UserSearchInterface[])
+    collectionData(usersCol, { idField: 'id' }).subscribe(
+      (data) => this.users$.next(data as UserInterface[]) // statt UserSearchInterface
     );
   }
 
@@ -172,20 +173,20 @@ export class SearchService {
                 u.name?.toLowerCase().includes(t) ||
                 u.email?.toLowerCase().includes(t)
             )
-            .map((u) => ({ type: 'user' as const, ...u })), // user results
+            .map((u) => ({ type: 'user' as const, ...u })), // jetzt UserInterface
           ...channels
             .filter((c) => c.name?.toLowerCase().includes(t))
-            .map((c) => ({ type: 'channel' as const, ...c })), // channel results
+            .map((c) => ({ type: 'channel' as const, ...c })),
           ...chatMessages
             .filter((m) => m.text?.toLowerCase().includes(t))
-            .map((m) => ({ type: 'chatMessage' as const, ...m })), // chat message results
+            .map((m) => ({ type: 'chatMessage' as const, ...m })),
           ...channelMessages
             .filter((m) => m.text?.toLowerCase().includes(t))
-            .map((m) => ({ type: 'channelMessage' as const, ...m })), // channel message results
+            .map((m) => ({ type: 'channelMessage' as const, ...m })),
           ...answers
             .filter((a) => a.text?.toLowerCase().includes(t))
-            .map((a) => ({ type: 'answer' as const, ...a })), // answer results
-        ] as SearchResult[];
+            .map((a) => ({ type: 'answer' as const, ...a })),
+        ];
       })
     );
   }
