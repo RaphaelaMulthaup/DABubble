@@ -14,7 +14,8 @@
     <div class="text">{{ message.text }}</div>
 
     @if (answers.length > 0) {
-    <div class="answers flex flex-col items-start">
+    <!-- flex-row for desktop -->
+    <div class="answers flex flex-col-reverse items-start">
       <button class="link w-full" (click)="openAnswers(message.id!)">
         {{answers.length}} {{answers.length > 1? 'Antworten': 'Antwort'}}
       </button>

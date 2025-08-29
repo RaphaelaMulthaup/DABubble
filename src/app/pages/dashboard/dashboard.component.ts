@@ -38,7 +38,7 @@ export class DashboardComponent {
   private chatActiveRouterService = inject(ChatActiveRouterService);
   private route = inject(ActivatedRoute);
 
-  currentState: MobileDashboardState='message-window';
+  currentState: MobileDashboardState = 'message-window';
 
   messages$ = this.route.paramMap.pipe(
     switchMap((params) =>
