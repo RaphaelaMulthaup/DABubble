@@ -67,9 +67,10 @@ export class DisplayedPostComponent {
     });
 
     this.reactions$ = this.postService.getReactions('/' + this.currentType + 's/' + this.currentChannelId, 'messages', this.message.id!);
-    this.reactions$.subscribe(data => {
-      this.reactions = data;
-    });
+    // this.reactions$.subscribe(data => {
+    //   this.reactions = data;
+    //   // console.log(this.reactions)
+    // });
 
     this.answers$ = this.postService.getAnswers('/' + this.currentType + 's/' + this.currentChannelId, 'messages', this.message.id!);
     this.answers$.subscribe(data => {

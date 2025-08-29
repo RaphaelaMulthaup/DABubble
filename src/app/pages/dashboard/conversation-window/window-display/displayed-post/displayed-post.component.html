@@ -24,7 +24,7 @@
     }
 
     <div class="interactions flex flex-row">
-      @for (reaction of reactions; track $index) {
+      @for (reaction of reactions$ | async; track $index) {
       @if(reaction.users.length > 0) {
       <div (click)="toggleExistingReaction(reaction.emoji)" class="reaction flex place-items-center">
         <img class="reaction-img" [src]="reaction.emoji" />
