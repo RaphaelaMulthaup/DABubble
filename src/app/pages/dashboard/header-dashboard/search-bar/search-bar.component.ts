@@ -7,11 +7,12 @@ import { JsonPipe } from '@angular/common';
 import { SearchResult } from '../../../../shared/types/search-result.type';
 import { ContactListItemComponent } from '../../../../shared/components/contact-list-item/contact-list-item.component';
 import { ChannelListItemComponent } from '../../../../shared/components/channel-list-item/channel-list-item.component';
+import { PostListItemComponent } from "../../../../shared/components/post-list-item/post-list-item.component";
 
 @Component({
   selector: 'app-search-bar',
   standalone: true,
-  imports: [ReactiveFormsModule, JsonPipe, ContactListItemComponent, ChannelListItemComponent],
+  imports: [ReactiveFormsModule, JsonPipe, ContactListItemComponent, ChannelListItemComponent, PostListItemComponent],
   templateUrl: './search-bar.component.html',
   styleUrls: ['./search-bar.component.scss'],
 })

@@ -11,10 +11,8 @@
   </div>
 
   <!-- this is only for desktop (in mobile: sidenav) -->
-  <!-- <div class="input-wrapper">
-    <input type="text" class="input-secondary" placeholder="Devspace durchsuchen" /><img class="search-icon"
-      src="./../../../../assets/img/search.svg" alt="" />
-  </div> -->
+  <app-search-bar></app-search-bar>
+
 
   <div class="current-user">
     <h1>{{ (currentUser$ | async)?.name }}</h1>

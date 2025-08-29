@@ -17,6 +17,7 @@
     ('channel') {
     <app-channel-list-item [channel]="item"></app-channel-list-item> } @case
     ('chatMessage') {
+      <app-post-list-item></app-post-list-item>
     <div class="chat-bubble"></div>
     {{ item.text }}
     } @case ('channelMessage') {
