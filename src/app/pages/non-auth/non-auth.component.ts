@@ -17,7 +17,7 @@ import { HeaderComponent } from '../../shared/components/header/header.component
 import { ConfirmPasswordComponent } from './confirm-password/confirm-password.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { FormControl, FormGroup } from '@angular/forms';
-
+import { CreateAccountBtnComponent } from '../../shared/components/create-account-btn/create-account-btn.component';
 
 @Component({
   selector: 'app-non-auth',
@@ -30,7 +30,8 @@ import { FormControl, FormGroup } from '@angular/forms';
     RouterLink,
     HeaderComponent,
     ConfirmPasswordComponent,
-    ResetPasswordComponent
+    ResetPasswordComponent,
+    CreateAccountBtnComponent
   ],
   templateUrl: './non-auth.component.html',
   styleUrl: './non-auth.component.scss'

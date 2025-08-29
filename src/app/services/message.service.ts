@@ -17,6 +17,7 @@ import { BehaviorSubject, Observable, of } from 'rxjs';
 import { MessageInterface } from '../shared/models/message.interface';
 import { ReactionInterface } from '../shared/models/reaction.interface';
 import { ChatInterface } from '../shared/models/chat.interface';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root', // Service is available globally in the application
@@ -24,6 +25,7 @@ import { ChatInterface } from '../shared/models/chat.interface';
 export class MessageService {
   // Inject Firestore instance
   private firestore: Firestore = inject(Firestore);
+  private authService = inject(AuthService);
 
   // Holds the current list of messages for the displayed conversation
   private _messagesDisplayedConversation = new BehaviorSubject<
@@ -68,8 +70,7 @@ export class MessageService {
    * @param parentPath - Path to the parent document (e.g. "chats/{chatId}").
    * @param subcollectionName - Name of the subcollection (e.g. "messages").
    * @param messageId - ID of the message being reacted to.
-   * @param emoji - Emoji identifier (used as document ID in "reactions" subcollection).
-   * @param userId - ID of the user reacting.
+   * @param emoji - the image-path for the chosen emoji.
    * @returns A Promise that resolves once the reaction update has been applied.
    */
   async toggleReaction(
@@ -77,12 +78,12 @@ export class MessageService {
     subcollectionName: string,
     messageId: string,
     emoji: string,
-    userId: string
   ) {
-    //userId muss nicht übergeben werden, sondern kann sich die funktion hier selbst holen (aus authservice, damit es nicht current-post machen muss)
+    let userId = this.authService.getCurrentUserId()!;
+    let reactionId = this.getReactionId(emoji);
     const reactionRef = doc(
       this.firestore,
-      `${parentPath}/${subcollectionName}/${messageId}/reactions/${emoji}`
+      `${parentPath}/${subcollectionName}/${messageId}/reactions/${reactionId}`
     );
 
     const reactionSnap = await getDoc(reactionRef);
@@ -95,6 +96,7 @@ export class MessageService {
         // User already reacted → remove their reaction
         await updateDoc(reactionRef, {
           users: arrayRemove(userId),
+          //maybe add to delete doc in firestore, if there are no users with this reactin left?
         });
       } else {
         // User has not reacted → add their reaction
@@ -109,6 +111,16 @@ export class MessageService {
         users: [userId],
       });
     }
+  }
+
+  /**
+   * This functions uses the emoji to convert it to a proper reaction-id.
+   *
+   * @param emoji - the image-path for the chosen emoji.
+   * @returns an adjusted string (the name of the emoji with '_' instead of '-')
+   */
+  getReactionId(emoji: string): string {
+    return emoji.substring(18, emoji.length - 4).replace(/-/g, '_');
   }
 
   /**
@@ -130,6 +142,28 @@ export class MessageService {
     );
     return collectionData(reactionsRef, { idField: 'id' }) as Observable<
       ReactionInterface[]
+    >;
+  }
+
+  /**
+ * Fetches all answers of a message in real time.
+ *
+ * @param parentPath - Path to the parent document (e.g. "chats/{chatId}").
+ * @param subcollectionName - Name of the subcollection (e.g. "messages").
+ * @param messageId - ID of the message whose reactions should be fetched.
+ * @returns Observable that emits the list of reactions (with emoji name and user IDs).
+ */
+  getAnswers(
+    parentPath: string,
+    subcollectionName: string,
+    messageId: string
+  ): Observable<MessageInterface[]> {
+    const reactionsRef = collection(
+      this.firestore,
+      `${parentPath}/${subcollectionName}/${messageId}/answers`
+    );
+    return collectionData(reactionsRef, { idField: 'id' }) as Observable<
+      MessageInterface[]
     >;
   }
 

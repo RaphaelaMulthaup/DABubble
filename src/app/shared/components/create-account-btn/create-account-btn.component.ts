@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
+import { AuthState } from '../../auth-state.type';
 
 @Component({
   selector: 'app-create-account-btn',
@@ -7,5 +8,11 @@ import { Component } from '@angular/core';
   styleUrl: './create-account-btn.component.scss'
 })
 export class CreateAccountBtnComponent {
+  @Output()changeAuthState = new EventEmitter<AuthState>();
 
+  constructor(){}
+
+  emitStateChange() {
+    this.changeAuthState.emit('registration-form');
+  }
 }
