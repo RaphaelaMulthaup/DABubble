@@ -211,4 +211,17 @@ export class PostService {
     });
     return of([]);
   }
+
+  /**
+  * This function compares the date, a post was created with today.
+  * It returns true or false, depending on those are the same or not.
+  * 
+  * @param index the index of the post
+  */
+  isPostCreatedToday(post: PostInterface): boolean {
+    //console.log(post)
+    let postDate = post.createdAt.toDate().setHours(0, 0, 0, 0);
+    let today = new Date().setHours(0, 0, 0, 0);
+    return postDate == today;
+  }
 }

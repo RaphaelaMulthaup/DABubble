@@ -17,9 +17,18 @@
     <!-- flex-row for desktop -->
     <div class="answers flex flex-col-reverse items-start">
       <button class="link w-full" (click)="openAnswers(message.id!)">
-        {{answers.length}} {{answers.length > 1? 'Antworten': 'Antwort'}}
+        {{(answers$ | async)?.length}} {{answers.length > 1? 'Antworten': 'Antwort'}}
       </button>
-      <span class="message-time w-full">Letzte Antwort 00:00 Uhr</span>
+      <span class="message-time w-full">
+        Letzte Antwort
+        <!-- hier muss die neueste zeit übergeben werden -->
+        @if(postService.isPostCreatedToday(answers[0])) {
+          hh:mm Uhr
+        } @else {
+          <!-- Monat voll ausschreiben, z.B. 01.August -->
+          dd.month 
+        }
+      </span>
     </div>
     }
 

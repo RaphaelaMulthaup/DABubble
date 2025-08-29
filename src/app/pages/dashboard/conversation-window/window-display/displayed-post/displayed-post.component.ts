@@ -47,9 +47,9 @@ export class DisplayedPostComponent {
   senderIsCurrentUser$!: Observable<boolean>;
   createdAtTime$!: Observable<string>;
   reactions$!: Observable<ReactionInterface[]>;
-  reactions: ReactionInterface[] = [];
+  // reactions: ReactionInterface[] = [];
   visibleReactions$!: Observable<ReactionInterface[]>;
-  answers$!: Observable<PostInterface[]>;
+  answers$?: Observable<PostInterface[]>;
   answers: PostInterface[] = [];
 
   isMessageFromCurrentUser!: boolean;
@@ -80,7 +80,7 @@ export class DisplayedPostComponent {
       )
     );
 
-    this.answers$ = this.postService.getAnswers('/' + this.currentType + 's/' + this.currentChannelId, 'messages', this.message.id!);
+    this.answers$ = this.postService.getAnswers('/' + this.currentType + 's/' + this.currentChannelId, 'messages', this.message.id!).pipe(map(answers => answers?? []));
     this.answers$.subscribe(data => {
       this.answers = data;
     });
