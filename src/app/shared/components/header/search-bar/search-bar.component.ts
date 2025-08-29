@@ -4,13 +4,13 @@ import { debounceTime, startWith, map, Observable } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { SearchService } from '../../../../services/search.service';
 import { JsonPipe } from '@angular/common';
-import { SearchResult } from '../../../search-result.type'
-
+import { SearchResult } from '../../../search-result.type';
+import { ContactListItemComponent } from '../../contact-list-item/contact-list-item.component';
 
 @Component({
   selector: 'app-search-bar',
   standalone: true,
-  imports: [ReactiveFormsModule, JsonPipe ],
+  imports: [ReactiveFormsModule, JsonPipe, ContactListItemComponent],
   templateUrl: './search-bar.component.html',
   styleUrls: ['./search-bar.component.scss'],
 })

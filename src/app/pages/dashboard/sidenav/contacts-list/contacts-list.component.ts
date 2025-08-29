@@ -5,7 +5,7 @@ import { AuthService } from '../../../../services/auth.service';
 import { ChatService } from '../../../../services/chat.service';
 import { Observable, of, switchMap, map, combineLatest, filter } from 'rxjs';
 import { UserInterface } from '../../../../shared/models/user.interface';
-import { ContactListItemComponent } from './contact-list-item/contact-list-item.component';
+import { ContactListItemComponent } from '../../../../shared/components/contact-list-item/contact-list-item.component';
 
 @Component({
   selector: 'app-contacts-list',

@@ -1,9 +1,9 @@
 import { Component, inject, Input } from '@angular/core';
-import { UserInterface } from '../../../../../shared/models/user.interface';
-import { MessageService } from '../../../../../services/message.service';
-import { AuthService } from '../../../../../services/auth.service';
-import { ChatService } from '../../../../../services/chat.service';
-import { OverlayService } from '../../../../../services/overlay.service';
+import { UserInterface } from '../../models/user.interface';
+import { MessageService } from '../../../services/message.service';
+import { AuthService } from '../../../services/auth.service';
+import { ChatService } from '../../../services/chat.service';
+import { OverlayService } from '../../../services/overlay.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -12,7 +12,7 @@ import { Router } from '@angular/router';
   templateUrl: './contact-list-item.component.html', // External HTML template
   styleUrls: [
     './contact-list-item.component.scss',
-    './../../../../../shared/styles/list-item.scss',
+    './../../styles/list-item.scss',
   ],
 })
 export class ContactListItemComponent {
