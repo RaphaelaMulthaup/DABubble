@@ -10,6 +10,12 @@
 
   &:hover {
     border: 1px solid var(--color-purple-light);
+    .add-emoji {
+      background-image: url("./../../../../../assets/img/sentiment-satisfied-black.svg?v=1");
+    }
+    .add-user-or-channel {
+      background-image: url("./../../../../../assets/img/alternate-email-black.svg?v=1");
+    }
   }
 
   &:focus-within {
@@ -43,4 +49,27 @@
 .buttons {
   width: 100%;
   @include dFlex($jc: space-between);
+}
+
+.add-emoji {
+  background-image: url("./../../../../../assets/img/sentiment-satisfied-gray.svg");
+  &:hover {
+    background-image: url("./../../../../../assets/img/sentiment-satisfied-blue.svg") !important;
+  }
+}
+
+.add-user-or-channel {
+  background-image: url("./../../../../../assets/img/alternate-email-gray.svg");
+  &:hover {
+    background-image: url("./../../../../../assets/img/alternate-email-blue.svg") !important;
+  }
+}
+
+.send {
+  height: 40px;
+  width: 40px;
+  background-image: url("./../../../../../assets/img/send-icon.svg");
+  &:hover {
+    background-image: url("./../../../../../assets/img/send-icon-hover.svg");
+  }
 }

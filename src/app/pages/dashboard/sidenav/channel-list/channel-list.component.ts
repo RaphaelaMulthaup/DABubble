@@ -9,10 +9,11 @@ import { CreateChannelFormComponent } from '../../../../overlay/create-channel-f
 import { RouterLink } from '@angular/router';
 import { UserService } from '../../../../services/user.service';
 import { OverlayService } from '../../../../services/overlay.service';
+import { ChannelListItemComponent } from '../../../../shared/components/channel-list-item/channel-list-item.component';
 
 @Component({
   selector: 'app-channel-list',
-  imports: [AsyncPipe, CreateChannelFormComponent, RouterLink],
+  imports: [AsyncPipe, CreateChannelFormComponent, RouterLink, ChannelListItemComponent],
   templateUrl: './channel-list.component.html',
   styleUrl: './channel-list.component.scss',
 })

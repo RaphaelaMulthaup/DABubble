@@ -66,7 +66,8 @@ export class AuthService {
   constructor(private auth: Auth, private firestore: Firestore) {
     // Listen to authentication state changes and update the userSubject
     onAuthStateChanged(this.auth, (user) => {
-      if (user) {
+      this.userSubject.next(user);
+      if (user) {      
         // Firestore-User laden
         this.userService.getUserById(user.uid).subscribe((userData) => {
           this.currentUserSubject.next(userData);

@@ -7,20 +7,12 @@
         <h2 class="font-bold text-xl">Channels</h2>
       </div>
     </div>
-    <button (click)=" displayCreateChannelForm()">+</button>
+    <button (click)="displayCreateChannelForm()">+</button>
   </div>
 </div>
-@for (channel of channels$ | async; track $index) {
-<div>
-  <div
-    class="flex gap-[10px] ml-[25px] cursor-pointer"
-    [routerLink]="['/dashboard', 'channel', channel.id]"
-  >
-    <img class="w-[24px] h-[24px]" alt="" />
-    <span>
-      {{ channel.name }}
-    </span>
-  </div>
+<div class="channel-list">
+  @for (channel of channels$ | async; track $index) {
+  <app-channel-list-item [channel]="channel"></app-channel-list-item>
+  }
 </div>
-}
-<button (click)=" displayCreateChannelForm()">Channel hinzufügen</button>
+<button (click)="displayCreateChannelForm()">Channel hinzufügen</button>

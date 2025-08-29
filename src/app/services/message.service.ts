@@ -166,8 +166,7 @@ export class MessageService {
     conversationId: string,
     startedBy: string,
     text: string,
-     // type: 'channel' | 'chat'
-    type: string
+    type: 'channel' | 'chat'
   ) {
     await this.sendMessage(`${type}s/${conversationId}`, 'messages', {
       senderId: startedBy,
