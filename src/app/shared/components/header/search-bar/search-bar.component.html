@@ -15,9 +15,8 @@
     @switch (item.type) { @case ('user') {
     <app-contact-list-item [user]="item"></app-contact-list-item>} @case
     ('channel') {
-    <div class="tag"></div>
-    {{ item.name }}
-    } @case ('chatMessage') {
+    <app-channel-list-item [channel]="item"></app-channel-list-item> } @case
+    ('chatMessage') {
     <div class="chat-bubble"></div>
     {{ item.text }}
     } @case ('channelMessage') {
