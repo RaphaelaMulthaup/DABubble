@@ -5,10 +5,11 @@ import { AuthService } from '../../../services/auth.service';
 import { ChatService } from '../../../services/chat.service';
 import { OverlayService } from '../../../services/overlay.service';
 import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-contact-list-item', // Component selector used in parent templates
-  imports: [], // No standalone Angular imports here
+  imports: [CommonModule],
   templateUrl: './contact-list-item.component.html', // External HTML template
   styleUrls: [
     './contact-list-item.component.scss',
@@ -18,6 +19,7 @@ import { Router } from '@angular/router';
 export class ContactListItemComponent {
   // Input property that receives a user object from the parent component
   @Input() user!: UserInterface;
+  @Input() relatedToSearchResultPost: boolean = false;
 
   // Stores the ID of the currently logged-in user
   currentUserId: string | null = null;

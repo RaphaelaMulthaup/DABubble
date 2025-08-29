@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Firestore, collection, collectionData } from '@angular/fire/firestore';
 import { BehaviorSubject, combineLatest, map, Observable } from 'rxjs';
 import { PostSearchInterface } from '../shared/models/postSearch.interface';
@@ -7,13 +7,16 @@ import { SearchResult } from '../shared/types/search-result.type';
 import { AuthService } from './auth.service';
 import { UserInterface } from '../shared/models/user.interface';
 import { ChannelInterface } from '../shared/models/channel.interface';
+import { PostInterface } from '../shared/models/post.interface';
+import { ChatService } from './chat.service';
 
 @Injectable({ providedIn: 'root' })
 export class SearchService {
+  chatService = inject(ChatService);
   // Local state managed with BehaviorSubjects for real-time updates
   private users$ = new BehaviorSubject<UserInterface[]>([]);
   private channels$ = new BehaviorSubject<ChannelInterface[]>([]);
-  private chatMessages$ = new BehaviorSubject<PostSearchInterface[]>([]);
+  private chatMessages$ = new BehaviorSubject<PostInterface[]>([]);
   private channelMessages$ = new BehaviorSubject<PostSearchInterface[]>([]);
   private answers$ = new BehaviorSubject<AnswerSearchInterface[]>([]);
 
@@ -177,8 +180,23 @@ export class SearchService {
             .filter((c) => c.name?.toLowerCase().includes(t))
             .map((c) => ({ type: 'channel' as const, ...c })),
           ...chatMessages
-            .filter((m) => m.text?.toLowerCase().includes(t))
-            .map((m) => ({ type: 'chatMessage' as const, ...m })),
+            .filter(
+              (m): m is PostInterface & { chatId: string } =>
+                !!m.chatId && m.text?.toLowerCase().includes(t)
+            )
+            .map((m) => {
+              const otherUserId = this.chatService.getOtherUserId(
+                m.chatId,
+                this.authService.currentUser!.uid
+              );
+              const otherUser = users.find((u) => u.uid === otherUserId)!;
+
+              return {
+                type: 'chatMessage' as const,
+                ...m,
+                user: otherUser,
+              };
+            }),
           ...channelMessages
             .filter((m) => m.text?.toLowerCase().includes(t))
             .map((m) => ({ type: 'channelMessage' as const, ...m })),

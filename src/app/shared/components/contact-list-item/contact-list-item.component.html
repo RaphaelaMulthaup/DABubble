@@ -1,18 +1,28 @@
-<li class="list-item contact-list-item " (click)="pickOutAndNavigateToChat()">
+<li
+  class="list-item contact-list-item"
+  (click)="pickOutAndNavigateToChat()"
+  [ngClass]="{ 'related-to-search-result-post': relatedToSearchResultPost }"
+>
   <div class="profil-img-and-status">
     <img class="profil-img" src="{{ user.photoUrl }}" alt="Profilbild" />
-    <img class="status" [src]="
+    @if (!relatedToSearchResultPost) {
+    <img
+      class="status"
+      [src]="
         user.active
           ? 'assets/img/online-with-white-circle.svg'
           : 'assets/img/offline-with-white-circle.svg'
-      " alt="Status" />
+      "
+      alt="Status"
+    />
+    }
   </div>
   <div>
     <span>
       {{ user.name }}
     </span>
     @if (currentUserId == user.uid) {
-      <span>(Du)</span>
+    <span>(Du)</span>
     }
   </div>
 </li>

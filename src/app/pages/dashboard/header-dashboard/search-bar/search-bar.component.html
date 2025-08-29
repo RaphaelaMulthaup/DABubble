@@ -12,14 +12,19 @@
 <ul class="results-list">
   @for (item of results(); track $index) {
   <li>
-    @switch (item.type) { @case ('user') {
-    <app-contact-list-item [user]="item"></app-contact-list-item>} @case
-    ('channel') {
-    <app-channel-list-item [channel]="item"></app-channel-list-item> } @case
-    ('chatMessage') {
-      <app-post-list-item></app-post-list-item>
-    <div class="chat-bubble"></div>
-    {{ item.text }}
+    @switch (item.type) {
+      @case ('user') {
+        <app-contact-list-item [user]="item"></app-contact-list-item>
+      }
+      @case ('channel') {
+        <app-channel-list-item [channel]="item"></app-channel-list-item>
+      } 
+      @case ('chatMessage') {
+        <app-contact-list-item
+          [user]="item.user"
+          [relatedToSearchResultPost]="true"
+        ></app-contact-list-item>
+        <app-post-list-item [post]="item"></app-post-list-item>
     } @case ('channelMessage') {
     <div class="chat-bubble"></div>
     <div class="tag"></div>
