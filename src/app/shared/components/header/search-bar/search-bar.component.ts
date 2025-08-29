@@ -15,17 +15,29 @@ import { ContactListItemComponent } from '../../contact-list-item/contact-list-i
   styleUrls: ['./search-bar.component.scss'],
 })
 export class SearchBarComponent {
+  // Inject the SearchService to use it inside the component
   searchService = inject(SearchService);
 
+  // Reactive form control for capturing the search input value
   searchControl = new FormControl<string>('', { nonNullable: true });
 
+  /***
+   * Observable that emits the search term as the user types.
+   * - startWith initializes with the current control value
+   * - debounceTime waits 300ms after typing stops
+   * - map trims whitespace from the input
+   */
   private term$: Observable<string> = this.searchControl.valueChanges.pipe(
     startWith(this.searchControl.value),
     debounceTime(300),
     map((v) => v.trim())
   );
 
-  // 👇 Hier den generischen Typ explizit angeben
+  /***
+   * Converts the search results Observable into a signal for template binding.
+   * Explicitly typed as SearchResult[] to ensure strong typing.
+   * Provides an initial empty array until results are received.
+   */
   results = toSignal(
     this.searchService.search(this.term$) as Observable<SearchResult[]>,
     { initialValue: [] as SearchResult[] }

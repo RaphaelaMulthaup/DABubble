@@ -10,6 +10,7 @@ import { RouterLink } from '@angular/router';
     './../../../shared/styles/list-item.scss'],
 })
 export class ChannelListItemComponent {
+  /** The channel whose information should be displayed. This is passed from the parent component. */
   @Input() channel!: ChannelInterface;
 
 }
