@@ -53,6 +53,7 @@ export class DisplayedPostComponent {
   answers: PostInterface[] = [];
 
   isMessageFromCurrentUser!: boolean;
+  allReactionsVisible: boolean = false;
 
   @ViewChild('overlayTemplate') overlayTemplate!: TemplateRef<any>;
   private vcr = inject(ViewContainerRef);
@@ -73,7 +74,10 @@ export class DisplayedPostComponent {
     //   // console.log(this.reactions)
     // });
     this.visibleReactions$ = this.reactions$.pipe(
-      map(list => list.filter(r => r.users.length > 0))
+      map(list => list
+        .filter(r => r.users.length > 0)
+        .sort((a, b) => b.users.length - a.users.length)
+      )
     );
 
     this.answers$ = this.postService.getAnswers('/' + this.currentType + 's/' + this.currentChannelId, 'messages', this.message.id!);

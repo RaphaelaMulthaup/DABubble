@@ -23,21 +23,27 @@
     </div>
     }
 
-    <div class="interactions w-full" [class.full-row]="((visibleReactions$ | async)?.length ?? 0) == 3">
-      @for (reaction of visibleReactions$ | async; track $index) {
-      @if(reaction.users.length > 0 && $index <= 4) { <div (click)="toggleExistingReaction(reaction.emoji)"
-        class="reaction flex place-items-center">
-        <img class="reaction-img" [src]="reaction.emoji" />
-        <p>{{ reaction.users.length }}</p>
-    </div>
-    }
-    }
+    <div class="interactions w-full" [class.fill-row]="((visibleReactions$ | async)?.length ?? 0) == 3">
+      @for (reaction of (visibleReactions$ | async); track $index) {
+        @if(allReactionsVisible || $index <= 4) { 
+          <div (click)="toggleExistingReaction(reaction.emoji)"class="reaction flex place-items-center">
+            <img class="reaction-img" [src]="reaction.emoji" />
+            <p>{{ reaction.users.length }}</p>
+          </div>
+        }
+      }
 
     <div class="add-reaction relative flex">
       @if (((visibleReactions$ | async)?.length ?? 0) > 5) {
-      <div class="reaction flex place-items-center">
-        <span>{{((visibleReactions$ | async)?.length?? 0) -5}} weitere</span>
-      </div>
+        <div class="reaction flex place-items-center">
+          <button (click)="allReactionsVisible = !allReactionsVisible">
+            @if (allReactionsVisible) {
+              --
+            } @else {
+              + {{((visibleReactions$ | async)?.length?? 0) -5}}
+            }
+          </button>
+        </div>
       }
       <button #addReactionBtn (click)="openEmojiPickerOverlay($event)" class="btn-tertiary"
         (mouseenter)="addReactionsImg.src = './assets/img/add-reaction-hover.svg'"
