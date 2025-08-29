@@ -13,7 +13,7 @@ import { SearchBarComponent } from './search-bar/search-bar.component';
   styleUrl: './header-dashboard.component.scss',
 })
 export class HeaderDashboardComponent implements OnInit {
-  private authService = inject(AuthService);
+  public authService = inject(AuthService);
 
   currentUser$?: Observable<UserInterface | null>;
 
