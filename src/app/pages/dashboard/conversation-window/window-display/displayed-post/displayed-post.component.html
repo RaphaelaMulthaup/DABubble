@@ -23,27 +23,30 @@
     </div>
     }
 
-    <div class="interactions flex flex-row">
-      @for (reaction of reactions$ | async; track $index) {
-      @if(reaction.users.length > 0) {
-      <div (click)="toggleExistingReaction(reaction.emoji)" class="reaction flex place-items-center">
+    <div class="interactions w-full" [class.full-row]="((visibleReactions$ | async)?.length ?? 0) == 3">
+      @for (reaction of visibleReactions$ | async; track $index) {
+      @if(reaction.users.length > 0 && $index <= 4) { <div (click)="toggleExistingReaction(reaction.emoji)"
+        class="reaction flex place-items-center">
         <img class="reaction-img" [src]="reaction.emoji" />
         <p>{{ reaction.users.length }}</p>
+    </div>
+    }
+    }
+
+    <div class="add-reaction relative flex">
+      @if (((visibleReactions$ | async)?.length ?? 0) > 5) {
+      <div class="reaction flex place-items-center">
+        <span>{{((visibleReactions$ | async)?.length?? 0) -5}} weitere</span>
       </div>
       }
-      }
-
-      <div class="relative">
-        <button #addReactionBtn (click)="openEmojiPickerOverlay($event)" class="add-reaction btn-tertiary"
-          (mouseenter)="addReactionsImg.src = './assets/img/add-reaction-hover.svg'"
-          (mouseleave)="addReactionsImg.src = './assets/img/add-reaction.svg'">
-          <img #addReactionsImg src="./assets/img/add-reaction.svg" alt="add reaction" />
-        </button>
-        <!-- <app-emoji-picker [messageFromCurrentUser]="isMessageFromCurrentUser"/> -->
-      </div>
-
+      <button #addReactionBtn (click)="openEmojiPickerOverlay($event)" class="btn-tertiary"
+        (mouseenter)="addReactionsImg.src = './assets/img/add-reaction-hover.svg'"
+        (mouseleave)="addReactionsImg.src = './assets/img/add-reaction.svg'">
+        <img #addReactionsImg src="./assets/img/add-reaction.svg" alt="add reaction" />
+      </button>
     </div>
   </div>
+</div>
 </div>
 
 <!-- btn to add an answer -->

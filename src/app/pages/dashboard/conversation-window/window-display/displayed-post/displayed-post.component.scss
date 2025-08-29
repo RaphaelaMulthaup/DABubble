@@ -39,14 +39,17 @@
 }
 
 .interactions {
-  gap: 12px;
+  display: grid;
+  grid-template-columns: repeat(3, max-content);
+  gap: 8px;
 
   .reaction {
+    width: max-content;
     padding: 2px 10px;
     border: 2px solid var(--color-purple-white);
     border-radius: 30px;
     flex-direction: row !important;
-    gap: 8px;
+    gap: 4px;
     overflow: hidden;
 
     &:hover {
@@ -63,10 +66,17 @@
       height: 32px;
     }
   }
+
+  &.full-row {
+    .add-reaction {
+      grid-column: 4;
+    }
+  }
 }
 
 .answers {
   gap: 4px;
+
   button {
     text-align: left;
   }
@@ -91,6 +101,7 @@
     }
 
     .answers {
+
       // flex-direction: row-reverse;
       button {
         text-align: right;

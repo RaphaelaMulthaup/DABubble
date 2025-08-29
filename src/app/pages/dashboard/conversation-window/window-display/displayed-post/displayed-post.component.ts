@@ -48,6 +48,7 @@ export class DisplayedPostComponent {
   createdAtTime$!: Observable<string>;
   reactions$!: Observable<ReactionInterface[]>;
   reactions: ReactionInterface[] = [];
+  visibleReactions$!: Observable<ReactionInterface[]>;
   answers$!: Observable<PostInterface[]>;
   answers: PostInterface[] = [];
 
@@ -71,6 +72,9 @@ export class DisplayedPostComponent {
     //   this.reactions = data;
     //   // console.log(this.reactions)
     // });
+    this.visibleReactions$ = this.reactions$.pipe(
+      map(list => list.filter(r => r.users.length > 0))
+    );
 
     this.answers$ = this.postService.getAnswers('/' + this.currentType + 's/' + this.currentChannelId, 'messages', this.message.id!);
     this.answers$.subscribe(data => {
