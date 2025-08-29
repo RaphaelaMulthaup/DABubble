@@ -7,12 +7,16 @@
         <form action="" [formGroup]="loginForm" (ngSubmit)="onSubmit()"
             class="form-group flex flex-col items-center w-full">
             <div class="input-container flex flex-col w-full">
-                <div class="mb-[16px]">
+                <div>
                     <div class="flex items-center relative">
                         <img class="input-icon absolute" src="./assets/img/mail.svg" alt="mail">
                         <input class="input-primary" id="emailId" type="text" placeholder="beispielname@email.com"
-                            formControlName="email" name="email" required>
+                            formControlName="email" name="email" required pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}">
                     </div>
+                    <p class="error-message">
+                    @if (loginForm.get('email')?.touched && loginForm.get('email')?.invalid)
+                        {Bitte gib eine gültige E-Mail-Addresse ein.}
+                    </p>
                 </div>
                 <div>
                     <div class="flex items-center relative">
@@ -20,6 +24,9 @@
                         <input class="input-primary" id="passwordId" type="password" placeholder="Passwort"
                             formControlName="password" name="password" required>
                     </div>
+                    <p class="error-message">
+                    @if (loginForm.get('password')?.invalid &&loginForm.get('password')?.touched)
+                        {Dein Passwort muss min. 6 Zeichen lang sein.}</p>
                 </div>
                 <p class="error-message">
                     @if (showErrorMessage && !isSubmittingWithGoogle){E-Mail und Passwort stimmen nicht überein.}
