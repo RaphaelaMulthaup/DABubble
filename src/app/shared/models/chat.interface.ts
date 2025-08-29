@@ -1,9 +1,9 @@
-import { MessageInterface } from './message.interface';
+import { PostInterface } from './post.interface';
 
 export interface ChatInterface {
   id?: string;
   // brauche wir die UserID überhaupt, wenn die Chat id aus den user ids besteht?
   userIds?: string[];
   lastMessageAt?: any;
-  // messages?: MessageInterface[];
+  // messages?: PostInterface[];
 }

@@ -1,6 +1,6 @@
 import { Component, EventEmitter, inject, OnInit, Output } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
-import { AuthState } from '../../../shared/auth-state.type';
+import { AuthState } from '../../../shared/types/auth-state.type';
 
 @Component({
   selector: 'app-avatar-selection',

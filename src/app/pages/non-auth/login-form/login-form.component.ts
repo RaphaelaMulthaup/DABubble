@@ -1,7 +1,7 @@
 import { Component, inject, Output, EventEmitter } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
 import { FormControl, FormsModule, ReactiveFormsModule, FormGroup, Validators } from '@angular/forms';
-import { AuthState } from '../../../shared/auth-state.type';
+import { AuthState } from '../../../shared/types/auth-state.type';
 import { CommonModule } from '@angular/common';
 
 @Component({

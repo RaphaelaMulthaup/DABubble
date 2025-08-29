@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Output } from '@angular/core';
-import { AuthState } from '../../auth-state.type';
+import { AuthState } from '../../types/auth-state.type';
 
 @Component({
   selector: 'app-create-account-btn',

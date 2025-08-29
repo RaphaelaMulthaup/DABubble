@@ -14,7 +14,7 @@ import {
   updateDoc,
 } from '@angular/fire/firestore';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { MessageInterface } from '../shared/models/message.interface';
+import { PostInterface } from '../shared/models/post.interface';
 import { ReactionInterface } from '../shared/models/reaction.interface';
 import { ChatInterface } from '../shared/models/chat.interface';
 import { AuthService } from './auth.service';
@@ -22,46 +22,45 @@ import { AuthService } from './auth.service';
 @Injectable({
   providedIn: 'root', // Service is available globally in the application
 })
-export class MessageService {
+export class PostService {
   // Inject Firestore instance
   private firestore: Firestore = inject(Firestore);
   private authService = inject(AuthService);
 
-  // Holds the current list of messages for the displayed conversation
-  private _messagesDisplayedConversation = new BehaviorSubject<
-    MessageInterface[]
-  >([]);
-
-  // Public observable for components to subscribe to
-  messagesDisplayedConversation$ =
-    this._messagesDisplayedConversation.asObservable();
+  // // Holds the current list of messages for the displayed conversation
+  // private _messagesDisplayedConversation = new BehaviorSubject<
+  //   PostInterface[]
+  // >([]);
+  // // Public observable for components to subscribe to
+  // messagesDisplayedConversation$ =
+  //   this._messagesDisplayedConversation.asObservable();
 
   /**
-   * Sends a message to a given subcollection (e.g. messages of a chat or thread).
+   * Sends a post to a given subcollection (e.g. messages of a conversation or thread).
    * Automatically sets the `createdAt` field to the server timestamp.
    *
    * @param parentPath - Path to the parent document (e.g. "chats/{chatId}").
    * @param subcollectionName - Name of the subcollection (e.g. "messages").
-   * @param message - Message object without `createdAt` (timestamp is added automatically).
+   * @param post - post object without `createdAt` (timestamp is added automatically).
    * @returns A Promise that resolves once the message has been written.
    */
-  async sendMessage(
+  async sendPost(
     parentPath: string,
     subcollectionName: string,
-    message: Omit<MessageInterface, 'createdAt'>
+    post: Omit<PostInterface, 'createdAt'>
   ) {
-    const messagesRef = collection(
+    const postsRef = collection(
       this.firestore,
       `${parentPath}/${subcollectionName}`
     );
-    await addDoc(messagesRef, {
-      ...message,
+    await addDoc(postsRef, {
+      ...post,
       createdAt: serverTimestamp(), // Firestore server timestamp
     });
   }
 
   /**
-   * Toggles a reaction for a given message.
+   * Toggles a reaction for a given post.
    *
    * - If the user has already reacted with the emoji, their ID will be removed.
    * - Otherwise, their ID will be added.
@@ -69,21 +68,21 @@ export class MessageService {
    *
    * @param parentPath - Path to the parent document (e.g. "chats/{chatId}").
    * @param subcollectionName - Name of the subcollection (e.g. "messages").
-   * @param messageId - ID of the message being reacted to.
+   * @param postId - ID of the post being reacted to.
    * @param emoji - the image-path for the chosen emoji.
    * @returns A Promise that resolves once the reaction update has been applied.
    */
   async toggleReaction(
     parentPath: string,
     subcollectionName: string,
-    messageId: string,
+    postId: string,
     emoji: string,
   ) {
     let userId = this.authService.getCurrentUserId()!;
     let reactionId = this.getReactionId(emoji);
     const reactionRef = doc(
       this.firestore,
-      `${parentPath}/${subcollectionName}/${messageId}/reactions/${reactionId}`
+      `${parentPath}/${subcollectionName}/${postId}/reactions/${reactionId}`
     );
 
     const reactionSnap = await getDoc(reactionRef);
@@ -124,21 +123,21 @@ export class MessageService {
   }
 
   /**
-   * Fetches all reactions of a message in real time.
+   * Fetches all reactions of a post in real time.
    *
    * @param parentPath - Path to the parent document (e.g. "chats/{chatId}").
    * @param subcollectionName - Name of the subcollection (e.g. "messages").
-   * @param messageId - ID of the message whose reactions should be fetched.
+   * @param postId - ID of the post whose reactions should be fetched.
    * @returns Observable that emits the list of reactions (with emoji name and user IDs).
    */
   getReactions(
     parentPath: string,
     subcollectionName: string,
-    messageId: string
+    postId: string
   ): Observable<ReactionInterface[]> {
     const reactionsRef = collection(
       this.firestore,
-      `${parentPath}/${subcollectionName}/${messageId}/reactions`
+      `${parentPath}/${subcollectionName}/${postId}/reactions`
     );
     return collectionData(reactionsRef, { idField: 'id' }) as Observable<
       ReactionInterface[]
@@ -157,53 +156,33 @@ export class MessageService {
     parentPath: string,
     subcollectionName: string,
     messageId: string
-  ): Observable<MessageInterface[]> {
+  ): Observable<PostInterface[]> {
     const reactionsRef = collection(
       this.firestore,
       `${parentPath}/${subcollectionName}/${messageId}/answers`
     );
     return collectionData(reactionsRef, { idField: 'id' }) as Observable<
-      MessageInterface[]
+      PostInterface[]
     >;
-  }
-
-  /**
-   * Deletes a message from Firestore.
-   *
-   * @param parentPath - Path to the parent document (e.g. "chats/{chatId}").
-   * @param subcollectionName - Name of the subcollection (e.g. "messages").
-   * @param messageId - ID of the message to be deleted.
-   * @returns A Promise that resolves once the message has been removed.
-   */
-  async deleteMessage(
-    parentPath: string,
-    subcollectionName: string,
-    messageId: string
-  ) {
-    const messageRef = doc(
-      this.firestore,
-      `${parentPath}/${subcollectionName}/${messageId}`
-    );
-    await deleteDoc(messageRef);
   }
 
   /**
    * Creates a new message inside a conversation.
    *
    * @param conversationId - ID of the conversation (chat or channel).
-   * @param startedBy - User ID of the sender.
+   * @param senderId - User ID of the sender.
    * @param text - Text content of the message.
    * @param type - Type of conversation ("chat" or "channel").
    * @returns An observable placeholder (currently resolves to an empty array).
    */
   async createMessage(
     conversationId: string,
-    startedBy: string,
+    senderId: string,
     text: string,
     type: 'channel' | 'chat'
   ) {
-    await this.sendMessage(`${type}s/${conversationId}`, 'messages', {
-      senderId: startedBy,
+    await this.sendPost(`${type}s/${conversationId}`, 'messages', {
+      senderId: senderId,
       text,
     });
     return of([]);
@@ -212,7 +191,7 @@ export class MessageService {
   /**
    * Creates an answer (reply) to an existing message inside a channel thread.
    *
-   * @param channelId - ID of the channel.
+   * @param conversationId - ID of the channel.
    * @param messageId - ID of the parent message being replied to.
    * @param senderId - ID of the replying user.
    * @param text - Text content of the reply.
@@ -220,24 +199,16 @@ export class MessageService {
    * @returns A Promise with the created answer document reference, or an empty observable if not in a channel.
    */
   async createAnswer(
-    channelId: string,
+    conversationId: string,
     messageId: string,
     senderId: string,
     text: string,
-    type: string
+    type: 'channel' | 'chat'
   ) {
-    if (type === 'channel') {
-      const answerRef = collection(
-        this.firestore,
-        `channels/${channelId}/messages/${messageId}/answers`
-      );
-      const newAnswer = {
-        senderId,
-        text,
-        createdAt: new Date(),
-      };
-      return await addDoc(answerRef, newAnswer);
-    }
+    await this.sendPost(`${type}s/${conversationId}/messages/${messageId}`, 'answers', {
+      senderId: senderId,
+      text,
+    });
     return of([]);
   }
 }

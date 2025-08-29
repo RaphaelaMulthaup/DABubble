@@ -1,4 +1,4 @@
-export interface MessageSearchInterface
+export interface PostSearchInterface
  {
   id: string;
   text: string;

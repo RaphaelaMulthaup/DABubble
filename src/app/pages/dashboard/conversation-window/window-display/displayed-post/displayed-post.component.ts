@@ -1,5 +1,5 @@
 import { Component, Input, TemplateRef, ViewChild, ViewContainerRef, inject } from '@angular/core';
-import { MessageInterface } from '../../../../../shared/models/message.interface';
+import { PostInterface } from '../../../../../shared/models/post.interface';
 import { AuthService } from '../../../../../services/auth.service';
 import { UserService } from '../../../../../services/user.service';
 import { map, switchMap, of } from 'rxjs';
@@ -14,7 +14,7 @@ import { ChatActiveRouterService } from '../../../../../services/chat-active-rou
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 import { ReactionInterface } from '../../../../../shared/models/reaction.interface';
-import { MessageService } from '../../../../../services/message.service';
+import { PostService } from '../../../../../services/post.service';
 import { EmojiPickerComponent } from '../../../../../shared/components/emoji-picker/emoji-picker.component';
 
 @Component({
@@ -27,7 +27,7 @@ export class DisplayedPostComponent {
   private authService = inject(AuthService);
   private userService = inject(UserService);
   public overlayService = inject(OverlayService);
-  public messageService = inject(MessageService);
+  public postService = inject(PostService);
 
   private route = inject(ActivatedRoute);
   private router = inject(Router);
@@ -39,7 +39,7 @@ export class DisplayedPostComponent {
   currentChannelId!: string;
 
   // Input message passed from the parent component
-  @Input() message!: MessageInterface;
+  @Input() message!: PostInterface;
 
   /** Observable für alle abhängigen Werte */
   senderName$!: Observable<string>;
@@ -48,8 +48,8 @@ export class DisplayedPostComponent {
   createdAtTime$!: Observable<string>;
   reactions$!: Observable<ReactionInterface[]>;
   reactions: ReactionInterface[] = [];
-  answers$!: Observable<MessageInterface[]>;
-  answers: MessageInterface[] = [];
+  answers$!: Observable<PostInterface[]>;
+  answers: PostInterface[] = [];
 
   isMessageFromCurrentUser!: boolean;
 
@@ -66,12 +66,12 @@ export class DisplayedPostComponent {
       this.currentChannelId = id;
     });
 
-    this.reactions$ = this.messageService.getReactions('/' + this.currentType + 's/' + this.currentChannelId, 'messages', this.message.id!);
+    this.reactions$ = this.postService.getReactions('/' + this.currentType + 's/' + this.currentChannelId, 'messages', this.message.id!);
     this.reactions$.subscribe(data => {
       this.reactions = data;
     });
 
-    this.answers$ = this.messageService.getAnswers('/' + this.currentType + 's/' + this.currentChannelId, 'messages', this.message.id!);
+    this.answers$ = this.postService.getAnswers('/' + this.currentType + 's/' + this.currentChannelId, 'messages', this.message.id!);
     this.answers$.subscribe(data => {
       this.answers = data;
     });
@@ -136,7 +136,7 @@ export class DisplayedPostComponent {
 
     //das abonniert den event emitter vom emoji-picker component
     ref!.instance.selectedEmoji.subscribe((emoji: string) => {
-      this.messageService.toggleReaction(
+      this.postService.toggleReaction(
         '/' + this.currentType + 's/' + this.currentChannelId,
         'messages',
         this.message.id!,
@@ -159,7 +159,7 @@ export class DisplayedPostComponent {
    *  @param emoji - the image-path for the chosen emoji.
    */
   toggleExistingReaction(emoji: string) {
-    this.messageService.toggleReaction(
+    this.postService.toggleReaction(
       '/' + this.currentType + 's/' + this.currentChannelId,
       'messages',
       this.message.id!,

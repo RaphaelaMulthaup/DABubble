@@ -7,12 +7,12 @@ import { OverlayComponent } from '../../overlay/overlay.component';
 import { CommonModule } from '@angular/common';
 import { OverlayService } from '../../services/overlay.service';
 import { map, switchMap, tap } from 'rxjs/operators';
-import { HeaderComponent } from '../../shared/components/header/header.component';
+import { HeaderDashboardComponent } from './header-dashboard/header-dashboard.component';
 import { ChatActiveRouterService } from '../../services/chat-active-router.service';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, throwError } from 'rxjs';
 import { HttpParams } from '@angular/common/http';
-import { MobileDashboardState } from '../../shared/mobile-dashboard-state.type';
+import { MobileDashboardState } from '../../shared/types/mobile-dashboard-state.type';
 import { ChatService } from '../../services/chat.service';
 
 @Component({
@@ -23,7 +23,7 @@ import { ChatService } from '../../services/chat.service';
     ConversationWindowComponent,
     OverlayComponent,
     CommonModule,
-    HeaderComponent
+    HeaderDashboardComponent
   ],
   templateUrl: './dashboard.component.html', // HTML template for the dashboard
   styleUrl: './dashboard.component.scss', // Styles for the dashboard

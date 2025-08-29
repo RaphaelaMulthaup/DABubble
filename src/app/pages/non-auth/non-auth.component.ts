@@ -11,13 +11,13 @@ import { RegisterFormComponent } from "./register-form/register-form.component";
 import { AuthService } from '../../services/auth.service';
 import { IntroComponent } from './intro/intro.component';
 import { AvatarSelectionComponent } from "./avatar-selection/avatar-selection.component";
-import { AuthState } from '../../shared/auth-state.type';
+import { AuthState } from '../../shared/types/auth-state.type';
 import { RouterLink } from '@angular/router';
-import { HeaderComponent } from '../../shared/components/header/header.component';
 import { ConfirmPasswordComponent } from './confirm-password/confirm-password.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
 import { FormControl, FormGroup } from '@angular/forms';
 import { CreateAccountBtnComponent } from '../../shared/components/create-account-btn/create-account-btn.component';
+import { HeaderOutsideDashboardComponent } from '../../shared/components/header-outside-dashboard/header-outside-dashboard.component';
 
 @Component({
   selector: 'app-non-auth',
@@ -28,7 +28,7 @@ import { CreateAccountBtnComponent } from '../../shared/components/create-accoun
     IntroComponent,
     AvatarSelectionComponent,
     RouterLink,
-    HeaderComponent,
+    HeaderOutsideDashboardComponent,
     ConfirmPasswordComponent,
     ResetPasswordComponent,
     CreateAccountBtnComponent

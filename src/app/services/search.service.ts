@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Firestore, collection, collectionData } from '@angular/fire/firestore';
 import { BehaviorSubject, combineLatest, map, Observable } from 'rxjs';
-import { MessageSearchInterface } from '../shared/models/messageSearch.interface';
+import { PostSearchInterface } from '../shared/models/postSearch.interface';
 import { AnswerSearchInterface } from '../shared/models/answerSearch.interface';
-import { SearchResult } from '../shared/search-result.type';
+import { SearchResult } from '../shared/types/search-result.type';
 import { AuthService } from './auth.service';
 import { UserInterface } from '../shared/models/user.interface';
 import { ChannelInterface } from '../shared/models/channel.interface';
@@ -13,8 +13,8 @@ export class SearchService {
   // Local state managed with BehaviorSubjects for real-time updates
   private users$ = new BehaviorSubject<UserInterface[]>([]);
   private channels$ = new BehaviorSubject<ChannelInterface[]>([]);
-  private chatMessages$ = new BehaviorSubject<MessageSearchInterface[]>([]);
-  private channelMessages$ = new BehaviorSubject<MessageSearchInterface[]>([]);
+  private chatMessages$ = new BehaviorSubject<PostSearchInterface[]>([]);
+  private channelMessages$ = new BehaviorSubject<PostSearchInterface[]>([]);
   private answers$ = new BehaviorSubject<AnswerSearchInterface[]>([]);
 
   constructor(private firestore: Firestore, private authService: AuthService) {

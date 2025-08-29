@@ -1,5 +1,5 @@
 <section class="dashboard w-full">
-  <app-header [currentMobileDashboardState]="currentState" (changeMobileDashboardState)="currentState = $event"/>
+  <app-header-dashboard [currentMobileDashboardState]="currentState" (changeMobileDashboardState)="currentState = $event"/>
 
   <div class="w-full h-full">
     @if (currentState == 'sidenav') {
@@ -14,6 +14,7 @@
       }
     }
   </div>
+  
 </section>
 
 <!-- <section class="dashboard flex w-full justify-around h-[calc(100vh-120px)] gap-[24px]">

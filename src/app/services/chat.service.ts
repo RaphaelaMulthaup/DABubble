@@ -8,7 +8,7 @@ import {
 } from '@angular/fire/firestore';
 import { ChatInterface } from '../shared/models/chat.interface';
 import { map, Observable } from 'rxjs';
-import { MobileDashboardState } from '../shared/mobile-dashboard-state.type';
+import { MobileDashboardState } from '../shared/types/mobile-dashboard-state.type';
 
 @Injectable({
   providedIn: 'root',

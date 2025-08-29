@@ -3,24 +3,6 @@
 header {
   // @include dFlex($g: 20px);
   background-color: var(--color-purple-white);
-}
-
-.header-on-non-auth {
-  padding: 75px;
-  padding-bottom: 0;
-
-  .logo-final {
-    height: 70px;
-    width: 241px;
-    visibility: hidden;
-  }
-
-  .showLogo {
-    visibility: visible;
-  }
-}
-
-.header-on-dashboard {
   // padding: 25px 34px 20px 50px;
   padding: 16px;
 

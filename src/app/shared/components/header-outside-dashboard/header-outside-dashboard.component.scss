@@ -1,0 +1,18 @@
+@import "./../../../../styles.scss";
+
+header {
+  // @include dFlex($g: 20px);
+  background-color: var(--color-purple-white);
+  padding: 75px;
+  padding-bottom: 0;
+
+  .logo-final {
+    height: 70px;
+    width: 241px;
+    visibility: hidden;
+  }
+
+  .showLogo {
+    visibility: visible;
+  }
+}

@@ -2,7 +2,7 @@ import { Component, EventEmitter, inject, Output } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
 import { ChannelListComponent } from './channel-list/channel-list.component';
 import { ContactsListComponent } from './contacts-list/contacts-list.component';
-import { MobileDashboardState } from '../../../shared/mobile-dashboard-state.type';
+import { MobileDashboardState } from '../../../shared/types/mobile-dashboard-state.type';
 
 @Component({
   selector: 'app-sidenav',

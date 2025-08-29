@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { HeaderComponent } from '../../shared/components/header/header.component';
+import { HeaderOutsideDashboardComponent } from '../../shared/components/header-outside-dashboard/header-outside-dashboard.component';
 
 @Component({
   selector: 'app-imprint',
-  imports: [RouterLink, HeaderComponent],
+  imports: [RouterLink, HeaderOutsideDashboardComponent],
   templateUrl: './imprint.component.html',
   styleUrl: './imprint.component.scss'
 })

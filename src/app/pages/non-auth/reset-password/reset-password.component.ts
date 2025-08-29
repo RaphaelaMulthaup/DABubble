@@ -1,12 +1,11 @@
 import { Component, EventEmitter, inject, OnInit, Output } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
-import { AuthState } from '../../../shared/auth-state.type';
+import { AuthState } from '../../../shared/types/auth-state.type';
 import { FormControl, FormsModule, ReactiveFormsModule, FormGroup, Validators } from '@angular/forms';
 import { Firestore, collection, collectionData, query, where, getDocs, doc, getDoc } from '@angular/fire/firestore';
 import { Auth, user, getAuth, verifyPasswordResetCode, confirmPasswordReset } from '@angular/fire/auth';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { HeaderComponent } from '../../../shared/components/header/header.component';
 
 @Component({
   selector: 'app-reset-password',
@@ -14,7 +13,6 @@ import { HeaderComponent } from '../../../shared/components/header/header.compon
     FormsModule,
     ReactiveFormsModule,
     CommonModule,
-    HeaderComponent,
     RouterLink
   ],
   templateUrl: './reset-password.component.html',

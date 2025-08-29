@@ -3,8 +3,8 @@ import { ConversationHeaderComponent } from './conversation-header/conversation-
 import { WindowDisplayComponent } from './window-display/window-display.component';
 import { CurrentPostInput } from './current-post-input/current-post-input.component';
 import { Observable } from 'rxjs';
-import { MessageInterface } from '../../../shared/models/message.interface';
-import { MobileDashboardState } from '../../../shared/mobile-dashboard-state.type';
+import { PostInterface } from '../../../shared/models/post.interface';
+import { MobileDashboardState } from '../../../shared/types/mobile-dashboard-state.type';
 
 @Component({
   selector: 'app-conversation-window',
@@ -13,7 +13,7 @@ import { MobileDashboardState } from '../../../shared/mobile-dashboard-state.typ
   styleUrl: './conversation-window.component.scss'
 })
 export class ConversationWindowComponent {
-@Input() data$!:Observable<MessageInterface[]>
+@Input() data$!:Observable<PostInterface[]>
 @Output() changeMobileDashboardState = new EventEmitter<MobileDashboardState>();
 
 ngOnInit(){

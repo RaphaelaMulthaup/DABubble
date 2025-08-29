@@ -4,9 +4,9 @@ import { debounceTime, startWith, map, Observable } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { SearchService } from '../../../../services/search.service';
 import { JsonPipe } from '@angular/common';
-import { SearchResult } from '../../../search-result.type';
-import { ContactListItemComponent } from '../../contact-list-item/contact-list-item.component';
-import { ChannelListItemComponent } from "../../channel-list-item/channel-list-item.component";
+import { SearchResult } from '../../../../shared/types/search-result.type';
+import { ContactListItemComponent } from '../../../../shared/components/contact-list-item/contact-list-item.component';
+import { ChannelListItemComponent } from '../../../../shared/components/channel-list-item/channel-list-item.component';
 
 @Component({
   selector: 'app-search-bar',

@@ -1,6 +1,6 @@
 import { Component, inject, Input } from '@angular/core';
 import { UserInterface } from '../../models/user.interface';
-import { MessageService } from '../../../services/message.service';
+import { PostService } from '../../../services/post.service';
 import { AuthService } from '../../../services/auth.service';
 import { ChatService } from '../../../services/chat.service';
 import { OverlayService } from '../../../services/overlay.service';
@@ -22,8 +22,8 @@ export class ContactListItemComponent {
   // Stores the ID of the currently logged-in user
   currentUserId: string | null = null;
 
-  // Inject MessageService instance to handle message-related operations
-  private messageService = inject(MessageService);
+  // Inject PostService instance to handle message-related operations
+  private postService = inject(PostService);
 
   // Inject AuthService instance to access authentication-related methods
   private authService = inject(AuthService);

@@ -6,7 +6,7 @@ import { UserService } from '../../../services/user.service';
 import { AngularFireFunctions } from '@angular/fire/compat/functions';
 
 import { CommonModule } from '@angular/common';
-import { AuthState } from '../../../shared/auth-state.type';
+import { AuthState } from '../../../shared/types/auth-state.type';
 import { user, getAuth, sendEmailVerification } from '@angular/fire/auth';
 import { flatMap } from 'rxjs';
 
