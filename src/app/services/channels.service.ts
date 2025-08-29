@@ -75,7 +75,7 @@ export class ChannelsService {
     if (!user) throw new Error('User not logged in');
     const channelData: ChannelInterface = {
       createdBy: user.uid,
-      description,
+      description: '',
       memberIds: [user.uid],
       name,
       deleted: false,
