@@ -5,7 +5,7 @@ import { FormControl, FormsModule, ReactiveFormsModule, FormGroup, Validators } 
 import { Firestore, collection, collectionData, query, where, getDocs, doc, getDoc } from '@angular/fire/firestore';
 import { Auth, user, getAuth, verifyPasswordResetCode, confirmPasswordReset } from '@angular/fire/auth';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { HeaderComponent } from '../../../shared/components/header/header.component';
 
 @Component({
@@ -15,6 +15,7 @@ import { HeaderComponent } from '../../../shared/components/header/header.compon
     ReactiveFormsModule,
     CommonModule,
     HeaderComponent,
+    RouterLink
   ],
   templateUrl: './reset-password.component.html',
   styleUrls: ['./reset-password.component.scss']
@@ -112,8 +113,7 @@ export class ResetPasswordComponent implements OnInit{
    * This function emits the showLogin-variable to change the non-auth-components variable noAccount to false.
    */
   backToLogin() {
-    this.changeAuthState.emit('login');
-    this.authService.emptyUserObject();
+    this.router.navigate([""]);
   }
 
   /**
