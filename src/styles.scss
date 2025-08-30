@@ -209,6 +209,12 @@ app-overlay {
   padding: 40px 20px;
 }
 
+.tag {
+  width: 24px;
+  aspect-ratio: 1;
+  background-image: url("./assets/img/tag-black.svg");
+}
+
 /* nunito-200 - latin */
 @font-face {
   font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */

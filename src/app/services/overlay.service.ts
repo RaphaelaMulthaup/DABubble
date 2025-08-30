@@ -3,6 +3,14 @@ import { Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 import { Overlay, OverlayRef, FlexibleConnectedPositionStrategy } from '@angular/cdk/overlay';
 import { ComponentPortal, TemplatePortal } from '@angular/cdk/portal';
+import { ChannelInterface } from '../shared/models/channel.interface';
+import { Observable, of } from 'rxjs';
+
+
+// here you kann add more interface to send data when the overlay is open.
+export interface OverlayData {
+  channel?: Observable<ChannelInterface | undefined>;
+}
 
 /**
  * OverlayService is responsible for controlling the visibility and content of an overlay.
@@ -40,6 +48,13 @@ export class OverlayService {
 
   constructor() { }
 
+  private overlayInputSubject = new BehaviorSubject<OverlayData | null>(null);
+  overlayInput = this.overlayInputSubject.asObservable();
+
+  setOverlayInputs(data: OverlayData) {
+    this.overlayInputSubject.next(data);
+  }
+
   /**
    * Method to display the overlay with the provided component and associated headline.
    * Sets the component to be displayed and updates the overlay visibility to 'true'.
@@ -61,10 +76,12 @@ export class OverlayService {
     this.overlayInputs = {};
   }
 
-  openComponent<T>(origin: HTMLElement, component: Type<T>): ComponentRef<T> | undefined {
+  openComponent<T>(origin: HTMLElement, component: Type<T>,centered = false): ComponentRef<T> | undefined {
     this.close(); // falls schon ein Overlay offen ist
 
-    const positionStrategy = this.overlay.position()
+    const positionStrategy = centered
+    ? this.overlay.position().global().centerHorizontally().centerVertically()
+    : this.overlay.position()
       .flexibleConnectedTo(origin)
       .withPositions([
         { originX: 'end', originY: 'top', overlayX: 'start', overlayY: 'top' },
@@ -74,7 +91,7 @@ export class OverlayService {
     this.overlayRef = this.overlay.create({
       positionStrategy,
       hasBackdrop: true,
-      backdropClass: 'cdk-overlay-dark-backdrop' // bzw 'cdk-overlay-transparent-backdrop' für transparentes
+      backdropClass: 'cdk-overlay-transparent-backdrop' // bzw 'cdk-overlay-transparent-backdrop' für transparentes
     });
 
     const portal = new ComponentPortal(component, null, this.injector);

@@ -1,17 +1,17 @@
 @if(channelDetails$ | async; as channel){
-    <div class="flex flex-col w-full gap-[20px]">
-        <div class="container">
-            <h3>Channel name</h3>
-            <p>#{{channel.name}}</p>
-        </div>
-        <div class="container">
+    <div class="mobile-overlay">
+        <header class="flex justify-between items-end h-[90px]">
+                        <h2>#{{channel.name}}</h2>
+                        <button  class="btn-tertiary close" (click)="closeOverlay()">X</button>
+        </header>
+        <div class="flex flex-col w-full gap-[20px]">
 
-            <div class="flex justify-between">
-                <h3>Channel description</h3>
-                <button>Bearbeiten</button>
-            </div>
-            <p>{{channel.description}}</p>
+            <app-change-channel-name [channelId]="channelId"  [channel]="channel"/>
+            <app-change-channel-description [channelId]="channelId" [channel]="channel"/>
+            <app-channel-members [memberIds]="memberIds"/>
+            <div>CREATED BY</div>
+
+
         </div>
-        <div>CREATED BY</div>
     </div>
 }

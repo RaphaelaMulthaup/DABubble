@@ -1,7 +1,8 @@
 @if(channelDetails$ | async; as channel) {
 <section class="flex w-full justify-between">
-    <div>
-        <button (click)="displayCreateChannelForm(channel.name)">{{channel.name}}</button>
+    <div class="flex">
+        <div class="tag"></div>
+        <button #editChannelBtn (click)="openEditChannelOverlay($event)"><h2>{{channel.name}}</h2></button>
     </div>
     <div>
         <button>AddMember</button>

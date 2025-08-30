@@ -107,4 +107,14 @@ export class ChannelsService {
     const promise = updateDoc(channelDocRef, { deleted: false });
     return from(promise);
   }
+
+  async changeChannelName(channelId:string, newValue:string){
+    const channelDocRef = doc(this.firestore, `channels/${channelId}`);
+    await updateDoc(channelDocRef, { name: newValue });
+  }
+  
+    async changeChannelDescription(channelId:string, newValue:string){
+    const channelDocRef = doc(this.firestore, `channels/${channelId}`);
+    await updateDoc(channelDocRef, { description: newValue });
+  }
 }
