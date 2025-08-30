@@ -1,0 +1,18 @@
+<li class="list-item contact-list-item " (click)="pickOutAndNavigateToChat()">
+  <div class="profil-img-and-status">
+    <img class="profil-img" src="{{ user.photoUrl }}" alt="Profilbild" />
+    <img class="status" [src]="
+        user.active
+          ? 'assets/img/online-with-white-circle.svg'
+          : 'assets/img/offline-with-white-circle.svg'
+      " alt="Status" />
+  </div>
+  <div>
+    <span>
+      {{ user.name }}
+    </span>
+    @if (currentUserId == user.uid) {
+      <span>(Du)</span>
+    }
+  </div>
+</li>

@@ -1,9 +1,9 @@
-<div class="message-card" [ngClass]="{ 'message-current-user': senderIsCurrentUser$ | async }">
+<div class="message-card w-full" [ngClass]="{ 'message-current-user': senderIsCurrentUser$ | async }">
   <div>
     @if(senderPhotoUrl$ | async; as photoUrl) {
     <img class="profil-img" [src]="senderPhotoUrl$ | async" alt="Profilbild" (click)="displayProfileViewOtherUser()" />
     } @else {
-    <img class="profil-img" src="/assets/img/no-avatar.svg" alt="Profilbild">
+    <img class="profil-img" src="/assets/img/no-avatar.svg" alt="Profilbild" (click)="displayProfileViewOtherUser()">
     }
   </div>
   <div class="message-content">
@@ -13,28 +13,35 @@
     </div>
     <div class="text">{{ message.text }}</div>
 
-    <!-- if-query to check if there are any answers and only show if true-->
-    <div class="answers flex flex-row">
-      <button class="link" (click)="openAnswers(message.id!)">
-        x Antworten
+    @if (answers.length > 0) {
+    <!-- flex-row for desktop -->
+    <div class="answers flex flex-col-reverse items-start">
+      <button class="link w-full" (click)="openAnswers(message.id!)">
+        {{answers.length}} {{answers.length > 1? 'Antworten': 'Antwort'}}
       </button>
-      <span class="message-time">Letzte Antwort {{ createdAtTime$ | async }} Uhr</span>
+      <span class="message-time w-full">Letzte Antwort 00:00 Uhr</span>
     </div>
+    }
 
     <div class="interactions flex flex-row">
-      @if ( reactions.length > 0) {
-        <div class="reaction flex place-items-center">
-          @for (reaction of reactions; track $index) {
-            <img class="reaction-img" [src]="reaction.emoji"/>
-            <p>{{ reaction.users.length }}</p>
-          }
-        </div>
+      @for (reaction of reactions; track $index) {
+      @if(reaction.users.length > 0) {
+      <div (click)="toggleExistingReaction(reaction.emoji)" class="reaction flex place-items-center">
+        <img class="reaction-img" [src]="reaction.emoji" />
+        <p>{{ reaction.users.length }}</p>
+      </div>
+      }
       }
 
-      <button (click)="reactionSelectionVisible = !reactionSelectionVisible" class="btn-tertiary" (mouseenter)="addReactionsImg.src = './assets/img/add-reaction-hover.svg'"
-        (mouseleave)="addReactionsImg.src = './assets/img/add-reaction.svg'">
-        <img #addReactionsImg src="./assets/img/add-reaction.svg" alt="add reaction" />
-      </button>
+      <div class="relative">
+        <button #addReactionBtn (click)="openEmojiPickerOverlay($event)" class="add-reaction btn-tertiary"
+          (mouseenter)="addReactionsImg.src = './assets/img/add-reaction-hover.svg'"
+          (mouseleave)="addReactionsImg.src = './assets/img/add-reaction.svg'">
+          <img #addReactionsImg src="./assets/img/add-reaction.svg" alt="add reaction" />
+        </button>
+        <!-- <app-emoji-picker [messageFromCurrentUser]="isMessageFromCurrentUser"/> -->
+      </div>
+
     </div>
   </div>
 </div>
@@ -44,11 +51,3 @@
   (mouseleave)="addAnswerImg.src = './assets/img/add-answer.svg'">
   <img #addAnswerImg src="./assets/img/add-answer.svg" alt="add answer">
 </button> -->
-
-@if(reactionSelectionVisible) {
-  <div class="reaction-options flex justify-center">
-    @for (img of emojis; track $index) {
-      <img (click)="reactToPost($index)" class="reaction-img" [src]="emojis[$index]" [alt]="emojis[$index]">
-    }
-  </div>
-}

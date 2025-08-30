@@ -31,6 +31,11 @@ export class ChannelsService {
   //   ) as Observable<ChannelInterface[]>;
   // }
 
+  getCurrentChannel(channelId: string): Observable<ChannelInterface | undefined> {
+    const channelRef = doc(this.firestore, `channels/${channelId}`);
+    return docData(channelRef, { idField: 'id' }) as Observable<ChannelInterface | undefined>;
+  }
+
   /**
    * Retrieves channels that the current user is a member of and not deleted
    * @returns Observable list of the current user's channels
@@ -77,7 +82,7 @@ export class ChannelsService {
       createdAt: new Date(),
     };
     const channelsCollection = collection(this.firestore, 'channels');
-    const promise = addDoc(channelsCollection, channelData).then(() => {});
+    const promise = addDoc(channelsCollection, channelData).then(() => { });
     return from(promise);
   }
 

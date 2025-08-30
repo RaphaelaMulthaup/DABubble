@@ -4,7 +4,7 @@ import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../../../services/auth.service';
 import { ActivatedRoute } from '@angular/router';
 import { ChatActiveRouterService } from '../../../../services/chat-active-router.service';
-import { MessageService } from '../../../../services/message.service';
+import { PostService } from '../../../../services/post.service';
 
 @Component({
   selector: 'app-current-post-input',
@@ -21,7 +21,7 @@ export class CurrentPostInput {
   messageToReplyId: string | null = null;
 
   /** Provides methods to create messages and replies. */
-  private messageService = inject(MessageService);
+  private postService = inject(PostService);
 
   /** Provides information about the currently logged-in user. */
   private authService = inject(AuthService);
@@ -65,7 +65,7 @@ export class CurrentPostInput {
    * Handles form submission:
    * - Retrieves the entered message text.
    * - Checks if the user is replying to an existing message or creating a new one.
-   * - Calls MessageService accordingly.
+   * - Calls PostService accordingly.
    * - Resets the form afterwards.
    */
   onSubmit() {
@@ -73,7 +73,7 @@ export class CurrentPostInput {
     const currentUserId: string | null = this.authService.getCurrentUserId();
 
     if (this.messageToReplyId) {
-      this.messageService.createAnswer(
+      this.postService.createAnswer(
         this.conversationId,
         this.messageToReplyId,
         currentUserId!,
@@ -81,7 +81,7 @@ export class CurrentPostInput {
         this.type
       );
     } else {
-      this.messageService.createMessage(
+      this.postService.createMessage(
         this.conversationId,
         currentUserId!,
         post,

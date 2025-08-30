@@ -1,5 +1,5 @@
-import { Component, Input, inject } from '@angular/core';
-import { MessageInterface } from '../../../../../shared/models/message.interface';
+import { Component, Input, TemplateRef, ViewChild, ViewContainerRef, inject } from '@angular/core';
+import { PostInterface } from '../../../../../shared/models/post.interface';
 import { AuthService } from '../../../../../services/auth.service';
 import { UserService } from '../../../../../services/user.service';
 import { map, switchMap, of } from 'rxjs';
@@ -14,12 +14,12 @@ import { ChatActiveRouterService } from '../../../../../services/chat-active-rou
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 import { ReactionInterface } from '../../../../../shared/models/reaction.interface';
-import { MessageService } from '../../../../../services/message.service';
-
+import { PostService } from '../../../../../services/post.service';
+import { EmojiPickerComponent } from '../../../../../shared/components/emoji-picker/emoji-picker.component';
 
 @Component({
   selector: 'app-displayed-post', // Component to display a single message in the conversation
-  imports: [CommonModule, OverlayComponent, FormsModule, RouterLink],
+  imports: [CommonModule, OverlayComponent, FormsModule, RouterLink, EmojiPickerComponent],
   templateUrl: './displayed-post.component.html', // External HTML template
   styleUrl: './displayed-post.component.scss', // SCSS styles for this component
 })
@@ -27,7 +27,7 @@ export class DisplayedPostComponent {
   private authService = inject(AuthService);
   private userService = inject(UserService);
   public overlayService = inject(OverlayService);
-  public messageService = inject(MessageService);
+  public postService = inject(PostService);
 
   private route = inject(ActivatedRoute);
   private router = inject(Router);
@@ -39,7 +39,7 @@ export class DisplayedPostComponent {
   currentChannelId!: string;
 
   // Input message passed from the parent component
-  @Input() message!: MessageInterface;
+  @Input() message!: PostInterface;
 
   /** Observable für alle abhängigen Werte */
   senderName$!: Observable<string>;
@@ -48,19 +48,32 @@ export class DisplayedPostComponent {
   createdAtTime$!: Observable<string>;
   reactions$!: Observable<ReactionInterface[]>;
   reactions: ReactionInterface[] = [];
+  answers$!: Observable<PostInterface[]>;
+  answers: PostInterface[] = [];
 
-  ngOnInit() { }
+  isMessageFromCurrentUser!: boolean;
+
+  @ViewChild('overlayTemplate') overlayTemplate!: TemplateRef<any>;
+  private vcr = inject(ViewContainerRef);
+
+  ngOnInit() {
+    this.isMessageFromCurrentUser = this.message.senderId === this.authService.getCurrentUserId();
+  }
 
   ngOnChanges() {
-    // this.senderId = this.message.senderId; // Extract sender ID from the message
     this.chatActiveRoute.getParams$(this.route).subscribe(({ type, id }) => {
       this.currentType = type;
       this.currentChannelId = id;
     });
 
-    this.reactions$ = this.messageService.getReactions('/' + this.currentType + 's/' + this.currentChannelId, 'messages', this.message.id!);
+    this.reactions$ = this.postService.getReactions('/' + this.currentType + 's/' + this.currentChannelId, 'messages', this.message.id!);
     this.reactions$.subscribe(data => {
       this.reactions = data;
+    });
+
+    this.answers$ = this.postService.getAnswers('/' + this.currentType + 's/' + this.currentChannelId, 'messages', this.message.id!);
+    this.answers$.subscribe(data => {
+      this.answers = data;
     });
 
     if (!this.message) return;
@@ -112,120 +125,45 @@ export class DisplayedPostComponent {
     );
   }
 
-  reactionSelectionVisible: boolean = false;
-  emojis = [
-    'assets/img/emojis/grinning-face.svg',
-    'assets/img/emojis/beaming-face.svg',
-    'assets/img/emojis/face-with-tears-of-joy.svg',
-    'assets/img/emojis/upside-down-face.svg',
-    'assets/img/emojis/winking-face.svg',
-    'assets/img/emojis/smiling-face-with-halo.svg',
-    'assets/img/emojis/smiling-face-with-hearts.svg',
-    'assets/img/emojis/smiling-face-with-heart-eyes.svg',
-    'assets/img/emojis/face-blowing-a-kiss.svg',
-    'assets/img/emojis/star-struck.svg',
-    'assets/img/emojis/face-savoring-food.svg',
-    'assets/img/emojis/smiling-face-with-open-hands.svg',
-    'assets/img/emojis/face-with-peeking-eye.svg',
-    'assets/img/emojis/shushing-face.svg',
-    'assets/img/emojis/thinking-face.svg',
-    'assets/img/emojis/saluting-face.svg',
-    'assets/img/emojis/zipper-mouth-face.svg',
-    'assets/img/emojis/neutral-face.svg',
-    'assets/img/emojis/face-with-rolling-eyes.svg',
-    'assets/img/emojis/relieved-face.svg',
-    'assets/img/emojis/sleeping-face.svg',
-    'assets/img/emojis/nauseated-face.svg',
-    'assets/img/emojis/sneezing-face.svg',
-    'assets/img/emojis/face-with-spiral-eyes.svg',
-    'assets/img/emojis/exploding-head.svg',
-    'assets/img/emojis/partying-face.svg',
-    'assets/img/emojis/smiling-face-with-sunglasses.svg',
-    'assets/img/emojis/slightly-frowning-face.svg',
-    'assets/img/emojis/hushed-face.svg',
-    'assets/img/emojis/face-holding-back-tears.svg',
-    'assets/img/emojis/fearful-face.svg',
-    'assets/img/emojis/sad-but-relieved-face.svg',
-    'assets/img/emojis/loudly-crying-face.svg',
-    'assets/img/emojis/angry-face.svg',
-    'assets/img/emojis/skull.svg',
-    'assets/img/emojis/pile-of-poop.svg',
-    'assets/img/emojis/clown-face.svg',
-    'assets/img/emojis/heart.svg',
-    'assets/img/emojis/star.svg',
-    'assets/img/emojis/waving-hand.svg',
-    'assets/img/emojis/raised-hand.svg',
-    'assets/img/emojis/ok-hand.svg',
-    'assets/img/emojis/index-pointing-up.svg',
-    'assets/img/emojis/thumbs-up.svg',
-    'assets/img/emojis/thumbs-down.svg',
-    'assets/img/emojis/clapping-hands.svg',
-    'assets/img/emojis/handshake.svg',
-    'assets/img/emojis/folded-hands.svg',
-    'assets/img/emojis/flexed-biceps.svg',
-    'assets/img/emojis/question-mark.svg',
-    'assets/img/emojis/exclamation-mark.svg',
-    'assets/img/emojis/check-mark.svg',
-    'assets/img/emojis/cross-mark.svg',
-  ]
-
   /**
-  * This function uses the chosen emoji and the userId to react to a post
-  */
-  reactToPost(index: number) {
-    console.log(this.emojis[index]);
-    console.log(this.reactions)
+   * This functions opens the emoji-picker overlay and transmits the isMessageFromCurrentUser-variable.
+   * The overlay possibly emits an emoji and this emoji is used to react to the post.
+   */
+  openEmojiPickerOverlay(event: MouseEvent) {
+    const origin = event.currentTarget as HTMLElement;
+    const ref = this.overlayService.openComponent(origin, EmojiPickerComponent);
+    ref!.instance.messageFromCurrentUser = this.isMessageFromCurrentUser;
+
+    //das abonniert den event emitter vom emoji-picker component
+    ref!.instance.selectedEmoji.subscribe((emoji: string) => {
+      this.postService.toggleReaction(
+        '/' + this.currentType + 's/' + this.currentChannelId,
+        'messages',
+        this.message.id!,
+        emoji
+      )
+      this.overlayService.close();
+    });
   }
 
+  /**
+   * This functions closese the emoji-picker-overlay
+   */
+  closeEmojiPickerOverlay() {
+    this.overlayService.close();
+  }
 
-  
-  // /**
-  //  * Checks if the message was sent by the currently logged-in user
-  //  * Used to adjust styling (e.g., alignment or colors)
-  //  */
-  // checkIfSenderIsCurrentUser() {
-  //   if (this.message && this.senderId == this.authService.getCurrentUserId()) {
-  //     this.senderIsCurrentUser = true;
-  //   }
-  // }
-
-  // /**
-  //  * Fetches sender information (name, photo) from Firestore
-  //  * Subscribes to updates in case the user data changes
-  //  */
-  // loadSenderInfo() {
-  //   this.userService.getUserById(this.senderId).subscribe({
-  //     next: (user) => {
-  //       this.senderPhotoUrl = user.photoUrl;
-  //       this.senderName = user.name;
-  //     },
-  //     error: (err) => {
-  //       console.error('Error loading user', err);
-  //     },
-  //   });
-  // }
-
-  // /**
-  //  * Formats the createdAt timestamp into a human-readable HH:mm format
-  //  * Supports both Firestore Timestamp and plain Date/number values
-  //  */
-  // formatCreatedAt() {
-  //   if (this.message?.createdAt) {
-  //     let date: Date;
-
-  //     if (this.message.createdAt instanceof Timestamp) {
-  //       // Firestore Timestamp → convert to JS Date
-  //       date = this.message.createdAt.toDate();
-  //     } else {
-  //       // Fallback if createdAt is already a Date or number
-  //       date = new Date(this.message.createdAt);
-  //     }
-
-  //     // Format into local time string (HH:mm)
-  //     this.createdAtTime = date.toLocaleTimeString([], {
-  //       hour: '2-digit',
-  //       minute: '2-digit',
-  //     });
-  //   }
-  // }
+  /**
+   * This functions toggles the users reaction, if the users clicks on an already chosen emoji (by any user) in the reactions-div
+   * 
+   *  @param emoji - the image-path for the chosen emoji.
+   */
+  toggleExistingReaction(emoji: string) {
+    this.postService.toggleReaction(
+      '/' + this.currentType + 's/' + this.currentChannelId,
+      'messages',
+      this.message.id!,
+      emoji
+    )
+  }
 }

@@ -1,5 +1,3 @@
-import { MessageInterface } from './message.interface';
-
 export interface ChannelInterface {
   id?: string; // Optional for Firestore documents
   createdBy: string;
@@ -8,5 +6,5 @@ export interface ChannelInterface {
   name: string;
   deleted: boolean;
   createdAt?: Date;
-  // messages?: MessageInterface[];
+  // messages?: PostInterface[];
 }

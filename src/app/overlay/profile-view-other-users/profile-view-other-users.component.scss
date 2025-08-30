@@ -5,10 +5,12 @@
   flex-direction: column;
   width: 358px;
   margin-top: 45px;
-  >img {
-    width: 200px;
-    aspect-ratio: 1;
-  }
+}
+
+.profil-img {
+  width: 200px;
+  aspect-ratio: 1;
+  border-radius: 50%;
 }
 
 .name-and-status {

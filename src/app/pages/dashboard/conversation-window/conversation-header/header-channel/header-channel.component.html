@@ -1,1 +1,10 @@
-<p>header-channel works!</p>
+@if(channelDetails$ | async; as channel) {
+<section class="flex w-full justify-between">
+    <div>
+        <button (click)="displayCreateChannelForm(channel.name)">{{channel.name}}</button>
+    </div>
+    <div>
+        <button>AddMember</button>
+    </div>
+</section>
+}

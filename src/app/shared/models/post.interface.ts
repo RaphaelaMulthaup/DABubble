@@ -1,4 +1,4 @@
-export interface MessageInterface {
+export interface PostInterface {
   senderId: string;
   text: string;
   createdAt: any;

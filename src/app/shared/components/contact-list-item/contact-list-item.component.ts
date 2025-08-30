@@ -1,16 +1,19 @@
 import { Component, inject, Input } from '@angular/core';
-import { UserInterface } from '../../../../../shared/models/user.interface';
-import { MessageService } from '../../../../../services/message.service';
-import { AuthService } from '../../../../../services/auth.service';
-import { ChatService } from '../../../../../services/chat.service';
-import { OverlayService } from '../../../../../services/overlay.service';
+import { UserInterface } from '../../models/user.interface';
+import { PostService } from '../../../services/post.service';
+import { AuthService } from '../../../services/auth.service';
+import { ChatService } from '../../../services/chat.service';
+import { OverlayService } from '../../../services/overlay.service';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-contact-list-item', // Component selector used in parent templates
   imports: [], // No standalone Angular imports here
   templateUrl: './contact-list-item.component.html', // External HTML template
-  styleUrl: './contact-list-item.component.scss', // SCSS styles for this component
+  styleUrls: [
+    './contact-list-item.component.scss',
+    './../../styles/list-item.scss',
+  ],
 })
 export class ContactListItemComponent {
   // Input property that receives a user object from the parent component
@@ -19,8 +22,8 @@ export class ContactListItemComponent {
   // Stores the ID of the currently logged-in user
   currentUserId: string | null = null;
 
-  // Inject MessageService instance to handle message-related operations
-  private messageService = inject(MessageService);
+  // Inject PostService instance to handle message-related operations
+  private postService = inject(PostService);
 
   // Inject AuthService instance to access authentication-related methods
   private authService = inject(AuthService);

@@ -1,0 +1,8 @@
+@import './../../../../../styles.scss';
+
+.channel-list{
+    padding-left: 45px;
+    padding-top: 30px;
+    @include dFlex($g: 13px, $ai: flex-start);
+    flex-direction: column;
+}

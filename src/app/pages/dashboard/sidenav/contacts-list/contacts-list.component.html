@@ -1,13 +1,26 @@
-<button (click)="directMessagesVisible = !directMessagesVisible" [class.brightness-0]="!directMessagesVisible" class="btn-dropdown flex place-items-center">
-  <img class="arrow-dropdown" src="./../../../../../assets/img/arrow-drop-down.svg" alt="arrow-drop-down">
-  <img src="./../../../../../assets/img/account-circle.svg" alt="account-circle">
+<button
+  (click)="directMessagesVisible = !directMessagesVisible"
+  [class.brightness-0]="!directMessagesVisible"
+  class="btn-dropdown flex place-items-center"
+>
+  <img
+    class="arrow-dropdown"
+    src="./../../../../../assets/img/arrow-drop-down.svg"
+    alt="arrow-drop-down"
+  />
+  <img
+    src="./../../../../../assets/img/account-circle.svg"
+    alt="account-circle"
+  />
   <span>Direktnachrichten</span>
 </button>
 
 @if (directMessagesVisible) {
 <ul class="contacts-list">
+  @if (currentUser) {
+  <app-contact-list-item [user]="currentUser"></app-contact-list-item>
+  }
   @for (user of contacts$ | async; track $index) {
-    {{user.name}}
   <app-contact-list-item [user]="user"></app-contact-list-item>
   }
 </ul>

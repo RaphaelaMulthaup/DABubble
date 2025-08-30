@@ -1,4 +1,23 @@
-<section class="flex w-full justify-around h-[calc(100vh-120px)] gap-[24px]">
+<section class="dashboard w-full">
+  <app-header-dashboard [currentMobileDashboardState]="currentState" (changeMobileDashboardState)="currentState = $event"/>
+
+  <div class="w-full h-full">
+    @if (currentState == 'sidenav') {
+      <app-sidenav (changeMobileDashboardState)="currentState = $event"></app-sidenav>
+    } @else if (currentState == 'message-window') {
+      <div [class.disabled]="msgId$  | async">
+        <app-conversation-window [data$]="messages$"></app-conversation-window>
+      </div>
+    } @else if (currentState == 'thread-window') {
+      @if(msgId$ | async; as msgId){
+        <app-conversation-window [data$]="answers$"></app-conversation-window>
+      }
+    }
+  </div>
+  
+</section>
+
+<!-- <section class="dashboard flex w-full justify-around h-[calc(100vh-120px)] gap-[24px]">
   <app-header />
   <div class="flex w-full h-full w-max-[1920px] gap-[20px]">
     <app-sidenav></app-sidenav>
@@ -9,9 +28,10 @@
       <app-conversation-window [data$]="answers$" class="flex w-[700px]"></app-conversation-window>
     }
   </div>
-</section>
+</section> -->
 
 <button (click)="logout()">logout</button>
+
 <!-- <section >
   <div class="w-[300px] bg-white h-full">
     <app-sidenav />

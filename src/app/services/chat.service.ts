@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import {
   collection,
   collectionSnapshots,
@@ -8,6 +8,7 @@ import {
 } from '@angular/fire/firestore';
 import { ChatInterface } from '../shared/models/chat.interface';
 import { map, Observable } from 'rxjs';
+import { MobileDashboardState } from '../shared/types/mobile-dashboard-state.type';
 
 @Injectable({
   providedIn: 'root',
@@ -63,6 +64,8 @@ export class ChatService {
       )
     );
   }
+  
+  // currentMobileDashboardState = signal<MobileDashboardState>('sidenav');
 
   /**
    * Generates a unique chat ID for two users.
@@ -76,6 +79,9 @@ export class ChatService {
    * @returns A string representing the unique chat ID for the two users.
    */
   async getChatId(userId1: string, userId2: string) {
+    //muss in separate Funktion verschoben werden:
+    // this.currentMobileDashboardState.set('message-window');
+
     const sortedIds = [userId1, userId2].sort();
     return `${sortedIds[0]}_${sortedIds[1]}`;
   }

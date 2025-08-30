@@ -1,0 +1,19 @@
+@import "./../../../styles.scss";
+
+.list-item {
+  @include dFlex($jc: flex-start);
+  padding-left: 20px;
+  padding-right: 20px;
+  cursor: pointer;
+  &:hover {
+    background-color: var(--color-purple-white);
+    span {
+      color: var(--color-purple-medium);
+      font-weight: 700;
+    }
+  }
+  span {
+    white-space: nowrap;
+    font-size: 18px;
+  }
+}

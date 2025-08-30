@@ -1,5 +1,4 @@
 @import "../../shared/styles/outside-dashboard.scss";
-@import "../../shared/components/header/header.component.scss";
 
 // header {
 //     .logo{
@@ -14,17 +13,6 @@
 footer {
     padding-bottom: 16px;
     gap: 16px;
-}
-
-.register {
-    width: 100%;
-    padding-top: 35px;
-    padding-bottom: 40px;
-    gap: 20px;
-
-    button {
-        padding: 7px 18px;
-    }
 }
 
 .show {

@@ -3,9 +3,9 @@ import { CommonModule, AsyncPipe } from '@angular/common';
 import { UserService } from '../../../../services/user.service';
 import { AuthService } from '../../../../services/auth.service';
 import { ChatService } from '../../../../services/chat.service';
-import { Observable, of, switchMap, map, combineLatest } from 'rxjs';
+import { Observable, of, switchMap, map, combineLatest, filter } from 'rxjs';
 import { UserInterface } from '../../../../shared/models/user.interface';
-import { ContactListItemComponent } from './contact-list-item/contact-list-item.component';
+import { ContactListItemComponent } from '../../../../shared/components/contact-list-item/contact-list-item.component';
 
 @Component({
   selector: 'app-contacts-list',
@@ -16,10 +16,11 @@ import { ContactListItemComponent } from './contact-list-item/contact-list-item.
 export class ContactsListComponent implements OnInit {
   // Holds the list of contacts as an observable
   contacts$: Observable<UserInterface[]> = of([]);
-  // Stores the currently logged-in user's ID
-  currentUserId: string | null = null;
+  // // Stores the currently logged-in user's ID
+  // currentUserId: string | null = null;
   // Controls visibility of direct messages section
   directMessagesVisible = true;
+  currentUser!: UserInterface;
 
   constructor(
     private userService: UserService,
@@ -32,38 +33,31 @@ export class ContactsListComponent implements OnInit {
    * Subscribes to the authenticated user stream and loads the user's contacts.
    */
   ngOnInit(): void {
-    // Wait for the logged-in user
-    this.authService.user$.subscribe((user) => {
-      if (!user) {
-        // If there is no logged-in user, reset state
-        this.currentUserId = null;
-        this.contacts$ = of([]);
-        return;
-      }
+    this.authService.currentUser$
+      .pipe(filter((user): user is UserInterface => user !== null))
+      .subscribe((user) => (this.currentUser = user));
 
-      this.currentUserId = user.uid;
+    this.contacts$ = this.authService.user$.pipe(
+      switchMap((user) => {
+        if (!user) {
+          return of([]);
+        }
 
-      // Load contacts for the current user
-      this.contacts$ = this.chatService
-        .getChatsForUser(this.currentUserId)
-        .pipe(
-          // Extract the IDs of the other users in each chat
+        return this.chatService.getChatsForUser(user.uid).pipe(
           map((chats) =>
             chats.map((chat) =>
-              this.chatService.getOtherUserId(chat.id!, this.currentUserId!)
+              this.chatService.getOtherUserId(chat.id!, user.uid)
             )
           ),
-          // For each contact ID, fetch the full user details
           switchMap((contactIds) => {
-            console.log(contactIds);
-
             if (contactIds.length === 0) return of([]);
-            // Combine all user detail observables into one stream
             return combineLatest(
               contactIds.map((id) => this.userService.getUserById(id))
             );
-          })
+          }),
+          map((users) => users.filter((u) => u.uid !== this.currentUser.uid)) // 🔑 Filter raus
         );
-    });
+      })
+    );
   }
 }

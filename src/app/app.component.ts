@@ -42,19 +42,6 @@ export class AppComponent {
   private sub!: Subscription;
 
   /**
-   * UserService for handling user-related operations such as authentication, user data, etc.
-   * Injected into the component.
-   */
-  private userService = inject(UserService);
-
-  /**
-   * ChatService for managing chat-related operations such as fetching messages, sending messages, etc.
-   * Injected into the component.
-   */
-  private chatService = inject(ChatService);
-
-
-  /**
    * OverlayService for managing overlays (showing/hiding overlays).
    * Injected into the component.
    */

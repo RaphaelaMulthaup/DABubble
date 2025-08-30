@@ -1,1 +1,16 @@
-<p>emoji-picker works!</p>
+
+<div 
+#overlayTemplate 
+(click)="$event.stopPropagation()" 
+[class.reaction-options-current-user]="messageFromCurrentUser"
+class="reaction-options"
+>
+    @for (img of emojis; track $index) {
+        <img 
+        (click)="reactToPost($index)" 
+        class="reaction-img" 
+        [src]="emojis[$index]" 
+        [alt]="emojis[$index]"
+        >
+    }
+</div>

@@ -1,29 +1,24 @@
 @import './../../../../../styles.scss';
 
-app-contact-list-item {
-    cursor: pointer;
-}
-
 .btn-dropdown {
+    height: 46px;
     gap: 12px;
+    font-weight: 700;
     color: var(--color-purple-medium);
     filter: brightness(0);
-    height: 46px;
-}
-
-.brightness-0 {
-    .arrow-dropdown {
-        rotate: -90deg;
-    }
 
     &:hover {
         filter: brightness(1);
     }
 }
 
+.arrow-rotate {
+    rotate: -90deg;
+}
+
 .contacts-list {
-    padding-left: 45px;
-    padding-top: 30px;
+    padding-left: 24px;
+    padding-top: 28px;
     @include dFlex($g: 13px, $ai: flex-start);
     flex-direction: column;
 }

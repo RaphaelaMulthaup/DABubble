@@ -1,0 +1,45 @@
+@import "./../../../../../styles.scss";
+
+.input-wrapper {
+  height: 70px;
+  @include dFlex();
+  position: relative;
+}
+
+input {
+  flex: 1;
+  height: 100%;
+  border-radius: 42px;
+  width: unset;
+  padding: 0 80px 0 45px;
+  line-height: 70px;
+  font-size: 24px;
+}
+
+.search-icon {
+  position: absolute;
+  right: 45px;
+}
+
+//später in andere Conponent in overlay
+.tag {
+  width: 24px;
+  aspect-ratio: 1;
+  background-image: url("./../../../../../assets/img/tag-black.svg");
+  // &:hover{
+
+  // }
+}
+
+.chat-bubble {
+  width: 24px;
+  aspect-ratio: 1;
+  background-image: url("./../../../../../assets/img/chat-bubble-black.svg");
+  background-repeat: no-repeat;  
+  background-position: center; 
+  background-size: auto;
+}
+
+.channel-name {
+  font-weight: 700;
+}

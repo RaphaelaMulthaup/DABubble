@@ -10,7 +10,7 @@ import {
 } from '@angular/fire/firestore';
 import { Observable, of, map } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
-import { MessageInterface } from '../shared/models/message.interface';
+import { PostInterface } from '../shared/models/post.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -43,7 +43,7 @@ export class ChatActiveRouterService {
     );
   }
 
-  getMessages(type: string, id: string): Observable<MessageInterface[]> {
+  getMessages(type: string, id: string): Observable<PostInterface[]> {
     // den Pfad dynamisch je nach type bauen
     let path: string | null = null;
 
@@ -67,7 +67,7 @@ export class ChatActiveRouterService {
             ({
               channelId: id,
               ...doc,
-            } as MessageInterface)
+            } as PostInterface)
         )
       )
     );
@@ -77,14 +77,14 @@ export class ChatActiveRouterService {
     type: string,
     id: string,
     messageId: string
-  ): Observable<MessageInterface[]> {
+  ): Observable<PostInterface[]> {
     if (type === 'channel') {
       const answersRef = collection(
         this.firestore,
         `channels/${id}/messages/${messageId}/answers`
       );
       return collectionData(answersRef, { idField: 'id' }) as Observable<
-        MessageInterface[]
+        PostInterface[]
       >;
     } else if (type === 'chat') {
       const answersRef = collection(
@@ -92,7 +92,7 @@ export class ChatActiveRouterService {
         `chats/${id}/messages/${messageId}/answers`
       );
       return collectionData(answersRef, { idField: 'id' }) as Observable<
-        MessageInterface[]
+        PostInterface[]
       >;
     }
     return of([]);

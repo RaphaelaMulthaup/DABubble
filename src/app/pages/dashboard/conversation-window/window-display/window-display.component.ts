@@ -1,8 +1,8 @@
 import { Component, inject, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MessageService } from '../../../../services/message.service';
+import { PostService } from '../../../../services/post.service';
 import { DisplayedPostComponent } from './displayed-post/displayed-post.component';
-import { MessageInterface } from '../../../../shared/models/message.interface';
+import { PostInterface } from '../../../../shared/models/post.interface';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { map, Observable, switchMap } from 'rxjs';
 import { ChatActiveRouterService } from '../../../../services/chat-active-router.service';
@@ -15,14 +15,14 @@ import { tap } from 'rxjs';
   styleUrl: './window-display.component.scss', // SCSS styles for this component
 })
 export class WindowDisplayComponent {
-  // // Inject MessageService to receive and manage displayed messages
-  // messageService = inject(MessageService);
+  // // Inject PostService to receive and manage displayed messages
+  // postService = inject(PostService);
   // //hier is a stream of messages
-  // messages$!: Observable<MessageInterface[]>;
+  // messages$!: Observable<PostInterface[]>;
   // private route = inject(ActivatedRoute);
   // private chatActiveRouterService = inject(ChatActiveRouterService);
 
-  @Input() messages$!: Observable<MessageInterface[]>;
+  @Input() messages$!: Observable<PostInterface[]>;
 
   //an array with all posts in this conversation
   postInfo!: any[];
@@ -31,7 +31,7 @@ export class WindowDisplayComponent {
   days = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
 
   /**
-   * Subscribe to the BehaviorSubject from MessageService
+   * Subscribe to the BehaviorSubject from PostService
    * Keeps 'messages' updated with the latest conversation in real-time
    */
   ngOnInit() {

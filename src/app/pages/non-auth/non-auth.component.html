@@ -5,7 +5,7 @@
         </div>
     </header> -->
 
-    <app-header></app-header>
+    <app-header-outside-dashboard/>
 
     <app-intro #introRef></app-intro>
 
@@ -25,10 +25,8 @@
         </section>
 
         @if (currentState == 'login') {
-        <div class="register flex flex-col items-center">
-            <p>Neu bei DABubble?</p>
-            <button class="btn-secondary" (click)="currentState = 'registration-form'">Konto erstellen</button>
-        </div>
+            <!-- this is here only for mobile-->
+            <app-create-account-btn (changeAuthState)="currentState = $event"/>
         }
     </main>
 

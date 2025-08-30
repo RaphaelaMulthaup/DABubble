@@ -1,7 +1,6 @@
 @import "./../../../../../../styles.scss";
 
 .message-card {
-  width: 100%;
   padding: 16px 48px 16px 16px;
   @include dFlex($jc: flex-start, $ai: flex-start, $g: 16px);
 }
@@ -60,14 +59,17 @@
     }
 
     .reaction-img {
-      width: 24px;
-      height: 24px;
+      width: 32px;
+      height: 32px;
     }
   }
 }
 
 .answers {
-  gap: 20px;
+  gap: 4px;
+  button {
+    text-align: left;
+  }
 }
 
 .message-current-user {
@@ -89,32 +91,10 @@
     }
 
     .answers {
-      flex-direction: row-reverse;
+      // flex-direction: row-reverse;
+      button {
+        text-align: right;
+      }
     }
-  }
-}
-
-.reaction-options {
-  margin: 0 32px;
-  padding: 16px;
-  flex-wrap: wrap;
-  position: absolute;
-  border-radius: 20px 0 20px 20px;
-  background-color: var(--color-purple-white);
-  box-shadow: 0px 2px 10px 0px #00000014;
-
-  .reaction-img {
-    width: 48px;
-    height: 48px;
-    padding: 2px;
-
-    &:hover {
-      cursor: pointer;
-      transform: scale(1.1);
-    }
-  }
-
-  &:last-child {
-    justify-content: flex-start;
   }
 }
