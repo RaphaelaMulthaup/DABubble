@@ -5,7 +5,7 @@ import { FormControl, FormsModule, ReactiveFormsModule, FormGroup, Validators } 
 import { Firestore, collection, collectionData, query, where, getDocs, doc, getDoc } from '@angular/fire/firestore';
 import { Auth, user, getAuth, verifyPasswordResetCode, confirmPasswordReset } from '@angular/fire/auth';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-reset-password',
@@ -13,7 +13,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
     FormsModule,
     ReactiveFormsModule,
     CommonModule,
-    RouterLink
+
   ],
   templateUrl: './reset-password.component.html',
   styleUrls: ['./reset-password.component.scss']
@@ -39,11 +39,13 @@ export class ResetPasswordComponent implements OnInit{
   ngOnInit(): void {
     this.oobCode = this.route.snapshot.queryParams['oobCode'] ?? '';
 
-    this.registerForm = new FormGroup({ 
+    this.registerForm = new FormGroup({
       password: new FormControl('', [Validators.required, Validators.minLength(6)]),
       passwordConfirm: new FormControl('', [Validators.required, Validators.minLength(6)])
-     });
-     this.verifyResetCode();
+    });
+
+    this.registerForm.get('password')?.valueChanges.subscribe(() => this.checkPasswords());
+    this.registerForm.get('passwordConfirm')?.valueChanges.subscribe(() => this.checkPasswords());
   }
 
   /**
