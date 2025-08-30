@@ -14,7 +14,6 @@ import { HeaderComponent } from '../../../shared/components/header/header.compon
     FormsModule,
     ReactiveFormsModule,
     CommonModule,
-    HeaderComponent,
     RouterLink
   ],
   templateUrl: './reset-password.component.html',
@@ -81,6 +80,10 @@ export class ResetPasswordComponent implements OnInit{
     }
   }
 
+  navigateToNonAuth(event: Event) {
+    location.reload();
+  }
+
   /**
    * check if input is valid
    */
@@ -101,7 +104,7 @@ export class ResetPasswordComponent implements OnInit{
     confirmPasswordReset(auth, this.oobCode, newPassword).then(() => {
       this.waveFlag();
       setTimeout(() => {
-        this.backToLogin();
+        location.reload();
       }, 1500);
     }).catch((error) => {
       console.error('Fehler beim Zurücksetzen des Passworts', error);
