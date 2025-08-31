@@ -215,6 +215,14 @@ app-overlay {
   background-image: url("./assets/img/tag-black.svg");
 }
 
+
+.separable{
+    display: flex;
+    width: 100%;
+    border: 1px solid #ADB0D9;
+    border-width: 1px;
+}
+
 /* nunito-200 - latin */
 @font-face {
   font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */

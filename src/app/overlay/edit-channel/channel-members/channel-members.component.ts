@@ -8,7 +8,8 @@ import { UserService } from '../../../services/user.service';
   selector: 'app-channel-members',
   imports: [CommonModule],
   templateUrl: './channel-members.component.html',
-  styleUrl: './channel-members.component.scss'
+  styleUrls: ['./channel-members.component.scss', './../../../shared/styles/list-item.scss']
+
 })
 export class ChannelMembersComponent {
 @Input() memberIds?:string[];
