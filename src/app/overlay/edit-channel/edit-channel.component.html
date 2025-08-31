@@ -4,14 +4,11 @@
                         <h2>#{{channel.name}}</h2>
                         <button  class="btn-tertiary close" (click)="closeOverlay()">X</button>
         </header>
-        <div class="flex flex-col w-full gap-[20px]">
+        <div class="flex items-center flex-col w-full gap-[20px]">
 
-            <app-change-channel-name [channelId]="channelId"  [channel]="channel"/>
-            <app-change-channel-description [channelId]="channelId" [channel]="channel"/>
-            <app-channel-members [memberIds]="memberIds"/>
-            <div>CREATED BY</div>
-
-
+            <app-change-channel-name class="container" [channelId]="channelId"  [channel]="channel"/>
+            <app-change-channel-description class="container" [channelId]="channelId" [channel]="channel"/>
+            <app-channel-members class="container" [memberIds]="memberIds"/>
         </div>
     </div>
 }

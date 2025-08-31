@@ -1,3 +1,7 @@
-            @for(membru of memberIds; track $index){
-                    <p>{{membru}}</p>
+            @for(user of users$| async; track $index){
+                <div class="flex gap-[20px] items-center">
+                            <img class="profil-img" src="{{ user.photoUrl }}" alt="Profilbild" />
+                         {{user.name}}
+                </div>
+               
             }
