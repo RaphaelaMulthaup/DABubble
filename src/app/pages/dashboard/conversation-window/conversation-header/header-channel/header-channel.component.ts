@@ -8,6 +8,7 @@ import { ChannelInterface } from '../../../../../shared/models/channel.interface
 import { Observable, switchMap } from 'rxjs';
 import { ChannelsService } from '../../../../../services/channels.service';
 
+
 @Component({
   selector: 'app-header-channel',
   imports: [CommonModule],
@@ -24,7 +25,8 @@ export class HeaderChannelComponent {
   private channelService = inject(ChannelsService);
 
 
-  ngOnInit() {
+
+  ngOnInit(){
     this.channelDetails$ = this.chatActiveRouterService.getId$(this.route).pipe(
       switchMap(id => {
         this.channelId = id;

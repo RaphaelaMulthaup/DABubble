@@ -3,6 +3,14 @@ import { Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 import { Overlay, OverlayRef, FlexibleConnectedPositionStrategy } from '@angular/cdk/overlay';
 import { ComponentPortal, TemplatePortal } from '@angular/cdk/portal';
+import { ChannelInterface } from '../shared/models/channel.interface';
+import { Observable, of } from 'rxjs';
+
+
+// here you kann add more interface to send data when the overlay is open.
+export interface OverlayData {
+  channel?: Observable<ChannelInterface | undefined>;
+}
 
 /**
  * OverlayService is responsible for controlling the visibility and content of an overlay.
@@ -39,6 +47,13 @@ export class OverlayService {
   private injector: any = inject(Injector);
 
   constructor() { }
+
+  private overlayInputSubject = new BehaviorSubject<OverlayData | null>(null);
+  overlayInput = this.overlayInputSubject.asObservable();
+
+  setOverlayInputs(data: OverlayData) {
+    this.overlayInputSubject.next(data);
+  }
 
   /**
    * Method to display the overlay with the provided component and associated headline.

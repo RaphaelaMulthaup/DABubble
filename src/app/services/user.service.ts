@@ -13,6 +13,7 @@ import {
 import { UserInterface } from '../shared/models/user.interface';
 import { map, Observable } from 'rxjs';
 import { docData } from '@angular/fire/firestore';
+import { User } from '@angular/fire/auth';
 
 @Injectable({
   providedIn: 'root',
@@ -96,5 +97,11 @@ export class UserService {
         }))
       )
     );
+  }
+
+  getMembersFromChannel(memberIds:string[]):Observable<UserInterface[]>{
+    const userColl = collection(this.firestore, 'users');
+    const q = query(userColl, where('uid', 'in', memberIds))
+    return collectionData(q, {idField: 'id'}) as Observable<UserInterface[]>;
   }
 }

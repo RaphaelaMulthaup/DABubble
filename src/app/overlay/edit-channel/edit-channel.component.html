@@ -1,23 +1,16 @@
-<div class="overlay">
-    <header>
-        <h2>{{ (channelDetails$ | async)?.name || ''}}</h2>
-        <button class="btn-tertiary close" (click)="overlayService.close()"></button>
-    </header>
-    @if(channelDetails$ | async; as channel){
-    <div class="flex flex-col w-full gap-[20px]">
-        <div class="container">
-            <h3>Channel name</h3>
-            <p>#{{channel.name}}</p>
-        </div>
-        <div class="container">
-
-            <div class="flex justify-between">
-                <h3>Channel description</h3>
-                <button>Bearbeiten</button>
+@if(channelDetails$ | async; as channel){
+    <div class="mobile-overlay">
+        <header class="flex justify-between items-end h-[90px]">
+            <h2>#{{channel.name}}</h2>
+            <button  class="btn-tertiary close" (click)="overlayService.close()"></button>
+        </header>
+        <div class="flex items-center flex-col w-full gap-[20px]">
+            <app-change-channel-name class="container" [channelId]="channelId"  [channel]="channel"/>
+            <app-change-channel-description class="container" [channelId]="channelId" [channel]="channel"/>
+            <app-channel-members class="container items-start" [memberIds]="memberIds"/>
+            <div class="flex justify-end">
+                <button class="btn-primary">Channel verlassen</button>
             </div>
-            <p>{{channel.description}}</p>
         </div>
-        <div>CREATED BY</div>
     </div>
-    }
-</div>
+}

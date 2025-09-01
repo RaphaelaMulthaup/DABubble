@@ -1,0 +1,10 @@
+@for(user of users$| async; track $index){
+    <div class="flex gap-[20px] items-center list-item">
+        <img class="profil-img" src="{{ user.photoUrl }}" alt="Profilbild" />
+        <span>{{user.name}}</span>
+    </div>
+}
+<button class="list-item">
+    <img src="./../../../../assets/img/add-answer.svg" alt="" >
+    <span>Mitglieder hinzufugen</span>
+</button>
