@@ -5,4 +5,5 @@ export interface PostInterface {
   id?: string;
   channelId?:string;
   chatId?:string;
+  channelName?: string;
 }

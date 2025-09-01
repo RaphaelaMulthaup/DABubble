@@ -5,10 +5,11 @@ import { AuthService } from '../../../services/auth.service';
 import { ChatService } from '../../../services/chat.service';
 import { OverlayService } from '../../../services/overlay.service';
 import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-contact-list-item', // Component selector used in parent templates
-  imports: [], // No standalone Angular imports here
+  imports: [CommonModule],
   templateUrl: './contact-list-item.component.html', // External HTML template
   styleUrls: [
     './contact-list-item.component.scss',
@@ -18,21 +19,16 @@ import { Router } from '@angular/router';
 export class ContactListItemComponent {
   // Input property that receives a user object from the parent component
   @Input() user!: UserInterface;
+  @Input() relatedToSearchResultPost: boolean = false;
 
   // Stores the ID of the currently logged-in user
   currentUserId: string | null = null;
-
-  // Inject PostService instance to handle message-related operations
-  private postService = inject(PostService);
 
   // Inject AuthService instance to access authentication-related methods
   private authService = inject(AuthService);
 
   // Inject ChatService instance to manage chat-related operations
   private chatService = inject(ChatService);
-
-  // Service to handle overlays
-  private overlayService = inject(OverlayService);
 
   constructor(private router: Router) {
     // Retrieve the currently logged-in user ID from AuthService

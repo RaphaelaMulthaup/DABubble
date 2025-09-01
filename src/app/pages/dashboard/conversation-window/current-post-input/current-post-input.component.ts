@@ -5,10 +5,15 @@ import { AuthService } from '../../../../services/auth.service';
 import { ActivatedRoute } from '@angular/router';
 import { ChatActiveRouterService } from '../../../../services/chat-active-router.service';
 import { PostService } from '../../../../services/post.service';
+import { startWith, debounceTime, filter, switchMap } from 'rxjs';
+import { SearchResult } from '../../../../shared/types/search-result.type';
+import { SearchService } from '../../../../services/search.service';
+import { ContactListItemComponent } from '../../../../shared/components/contact-list-item/contact-list-item.component';
+import { ChannelListItemComponent } from '../../../../shared/components/channel-list-item/channel-list-item.component';
 
 @Component({
   selector: 'app-current-post-input',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, ContactListItemComponent, ChannelListItemComponent],
   templateUrl: './current-post-input.component.html',
   styleUrl: './current-post-input.component.scss',
 })
@@ -23,8 +28,15 @@ export class CurrentPostInput {
   /** Provides methods to create messages and replies. */
   private postService = inject(PostService);
 
+
   /** Provides information about the currently logged-in user. */
   private authService = inject(AuthService);
+
+
+
+  private searchService = inject(SearchService);
+
+  
 
   /** Gives access to the current route parameters. */
   private route = inject(ActivatedRoute);
@@ -40,6 +52,7 @@ export class CurrentPostInput {
     /** Input field for the message text. */
     text: new FormControl('', []),
   });
+    searchResults: SearchResult[] = [];
 
   /**
    * Angular lifecycle hook that runs after the component is initialized.
@@ -59,6 +72,28 @@ export class CurrentPostInput {
       this.messageToReplyId = msgId;
       //console.log(` aici messageid    |  ${this.messageToReplyId}`);
     });
+
+    // Stream für Textarea Änderungen
+    this.postForm.get('text')!.valueChanges
+      .pipe(
+        startWith(this.postForm.get('text')!.value),
+        debounceTime(200),
+        filter((text) => !!text), // nur wenn etwas eingegeben wurde
+        switchMap((text) => {
+          text = text.trim();
+          if (text.startsWith('@') || text.startsWith('#')) {
+            // Suche nur ausführen, wenn @ oder #
+            return this.searchService.search(this.postForm.get('text')!.valueChanges.pipe(
+              startWith(text)
+            ));
+          }
+          return [[]]; // leeres Array sonst
+        })
+      )
+      .subscribe((results: SearchResult[]) => {
+        this.searchResults = results;
+      });
+  
   }
 
   /**

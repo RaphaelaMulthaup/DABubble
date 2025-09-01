@@ -14,7 +14,7 @@ import { MobileService } from '../../../services/mobile.service';
   styleUrl: './header-dashboard.component.scss',
 })
 export class HeaderDashboardComponent implements OnInit {
-  private authService = inject(AuthService);
+  public authService = inject(AuthService);
 
   currentUser$?: Observable<UserInterface | null>;
 

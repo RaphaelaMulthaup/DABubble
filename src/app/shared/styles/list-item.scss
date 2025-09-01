@@ -16,4 +16,20 @@
     white-space: nowrap;
     font-size: 18px;
   }
+  &.related-to-search-result-post {
+    cursor: auto;
+    gap: 10px !important;
+    &:hover {
+      background-color: unset;
+      
+      span {
+        color: inherit;
+        font-weight: 600;
+      }
+    }
+    span {
+      font-weight: 600;
+    }
+  }
 }
+

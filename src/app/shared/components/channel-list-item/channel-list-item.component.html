@@ -1,9 +1,10 @@
-<div
+<li
   class="list-item channel-list-item"
   [routerLink]="['/dashboard', 'channel', channel.id]"
+  [ngClass]="{ 'related-to-search-result-post': relatedToSearchResultPost }"
 >
   <div class="tag"></div>
   <span>
     {{ channel.name }}
   </span>
-</div>
+</li>

@@ -1,73 +1,63 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Firestore, collection, collectionData } from '@angular/fire/firestore';
 import { BehaviorSubject, combineLatest, map, Observable } from 'rxjs';
-import { PostSearchInterface } from '../shared/models/postSearch.interface';
-import { AnswerSearchInterface } from '../shared/models/answerSearch.interface';
 import { SearchResult } from '../shared/types/search-result.type';
 import { AuthService } from './auth.service';
 import { UserInterface } from '../shared/models/user.interface';
 import { ChannelInterface } from '../shared/models/channel.interface';
+import { PostInterface } from '../shared/models/post.interface';
+import { ChatService } from './chat.service';
 
 @Injectable({ providedIn: 'root' })
 export class SearchService {
+  chatService = inject(ChatService);
   // Local state managed with BehaviorSubjects for real-time updates
   private users$ = new BehaviorSubject<UserInterface[]>([]);
   private channels$ = new BehaviorSubject<ChannelInterface[]>([]);
-  private chatMessages$ = new BehaviorSubject<PostSearchInterface[]>([]);
-  private channelMessages$ = new BehaviorSubject<PostSearchInterface[]>([]);
-  private answers$ = new BehaviorSubject<AnswerSearchInterface[]>([]);
+  private chatPosts$ = new BehaviorSubject<PostInterface[]>([]);
+  private channelPosts$ = new BehaviorSubject<PostInterface[]>([]);
 
-  constructor(private firestore: Firestore, private authService: AuthService) {
-    this.listenToUsers();
-    this.listenToChannels();
-    this.listenToChats();
-    this.listenToChannelMessages();
+  private initAfterLogin() {
+    this.authService.currentUser$.subscribe((user) => {
+      if (!user) return; // noch kein User, nichts machen
+      const uid = user.uid;
+
+      // Channels und Chats laden
+      this.loadChannelsForUser(uid);
+      this.loadChatsForUser(uid);
+    });
   }
 
+  constructor(private firestore: Firestore, private authService: AuthService) {
+    this.listenToUsers(); // Users kann man immer laden
+    this.initAfterLogin(); // Channels & Chats erst nach User
+    this.listenToChannelMessages();
+  }
   /***
    * Listen to all users in Firestore and keep them updated in users$.
-   * Data is cast to UserSearchInterface for search functionality.
+   * Data is cast to UserInterface for search functionality.
    */
   private listenToUsers() {
     const usersCol = collection(this.firestore, 'users');
-    collectionData(usersCol, { idField: 'id' }).subscribe(
-      (data) => this.users$.next(data as UserInterface[]) // statt UserSearchInterface
+    collectionData(usersCol, { idField: 'id' }).subscribe((data) =>
+      this.users$.next(data as UserInterface[])
     );
   }
 
-  /***
-   * Listen to all channels in Firestore that the current user is a member of.
-   * Filters out channels where the user is not included.
-   */
-  private listenToChannels() {
-    const currentUserId = this.authService.currentUser?.uid;
-
+  private loadChannelsForUser(userId: string) {
     const channelsCol = collection(this.firestore, 'channels');
     collectionData(channelsCol, { idField: 'id' }).subscribe((data: any[]) => {
-      if (!currentUserId) {
-        this.channels$.next([]);
-        return;
-      }
-
       const userChannels = data.filter((channel) =>
-        channel.memberIds?.includes(currentUserId)
+        channel.memberIds?.includes(userId)
       );
-
       this.channels$.next(userChannels as ChannelInterface[]);
     });
   }
 
-  /***
-   * Listen to all direct chats for the current user.
-   * Loads chat messages and answers nested under each message.
-   */
-  private listenToChats() {
-    const currentUserId = this.authService.currentUser?.uid;
-    if (!currentUserId) return;
-
+  private loadChatsForUser(currentUserId: string) {
     const chatsCol = collection(this.firestore, 'chats');
     collectionData(chatsCol, { idField: 'id' }).subscribe((chats: any[]) => {
-      // Only include chats where the user is one of the participants
+      // Nur Chats, in denen der User beteiligt ist
       const userChats = chats.filter((chat) => {
         const [user1, user2] = chat.id.split('_');
         return user1 === currentUserId || user2 === currentUserId;
@@ -76,11 +66,16 @@ export class SearchService {
       userChats.forEach((chat) => {
         const msgCol = collection(this.firestore, `chats/${chat.id}/messages`);
         collectionData(msgCol, { idField: 'id' }).subscribe((msgs: any[]) => {
-          // Attach chatId to each message for context
-          const enriched = msgs.map((m) => ({ ...m, chatId: chat.id }));
-          this.chatMessages$.next([...this.chatMessages$.value, ...enriched]);
+          // enriched ist jetzt korrekt typisiert
+          const enriched: (PostInterface & { chatId: string })[] = msgs.map(
+            (m) => ({
+              ...(m as PostInterface),
+              chatId: chat.id,
+            })
+          );
+          this.chatPosts$.next([...this.chatPosts$.value, ...enriched]);
 
-          // Also listen for answers to each message
+          // Antworten
           msgs.forEach((m) => {
             const ansCol = collection(
               this.firestore,
@@ -88,12 +83,15 @@ export class SearchService {
             );
             collectionData(ansCol, { idField: 'id' }).subscribe(
               (ans: any[]) => {
-                const enrichedAns = ans.map((a) => ({
-                  ...a,
-                  parentMessageId: m.id,
-                  chatId: chat.id,
-                }));
-                this.answers$.next([...this.answers$.value, ...enrichedAns]);
+                const enrichedAns: (PostInterface & { chatId: string })[] =
+                  ans.map((a) => ({
+                    ...(a as PostInterface),
+                    chatId: chat.id,
+                  }));
+                this.chatPosts$.next([
+                  ...this.chatPosts$.value,
+                  ...enrichedAns,
+                ]);
               }
             );
           });
@@ -101,7 +99,6 @@ export class SearchService {
       });
     });
   }
-
   /***
    * Listen to all channel messages for the channels the user is in.
    * Also loads answers nested under each message.
@@ -120,12 +117,9 @@ export class SearchService {
             channelId: channel.id,
             channelName: channel.name,
           }));
-          this.channelMessages$.next([
-            ...this.channelMessages$.value,
-            ...enriched,
-          ]);
+          this.channelPosts$.next([...this.channelPosts$.value, ...enriched]);
 
-          // Also listen for answers inside channel messages
+          // Listen for answers inside channel messages
           msgs.forEach((m) => {
             const ansCol = collection(
               this.firestore,
@@ -135,11 +129,15 @@ export class SearchService {
               (ans: any[]) => {
                 const enrichedAns = ans.map((a) => ({
                   ...a,
-                  parentMessageId: m.id,
                   channelId: channel.id,
                   channelName: channel.name,
                 }));
-                this.answers$.next([...this.answers$.value, ...enrichedAns]);
+
+                // Direkt in channelPosts$ speichern
+                this.channelPosts$.next([
+                  ...this.channelPosts$.value,
+                  ...enrichedAns,
+                ]);
               }
             );
           });
@@ -157,34 +155,71 @@ export class SearchService {
       term$,
       this.users$,
       this.channels$,
-      this.chatMessages$,
-      this.channelMessages$,
-      this.answers$,
+      this.chatPosts$,
+      this.channelPosts$,
     ]).pipe(
-      map(([term, users, channels, chatMessages, channelMessages, answers]) => {
-        const t = (term ?? '').toLowerCase();
+      map(([term, users, channels, chatMessages, channelMessages]) => {
+        const t = (term ?? '').trim().toLowerCase();
+
         if (!t) return [] as SearchResult[];
 
+        // Wenn nur "@" eingegeben wurde, gib alle Users zurück
+        if (t === '@') {
+          return users.map((u) => ({ type: 'user' as const, ...u }));
+        }
+
+        // Wenn nur "#" eingegeben wurde, gib alle Channels zurück
+        if (t === '#') {
+          return channels.map((c) => ({ type: 'channel' as const, ...c }));
+        }
+
+        // Wenn es mit "@" beginnt, aber noch mehr Text folgt, filtere Users
+        if (t.startsWith('@')) {
+          const query = t.slice(1); // entferne das "@"
+          return users
+            .filter(
+              (u) => u.name?.toLowerCase().includes(query) // <- E-Mail raus
+            )
+            .map((u) => ({ type: 'user' as const, ...u }));
+        }
+
+        // Wenn es mit "#" beginnt, aber noch mehr Text folgt, filtere Channels
+        if (t.startsWith('#')) {
+          const query = t.slice(1); // entferne das "#"
+          return channels
+            .filter((c) => c.name?.toLowerCase().includes(query))
+            .map((c) => ({ type: 'channel' as const, ...c }));
+        }
+
+        // Normale Suche für alles andere
         return [
           ...users
             .filter(
-              (u) =>
-                u.name?.toLowerCase().includes(t) ||
-                u.email?.toLowerCase().includes(t)
+              (u) => u.name?.toLowerCase().includes(t) // <- E-Mail raus
             )
-            .map((u) => ({ type: 'user' as const, ...u })), // jetzt UserInterface
+            .map((u) => ({ type: 'user' as const, ...u })),
           ...channels
             .filter((c) => c.name?.toLowerCase().includes(t))
             .map((c) => ({ type: 'channel' as const, ...c })),
           ...chatMessages
-            .filter((m) => m.text?.toLowerCase().includes(t))
-            .map((m) => ({ type: 'chatMessage' as const, ...m })),
+            .filter(
+              (m): m is PostInterface & { chatId: string } =>
+                !!m.chatId && m.text?.toLowerCase().includes(t)
+            )
+            .map((m) => {
+              const otherUserId = this.chatService.getOtherUserId(
+                m.chatId,
+                this.authService.currentUser!.uid
+              );
+              const otherUser = users.find((u) => u.uid === otherUserId)!;
+              return { type: 'chatMessage' as const, ...m, user: otherUser };
+            }),
           ...channelMessages
             .filter((m) => m.text?.toLowerCase().includes(t))
-            .map((m) => ({ type: 'channelMessage' as const, ...m })),
-          ...answers
-            .filter((a) => a.text?.toLowerCase().includes(t))
-            .map((a) => ({ type: 'answer' as const, ...a })),
+            .map((m) => {
+              const channel = channels.find((c) => c.id === m.channelId)!;
+              return { type: 'channelMessage' as const, ...m, channel };
+            }),
         ];
       })
     );

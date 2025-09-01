@@ -1,0 +1,21 @@
+.post-list-item {
+  gap: 10px !important;
+  border-radius: 20px;
+  padding-top: 4.5px;
+  padding-bottom: 4.5px;
+  margin-left: 16px;
+  &:hover {
+    .chat-bubble {
+      background-image: url("./../../../../assets/img/chat-bubble-blue.svg");
+    }
+  }
+}
+
+.chat-bubble {
+  width: 24px;
+  aspect-ratio: 1;
+  background-image: url("./../../../../assets/img/chat-bubble-black.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: auto;
+}
