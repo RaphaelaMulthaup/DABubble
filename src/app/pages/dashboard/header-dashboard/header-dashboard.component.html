@@ -20,6 +20,7 @@
     <h1>{{ (currentUser$ | async)?.name }}</h1>
     <img class="profil-img" [src]="(currentUser$ | async)?.photoUrl" alt="Profilbild" />
     <!-- this is only for desktop -->
-    <!-- <button class="arrow-btn"></button> -->
+    <button class="arrow-btn" (click)="showProfile()"></button>
+    <app-profile-view-main class="profile-view"></app-profile-view-main>
   </div>
 </header>

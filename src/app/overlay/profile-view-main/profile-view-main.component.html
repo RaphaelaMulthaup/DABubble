@@ -1,20 +1,28 @@
-<div class="profiel-view-main">
-    <img class="user-img" src="" alt="User-img">
-    <div class="name-and-status">
-        <div class="name-and-setting">
-            <h1>Testbert</h1>
-            <button class="link">Bearbeiten</button>
+<div class="profil-view-main flex flex-col items-center justify-between"
+    *ngIf="(user$ | async) as user">
+    <div class="user-profile-header flex items-center justify-between w-full">
+        <h2 class="front-bold text-xl">Profil</h2>
+        <button class="btn-tertiary close" (click)="closeProfile()"></button>
+    </div>
+    <div class="img-area flex items-center justify-center w-full">
+        <img class="user-img" [src]="user.photoUrl" alt="user img">
+    </div>
+    <div class="profile-mid-area flex flex-col w-full">
+        <div class="mid-head flex items-center justify-between w-full">
+            <h1 class="user-name">{{ user.name }}</h1>
+            <button type="button" class="link" (click)="showEdit()">Bearbeiten</button>
+            <app-edit-profile class="edit-view"></app-edit-profile>
         </div>
-        <div class="status">
-            <img src="" alt="status">
-            <span>Anwesend / Abwesend</span>
+        <div class="mid-section flex">
+            <img class="status" src="./assets/img/online.svg" alt="">
+            <h3 class="status-txt">Akive</h3>
         </div>
     </div>
-    <div class="mail-info">
-        <div class="mail-header">
-            <img src="" alt="mail">
-            <h3>E-mai-Adresse</h3>
+    <div class="profile-bottom-area flex flex-col w-full">
+        <div class="mail-section flex items-center">
+            <img class="mail-profile-icon" src="./assets/img/mail-profil-view.svg" alt="mail icon">
+            <h3 class="profile-h3">E-Mail-Adresse</h3>
         </div>
-        <span class="mail-address">testbert@rest.test</span>
+        <a class="mail-link" href="">{{ user.email }}</a>
     </div>
 </div>
