@@ -2,7 +2,6 @@ import { inject, Injectable } from '@angular/core';
 import { Firestore, collection, collectionData } from '@angular/fire/firestore';
 import { BehaviorSubject, combineLatest, map, Observable } from 'rxjs';
 import { PostSearchInterface } from '../shared/models/postSearch.interface';
-import { AnswerSearchInterface } from '../shared/models/answerSearch.interface';
 import { SearchResult } from '../shared/types/search-result.type';
 import { AuthService } from './auth.service';
 import { UserInterface } from '../shared/models/user.interface';
@@ -16,9 +15,8 @@ export class SearchService {
   // Local state managed with BehaviorSubjects for real-time updates
   private users$ = new BehaviorSubject<UserInterface[]>([]);
   private channels$ = new BehaviorSubject<ChannelInterface[]>([]);
-  private chatMessages$ = new BehaviorSubject<PostInterface[]>([]);
-  private channelMessages$ = new BehaviorSubject<PostSearchInterface[]>([]);
-  private answers$ = new BehaviorSubject<AnswerSearchInterface[]>([]);
+  private chatPosts$ = new BehaviorSubject<PostInterface[]>([]);
+  private channelPosts$ = new BehaviorSubject<PostSearchInterface[]>([]);
 
   constructor(private firestore: Firestore, private authService: AuthService) {
     this.listenToUsers();
@@ -81,7 +79,7 @@ export class SearchService {
         collectionData(msgCol, { idField: 'id' }).subscribe((msgs: any[]) => {
           // Attach chatId to each message for context
           const enriched = msgs.map((m) => ({ ...m, chatId: chat.id }));
-          this.chatMessages$.next([...this.chatMessages$.value, ...enriched]);
+          this.chatPosts$.next([...this.chatPosts$.value, ...enriched]);
 
           // Also listen for answers to each message
           msgs.forEach((m) => {
@@ -93,10 +91,14 @@ export class SearchService {
               (ans: any[]) => {
                 const enrichedAns = ans.map((a) => ({
                   ...a,
-                  parentMessageId: m.id,
-                  chatId: chat.id,
+                  chatId: chat.id, // nur chatId hinzufügen
                 }));
-                this.answers$.next([...this.answers$.value, ...enrichedAns]);
+
+                // Direkt in chatPosts$ speichern
+                this.chatPosts$.next([
+                  ...this.chatPosts$.value,
+                  ...enrichedAns,
+                ]);
               }
             );
           });
@@ -123,12 +125,12 @@ export class SearchService {
             channelId: channel.id,
             channelName: channel.name,
           }));
-          this.channelMessages$.next([
-            ...this.channelMessages$.value,
+          this.channelPosts$.next([
+            ...this.channelPosts$.value,
             ...enriched,
           ]);
 
-          // Also listen for answers inside channel messages
+          // Listen for answers inside channel messages
           msgs.forEach((m) => {
             const ansCol = collection(
               this.firestore,
@@ -138,11 +140,15 @@ export class SearchService {
               (ans: any[]) => {
                 const enrichedAns = ans.map((a) => ({
                   ...a,
-                  parentMessageId: m.id,
                   channelId: channel.id,
                   channelName: channel.name,
                 }));
-                this.answers$.next([...this.answers$.value, ...enrichedAns]);
+
+                // Direkt in channelPosts$ speichern
+                this.channelPosts$.next([
+                  ...this.channelPosts$.value,
+                  ...enrichedAns,
+                ]);
               }
             );
           });
@@ -160,11 +166,10 @@ export class SearchService {
       term$,
       this.users$,
       this.channels$,
-      this.chatMessages$,
-      this.channelMessages$,
-      this.answers$,
+      this.chatPosts$,
+      this.channelPosts$,
     ]).pipe(
-      map(([term, users, channels, chatMessages, channelMessages, answers]) => {
+      map(([term, users, channels, chatMessages, channelMessages]) => {
         const t = (term ?? '').toLowerCase();
         if (!t) return [] as SearchResult[];
 
@@ -175,7 +180,7 @@ export class SearchService {
                 u.name?.toLowerCase().includes(t) ||
                 u.email?.toLowerCase().includes(t)
             )
-            .map((u) => ({ type: 'user' as const, ...u })), // jetzt UserInterface
+            .map((u) => ({ type: 'user' as const, ...u })),
           ...channels
             .filter((c) => c.name?.toLowerCase().includes(t))
             .map((c) => ({ type: 'channel' as const, ...c })),
@@ -204,12 +209,9 @@ export class SearchService {
               return {
                 type: 'channelMessage' as const,
                 ...m,
-                channel, // <- hier hängt jetzt das ganze Channel-Objekt dran
+                channel,
               };
             }),
-          ...answers
-            .filter((a) => a.text?.toLowerCase().includes(t))
-            .map((a) => ({ type: 'answer' as const, ...a })),
         ];
       })
     );

@@ -38,12 +38,6 @@
       }
     </ul>
     }
-    @case ('answer') {
-    <div class="chat-bubble"></div>
-    <div class="tag"></div>
-    <span class="channel-name">{{ item.channelName }}:</span>
-    {{ item.text }}
-    } 
     @default { {{ item | json }} } }
   </li>
   }
