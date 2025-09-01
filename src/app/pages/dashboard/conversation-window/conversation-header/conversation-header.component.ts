@@ -4,11 +4,12 @@ import { ChatActiveRouterService } from '../../../../services/chat-active-router
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from '../../../../services/user.service';
 import { HeaderChannelComponent } from "./header-channel/header-channel.component";
+import { HeaderSearchbarComponent } from "./header-searchbar/header-searchbar.component";
 
 
 @Component({
   selector: 'app-conversation-header',
-  imports: [CommonModule, HeaderChannelComponent],
+  imports: [CommonModule, HeaderChannelComponent, HeaderSearchbarComponent],
   templateUrl: './conversation-header.component.html',
   styleUrl: './conversation-header.component.scss',
 })
