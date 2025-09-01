@@ -173,7 +173,7 @@ export class DisplayedPostComponent {
   openReactedUsersOverlay(event: MouseEvent, reaction: ReactionInterface) {
     this.overlayService.openComponent(
       ReactedUsersComponent,
-      'cdk-overlay-transparent-backdrop',
+      null,
       { reaction: reaction },
       event.currentTarget as HTMLElement,
       { originX: 'center', originY: 'top', overlayX: 'start', overlayY: 'bottom' },

@@ -76,16 +76,16 @@ export class OverlayService {
     this.overlayInputs = {};
   }
 
-    /**
-   * Prüfen, ob Overlay aktuell offen ist
-   */
+  /**
+ * Prüfen, ob Overlay aktuell offen ist
+ */
   isOpen(): boolean {
     return !!this.overlayRef;
   }
 
   openComponent<T extends Object>(
     component: Type<T>,
-    backdropType: 'cdk-overlay-dark-backdrop' | 'cdk-overlay-transparent-backdrop',
+    backdropType: 'cdk-overlay-dark-backdrop' | 'cdk-overlay-transparent-backdrop' | null,
     data: Partial<T>,
     origin?: HTMLElement,
     originPosition?: {},
@@ -103,16 +103,23 @@ export class OverlayService {
         ]);
     } else {
       positionStrategy = this.overlay.position()
-      .global()
-      .centerHorizontally()
-      .centerVertically();
+        .global()
+        .centerHorizontally()
+        .centerVertically();
     }
 
-    this.overlayRef = this.overlay.create({
-      positionStrategy,
-      hasBackdrop: true,
-      backdropClass: backdropType
-    });
+    if (backdropType == null) {
+      this.overlayRef = this.overlay.create({
+        positionStrategy,
+        hasBackdrop: false
+      });
+    } else {
+      this.overlayRef = this.overlay.create({
+        positionStrategy,
+        hasBackdrop: true,
+        backdropClass: backdropType
+      });
+    }
 
     const portal = new ComponentPortal(component, null, this.injector);
     const componentRef = this.overlayRef?.attach(portal)!;
