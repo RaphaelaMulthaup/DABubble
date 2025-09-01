@@ -30,8 +30,8 @@ export class SearchService {
    */
   private listenToUsers() {
     const usersCol = collection(this.firestore, 'users');
-    collectionData(usersCol, { idField: 'id' }).subscribe(
-      (data) => this.users$.next(data as UserInterface[]) 
+    collectionData(usersCol, { idField: 'id' }).subscribe((data) =>
+      this.users$.next(data as UserInterface[])
     );
   }
 
@@ -124,10 +124,7 @@ export class SearchService {
             channelId: channel.id,
             channelName: channel.name,
           }));
-          this.channelPosts$.next([
-            ...this.channelPosts$.value,
-            ...enriched,
-          ]);
+          this.channelPosts$.next([...this.channelPosts$.value, ...enriched]);
 
           // Listen for answers inside channel messages
           msgs.forEach((m) => {
@@ -169,9 +166,41 @@ export class SearchService {
       this.channelPosts$,
     ]).pipe(
       map(([term, users, channels, chatMessages, channelMessages]) => {
-        const t = (term ?? '').toLowerCase();
+        const t = (term ?? '').trim().toLowerCase();
+
         if (!t) return [] as SearchResult[];
 
+        // Wenn nur "@" eingegeben wurde, gib alle Users zurück
+        if (t === '@') {
+          return users.map((u) => ({ type: 'user' as const, ...u }));
+        }
+
+        // Wenn nur "#" eingegeben wurde, gib alle Channels zurück
+        if (t === '#') {
+          return channels.map((c) => ({ type: 'channel' as const, ...c }));
+        }
+
+        // Wenn es mit "@" beginnt, aber noch mehr Text folgt, filtere Users
+        if (t.startsWith('@')) {
+          const query = t.slice(1); // entferne das "@"
+          return users
+            .filter(
+              (u) =>
+                u.name?.toLowerCase().includes(query) ||
+                u.email?.toLowerCase().includes(query)
+            )
+            .map((u) => ({ type: 'user' as const, ...u }));
+        }
+
+        // Wenn es mit "#" beginnt, aber noch mehr Text folgt, filtere Channels
+        if (t.startsWith('#')) {
+          const query = t.slice(1); // entferne das "#"
+          return channels
+            .filter((c) => c.name?.toLowerCase().includes(query))
+            .map((c) => ({ type: 'channel' as const, ...c }));
+        }
+
+        // Normale Suche für alles andere
         return [
           ...users
             .filter(
@@ -194,22 +223,13 @@ export class SearchService {
                 this.authService.currentUser!.uid
               );
               const otherUser = users.find((u) => u.uid === otherUserId)!;
-
-              return {
-                type: 'chatMessage' as const,
-                ...m,
-                user: otherUser,
-              };
+              return { type: 'chatMessage' as const, ...m, user: otherUser };
             }),
           ...channelMessages
             .filter((m) => m.text?.toLowerCase().includes(t))
             .map((m) => {
               const channel = channels.find((c) => c.id === m.channelId)!;
-              return {
-                type: 'channelMessage' as const,
-                ...m,
-                channel,
-              };
+              return { type: 'channelMessage' as const, ...m, channel };
             }),
         ];
       })
