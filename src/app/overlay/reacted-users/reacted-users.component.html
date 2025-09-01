@@ -1,5 +1,38 @@
 <div class="reacted-users flex flex-col items-center">
   <img class="reaction-img" [src]="reaction.emoji" />
-  <p>{{userNames[0]}}</p>
-  <span>hat reagiert</span>
+  <p>
+    @if (userNames.length > 2) {
+      @if (currentUserReacted) {
+        Du
+      } @else {
+        {{userNames[0]}}
+      }
+      und {{userNames.length - 1}} weitere
+
+    }@else if (userNames.length == 2) {
+      @if (currentUserReacted) {
+        Du
+      } @else {
+        {{userNames[0]}}
+      }
+      und {{userNames[1]}}
+      
+    } @else {
+      @if (currentUserReacted) {
+        Du
+      } @else {
+        {{userNames[0]}}
+      }
+    }
+  </p>
+  <span>
+    @if (userNames.length > 1) {
+      haben
+    } @else if (currentUserReacted) {
+      hast
+    } @else {
+      hat
+    }
+     reagiert
+  </span>
 </div>
