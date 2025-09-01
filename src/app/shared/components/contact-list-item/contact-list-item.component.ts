@@ -24,17 +24,11 @@ export class ContactListItemComponent {
   // Stores the ID of the currently logged-in user
   currentUserId: string | null = null;
 
-  // Inject PostService instance to handle message-related operations
-  private postService = inject(PostService);
-
   // Inject AuthService instance to access authentication-related methods
   private authService = inject(AuthService);
 
   // Inject ChatService instance to manage chat-related operations
   private chatService = inject(ChatService);
-
-  // Service to handle overlays
-  private overlayService = inject(OverlayService);
 
   constructor(private router: Router) {
     // Retrieve the currently logged-in user ID from AuthService

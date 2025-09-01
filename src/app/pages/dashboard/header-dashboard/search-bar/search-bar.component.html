@@ -29,7 +29,7 @@
       }
     </ul>
     } @case ('channelGroup') {
-    <app-channel-list-item [channel]="item.channel"></app-channel-list-item>
+    <app-channel-list-item [channel]="item.channel" [relatedToSearchResultPost]="true"></app-channel-list-item>
     <ul>
       @for (post of item.posts; track post.id) {
       <li>
