@@ -1,14 +1,13 @@
-[debug] [2025-08-27T11:06:32.636Z] ----------------------------------------------------------------------
-[debug] [2025-08-27T11:06:32.641Z] Command:       /opt/node-v22.15.0-linux-x64/bin/node /opt/node-v22.15.0-linux-x64/bin/firebase init functions
-[debug] [2025-08-27T11:06:32.642Z] CLI Version:   14.14.0
-[debug] [2025-08-27T11:06:32.643Z] Platform:      linux
-[debug] [2025-08-27T11:06:32.643Z] Node Version:  v22.15.0
-[debug] [2025-08-27T11:06:32.644Z] Time:          Wed Aug 27 2025 13:06:32 GMT+0200 (Mitteleuropäische Sommerzeit)
-[debug] [2025-08-27T11:06:32.644Z] ----------------------------------------------------------------------
+[debug] [2025-08-30T09:23:30.527Z] ----------------------------------------------------------------------
+[debug] [2025-08-30T09:23:30.532Z] Command:       /opt/node-v22.15.0-linux-x64/bin/node /opt/node-v22.15.0-linux-x64/bin/firebase init functions
+[debug] [2025-08-30T09:23:30.533Z] CLI Version:   14.15.1
+[debug] [2025-08-30T09:23:30.533Z] Platform:      linux
+[debug] [2025-08-30T09:23:30.533Z] Node Version:  v22.15.0
+[debug] [2025-08-30T09:23:30.534Z] Time:          Sat Aug 30 2025 11:23:30 GMT+0200 (Mitteleuropäische Sommerzeit)
+[debug] [2025-08-30T09:23:30.534Z] ----------------------------------------------------------------------
 [debug] 
-[debug] [2025-08-27T11:06:32.648Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
-[debug] [2025-08-27T11:06:33.168Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
-[debug] [2025-08-27T11:06:33.169Z] > authorizing via signed-in user (s62469338@gmail.com)
+[debug] [2025-08-30T09:23:30.957Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-08-30T09:23:30.959Z] > authorizing via signed-in user (s62469338@gmail.com)
 [info] 
      ######## #### ########  ######## ########     ###     ######  ########
      ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
@@ -31,21 +30,19 @@ Before we get started, keep in mind:
 [info] You can create multiple project aliases by running firebase use --add, 
 [info] but for now we'll just set up a default project.
 [info] 
-[debug] [2025-08-27T11:06:33.174Z] Using project from CLI flag: dabubble-57b53
-[debug] [2025-08-27T11:06:33.174Z] Checked if tokens are valid: false, expires at: 1754905357428
-[debug] [2025-08-27T11:06:33.175Z] Checked if tokens are valid: false, expires at: 1754905357428
-[debug] [2025-08-27T11:06:33.175Z] > refreshing access token with scopes: []
-[debug] [2025-08-27T11:06:33.177Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
-[debug] [2025-08-27T11:06:33.178Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
-[debug] [2025-08-27T11:06:33.339Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
-[debug] [2025-08-27T11:06:33.339Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
-[debug] [2025-08-27T11:06:33.352Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/dabubble-57b53 [none]
-[debug] [2025-08-27T11:06:33.469Z] <<< [apiv2][status] GET https://firebase-public.firebaseio.com/cli.json 200
-[debug] [2025-08-27T11:06:33.469Z] <<< [apiv2][body] GET https://firebase-public.firebaseio.com/cli.json {"cloudBuildErrorAfter":1594252800000,"cloudBuildWarnAfter":1590019200000,"defaultNode10After":1594252800000,"minVersion":"3.0.5","node8DeploysDisabledAfter":1613390400000,"node8RuntimeDisabledAfter":1615809600000,"node8WarnAfter":1600128000000}
-[debug] [2025-08-27T11:06:34.152Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/dabubble-57b53 403
-[debug] [2025-08-27T11:06:34.152Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/dabubble-57b53 {"error":{"code":403,"message":"The caller does not have permission","status":"PERMISSION_DENIED"}}
-[debug] [2025-08-27T11:06:34.154Z] Request to https://firebase.googleapis.com/v1beta1/projects/dabubble-57b53 had HTTP Error: 403, The caller does not have permission
-[debug] [2025-08-27T11:06:34.246Z] FirebaseError: Request to https://firebase.googleapis.com/v1beta1/projects/dabubble-57b53 had HTTP Error: 403, The caller does not have permission
+[debug] [2025-08-30T09:23:30.964Z] Using project from CLI flag: dabubble-57b53
+[debug] [2025-08-30T09:23:30.966Z] Checked if tokens are valid: false, expires at: 1756296392339
+[debug] [2025-08-30T09:23:30.967Z] Checked if tokens are valid: false, expires at: 1756296392339
+[debug] [2025-08-30T09:23:30.967Z] > refreshing access token with scopes: []
+[debug] [2025-08-30T09:23:30.971Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2025-08-30T09:23:30.972Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-08-30T09:23:31.204Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2025-08-30T09:23:31.204Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-08-30T09:23:31.216Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/dabubble-57b53 [none]
+[debug] [2025-08-30T09:23:31.604Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/dabubble-57b53 403
+[debug] [2025-08-30T09:23:31.604Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/dabubble-57b53 {"error":{"code":403,"message":"The caller does not have permission","status":"PERMISSION_DENIED"}}
+[debug] [2025-08-30T09:23:31.606Z] Request to https://firebase.googleapis.com/v1beta1/projects/dabubble-57b53 had HTTP Error: 403, The caller does not have permission
+[debug] [2025-08-30T09:23:31.720Z] FirebaseError: Request to https://firebase.googleapis.com/v1beta1/projects/dabubble-57b53 had HTTP Error: 403, The caller does not have permission
     at responseToError (/opt/node-v22.15.0-linux-x64/lib/node_modules/firebase-tools/lib/responseToError.js:52:12)
     at RetryOperation._fn (/opt/node-v22.15.0-linux-x64/lib/node_modules/firebase-tools/lib/apiv2.js:312:77)
     at process.processTicksAndRejections (node:internal/process/task_queues:105:5)

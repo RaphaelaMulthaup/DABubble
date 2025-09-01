@@ -1,0 +1,21 @@
+<div class="edit-profile-main flex flex-col items-center justify-between"
+    *ngIf="(user$ | async) as user">
+    <div class="edit-profile-header flex items-center justify-between w-full">
+        <h2 class="front-bold text-xl">Dein Profil bearbeiten</h2>
+        <button class="btn-tertiary close"></button>
+    </div>
+    <div class="img-area flex items-center justify-center w-full">
+        <img class="user-img" [src]="user.photoUrl" alt="user img">
+    </div>
+    <div class="name-section flex flex-col w-full">
+        <div class="name-header flex items-center">
+            <img class="edit-icon" [src]="" alt="">
+            <h3 class="edit-h3">Vollständiger Name</h3>
+        </div>
+        <input class="input-primary" type="text" placeholder="{{ user.name }}">
+    </div>
+    <div class="btn-area flex items-center justify-around w-full">
+        <button class="btn-secondary">Abbrechen</button>
+        <button class="btn-primary">Speichern</button>
+    </div>
+</div>

@@ -90,3 +90,14 @@ h1 {
 .arrow-back {
   rotate: 90deg;
 }
+
+.profile-view{
+  display: none;
+  position: absolute;
+  top: 60px;
+  z-index: 10;
+}
+
+.showProfile{
+  display: flex;
+}

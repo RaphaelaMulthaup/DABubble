@@ -1,0 +1,62 @@
+@import './../../../styles.scss';
+
+.profil-view-main{
+    background-color: white;
+    border: solid 1px lightgray;
+    width: 500px;
+    height: 600px;
+    top: 60px;
+    z-index: 10;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    padding: 38px;
+}
+
+.user-img{
+    width: 200px;
+    border-radius: 50%;
+}
+
+.user-name{
+    color: black;
+}
+
+.profile-h3{
+    margin: 0px 0px 0px 20px;
+}
+
+.status-txt{
+    font-size: 20px;
+    font-weight: 400;
+    color: var(--color-green);
+    margin: 0px 0px 0px 8px;
+}
+
+.mail-link{
+    margin: 0px 0px 0px 48px;
+    color: var(--color-blue);
+}
+
+.close {
+  background-image: url("./../../../assets/img/close.svg");
+  &:hover {
+    background-image: url("./../../../assets/img/close-hover.svg");
+  }
+}
+
+.closeProfile{
+    display: none;
+}
+
+.edit-view{
+    display: none;
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 10;
+}
+
+.showEdit{
+    display: flex;
+}
