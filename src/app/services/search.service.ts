@@ -1,7 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { Firestore, collection, collectionData } from '@angular/fire/firestore';
 import { BehaviorSubject, combineLatest, map, Observable } from 'rxjs';
-import { PostSearchInterface } from '../shared/models/postSearch.interface';
 import { SearchResult } from '../shared/types/search-result.type';
 import { AuthService } from './auth.service';
 import { UserInterface } from '../shared/models/user.interface';
@@ -16,7 +15,7 @@ export class SearchService {
   private users$ = new BehaviorSubject<UserInterface[]>([]);
   private channels$ = new BehaviorSubject<ChannelInterface[]>([]);
   private chatPosts$ = new BehaviorSubject<PostInterface[]>([]);
-  private channelPosts$ = new BehaviorSubject<PostSearchInterface[]>([]);
+  private channelPosts$ = new BehaviorSubject<PostInterface[]>([]);
 
   constructor(private firestore: Firestore, private authService: AuthService) {
     this.listenToUsers();
@@ -27,12 +26,12 @@ export class SearchService {
 
   /***
    * Listen to all users in Firestore and keep them updated in users$.
-   * Data is cast to UserSearchInterface for search functionality.
+   * Data is cast to UserInterface for search functionality.
    */
   private listenToUsers() {
     const usersCol = collection(this.firestore, 'users');
     collectionData(usersCol, { idField: 'id' }).subscribe(
-      (data) => this.users$.next(data as UserInterface[]) // statt UserSearchInterface
+      (data) => this.users$.next(data as UserInterface[]) 
     );
   }
 
