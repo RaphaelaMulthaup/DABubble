@@ -19,7 +19,7 @@ export class EditChannelComponent {
   channelId?:string;
   memberIds?:string[];
 
-  private overlayService = inject(OverlayService);
+  public overlayService = inject(OverlayService);
   channelDetails$: Observable<ChannelInterface | undefined> = this.overlayService.overlayInput.pipe(
     switchMap(overlayData => overlayData?.channel ?? of(undefined))
   );
