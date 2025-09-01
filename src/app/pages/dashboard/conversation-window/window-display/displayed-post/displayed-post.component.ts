@@ -124,14 +124,19 @@ export class DisplayedPostComponent {
  * This method displays the profile view of another user.
  * It triggers the overlay service to open the ProfileViewOtherUsersComponent.
  */
-  displayProfileViewOtherUser() {
-    const user$ = this.userService.getUserById(this.message.senderId);
-    this.overlayService.displayOverlay(
+  openUserProfileOverlay(event: MouseEvent) {
+    // const user$ = this.userService.getUserById(this.message.senderId);
+    // this.overlayService.displayOverlay(
+    //   ProfileViewOtherUsersComponent,
+    //   'Profil',
+    //   {
+    //     user$: user$,
+    //   }
+    // );
+    this.overlayService.openComponent(
       ProfileViewOtherUsersComponent,
-      'Profil',
-      {
-        user$: user$,
-      }
+      'cdk-overlay-dark-backdrop',
+      { user$: this.userService.getUserById(this.message.senderId) }
     );
   }
 
@@ -142,14 +147,13 @@ export class DisplayedPostComponent {
   openEmojiPickerOverlay(event: MouseEvent) {
     const origin = event.currentTarget as HTMLElement;
     const overlay = this.overlayService.openComponent(
-      origin,
       EmojiPickerComponent,
+      'cdk-overlay-transparent-backdrop',
+      { messageFromCurrentUser: this.isMessageFromCurrentUser },
+      origin,
       { originX: 'end', originY: 'top', overlayX: 'start', overlayY: 'top' },
       { originX: 'start', originY: 'top', overlayX: 'end', overlayY: 'top' },
-      'transparent',
-      {messageFromCurrentUser: this.isMessageFromCurrentUser}
     );
-    // overlay!.instance.messageFromCurrentUser = this.isMessageFromCurrentUser;
 
     //das abonniert den event emitter vom emoji-picker component
     overlay!.instance.selectedEmoji.subscribe((emoji: string) => {
@@ -166,24 +170,15 @@ export class DisplayedPostComponent {
   /**
    * This functions opens the reacted-users-overlay.
    */
-  openReactedUsersOverlay(event: MouseEvent, reaction:ReactionInterface) {
-    const origin = event.currentTarget as HTMLElement;
-    const overlay = this.overlayService.openComponent(
-      origin,
+  openReactedUsersOverlay(event: MouseEvent, reaction: ReactionInterface) {
+    this.overlayService.openComponent(
       ReactedUsersComponent,
+      'cdk-overlay-transparent-backdrop',
+      { reaction: reaction },
+      event.currentTarget as HTMLElement,
       { originX: 'center', originY: 'top', overlayX: 'start', overlayY: 'bottom' },
       { originX: 'center', originY: 'top', overlayX: 'end', overlayY: 'bottom' },
-      'transparent',
-      {reaction: reaction}
     );
-      // overlay!.instance.reaction = reaction;
-  }
-
-  /**
-   * This functions closese an overlay
-   */
-  closeOverlay() {
-    this.overlayService.close();
   }
 
   /**

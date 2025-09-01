@@ -40,50 +40,56 @@ export class OverlayService {
 
   constructor() { }
 
-  /**
-   * Method to display the overlay with the provided component and associated headline.
-   * Sets the component to be displayed and updates the overlay visibility to 'true'.
-   */
-  displayOverlay(component: Type<any>, headline: string, inputs?: Record<string, any>) {
-    this.headline = headline;
-    this.overlayComponent = component; // Set the component to be displayed in the overlay
-    this.overlayInputs = inputs || {};
-    this.overlaySubject.next(true); // Update the visibility to 'true' (show overlay)
-  }
+  // /**
+  //  * Method to display the overlay with the provided component and associated headline.
+  //  * Sets the component to be displayed and updates the overlay visibility to 'true'.
+  //  */
+  // displayOverlay(component: Type<any>, headline: string, inputs?: Record<string, any>) {
+  //   this.headline = headline;
+  //   this.overlayComponent = component; // Set the component to be displayed in the overlay
+  //   this.overlayInputs = inputs || {};
+  //   this.overlaySubject.next(true); // Update the visibility to 'true' (show overlay)
+  // }
 
-  /**
-   * Method to hide the overlay.
-   * Resets the overlay visibility to 'false' and clears the component.
-   */
-  hideOverlay() {
-    this.overlaySubject.next(false); // Set visibility to 'false' (hide overlay)
-    this.overlayComponent = null; // Clear the component being displayed
-    this.overlayInputs = {};
-  }
+  // /**
+  //  * Method to hide the overlay.
+  //  * Resets the overlay visibility to 'false' and clears the component.
+  //  */
+  // hideOverlay() {
+  //   this.overlaySubject.next(false); // Set visibility to 'false' (hide overlay)
+  //   this.overlayComponent = null; // Clear the component being displayed
+  //   this.overlayInputs = {};
+  // }
 
   openComponent<T extends Object>(
-    origin: HTMLElement,
     component: Type<T>,
-    originPosition: {},
+    backdropType: 'cdk-overlay-dark-backdrop' | 'cdk-overlay-transparent-backdrop',
+    data: Partial<T>,
+    origin?: HTMLElement,
+    originPosition?: {},
     originPositionFallback?: {},
-    backdropType?: 'dark' | 'transparent',
-    data?: Partial<T>
   ): ComponentRef<T> | undefined {
     this.close(); // falls schon ein Overlay offen ist
 
-    const positionStrategy = this.overlay.position()
-      .flexibleConnectedTo(origin)
-      .withPositions([
-        originPosition,
-        originPositionFallback || originPosition   //falls das Erste platzmäßig nicht klappt
-      ]);
-
-    let backdrop = backdropType ? this.setBackdropType(backdropType) : 'cdk-overlay-dark-backdrop';
+    let positionStrategy;
+    if (origin) {
+      positionStrategy = this.overlay.position()
+        .flexibleConnectedTo(origin)
+        .withPositions([
+          originPosition,
+          originPositionFallback || originPosition   //falls das Erste platzmäßig nicht klappt
+        ]);
+    } else {
+      positionStrategy = this.overlay.position()
+      .global()
+      .centerHorizontally()
+      .centerVertically();
+    }
 
     this.overlayRef = this.overlay.create({
       positionStrategy,
       hasBackdrop: true,
-      backdropClass: backdrop
+      backdropClass: backdropType
     });
 
     const portal = new ComponentPortal(component, null, this.injector);
@@ -95,19 +101,13 @@ export class OverlayService {
     // Klick außerhalb schließt Overlay
     this.overlayRef?.backdropClick().subscribe(() => this.close());
 
-    if (data) {
-      Object.assign(componentRef.instance, data);
-    }
+    if (data) Object.assign(componentRef.instance, data);
 
     return componentRef;
   }
 
-  setBackdropType(backdropType: 'dark' | 'transparent') {
-    return 'cdk-overlay-' + backdropType + '-backdrop'
-  }
-
   /**
-   * Overlay schließen
+   * closes an overlay
    */
   close(): void {
     if (this.overlayRef) {
@@ -119,10 +119,10 @@ export class OverlayService {
     }
   }
 
-  /**
-   * Prüfen, ob Overlay aktuell offen ist
-   */
-  isOpen(): boolean {
-    return !!this.overlayRef;
-  }
+  // /**
+  //  * Prüfen, ob Overlay aktuell offen ist
+  //  */
+  // isOpen(): boolean {
+  //   return !!this.overlayRef;
+  // }
 }

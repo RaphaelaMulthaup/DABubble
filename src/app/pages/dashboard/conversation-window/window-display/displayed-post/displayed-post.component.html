@@ -1,9 +1,9 @@
 <div class="message-card w-full" [ngClass]="{ 'message-current-user': senderIsCurrentUser$ | async }">
   <div>
     @if(senderPhotoUrl$ | async; as photoUrl) {
-    <img class="profil-img" [src]="senderPhotoUrl$ | async" alt="Profilbild" (click)="displayProfileViewOtherUser()" />
+    <img class="profil-img" [src]="senderPhotoUrl$ | async" alt="Profilbild" (click)="openUserProfileOverlay($event)" />
     } @else {
-    <img class="profil-img" src="/assets/img/no-avatar.svg" alt="Profilbild" (click)="displayProfileViewOtherUser()">
+    <img class="profil-img" src="/assets/img/no-avatar.svg" alt="Profilbild" (click)="openUserProfileOverlay($event)">
     }
   </div>
   <div class="message-content">
@@ -35,7 +35,7 @@
     <div class="interactions w-full" [class.fill-row]="((visibleReactions$ | async)?.length ?? 0) == 3">
       @for (reaction of (visibleReactions$ | async); track $index) {
         @if(allReactionsVisible || $index <= 4) { 
-          <div (mouseenter)="openReactedUsersOverlay($event, reaction)" (mouseleave)="closeOverlay()" (click)="toggleExistingReaction(reaction.emoji)"class="reaction flex place-items-center">
+          <div (mouseenter)="openReactedUsersOverlay($event, reaction)" (mouseleave)="overlayService.close()" (click)="toggleExistingReaction(reaction.emoji)"class="reaction flex place-items-center">
             <img class="reaction-img" [src]="reaction.emoji" />
             <p>{{ reaction.users.length }}</p>
           </div>

@@ -42,10 +42,11 @@ export class ProfileViewOtherUsersComponent {
   /** Service for managing chat-related logic */
   chatService = inject(ChatService);
 
-  /** Observable providing the user data displayed in the overlay */
-  user$ = this.overlayService.overlayInputs[
-    'user$'
-  ] as Observable<UserInterface>;
+  // /** Observable providing the user data displayed in the overlay */
+  // user$ = this.overlayService.overlayInputs[
+  //   'user$'
+  // ] as Observable<UserInterface>;
+  user$!: Observable<UserInterface>;
 
   constructor(private router: Router) {}
 
