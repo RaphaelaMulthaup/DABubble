@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { OverlayService } from '../../services/overlay.service';
 import { ChannelInterface } from '../../shared/models/channel.interface';
-import { Observable, of, switchMap } from 'rxjs';
+import { filter, Observable, of, switchMap } from 'rxjs';
 import { ChangeChannelNameComponent } from "./change-channel-name/change-channel-name.component";
 import { ChangeChannelDescriptionComponent } from "./change-channel-description/change-channel-description.component";
 import { ChannelMembersComponent } from "../../shared/components/channel-members/channel-members.component";
@@ -22,8 +22,7 @@ export class EditChannelComponent {
  
   private userService = inject(UserService);
   private authService = inject(AuthService);
-   channelService = inject(ChannelsService);
-
+  channelService = inject(ChannelsService);
 
   currentUser = this.authService.getCurrentUserId();
 
@@ -31,35 +30,23 @@ export class EditChannelComponent {
   memberIds?:string[];
   createdById?:string;
   user$?:Observable<UserInterface>;
-
-
-  public overlayService = inject(OverlayService);
+    public overlayService = inject(OverlayService);
+    // CORECT: Inițializare corectă a observabilului
   channelDetails$: Observable<ChannelInterface | undefined> = this.overlayService.overlayInput.pipe(
-    switchMap(overlayData => overlayData?.channel ?? of(undefined))
+  switchMap(data => data?.channel ?? of(null)),
+  filter((channel): channel is ChannelInterface => !!channel) 
   );
 
-  constructor(){
-  }
 
   ngOnInit(){
-    this.channelDetails$.subscribe(channel => {
+    this.channelDetails$!.subscribe(channel => {
       if (channel) {
         this.createdById = channel.createdBy;
         this.channelId = channel.id;
         this.memberIds = channel.memberIds;
         this.user$ = this.userService.getUserById(this.createdById);
-        console.log(this.currentUser);
-        console.log(this.createdById);
       }
     });
-
-
-    console.log(this.createdById);
   }  
-
-  closeOverlay() {
-    this.overlayService.close();
-  }
-
 
 }
