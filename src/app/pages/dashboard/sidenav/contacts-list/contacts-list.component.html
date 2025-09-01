@@ -18,10 +18,10 @@
 @if (directMessagesVisible) {
 <ul (click)="mobileService.setMobileDashboardState('message-window')" class="contacts-list">
   @if (currentUser) {
-  <app-contact-list-item [user]="currentUser"></app-contact-list-item>
+  <app-user-list-item [user]="currentUser"></app-user-list-item>
   }
   @for (user of contacts$ | async; track $index) {
-  <app-contact-list-item [user]="user"></app-contact-list-item>
+  <app-user-list-item [user]="user"></app-user-list-item>
   }
 </ul>
 }

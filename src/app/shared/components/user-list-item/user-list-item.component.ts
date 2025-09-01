@@ -8,15 +8,15 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-contact-list-item', // Component selector used in parent templates
+  selector: 'app-user-list-item', // Component selector used in parent templates
   imports: [CommonModule],
-  templateUrl: './contact-list-item.component.html', // External HTML template
+  templateUrl: './user-list-item.component.html', // External HTML template
   styleUrls: [
-    './contact-list-item.component.scss',
+    './user-list-item.component.scss',
     './../../styles/list-item.scss',
   ],
 })
-export class ContactListItemComponent {
+export class UserListItemComponent {
   // Input property that receives a user object from the parent component
   @Input() user!: UserInterface;
   @Input() relatedToSearchResultPost: boolean = false;

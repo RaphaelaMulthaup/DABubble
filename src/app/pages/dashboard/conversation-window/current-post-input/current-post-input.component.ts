@@ -8,7 +8,7 @@ import { PostService } from '../../../../services/post.service';
 import { startWith, debounceTime, filter, switchMap } from 'rxjs';
 import { SearchResult } from '../../../../shared/types/search-result.type';
 import { SearchService } from '../../../../services/search.service';
-import { ContactListItemComponent } from '../../../../shared/components/contact-list-item/contact-list-item.component';
+import { UserListItemComponent } from '../../../../shared/components/user-list-item/user-list-item.component';
 import { ChannelListItemComponent } from '../../../../shared/components/channel-list-item/channel-list-item.component';
 
 @Component({
@@ -16,7 +16,7 @@ import { ChannelListItemComponent } from '../../../../shared/components/channel-
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    ContactListItemComponent,
+    UserListItemComponent,
     ChannelListItemComponent,
   ],
   templateUrl: './current-post-input.component.html',
