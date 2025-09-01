@@ -86,7 +86,6 @@ export class ChannelListComponent {
     );
   }
 
-
   /**
    * Deletes a channel by its ID
    * @param channel The channel to delete
