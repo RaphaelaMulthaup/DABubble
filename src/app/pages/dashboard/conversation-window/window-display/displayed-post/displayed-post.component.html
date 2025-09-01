@@ -35,7 +35,7 @@
     <div class="interactions w-full" [class.fill-row]="((visibleReactions$ | async)?.length ?? 0) == 3">
       @for (reaction of (visibleReactions$ | async); track $index) {
         @if(allReactionsVisible || $index <= 4) { 
-          <div (click)="toggleExistingReaction(reaction.emoji)"class="reaction flex place-items-center">
+          <div (mouseenter)="openReactedUsersOverlay($event, reaction)" (mouseleave)="closeOverlay()" (click)="toggleExistingReaction(reaction.emoji)"class="reaction flex place-items-center">
             <img class="reaction-img" [src]="reaction.emoji" />
             <p>{{ reaction.users.length }}</p>
           </div>
@@ -54,7 +54,7 @@
           </button>
         </div>
       }
-      <button #addReactionBtn (click)="openEmojiPickerOverlay($event)" class="btn-tertiary"
+      <button (click)="openEmojiPickerOverlay($event)" class="btn-tertiary"
         (mouseenter)="addReactionsImg.src = './assets/img/add-reaction-hover.svg'"
         (mouseleave)="addReactionsImg.src = './assets/img/add-reaction.svg'">
         <img #addReactionsImg src="./assets/img/add-reaction.svg" alt="add reaction" />

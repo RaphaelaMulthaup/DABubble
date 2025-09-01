@@ -61,24 +61,33 @@ export class OverlayService {
     this.overlayInputs = {};
   }
 
-  openComponent<T>(origin: HTMLElement, component: Type<T>): ComponentRef<T> | undefined {
+  openComponent<T extends Object>(
+    origin: HTMLElement,
+    component: Type<T>,
+    originPosition: {},
+    originPositionFallback?: {},
+    backdropType?: 'dark' | 'transparent',
+    data?: Partial<T>
+  ): ComponentRef<T> | undefined {
     this.close(); // falls schon ein Overlay offen ist
 
     const positionStrategy = this.overlay.position()
       .flexibleConnectedTo(origin)
       .withPositions([
-        { originX: 'end', originY: 'top', overlayX: 'start', overlayY: 'top' },
-        { originX: 'start', originY: 'top', overlayX: 'end', overlayY: 'top' }
+        originPosition,
+        originPositionFallback || originPosition   //falls das Erste platzmäßig nicht klappt
       ]);
+
+    let backdrop = backdropType ? this.setBackdropType(backdropType) : 'cdk-overlay-dark-backdrop';
 
     this.overlayRef = this.overlay.create({
       positionStrategy,
       hasBackdrop: true,
-      backdropClass: 'cdk-overlay-dark-backdrop' // bzw 'cdk-overlay-transparent-backdrop' für transparentes
+      backdropClass: backdrop
     });
 
     const portal = new ComponentPortal(component, null, this.injector);
-    const componentRef = this.overlayRef?.attach(portal);
+    const componentRef = this.overlayRef?.attach(portal)!;
 
     // Body scroll sperren
     document.body.style.overflow = 'hidden';
@@ -86,7 +95,15 @@ export class OverlayService {
     // Klick außerhalb schließt Overlay
     this.overlayRef?.backdropClick().subscribe(() => this.close());
 
+    if (data) {
+      Object.assign(componentRef.instance, data);
+    }
+
     return componentRef;
+  }
+
+  setBackdropType(backdropType: 'dark' | 'transparent') {
+    return 'cdk-overlay-' + backdropType + '-backdrop'
   }
 
   /**

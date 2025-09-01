@@ -2,18 +2,6 @@
   <app-header-dashboard/>
 
   <div class="w-full h-full">
-    <!-- @if (mobileDashboardState == 'sidenav') {
-      <app-sidenav (changeMobileDashboardState)="mobileDashboardState = $event"></app-sidenav>
-    } @else if (mobileDashboardState == 'message-window') {
-      <div [class.disabled]="msgId$  | async">
-        <app-conversation-window [data$]="messages$"></app-conversation-window>
-      </div>
-    } @else if (mobileDashboardState == 'thread-window') {
-      @if(msgId$ | async; as msgId){
-        <app-conversation-window [data$]="answers$"></app-conversation-window>
-      }
-    } -->
-
     @switch (mobileDashboardState()) {
       @case ('sidenav') {
         <app-sidenav></app-sidenav>

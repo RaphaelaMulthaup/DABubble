@@ -16,6 +16,7 @@ import { Router } from '@angular/router';
 import { ReactionInterface } from '../../../../../shared/models/reaction.interface';
 import { PostService } from '../../../../../services/post.service';
 import { EmojiPickerComponent } from '../../../../../shared/components/emoji-picker/emoji-picker.component';
+import { ReactedUsersComponent } from '../../../../../overlay/reacted-users/reacted-users.component';
 
 @Component({
   selector: 'app-displayed-post', // Component to display a single message in the conversation
@@ -80,7 +81,7 @@ export class DisplayedPostComponent {
       )
     );
 
-    this.answers$ = this.postService.getAnswers('/' + this.currentType + 's/' + this.currentChannelId, 'messages', this.message.id!).pipe(map(answers => answers?? []));
+    this.answers$ = this.postService.getAnswers('/' + this.currentType + 's/' + this.currentChannelId, 'messages', this.message.id!).pipe(map(answers => answers ?? []));
     this.answers$.subscribe(data => {
       this.answers = data;
     });
@@ -140,11 +141,18 @@ export class DisplayedPostComponent {
    */
   openEmojiPickerOverlay(event: MouseEvent) {
     const origin = event.currentTarget as HTMLElement;
-    const ref = this.overlayService.openComponent(origin, EmojiPickerComponent);
-    ref!.instance.messageFromCurrentUser = this.isMessageFromCurrentUser;
+    const overlay = this.overlayService.openComponent(
+      origin,
+      EmojiPickerComponent,
+      { originX: 'end', originY: 'top', overlayX: 'start', overlayY: 'top' },
+      { originX: 'start', originY: 'top', overlayX: 'end', overlayY: 'top' },
+      'transparent',
+      {messageFromCurrentUser: this.isMessageFromCurrentUser}
+    );
+    // overlay!.instance.messageFromCurrentUser = this.isMessageFromCurrentUser;
 
     //das abonniert den event emitter vom emoji-picker component
-    ref!.instance.selectedEmoji.subscribe((emoji: string) => {
+    overlay!.instance.selectedEmoji.subscribe((emoji: string) => {
       this.postService.toggleReaction(
         '/' + this.currentType + 's/' + this.currentChannelId,
         'messages',
@@ -156,9 +164,25 @@ export class DisplayedPostComponent {
   }
 
   /**
-   * This functions closese the emoji-picker-overlay
+   * This functions opens the reacted-users-overlay.
    */
-  closeEmojiPickerOverlay() {
+  openReactedUsersOverlay(event: MouseEvent, reaction:ReactionInterface) {
+    const origin = event.currentTarget as HTMLElement;
+    const overlay = this.overlayService.openComponent(
+      origin,
+      ReactedUsersComponent,
+      { originX: 'center', originY: 'top', overlayX: 'start', overlayY: 'bottom' },
+      { originX: 'center', originY: 'top', overlayX: 'end', overlayY: 'bottom' },
+      'transparent',
+      {reaction: reaction}
+    );
+      // overlay!.instance.reaction = reaction;
+  }
+
+  /**
+   * This functions closese an overlay
+   */
+  closeOverlay() {
     this.overlayService.close();
   }
 
