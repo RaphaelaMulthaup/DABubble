@@ -178,9 +178,7 @@ export class SearchService {
           const query = t.slice(1); // entferne das "@"
           return users
             .filter(
-              (u) =>
-                u.name?.toLowerCase().includes(query) ||
-                u.email?.toLowerCase().includes(query)
+              (u) => u.name?.toLowerCase().includes(query) // <- E-Mail raus
             )
             .map((u) => ({ type: 'user' as const, ...u }));
         }
@@ -197,9 +195,7 @@ export class SearchService {
         return [
           ...users
             .filter(
-              (u) =>
-                u.name?.toLowerCase().includes(t) ||
-                u.email?.toLowerCase().includes(t)
+              (u) => u.name?.toLowerCase().includes(t) // <- E-Mail raus
             )
             .map((u) => ({ type: 'user' as const, ...u })),
           ...channels
