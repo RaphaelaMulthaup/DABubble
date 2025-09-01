@@ -199,7 +199,14 @@ export class SearchService {
             }),
           ...channelMessages
             .filter((m) => m.text?.toLowerCase().includes(t))
-            .map((m) => ({ type: 'channelMessage' as const, ...m })),
+            .map((m) => {
+              const channel = channels.find((c) => c.id === m.channelId)!;
+              return {
+                type: 'channelMessage' as const,
+                ...m,
+                channel, // <- hier hängt jetzt das ganze Channel-Objekt dran
+              };
+            }),
           ...answers
             .filter((a) => a.text?.toLowerCase().includes(t))
             .map((a) => ({ type: 'answer' as const, ...a })),

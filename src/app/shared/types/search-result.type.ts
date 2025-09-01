@@ -7,6 +7,7 @@ import { PostInterface } from '../models/post.interface';
 export type SearchResult =
   | (UserInterface & { type: 'user' })
   | (ChannelInterface & { type: 'channel' })
-  | (PostInterface & { type: 'chatMessage', user: UserInterface })
-  | (PostSearchInterface & { type: 'channelMessage' })
+  | (PostInterface & { type: 'chatMessage'; user: UserInterface })
+  | (PostSearchInterface & { type: 'channelMessage'; channel: ChannelInterface })
+  | { type: 'channelGroup'; channel: ChannelInterface; posts: PostSearchInterface[] }
   | (AnswerSearchInterface & { type: 'answer' });

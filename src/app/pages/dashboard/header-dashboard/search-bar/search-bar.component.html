@@ -9,46 +9,45 @@
 </div>
 
 @if (groupedResults().length > 0) {
-  <ul class="results-list">
-    @for (item of groupedResults(); track $index) {
+<ul class="results-list">
+  @for (item of groupedResults(); track $index) {
+  <li>
+    @switch (item.type) { @case ('user') {
+    <app-contact-list-item [user]="item"></app-contact-list-item>
+    } @case ('channel') {
+    <app-channel-list-item [channel]="item"></app-channel-list-item>
+    } @case ('chatGroup') {
+    <app-contact-list-item
+      [user]="item.user"
+      [relatedToSearchResultPost]="true"
+    ></app-contact-list-item>
+    <ul>
+      @for (post of item.posts; track post.id) {
       <li>
-        @switch (item.type) {
-          @case ('user') {
-            <app-contact-list-item [user]="item"></app-contact-list-item>
-          }
-          @case ('channel') {
-            <app-channel-list-item [channel]="item"></app-channel-list-item>
-          }
-          @case ('chatGroup') {
-            <app-contact-list-item
-              [user]="item.user"
-              [relatedToSearchResultPost]="true"
-            ></app-contact-list-item>
-            <ul>
-              @for (post of item.posts; track post.id) {
-                <li>
-                  <app-post-list-item [post]="post"></app-post-list-item>
-                </li>
-              }
-            </ul>
-          }
-          @case ('channelMessage') {
-            <div class="chat-bubble"></div>
-            <div class="tag"></div>
-            <span class="channel-name">{{ item.channelName }}:</span>
-            {{ item.text }}
-          }
-          @case ('answer') {
-            <div class="chat-bubble"></div>
-            <div class="tag"></div>
-            <span class="channel-name">{{ item.channelName }}:</span>
-            {{ item.text }}
-          }
-          @default { {{ item | json }} }
-        }
+        <app-post-list-item [post]="post"></app-post-list-item>
       </li>
+      }
+    </ul>
+    } @case ('channelGroup') {
+    <app-channel-list-item [channel]="item.channel"></app-channel-list-item>
+    <ul>
+      @for (post of item.posts; track post.id) {
+      <li>
+        <app-post-list-item [post]="post"></app-post-list-item>
+      </li>
+      }
+    </ul>
     }
-  </ul>
+    @case ('answer') {
+    <div class="chat-bubble"></div>
+    <div class="tag"></div>
+    <span class="channel-name">{{ item.channelName }}:</span>
+    {{ item.text }}
+    } 
+    @default { {{ item | json }} } }
+  </li>
+  }
+</ul>
 } @else {
-  <div>Keine Treffer</div>
+<div>Keine Treffer</div>
 }

@@ -9,6 +9,7 @@ import { ContactListItemComponent } from '../../../../shared/components/contact-
 import { ChannelListItemComponent } from '../../../../shared/components/channel-list-item/channel-list-item.component';
 import { PostListItemComponent } from '../../../../shared/components/post-list-item/post-list-item.component';
 import { UserInterface } from '../../../../shared/models/user.interface';
+import { ChannelInterface } from '../../../../shared/models/channel.interface';
 
 @Component({
   selector: 'app-search-bar',
@@ -60,12 +61,24 @@ export class SearchBarComponent {
     // Sammel-Map für chatMessages nach User
     const chatMap = new Map<string, { user: UserInterface; posts: any[] }>();
 
+    // Sammel-Map für channelMessages nach Channel
+    const channelMap = new Map<
+      string,
+      { channel: ChannelInterface; posts: any[] }
+    >();
+
     for (const item of res) {
       if (item.type === 'chatMessage') {
         if (!chatMap.has(item.user.uid)) {
           chatMap.set(item.user.uid, { user: item.user, posts: [] });
         }
         chatMap.get(item.user.uid)!.posts.push(item);
+      } else if (item.type === 'channelMessage') {
+        const channelId = item.channelId!;
+        if (!channelMap.has(channelId)) {
+          channelMap.set(channelId, { channel: item.channel, posts: [] });
+        }
+        channelMap.get(channelId)!.posts.push(item);
       } else {
         grouped.push(item);
       }
@@ -76,6 +89,15 @@ export class SearchBarComponent {
       grouped.push({
         type: 'chatGroup',
         user: value.user,
+        posts: value.posts,
+      });
+    }
+
+    // alle Channel-Gruppen anhängen
+    for (const [, value] of channelMap) {
+      grouped.push({
+        type: 'channelGroup',
+        channel: value.channel,
         posts: value.posts,
       });
     }
