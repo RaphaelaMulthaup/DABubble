@@ -40,26 +40,33 @@ export class OverlayService {
 
   constructor() { }
 
-  // /**
-  //  * Method to display the overlay with the provided component and associated headline.
-  //  * Sets the component to be displayed and updates the overlay visibility to 'true'.
-  //  */
-  // displayOverlay(component: Type<any>, headline: string, inputs?: Record<string, any>) {
-  //   this.headline = headline;
-  //   this.overlayComponent = component; // Set the component to be displayed in the overlay
-  //   this.overlayInputs = inputs || {};
-  //   this.overlaySubject.next(true); // Update the visibility to 'true' (show overlay)
-  // }
+  /**
+   * Method to display the overlay with the provided component and associated headline.
+   * Sets the component to be displayed and updates the overlay visibility to 'true'.
+   */
+  displayOverlay(component: Type<any>, headline: string, inputs?: Record<string, any>) {
+    this.headline = headline;
+    this.overlayComponent = component; // Set the component to be displayed in the overlay
+    this.overlayInputs = inputs || {};
+    this.overlaySubject.next(true); // Update the visibility to 'true' (show overlay)
+  }
 
-  // /**
-  //  * Method to hide the overlay.
-  //  * Resets the overlay visibility to 'false' and clears the component.
-  //  */
-  // hideOverlay() {
-  //   this.overlaySubject.next(false); // Set visibility to 'false' (hide overlay)
-  //   this.overlayComponent = null; // Clear the component being displayed
-  //   this.overlayInputs = {};
-  // }
+  /**
+   * Method to hide the overlay.
+   * Resets the overlay visibility to 'false' and clears the component.
+   */
+  hideOverlay() {
+    this.overlaySubject.next(false); // Set visibility to 'false' (hide overlay)
+    this.overlayComponent = null; // Clear the component being displayed
+    this.overlayInputs = {};
+  }
+
+    /**
+   * Prüfen, ob Overlay aktuell offen ist
+   */
+  isOpen(): boolean {
+    return !!this.overlayRef;
+  }
 
   openComponent<T extends Object>(
     component: Type<T>,
@@ -118,11 +125,4 @@ export class OverlayService {
       document.body.style.overflow = '';
     }
   }
-
-  // /**
-  //  * Prüfen, ob Overlay aktuell offen ist
-  //  */
-  // isOpen(): boolean {
-  //   return !!this.overlayRef;
-  // }
 }
