@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { OverlayService } from '../../services/overlay.service';
 
 @Component({
   selector: 'app-profile-view-main',
@@ -7,5 +8,5 @@ import { Component } from '@angular/core';
   styleUrl: './profile-view-main.component.scss'
 })
 export class ProfileViewMainComponent {
-
+  overlayService = inject(OverlayService);
 }

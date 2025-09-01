@@ -11,6 +11,6 @@ import { Observable } from 'rxjs';
   styleUrl: './edit-channel.component.scss'
 })
 export class EditChannelComponent {
-  private overlayService = inject(OverlayService);
+  public overlayService = inject(OverlayService);
   channelDetails$ = this.overlayService.overlayInputs as Observable<ChannelInterface>;;
 }

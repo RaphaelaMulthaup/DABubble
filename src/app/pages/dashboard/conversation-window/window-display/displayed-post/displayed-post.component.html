@@ -1,9 +1,9 @@
 <div class="message-card w-full" [ngClass]="{ 'message-current-user': senderIsCurrentUser$ | async }">
   <div>
     @if(senderPhotoUrl$ | async; as photoUrl) {
-    <img class="profil-img" [src]="senderPhotoUrl$ | async" alt="Profilbild" (click)="openUserProfileOverlay($event)" />
+    <img class="profil-img" [src]="senderPhotoUrl$ | async" alt="Profilbild" (click)="openUserProfileOverlay()" />
     } @else {
-    <img class="profil-img" src="/assets/img/no-avatar.svg" alt="Profilbild" (click)="openUserProfileOverlay($event)">
+    <img class="profil-img" src="/assets/img/no-avatar.svg" alt="Profilbild" (click)="openUserProfileOverlay()">
     }
   </div>
   <div class="message-content">

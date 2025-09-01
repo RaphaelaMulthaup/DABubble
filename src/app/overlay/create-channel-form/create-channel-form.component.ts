@@ -37,8 +37,7 @@ export class CreateChannelFormComponent {
     description: new FormControl(''),
   });
 
-
-    private overlayService = inject(OverlayService);
+  public overlayService = inject(OverlayService);
   
   constructor() {}
 
@@ -66,22 +65,11 @@ export class CreateChannelFormComponent {
         console.log('Channel created successfully');
         this.errorMessage = null;
         this.createChannel.reset();
-        this.overlayService.hideOverlay();
+        this.overlayService.close();
       },
       error: (err: { code: string | null }) => {
         this.errorMessage = err.code; // Set error message from backend
       },
     });
-  }
-
-    hideOverlay(){
-    this.overlayService.hideOverlay();
-  }
-
-  /**
-   * Handles form closing without submission
-   */
-  onClose() {
-    this.close.emit();
   }
 }

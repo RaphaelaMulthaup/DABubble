@@ -1,4 +1,9 @@
-@if(channelDetails$ | async; as channel){
+<div class="overlay">
+    <header>
+        <h2>{{ (channelDetails$ | async)?.name || ''}}</h2>
+        <button class="btn-tertiary close" (click)="overlayService.close()"></button>
+    </header>
+    @if(channelDetails$ | async; as channel){
     <div class="flex flex-col w-full gap-[20px]">
         <div class="container">
             <h3>Channel name</h3>
@@ -14,4 +19,5 @@
         </div>
         <div>CREATED BY</div>
     </div>
-}
+    }
+</div>

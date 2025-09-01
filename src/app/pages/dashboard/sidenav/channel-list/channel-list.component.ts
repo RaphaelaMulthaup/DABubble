@@ -44,7 +44,7 @@ export class ChannelListComponent {
   private channnelsService = inject(ChannelsService);
   private authService = inject(AuthService);
   private overlayService = inject(OverlayService);
-  constructor() {}
+  constructor() { }
 
   /**
    * Lifecycle hook that initializes component data
@@ -66,16 +66,24 @@ export class ChannelListComponent {
     this.channelSelectionService.selectChannel(channel);
   }
 
- displayCreateChannelForm() {
-    this.overlayService.displayOverlay(
-      CreateChannelFormComponent,
-      'Channel erstellen',
-      {}
-    );
+  // displayCreateChannelForm() {
+  //   this.overlayService.displayOverlay(
+  //     CreateChannelFormComponent,
+  //     'Channel erstellen',
+  //     {}
+  //   );
+  // }
+
+  hideOverlay() {
+    this.overlayService.hideOverlay();
   }
 
-  hideOverlay(){
-    this.overlayService.hideOverlay();
+  openCreateChannelFormOverlay() {
+    this.overlayService.openComponent(
+      CreateChannelFormComponent,
+      'cdk-overlay-dark-backdrop',
+      {}
+    );
   }
 
 

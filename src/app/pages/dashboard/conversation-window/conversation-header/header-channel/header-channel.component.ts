@@ -15,7 +15,7 @@ import { ChannelsService } from '../../../../../services/channels.service';
   styleUrl: './header-channel.component.scss'
 })
 export class HeaderChannelComponent {
-  channelId!:string;
+  channelId!: string;
   channelDetails$!: Observable<ChannelInterface | undefined>;
 
   private overlayService = inject(OverlayService);
@@ -24,20 +24,28 @@ export class HeaderChannelComponent {
   private channelService = inject(ChannelsService);
 
 
-  ngOnInit(){
+  ngOnInit() {
     this.channelDetails$ = this.chatActiveRouterService.getId$(this.route).pipe(
       switchMap(id => {
         this.channelId = id;
         return this.channelService.getCurrentChannel(this.channelId);
       })
     );
-    }
+  }
 
-  displayCreateChannelForm(channelName:string) {
-    this.overlayService.displayOverlay(
+  // displayCreateChannelForm(channelName: string) {
+  //   this.overlayService.displayOverlay(
+  //     EditChannelComponent,
+  //     `${channelName}`,
+  //     this.channelDetails$
+  //   );
+  // }
+
+  openEditChannelFormOverlay() {
+    this.overlayService.openComponent(
       EditChannelComponent,
-      `${channelName}`,
-      this.channelDetails$
+      'cdk-overlay-dark-backdrop',
+      { channelDetails$: this.channelDetails$ as Observable<ChannelInterface>}
     );
   }
 }

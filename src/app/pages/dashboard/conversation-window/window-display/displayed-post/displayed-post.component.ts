@@ -124,7 +124,7 @@ export class DisplayedPostComponent {
  * This method displays the profile view of another user.
  * It triggers the overlay service to open the ProfileViewOtherUsersComponent.
  */
-  openUserProfileOverlay(event: MouseEvent) {
+  openUserProfileOverlay() {
     // const user$ = this.userService.getUserById(this.message.senderId);
     // this.overlayService.displayOverlay(
     //   ProfileViewOtherUsersComponent,
