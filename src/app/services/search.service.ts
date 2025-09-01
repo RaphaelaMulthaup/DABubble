@@ -17,13 +17,22 @@ export class SearchService {
   private chatPosts$ = new BehaviorSubject<PostInterface[]>([]);
   private channelPosts$ = new BehaviorSubject<PostInterface[]>([]);
 
-  constructor(private firestore: Firestore, private authService: AuthService) {
-    this.listenToUsers();
-    this.listenToChannels();
-    this.listenToChats();
-    this.listenToChannelMessages();
+  private initAfterLogin() {
+    this.authService.currentUser$.subscribe((user) => {
+      if (!user) return; // noch kein User, nichts machen
+      const uid = user.uid;
+
+      // Channels und Chats laden
+      this.loadChannelsForUser(uid);
+      this.loadChatsForUser(uid);
+    });
   }
 
+  constructor(private firestore: Firestore, private authService: AuthService) {
+    this.listenToUsers(); // Users kann man immer laden
+    this.initAfterLogin(); // Channels & Chats erst nach User
+    this.listenToChannelMessages();
+  }
   /***
    * Listen to all users in Firestore and keep them updated in users$.
    * Data is cast to UserInterface for search functionality.
@@ -35,39 +44,20 @@ export class SearchService {
     );
   }
 
-  /***
-   * Listen to all channels in Firestore that the current user is a member of.
-   * Filters out channels where the user is not included.
-   */
-  private listenToChannels() {
-    const currentUserId = this.authService.currentUser?.uid;
-
+  private loadChannelsForUser(userId: string) {
     const channelsCol = collection(this.firestore, 'channels');
     collectionData(channelsCol, { idField: 'id' }).subscribe((data: any[]) => {
-      if (!currentUserId) {
-        this.channels$.next([]);
-        return;
-      }
-
       const userChannels = data.filter((channel) =>
-        channel.memberIds?.includes(currentUserId)
+        channel.memberIds?.includes(userId)
       );
-
       this.channels$.next(userChannels as ChannelInterface[]);
     });
   }
 
-  /***
-   * Listen to all direct chats for the current user.
-   * Loads chat messages and answers nested under each message.
-   */
-  private listenToChats() {
-    const currentUserId = this.authService.currentUser?.uid;
-    if (!currentUserId) return;
-
+  private loadChatsForUser(currentUserId: string) {
     const chatsCol = collection(this.firestore, 'chats');
     collectionData(chatsCol, { idField: 'id' }).subscribe((chats: any[]) => {
-      // Only include chats where the user is one of the participants
+      // Nur Chats, in denen der User beteiligt ist
       const userChats = chats.filter((chat) => {
         const [user1, user2] = chat.id.split('_');
         return user1 === currentUserId || user2 === currentUserId;
@@ -76,11 +66,16 @@ export class SearchService {
       userChats.forEach((chat) => {
         const msgCol = collection(this.firestore, `chats/${chat.id}/messages`);
         collectionData(msgCol, { idField: 'id' }).subscribe((msgs: any[]) => {
-          // Attach chatId to each message for context
-          const enriched = msgs.map((m) => ({ ...m, chatId: chat.id }));
+          // enriched ist jetzt korrekt typisiert
+          const enriched: (PostInterface & { chatId: string })[] = msgs.map(
+            (m) => ({
+              ...(m as PostInterface),
+              chatId: chat.id,
+            })
+          );
           this.chatPosts$.next([...this.chatPosts$.value, ...enriched]);
 
-          // Also listen for answers to each message
+          // Antworten
           msgs.forEach((m) => {
             const ansCol = collection(
               this.firestore,
@@ -88,12 +83,11 @@ export class SearchService {
             );
             collectionData(ansCol, { idField: 'id' }).subscribe(
               (ans: any[]) => {
-                const enrichedAns = ans.map((a) => ({
-                  ...a,
-                  chatId: chat.id, // nur chatId hinzufügen
-                }));
-
-                // Direkt in chatPosts$ speichern
+                const enrichedAns: (PostInterface & { chatId: string })[] =
+                  ans.map((a) => ({
+                    ...(a as PostInterface),
+                    chatId: chat.id,
+                  }));
                 this.chatPosts$.next([
                   ...this.chatPosts$.value,
                   ...enrichedAns,
@@ -105,7 +99,6 @@ export class SearchService {
       });
     });
   }
-
   /***
    * Listen to all channel messages for the channels the user is in.
    * Also loads answers nested under each message.
