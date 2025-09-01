@@ -1,10 +1,10 @@
 <header class="flex place-content-between">
   <div class="logo-box flex items-center">
-    @if (currentMobileDashboardState == 'sidenav') {
+    @if (mobileDashboardState() == 'sidenav') {
       <img class="logo-final" src="assets/img/logo.png" alt="Logo DABubble" />
     } @else {
       <div class="logo-channel flex items-center">
-        <button (click)="backToSidenav()" class="arrow-btn arrow-back"></button>
+        <button (click)="mobileService.setMobileDashboardState('sidenav')" class="arrow-btn arrow-back"></button>
         <img src="assets/img/logo-solo.png" alt="Logo Channel" />
       </div>
     }

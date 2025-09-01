@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit, WritableSignal } from '@angular/core';
 import { CommonModule, AsyncPipe } from '@angular/common';
 import { UserService } from '../../../../services/user.service';
 import { AuthService } from '../../../../services/auth.service';
@@ -6,6 +6,8 @@ import { ChatService } from '../../../../services/chat.service';
 import { Observable, of, switchMap, map, combineLatest, filter } from 'rxjs';
 import { UserInterface } from '../../../../shared/models/user.interface';
 import { ContactListItemComponent } from '../../../../shared/components/contact-list-item/contact-list-item.component';
+import { MobileService } from '../../../../services/mobile.service';
+import { MobileDashboardState } from '../../../../shared/types/mobile-dashboard-state.type';
 
 @Component({
   selector: 'app-contacts-list',
@@ -21,6 +23,10 @@ export class ContactsListComponent implements OnInit {
   // Controls visibility of direct messages section
   directMessagesVisible = true;
   currentUser!: UserInterface;
+
+  public mobileService = inject(MobileService);
+
+  mobileDashboardState: WritableSignal<MobileDashboardState> = this.mobileService.mobileDashboardState;
 
   constructor(
     private userService: UserService,

@@ -1,8 +1,7 @@
-import { Component, EventEmitter, inject, Output } from '@angular/core';
+import { Component, inject} from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
 import { ChannelListComponent } from './channel-list/channel-list.component';
 import { ContactsListComponent } from './contacts-list/contacts-list.component';
-import { MobileDashboardState } from '../../../shared/types/mobile-dashboard-state.type';
 
 @Component({
   selector: 'app-sidenav',
@@ -21,18 +20,11 @@ export class SidenavComponent {
   /** Observable of the current user from AuthService */
   user$ = this.authService.user$;
 
-  @Output() changeMobileDashboardState = new EventEmitter<MobileDashboardState>();
-
   /** Lifecycle hook that runs after component initialization */
   ngOnInit() {
     // Subscribe to the user observable to update the display name
     this.user$.subscribe(user => {
       this.userDisplayName = user?.displayName ?? null;
     });
-  }
-
-  //needs to be connected to channels- and contacts-list
-  goToMessageWindow() {
-    this.changeMobileDashboardState.emit('message-window');
   }
 }

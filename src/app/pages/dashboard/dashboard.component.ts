@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, WritableSignal } from '@angular/core';
 import { inject } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { SidenavComponent } from './sidenav/sidenav.component';
@@ -14,6 +14,7 @@ import { Observable, throwError } from 'rxjs';
 import { HttpParams } from '@angular/common/http';
 import { MobileDashboardState } from '../../shared/types/mobile-dashboard-state.type';
 import { ChatService } from '../../services/chat.service';
+import { MobileService } from '../../services/mobile.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -37,8 +38,9 @@ export class DashboardComponent {
   // private chatService = inject(ChatService);
   private chatActiveRouterService = inject(ChatActiveRouterService);
   private route = inject(ActivatedRoute);
+  private mobileService = inject(MobileService);
 
-  currentState: MobileDashboardState = 'message-window';
+  mobileDashboardState: WritableSignal<MobileDashboardState> = this.mobileService.mobileDashboardState;
 
   messages$ = this.route.paramMap.pipe(
     switchMap((params) =>

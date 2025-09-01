@@ -16,7 +16,7 @@
 </button>
 
 @if (directMessagesVisible) {
-<ul class="contacts-list">
+<ul (click)="mobileService.setMobileDashboardState('message-window')" class="contacts-list">
   @if (currentUser) {
   <app-contact-list-item [user]="currentUser"></app-contact-list-item>
   }

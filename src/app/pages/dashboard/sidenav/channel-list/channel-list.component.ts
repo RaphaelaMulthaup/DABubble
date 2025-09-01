@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, WritableSignal } from '@angular/core';
 import { ChannelsService } from '../../../../services/channels.service';
 import { Observable } from 'rxjs';
 import { ChannelInterface } from '../../../../shared/models/channel.interface';
@@ -10,6 +10,8 @@ import { RouterLink } from '@angular/router';
 import { UserService } from '../../../../services/user.service';
 import { OverlayService } from '../../../../services/overlay.service';
 import { ChannelListItemComponent } from '../../../../shared/components/channel-list-item/channel-list-item.component';
+import { MobileService } from '../../../../services/mobile.service';
+import { MobileDashboardState } from '../../../../shared/types/mobile-dashboard-state.type';
 
 @Component({
   selector: 'app-channel-list',
@@ -32,6 +34,10 @@ export class ChannelListComponent {
   selectedChannel: ChannelInterface | null = null;
   // ID of the currently logged-in user
   currentUserId!: string | null;
+
+  public mobileService = inject(MobileService);
+
+  mobileDashboardState: WritableSignal<MobileDashboardState> = this.mobileService.mobileDashboardState;
 
   // Services injected via Angular's DI system
   private channelSelectionService = inject(ChannelSelectionService);
