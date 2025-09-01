@@ -6,10 +6,14 @@
         </header>
         <div class="flex items-center flex-col w-full gap-[20px]">
             <app-change-channel-name class="container" [channelId]="channelId"  [channel]="channel"/>
-            <app-change-channel-description class="container" [channelId]="channelId" [channel]="channel"/>
+            <app-change-channel-description class="container" [channelId]="channelId" [channel]="channel" [user$]="user$"/>
             <app-channel-members class="container items-start" [memberIds]="memberIds"/>
             <div class="flex justify-end">
-                <button class="btn-primary">Channel verlassen</button>
+                @if(currentUser == createdById){
+                    <button class="btn-primary"(click)="channelService.deleteChannel(channelId!)">Channel loschen</button>
+                }@else {
+                    <button class="btn-primary" (click)="channelService.leaveChannel(channelId!, currentUser!)">Channel verlassen</button>
+                }
             </div>
         </div>
     </div>

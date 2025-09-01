@@ -18,7 +18,9 @@
         <span class="separable"></span>
         <div class="flex flex-col">
             <h4>Erstellt von</h4>
-            {{channel?.createdBy}}
+            @if(user$ | async; as user){
+                {{user.name}}
+            }
         </div>
     </div>
 </div>

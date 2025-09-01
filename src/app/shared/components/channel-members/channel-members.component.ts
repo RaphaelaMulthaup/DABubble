@@ -1,12 +1,13 @@
 import { Component, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Observable } from 'rxjs';
-import { UserInterface } from '../../../shared/models/user.interface';
+import { UserInterface } from '../../models/user.interface';
 import { UserService } from '../../../services/user.service';
+import { ContactListItemComponent } from '../contact-list-item/contact-list-item.component';
 
 @Component({
   selector: 'app-channel-members',
-  imports: [CommonModule],
+  imports: [CommonModule, ContactListItemComponent ],
   templateUrl: './channel-members.component.html',
   styleUrls: ['./channel-members.component.scss', './../../../shared/styles/list-item.scss']
 

@@ -7,11 +7,12 @@ import { ActivatedRoute } from '@angular/router';
 import { ChannelInterface } from '../../../../../shared/models/channel.interface';
 import { Observable, switchMap } from 'rxjs';
 import { ChannelsService } from '../../../../../services/channels.service';
+import { ChannelMembersComponent } from "../../../../../shared/components/channel-members/channel-members.component";
 
 
 @Component({
   selector: 'app-header-channel',
-  imports: [CommonModule],
+  imports: [CommonModule, ChannelMembersComponent],
   templateUrl: './header-channel.component.html',
   styleUrl: './header-channel.component.scss'
 })
