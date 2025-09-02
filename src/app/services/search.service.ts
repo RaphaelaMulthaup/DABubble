@@ -233,4 +233,44 @@ export class SearchService {
       })
     );
   }
+
+  searchHeaderSearch(term$: Observable<string>): Observable<SearchResult[]> {
+    return combineLatest([term$, this.users$, this.userChannels$]).pipe(
+      map(([term, users, channels]) => {
+        const t = (term ?? '').trim().toLowerCase();
+        if (!t) return [] as SearchResult[];
+
+        // @ → alle User
+        if (t === '@') {
+          return users.map((u) => ({ type: 'user' as const, ...u }));
+        }
+
+        // # → alle Channels, in denen User Mitglied ist
+        if (t === '#') {
+          return channels.map((c) => ({ type: 'channel' as const, ...c }));
+        }
+
+        // @xyz → User anhand Name
+        if (t.startsWith('@')) {
+          const query = t.slice(1);
+          return users
+            .filter((u) => u.name?.toLowerCase().includes(query))
+            .map((u) => ({ type: 'user' as const, ...u }));
+        }
+
+        // #xyz → Channels anhand Name
+        if (t.startsWith('#')) {
+          const query = t.slice(1);
+          return channels
+            .filter((c) => c.name?.toLowerCase().includes(query))
+            .map((c) => ({ type: 'channel' as const, ...c }));
+        }
+
+        // Standard: User anhand ihrer Mailadresse
+        return users
+          .filter((u) => u.email?.toLowerCase().includes(t))
+          .map((u) => ({ type: 'user' as const, ...u }));
+      })
+    );
+  }
 }
