@@ -15,7 +15,7 @@ import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 import { ReactionInterface } from '../../../../../shared/models/reaction.interface';
 import { PostService } from '../../../../../services/post.service';
-import { EmojiPickerComponent } from '../../../../../shared/components/emoji-picker/emoji-picker.component';
+import { EmojiPickerComponent } from '../../../../../overlay/emoji-picker/emoji-picker.component';
 import { ReactedUsersComponent } from '../../../../../overlay/reacted-users/reacted-users.component';
 
 @Component({

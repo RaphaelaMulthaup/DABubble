@@ -1,8 +1,5 @@
 <div class="overlay">
-  <header>
-    <h2>Profil</h2>
-    <button class="btn-tertiary close" (click)="overlayService.close()"></button>
-  </header>
+  <app-header-overlay [overlayHeadline]="'Profil'"/>
   <div class="profile-view-other-user">
     <img class="profil-img" [src]="(user$ | async)?.photoUrl || '/assets/img/no-avatar.svg'" alt="Profilbild" />
     <div class="name-and-status">

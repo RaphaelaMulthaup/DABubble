@@ -11,19 +11,6 @@
     padding: 20px;
 }
 
-header{
-  padding-top: 40px;
-  padding-right: 16px;
-  padding-bottom: 10px;
-  padding-left: 16px;
-  .close {
-  background-image: url("../../../assets/img/close.svg");
-  &:hover {
-    background-image: url("../../../assets/img/close-hover.svg");
-  }
-}
-}
-
 .mobile-overlay {
   position: relative;
   width: 100vw;             
