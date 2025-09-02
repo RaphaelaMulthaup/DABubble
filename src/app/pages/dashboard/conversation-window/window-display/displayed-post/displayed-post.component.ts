@@ -5,7 +5,6 @@ import { UserService } from '../../../../../services/user.service';
 import { map, switchMap, of } from 'rxjs';
 import { Timestamp } from '@angular/fire/firestore';
 import { CommonModule } from '@angular/common';
-import { OverlayComponent } from '../../../../../overlay/overlay.component';
 import { OverlayService } from '../../../../../services/overlay.service';
 import { FormsModule } from '@angular/forms';
 import { ProfileViewOtherUsersComponent } from '../../../../../overlay/profile-view-other-users/profile-view-other-users.component';
@@ -20,7 +19,7 @@ import { ReactedUsersComponent } from '../../../../../overlay/reacted-users/reac
 
 @Component({
   selector: 'app-displayed-post', // Component to display a single message in the conversation
-  imports: [CommonModule, OverlayComponent, FormsModule, RouterLink, EmojiPickerComponent],
+  imports: [CommonModule, FormsModule, RouterLink, EmojiPickerComponent],
   templateUrl: './displayed-post.component.html', // External HTML template
   styleUrl: './displayed-post.component.scss', // SCSS styles for this component
 })

@@ -3,7 +3,6 @@ import { inject } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { SidenavComponent } from './sidenav/sidenav.component';
 import { ConversationWindowComponent } from './conversation-window/conversation-window.component';
-import { OverlayComponent } from '../../overlay/overlay.component';
 import { CommonModule } from '@angular/common';
 import { OverlayService } from '../../services/overlay.service';
 import { map, switchMap, tap } from 'rxjs/operators';
@@ -22,7 +21,6 @@ import { MobileService } from '../../services/mobile.service';
   imports: [
     SidenavComponent,
     ConversationWindowComponent,
-    OverlayComponent,
     CommonModule,
     HeaderDashboardComponent
   ],

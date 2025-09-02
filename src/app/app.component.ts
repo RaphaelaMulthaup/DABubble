@@ -14,11 +14,10 @@ import { map, Subscription } from 'rxjs';
 import { UserService } from './services/user.service';
 import { ChatService } from './services/chat.service';
 import { OverlayService } from './services/overlay.service';
-import { OverlayComponent } from './overlay/overlay.component';
 
 @Component({
   selector: 'app-root', // Defines the component selector for HTML usage
-  imports: [RouterOutlet, AsyncPipe, OverlayComponent, CommonModule], // Imports necessary modules for routing, async operations, overlays, and common features
+  imports: [RouterOutlet, AsyncPipe, CommonModule], // Imports necessary modules for routing, async operations, overlays, and common features
   templateUrl: './app.component.html', // Path to the component's HTML template
   styleUrl: './app.component.scss', // Path to the component's styling file
 })
