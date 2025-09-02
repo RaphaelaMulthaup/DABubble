@@ -26,7 +26,7 @@ export class HeaderChannelComponent {
 
 
 
-  ngOnInit(){
+  ngOnInit() {
     this.channelDetails$ = this.chatActiveRouterService.getId$(this.route).pipe(
       switchMap(id => {
         this.channelId = id;
@@ -35,19 +35,12 @@ export class HeaderChannelComponent {
     );
   }
 
-  // displayCreateChannelForm(channelName: string) {
-  //   this.overlayService.displayOverlay(
-  //     EditChannelComponent,
-  //     `${channelName}`,
-  //     this.channelDetails$
-  //   );
-  // }
-
   openEditChannelFormOverlay() {
     this.overlayService.openComponent(
       EditChannelComponent,
       'cdk-overlay-dark-backdrop',
-      { channelDetails$: this.channelDetails$ as Observable<ChannelInterface>}
+      { globalPosition: 'center' },
+      { channelDetails$: this.channelDetails$ as Observable<ChannelInterface> }
     );
   }
 }

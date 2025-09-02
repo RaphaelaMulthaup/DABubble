@@ -14,11 +14,10 @@ import { map, Subscription } from 'rxjs';
 import { UserService } from './services/user.service';
 import { ChatService } from './services/chat.service';
 import { OverlayService } from './services/overlay.service';
-import { OverlayComponent } from './overlay/overlay.component';
 
 @Component({
   selector: 'app-root', // Defines the component selector for HTML usage
-  imports: [RouterOutlet, AsyncPipe, OverlayComponent, CommonModule], // Imports necessary modules for routing, async operations, overlays, and common features
+  imports: [RouterOutlet, AsyncPipe, CommonModule], // Imports necessary modules for routing, async operations, overlays, and common features
   templateUrl: './app.component.html', // Path to the component's HTML template
   styleUrl: './app.component.scss', // Path to the component's styling file
 })
@@ -35,17 +34,17 @@ export class AppComponent {
    */
   firestore: Firestore = inject(Firestore);
 
-  /**
-   * Subscription to observe the visibility of the overlay.
-   * It's used to manage the active state of the overlay.
-   */
-  private sub!: Subscription;
+  // /**
+  //  * Subscription to observe the visibility of the overlay.
+  //  * It's used to manage the active state of the overlay.
+  //  */
+  // private sub!: Subscription;
 
-  /**
-   * OverlayService for managing overlays (showing/hiding overlays).
-   * Injected into the component.
-   */
-  public overlayService = inject(OverlayService);
+  // /**
+  //  * OverlayService for managing overlays (showing/hiding overlays).
+  //  * Injected into the component.
+  //  */
+  // public overlayService = inject(OverlayService);
 
   constructor(
     /**
@@ -67,22 +66,22 @@ export class AppComponent {
    */
   ngOnInit() {
     // Subscribe to overlay visibility and apply/remove classes based on its state
-    this.sub = this.overlayService.overlayDisplayed.subscribe(
-      (overlayDisplayed) => {
-        const htmlEl = this.document.documentElement;
-        const bodyEl = this.document.body;
+    // this.sub = this.overlayService.overlayDisplayed.subscribe(
+    //   (overlayDisplayed) => {
+    //     const htmlEl = this.document.documentElement;
+    //     const bodyEl = this.document.body;
 
-        if (overlayDisplayed) {
-          // If overlay is displayed, add 'overlay-active' class to HTML and body elements
-          this.renderer.addClass(htmlEl, 'overlay-active');
-          this.renderer.addClass(bodyEl, 'overlay-active');
-        } else {
-          // If overlay is hidden, remove 'overlay-active' class from HTML and body elements
-          this.renderer.removeClass(htmlEl, 'overlay-active');
-          this.renderer.removeClass(bodyEl, 'overlay-active');
-        }
-      }
-    );
+    //     if (overlayDisplayed) {
+    //       // If overlay is displayed, add 'overlay-active' class to HTML and body elements
+    //       this.renderer.addClass(htmlEl, 'overlay-active');
+    //       this.renderer.addClass(bodyEl, 'overlay-active');
+    //     } else {
+    //       // If overlay is hidden, remove 'overlay-active' class from HTML and body elements
+    //       this.renderer.removeClass(htmlEl, 'overlay-active');
+    //       this.renderer.removeClass(bodyEl, 'overlay-active');
+    //     }
+    //   }
+    // );
   }
 
   /**
@@ -90,6 +89,6 @@ export class AppComponent {
    * Unsubscribes from the overlay subscription to prevent memory leaks.
    */
   ngOnDestroy() {
-    this.sub.unsubscribe(); // Clean up the subscription
+    // this.sub.unsubscribe(); // Clean up the subscription
   }
 }

@@ -1,16 +1,13 @@
 @if(channelDetails$ | async; as channel){
-    <div class="mobile-overlay">
-        <header class="flex justify-between items-end h-[90px]">
-            <h2>#{{channel.name}}</h2>
-            <button  class="btn-tertiary close" (click)="overlayService.close()"></button>
-        </header>
-        <div class="flex items-center flex-col w-full gap-[20px]">
-            <app-change-channel-name class="container" [channelId]="channelId"  [channel]="channel"/>
-            <app-change-channel-description class="container" [channelId]="channelId" [channel]="channel"/>
-            <app-channel-members class="container items-start" [memberIds]="memberIds"/>
-            <div class="flex justify-end">
-                <button class="btn-primary">Channel verlassen</button>
-            </div>
+<div class="mobile-overlay">
+    <app-header-overlay [overlayHeadline]="channelName || ''" />
+    <div class="flex items-center flex-col w-full gap-[20px]">
+        <app-change-channel-name class="container" [channelId]="channelId" [channel]="channel" />
+        <app-change-channel-description class="container" [channelId]="channelId" [channel]="channel" />
+        <app-channel-members class="container items-start" [memberIds]="memberIds" />
+        <div class="flex justify-end">
+            <button class="btn-primary">Channel verlassen</button>
         </div>
     </div>
+</div>
 }

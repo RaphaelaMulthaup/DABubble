@@ -1,18 +1,5 @@
 @import "./../../../styles.scss";
 
-header {
-  width: 100%;
-  height: 40px;
-  @include dFlex($jc: space-between);
-}
-
-.close {
-  background-image: url("../../../assets/img/close.svg");
-  &:hover {
-    background-image: url("../../../assets/img/close-hover.svg");
-  }
-}
-
 .profile-view-other-user {
   @include dFlex($g: 45px);
   flex-direction: column;

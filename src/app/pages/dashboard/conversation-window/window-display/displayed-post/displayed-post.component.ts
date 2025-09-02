@@ -5,7 +5,6 @@ import { UserService } from '../../../../../services/user.service';
 import { map, switchMap, of } from 'rxjs';
 import { Timestamp } from '@angular/fire/firestore';
 import { CommonModule } from '@angular/common';
-import { OverlayComponent } from '../../../../../overlay/overlay.component';
 import { OverlayService } from '../../../../../services/overlay.service';
 import { FormsModule } from '@angular/forms';
 import { ProfileViewOtherUsersComponent } from '../../../../../overlay/profile-view-other-users/profile-view-other-users.component';
@@ -15,12 +14,12 @@ import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 import { ReactionInterface } from '../../../../../shared/models/reaction.interface';
 import { PostService } from '../../../../../services/post.service';
-import { EmojiPickerComponent } from '../../../../../shared/components/emoji-picker/emoji-picker.component';
+import { EmojiPickerComponent } from '../../../../../overlay/emoji-picker/emoji-picker.component';
 import { ReactedUsersComponent } from '../../../../../overlay/reacted-users/reacted-users.component';
 
 @Component({
   selector: 'app-displayed-post', // Component to display a single message in the conversation
-  imports: [CommonModule, OverlayComponent, FormsModule, RouterLink, EmojiPickerComponent],
+  imports: [CommonModule, FormsModule, RouterLink, EmojiPickerComponent],
   templateUrl: './displayed-post.component.html', // External HTML template
   styleUrl: './displayed-post.component.scss', // SCSS styles for this component
 })
@@ -125,17 +124,10 @@ export class DisplayedPostComponent {
  * It triggers the overlay service to open the ProfileViewOtherUsersComponent.
  */
   openUserProfileOverlay() {
-    // const user$ = this.userService.getUserById(this.message.senderId);
-    // this.overlayService.displayOverlay(
-    //   ProfileViewOtherUsersComponent,
-    //   'Profil',
-    //   {
-    //     user$: user$,
-    //   }
-    // );
     this.overlayService.openComponent(
       ProfileViewOtherUsersComponent,
       'cdk-overlay-dark-backdrop',
+      { globalPosition: 'center' },
       { user$: this.userService.getUserById(this.message.senderId) }
     );
   }
@@ -145,14 +137,15 @@ export class DisplayedPostComponent {
    * The overlay possibly emits an emoji and this emoji is used to react to the post.
    */
   openEmojiPickerOverlay(event: MouseEvent) {
-    const origin = event.currentTarget as HTMLElement;
     const overlay = this.overlayService.openComponent(
       EmojiPickerComponent,
       'cdk-overlay-transparent-backdrop',
-      { messageFromCurrentUser: this.isMessageFromCurrentUser },
-      origin,
-      { originX: 'end', originY: 'top', overlayX: 'start', overlayY: 'top' },
-      { originX: 'start', originY: 'top', overlayX: 'end', overlayY: 'top' },
+      {
+        origin: event.currentTarget as HTMLElement,
+        originPosition: { originX: 'end', originY: 'top', overlayX: 'start', overlayY: 'top' },
+        originPositionFallback: { originX: 'start', originY: 'top', overlayX: 'end', overlayY: 'top' }
+      },
+      { messageFromCurrentUser: this.isMessageFromCurrentUser }
     );
 
     //das abonniert den event emitter vom emoji-picker component
@@ -173,11 +166,13 @@ export class DisplayedPostComponent {
   openReactedUsersOverlay(event: MouseEvent, reaction: ReactionInterface) {
     this.overlayService.openComponent(
       ReactedUsersComponent,
-      'cdk-overlay-transparent-backdrop',
-      { reaction: reaction },
-      event.currentTarget as HTMLElement,
-      { originX: 'center', originY: 'top', overlayX: 'start', overlayY: 'bottom' },
-      { originX: 'center', originY: 'top', overlayX: 'end', overlayY: 'bottom' },
+      null,
+      {
+        origin: event.currentTarget as HTMLElement,
+        originPosition: { originX: 'center', originY: 'top', overlayX: 'start', overlayY: 'bottom' },
+        originPositionFallback: { originX: 'center', originY: 'top', overlayX: 'end', overlayY: 'bottom' }
+      },
+      { reaction: reaction }
     );
   }
 

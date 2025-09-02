@@ -8,10 +8,11 @@ import {
   Validators,
 } from '@angular/forms';
 import { OverlayService } from '../../services/overlay.service';
+import { HeaderOverlayComponent } from '../../shared/components/header-overlay/header-overlay.component';
 
 @Component({
   selector: 'app-create-channel-form',
-  imports: [FormsModule, ReactiveFormsModule],
+  imports: [FormsModule, ReactiveFormsModule, HeaderOverlayComponent],
   templateUrl: './create-channel-form.component.html',
   styleUrl: './create-channel-form.component.scss',
 })

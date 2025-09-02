@@ -51,68 +51,52 @@ export class OverlayService {
   private overlayInputSubject = new BehaviorSubject<OverlayData | null>(null);
   overlayInput = this.overlayInputSubject.asObservable();
 
-  setOverlayInputs(data: OverlayData) {
-    this.overlayInputSubject.next(data);
-  }
-
-  /**
-   * Method to display the overlay with the provided component and associated headline.
-   * Sets the component to be displayed and updates the overlay visibility to 'true'.
-   */
-  displayOverlay(component: Type<any>, headline: string, inputs?: Record<string, any>) {
-    this.headline = headline;
-    this.overlayComponent = component; // Set the component to be displayed in the overlay
-    this.overlayInputs = inputs || {};
-    this.overlaySubject.next(true); // Update the visibility to 'true' (show overlay)
-  }
-
-  /**
-   * Method to hide the overlay.
-   * Resets the overlay visibility to 'false' and clears the component.
-   */
-  hideOverlay() {
-    this.overlaySubject.next(false); // Set visibility to 'false' (hide overlay)
-    this.overlayComponent = null; // Clear the component being displayed
-    this.overlayInputs = {};
-  }
-
-    /**
-   * Prüfen, ob Overlay aktuell offen ist
-   */
-  isOpen(): boolean {
-    return !!this.overlayRef;
-  }
-
   openComponent<T extends Object>(
     component: Type<T>,
-    backdropType: 'cdk-overlay-dark-backdrop' | 'cdk-overlay-transparent-backdrop',
-    data: Partial<T>,
-    origin?: HTMLElement,
-    originPosition?: {},
-    originPositionFallback?: {},
+    backdropType: 'cdk-overlay-dark-backdrop' | 'cdk-overlay-transparent-backdrop' | null,
+    position: {
+      origin?: HTMLElement,                 //the element, the overlay is connected to (leave empty for global overlays)
+      originPosition?: {},                  //the position of the overlay relative to the connected element (leave empty for global overlays)
+      originPositionFallback?: {},          //the position of the overlay, if the originPosition is not possible due to space(leave empty for global overlays)
+      globalPosition?: 'center' | 'bottom'  //If the overlay is not connected to an element: the parameter whether it is centered or at the bottom of the page (leave empty for overlays connected to an element)
+    },
+    data?: Partial<T>,
+
   ): ComponentRef<T> | undefined {
     this.close(); // falls schon ein Overlay offen ist
 
     let positionStrategy;
-    if (origin) {
+    if (position.origin) {
       positionStrategy = this.overlay.position()
-        .flexibleConnectedTo(origin)
+        .flexibleConnectedTo(position.origin)
         .withPositions([
-          originPosition,
-          originPositionFallback || originPosition   //falls das Erste platzmäßig nicht klappt
+          position.originPosition,
+          position.originPositionFallback || position.originPosition
         ]);
+    } else if (position.globalPosition === 'bottom') {
+      positionStrategy = this.overlay.position()
+        .global()
+        .centerHorizontally()
+        .bottom('0px');
     } else {
       positionStrategy = this.overlay.position()
-      .global()
-      .centerHorizontally()
-      .centerVertically();
+        .global()
+        .centerHorizontally()
+        .centerVertically();
     }
 
-    this.overlayRef = this.overlay.create({
-      positionStrategy,
-      hasBackdrop: true,
-      backdropClass: backdropType
-    });
+    if (backdropType === null) {
+      this.overlayRef = this.overlay.create({
+        positionStrategy,
+        hasBackdrop: false
+      });
+    } else {
+      this.overlayRef = this.overlay.create({
+        positionStrategy,
+        hasBackdrop: true,
+        backdropClass: backdropType
+      });
+    }
 
     const portal = new ComponentPortal(component, null, this.injector);
     const componentRef = this.overlayRef?.attach(portal)!;

@@ -15,10 +15,11 @@ import {
 } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 import { ChatService } from '../../services/chat.service';
+import { HeaderOverlayComponent } from '../../shared/components/header-overlay/header-overlay.component';
 
 @Component({
   selector: 'app-profile-view-other-users',
-  imports: [AsyncPipe],
+  imports: [AsyncPipe, HeaderOverlayComponent],
   templateUrl: './profile-view-other-users.component.html',
   styleUrl: './profile-view-other-users.component.scss',
 })
@@ -73,6 +74,6 @@ export class ProfileViewOtherUsersComponent {
     this.router.navigate(['/dashboard', 'chat', chatId]);
 
     // Hide the overlay
-    this.overlayService.hideOverlay();
+    this.overlayService.close();
   }
 }
