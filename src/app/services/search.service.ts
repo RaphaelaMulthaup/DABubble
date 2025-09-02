@@ -95,11 +95,15 @@ export class SearchService {
             );
             collectionData(ansCol, { idField: 'id' }).subscribe(
               (ans: any[]) => {
-                const enrichedAns: (PostInterface & { chatId: string })[] =
-                  ans.map((a) => ({
-                    ...(a as PostInterface),
-                    chatId: chat.id,
-                  }));
+                const enrichedAns: (PostInterface & {
+                  chatId: string;
+                  answer: true;
+                })[] = ans.map((a) => ({
+                  ...(a as PostInterface),
+                  chatId: chat.id,
+                  answer: true, // <-- hier setzen
+                }));
+
                 const newAnswers = enrichedAns.filter(
                   (a) => !this.chatPosts$.value.some((p) => p.id === a.id)
                 );
@@ -142,10 +146,13 @@ export class SearchService {
             );
             collectionData(ansCol, { idField: 'id' }).subscribe(
               (ans: any[]) => {
-                const enrichedAns = ans.map((a) => ({
-                  ...a,
-                  channelId: channel.id,
-                  channelName: channel.name,
+                const enrichedAns: (PostInterface & {
+                  channelId: string;
+                  answer: true;
+                })[] = ans.map((a) => ({
+                  ...(a as PostInterface),
+                  channelId: channel.id!,
+                  answer: true, // <-- hier setzen
                 }));
 
                 const newAnswers = enrichedAns.filter(
