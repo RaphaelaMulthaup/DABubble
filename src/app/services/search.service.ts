@@ -36,6 +36,7 @@ export class SearchService {
     this.initAfterLogin(); // Channels & Chats erst nach User
     this.listenToChannelMessages();
     this.loadAllChannels();
+    this.userChannels$.subscribe((chs) => this.channels$.next(chs));
   }
 
   private loadAllChannels() {
