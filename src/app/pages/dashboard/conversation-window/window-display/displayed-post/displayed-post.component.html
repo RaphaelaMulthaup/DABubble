@@ -42,19 +42,16 @@
         }
       }
 
-    <div class="add-reaction relative flex">
+    <div class="add-reaction flex">
       @if (((visibleReactions$ | async)?.length ?? 0) > 5) {
-        <div class="reaction flex place-items-center">
-          <button (click)="allReactionsVisible = !allReactionsVisible">
-            @if (allReactionsVisible) {
-              --
-            } @else {
-              + {{((visibleReactions$ | async)?.length?? 0) -5}}
-            }
-          </button>
-        </div>
+        <button (click)="allReactionsVisible = !allReactionsVisible" [class.minimize]="allReactionsVisible" class="toggle-reactions-btn relative">
+          @if (!allReactionsVisible) {
+            + {{((visibleReactions$ | async)?.length?? 0) -5}}
+          }
+        </button>
       }
-      <button (click)="openEmojiPickerOverlay($event)" class="btn-tertiary"
+
+      <button (click)="openEmojiPickerOverlay($event)" class="btn-tertiary relative"
         (mouseenter)="addReactionsImg.src = './assets/img/add-reaction-hover.svg'"
         (mouseleave)="addReactionsImg.src = './assets/img/add-reaction.svg'">
         <img #addReactionsImg src="./assets/img/add-reaction.svg" alt="add reaction" />

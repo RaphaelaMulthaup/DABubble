@@ -74,6 +74,38 @@
   }
 }
 
+.add-reaction {
+  width: 0px;
+  gap: 4px;
+
+  .toggle-reactions-btn {
+    border: 2px solid var(--color-purple-white);
+    border-radius: 30px;
+    height: 40px;
+    aspect-ratio: 1 / 1;
+
+    &:hover {
+      transform: scale(1.1);
+      color: var(--color-purple-dark);
+      font-weight: 600;
+    }
+  }
+
+  .minimize {
+    background-image: url("../../../../../../assets/img/minimize.svg");
+    background-repeat: no-repeat;
+    background-position: center;
+
+    &:hover {
+      background-image: url("../../../../../../assets/img/minimize_hovers.svg");
+    }
+  }
+
+  .btn-tertiary {
+    min-width: 40px;
+  }
+}
+
 .answers {
   gap: 4px;
 
