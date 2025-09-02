@@ -18,17 +18,16 @@ export class PostListItemComponent {
   navigateToConversation() {
     const type = this.post.chatId ? 'chat' : 'channel';
     const channelId = this.post.chatId ?? this.post.channelId ?? 'unknown';
+    const postId = this.post.id;
 
     if (this.post.answer) {
-      this.router.navigate([
-        '/dashboard',
-        type,
-        channelId,
-        'answers',
-        this.post.id,
-      ]);
+      this.router.navigate(['/dashboard', type, channelId, 'answers', postId], {
+        queryParams: { scrollTo: postId },
+      });
     } else {
-      this.router.navigate(['/dashboard', type, channelId]);
+      this.router.navigate(['/dashboard', type, channelId], {
+        queryParams: { scrollTo: postId },
+      });
     }
   }
 }

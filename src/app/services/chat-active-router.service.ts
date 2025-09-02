@@ -65,8 +65,9 @@ export class ChatActiveRouterService {
         docs.map(
           (doc) =>
             ({
-              channelId: id,
               ...doc,
+              channelId: type === 'channel' ? id : undefined,
+              chatId: type === 'chat' ? id : undefined,
             } as PostInterface)
         )
       )

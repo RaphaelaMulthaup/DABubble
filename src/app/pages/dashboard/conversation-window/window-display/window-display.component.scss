@@ -22,3 +22,8 @@ app-displayed-post {
 .date {
     white-space: nowrap;
 }
+
+.messages-container {
+  height: 100%;
+  overflow-y: auto;  // wichtig!
+}

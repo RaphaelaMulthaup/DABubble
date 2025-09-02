@@ -47,17 +47,40 @@ export class PostService {
   async sendPost(
     parentPath: string,
     subcollectionName: string,
-    post: Omit<PostInterface, 'createdAt'>
+    post: Omit<PostInterface, 'createdAt' | 'id'>
   ) {
+    // Referenz auf die Collection
     const postsRef = collection(
       this.firestore,
       `${parentPath}/${subcollectionName}`
     );
-    await addDoc(postsRef, {
+
+    // Erstelle ein neues DocumentRef mit automatisch generierter ID
+    const newDocRef = doc(postsRef); // ohne ID -> Firestore generiert eine
+
+    // Dokument schreiben inkl. der ID
+    await setDoc(newDocRef, {
       ...post,
-      createdAt: serverTimestamp(), // Firestore server timestamp
+      id: newDocRef.id, // ID direkt im Dokument speichern
+      createdAt: serverTimestamp(),
     });
+
+    return newDocRef.id; // optional: zurückgeben
   }
+  // async sendPost(
+  //   parentPath: string,
+  //   subcollectionName: string,
+  //   post: Omit<PostInterface, 'createdAt'>
+  // ) {
+  //   const postsRef = collection(
+  //     this.firestore,
+  //     `${parentPath}/${subcollectionName}`
+  //   );
+  //   await addDoc(postsRef, {
+  //     ...post,
+  //     createdAt: serverTimestamp(), // Firestore server timestamp
+  //   });
+  // }
 
   /**
    * Toggles a reaction for a given post.
@@ -76,7 +99,7 @@ export class PostService {
     parentPath: string,
     subcollectionName: string,
     postId: string,
-    emoji: string,
+    emoji: string
   ) {
     let userId = this.authService.getCurrentUserId()!;
     let reactionId = this.getReactionId(emoji);
@@ -145,13 +168,13 @@ export class PostService {
   }
 
   /**
- * Fetches all answers of a message in real time.
- *
- * @param parentPath - Path to the parent document (e.g. "chats/{chatId}").
- * @param subcollectionName - Name of the subcollection (e.g. "messages").
- * @param messageId - ID of the message whose reactions should be fetched.
- * @returns Observable that emits the list of reactions (with emoji name and user IDs).
- */
+   * Fetches all answers of a message in real time.
+   *
+   * @param parentPath - Path to the parent document (e.g. "chats/{chatId}").
+   * @param subcollectionName - Name of the subcollection (e.g. "messages").
+   * @param messageId - ID of the message whose reactions should be fetched.
+   * @returns Observable that emits the list of reactions (with emoji name and user IDs).
+   */
   getAnswers(
     parentPath: string,
     subcollectionName: string,
@@ -205,19 +228,23 @@ export class PostService {
     text: string,
     type: 'channel' | 'chat'
   ) {
-    await this.sendPost(`${type}s/${conversationId}/messages/${messageId}`, 'answers', {
-      senderId: senderId,
-      text,
-    });
+    await this.sendPost(
+      `${type}s/${conversationId}/messages/${messageId}`,
+      'answers',
+      {
+        senderId: senderId,
+        text,
+      }
+    );
     return of([]);
   }
 
   /**
-  * This function compares the date, a post was created with today.
-  * It returns true or false, depending on those are the same or not.
-  * 
-  * @param index the index of the post
-  */
+   * This function compares the date, a post was created with today.
+   * It returns true or false, depending on those are the same or not.
+   *
+   * @param index the index of the post
+   */
   isPostCreatedToday(post: PostInterface): boolean {
     let postDate = post.createdAt.toDate().setHours(0, 0, 0, 0);
     let today = new Date().setHours(0, 0, 0, 0);
