@@ -39,7 +39,7 @@ export class DisplayedPostComponent {
   currentChannelId!: string;
 
   // Input message passed from the parent component
-  @Input() message!: PostInterface;
+  @Input() post!: PostInterface;
 
   /** Observable für alle abhängigen Werte */
   senderName$!: Observable<string>;
@@ -59,7 +59,7 @@ export class DisplayedPostComponent {
   private vcr = inject(ViewContainerRef);
 
   ngOnInit() {
-    this.isMessageFromCurrentUser = this.message.senderId === this.authService.getCurrentUserId();
+    this.isMessageFromCurrentUser = this.post.senderId === this.authService.getCurrentUserId();
   }
 
   ngOnChanges() {
@@ -68,7 +68,7 @@ export class DisplayedPostComponent {
       this.currentChannelId = id;
     });
 
-    this.reactions$ = this.postService.getReactions('/' + this.currentType + 's/' + this.currentChannelId, 'messages', this.message.id!);
+    this.reactions$ = this.postService.getReactions('/' + this.currentType + 's/' + this.currentChannelId, 'messages', this.post.id!);
     // this.reactions$.subscribe(data => {
     //   this.reactions = data;
     //   // console.log(this.reactions)
@@ -80,24 +80,24 @@ export class DisplayedPostComponent {
       )
     );
 
-    this.answers$ = this.postService.getAnswers('/' + this.currentType + 's/' + this.currentChannelId, 'messages', this.message.id!).pipe(map(answers => answers ?? []));
+    this.answers$ = this.postService.getAnswers('/' + this.currentType + 's/' + this.currentChannelId, 'messages', this.post.id!).pipe(map(answers => answers ?? []));
     this.answers$.subscribe(data => {
       this.answers = data;
     });
 
-    if (!this.message) return;
+    if (!this.post) return;
     // Prüfen, ob der Sender aktuell ist
     this.senderIsCurrentUser$ = of(
-      this.message.senderId === this.authService.getCurrentUserId()
+      this.post.senderId === this.authService.getCurrentUserId()
     );
 
     // Userdaten laden
-    const user$ = this.userService.getUserById(this.message.senderId);
+    const user$ = this.userService.getUserById(this.post.senderId);
     this.senderName$ = user$.pipe(map((u) => u?.name ?? ''));
     this.senderPhotoUrl$ = user$.pipe(map((u) => u?.photoUrl ?? ''));
 
     // Zeit formatieren
-    this.createdAtTime$ = of(this.message.createdAt).pipe(
+    this.createdAtTime$ = of(this.post.createdAt).pipe(
       map((ts) => {
         let date: Date;
         if (ts instanceof Timestamp) {
@@ -128,7 +128,7 @@ export class DisplayedPostComponent {
       ProfileViewOtherUsersComponent,
       'cdk-overlay-dark-backdrop',
       { globalPosition: 'center' },
-      { user$: this.userService.getUserById(this.message.senderId) }
+      { user$: this.userService.getUserById(this.post.senderId) }
     );
   }
 
@@ -153,7 +153,7 @@ export class DisplayedPostComponent {
       this.postService.toggleReaction(
         '/' + this.currentType + 's/' + this.currentChannelId,
         'messages',
-        this.message.id!,
+        this.post.id!,
         emoji
       )
       this.overlayService.close();
@@ -185,7 +185,7 @@ export class DisplayedPostComponent {
     this.postService.toggleReaction(
       '/' + this.currentType + 's/' + this.currentChannelId,
       'messages',
-      this.message.id!,
+      this.post.id!,
       emoji
     )
   }

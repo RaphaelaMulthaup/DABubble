@@ -1,51 +1,68 @@
 @import "./../../../../../../styles.scss";
 
-.message-card {
-  padding: 16px 48px 16px 16px;
-  @include dFlex($jc: flex-start, $ai: flex-start, $g: 16px);
+.post-container {
+  gap: 8px;
+  padding: 16px 0;
 }
 
-.profil-img {
-  min-width: 50px;
-  width: 50px;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  cursor: pointer;
+.post {
+  gap: 16px;
+  padding: 0 48px 0 16px;
 }
 
-.message-content {
-  @include dFlex($g: 8px, $ai: flex-start);
-  flex-direction: column;
-}
-
-.infos-message {
-  @include dFlex($g: 20px);
-
-  span {
-    font-size: 16px;
+.profile-img {
+  img {
+    min-width: 50px;
+    width: 50px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    cursor: pointer;
   }
 }
 
-.message-time {
-  color: var(--color-gray);
+.post-content {
+  gap: 8px;
+
+  .post-header {
+    gap: 20px;
+
+    .post-time {
+      font-size: 16px;
+      color: var(--color-gray);
+    }
+  }
+
+  .text {
+    width: fit-content;
+    font-size: 18px;
+    background-color: var(--color-purple-white);
+    padding: 16px;
+    border-radius: 0 20px 20px 20px;
+    cursor: pointer;
+  }
+
+  .answers {
+    gap: 4px;
+
+    button {
+      text-align: left;
+    }
+  }
 }
 
-.text {
-  font-size: 17px;
-  background-color: var(--color-purple-white);
-  padding: 15px;
-  border-radius: 0 20px 20px 20px;
-  cursor: pointer;
+.interactions-container {
+  margin-left: 82px;
 }
 
 .interactions {
   display: grid;
   grid-template-columns: repeat(3, max-content);
   gap: 8px;
+  background-color: var(--color-white);
 
   .reaction {
     width: max-content;
-    padding: 2px 10px;
+    padding: 3px 14px;
     border: 2px solid var(--color-purple-white);
     border-radius: 30px;
     flex-direction: row !important;
@@ -75,8 +92,7 @@
 }
 
 .add-reaction {
-  width: 0px;
-  gap: 4px;
+  gap: 3px;
 
   .toggle-reactions-btn {
     border: 2px solid var(--color-purple-white);
@@ -102,46 +118,44 @@
   }
 
   .btn-tertiary {
-    min-width: 40px;
+    width: 40px;
+    aspect-ratio: 1 / 1;
   }
 }
 
-.answers {
-  gap: 4px;
+.post-current-user {
+  align-items: end;
 
-  button {
-    text-align: left;
-  }
-}
+  .post {
+    padding: 0 16px 0 48px;
+    flex-direction: row-reverse;
 
-.message-current-user {
-  padding: 16px 16px 16px 48px;
-  flex-direction: row-reverse;
+    .post-content {
+      align-items: end;
 
-  .message-content {
-    @include dFlex($g: 8px, $ai: flex-end);
-    flex-direction: column;
+      .post-header {
+        flex-direction: row-reverse;
+      }
 
-    div:first-child {
-      flex-direction: row-reverse;
-    }
-
-    .text {
-      background-color: var(--color-purple-light);
-      border-radius: 20px 0 20px 20px;
-      color: var(--color-white);
-    }
-
-    .answers {
-
-      // flex-direction: row-reverse;
-      button {
-        text-align: right;
+      .text {
+        background-color: var(--color-purple-light);
+        border-radius: 20px 0 20px 20px;
+        color: var(--color-white);
       }
     }
+  }
+
+  .interactions-container {
+    margin-left: 0;
+    margin-right: 82px;
+    justify-content: end;
 
     .interactions {
-      justify-content: right;
+      justify-content: end;
     }
   }
+}
+
+.post-clicked {
+  //background-color: var(--color-purple-white);
 }

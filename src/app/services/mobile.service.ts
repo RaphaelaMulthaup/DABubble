@@ -5,7 +5,7 @@ import { MobileDashboardState } from '../shared/types/mobile-dashboard-state.typ
   providedIn: 'root'
 })
 export class MobileService {
-  mobileDashboardState = signal<MobileDashboardState>('sidenav');
+  mobileDashboardState = signal<MobileDashboardState>('message-window');
 
   setMobileDashboardState(state: MobileDashboardState) {
     this.mobileDashboardState.set(state);
