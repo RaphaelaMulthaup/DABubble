@@ -1,5 +1,5 @@
 <div class="post-container w-full flex flex-col" [ngClass]="{ 'post-current-user': senderIsCurrentUser$ | async }">
-  <div class="post post-clicked flex">
+  <div class="post flex w-full" [ngClass]="{'clicked': postClicked}">
     <div class="profile-img">
       @if(senderPhotoUrl$ | async; as photoUrl) {
       <img class="profil-img" [src]="senderPhotoUrl$ | async" alt="Profilbild" (click)="openUserProfileOverlay()" />
@@ -14,7 +14,7 @@
         <span class="post-time">{{ createdAtTime$ | async }} Uhr</span>
       </div>
 
-      <div class="text">{{ post.text }}</div>
+      <div (click)="openPostInteractionOverlay($event)" class="text">{{ post.text }}</div>
 
       @if (answers.length > 0) {
       <!-- flex-row for desktop -->

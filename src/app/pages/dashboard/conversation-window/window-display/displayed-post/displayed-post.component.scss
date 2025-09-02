@@ -1,13 +1,13 @@
 @import "./../../../../../../styles.scss";
 
 .post-container {
-  gap: 8px;
-  padding: 16px 0;
+  padding: 10px 0;
+  overflow-x: hidden;
 }
 
 .post {
   gap: 16px;
-  padding: 0 48px 0 16px;
+  padding: 6px 48px 6px 16px;
 }
 
 .profile-img {
@@ -52,6 +52,7 @@
 
 .interactions-container {
   margin-left: 82px;
+  padding-top: 2px;
 }
 
 .interactions {
@@ -113,7 +114,7 @@
     background-position: center;
 
     &:hover {
-      background-image: url("../../../../../../assets/img/minimize_hovers.svg");
+      background-image: url("../../../../../../assets/img/minimize-hover.svg");
     }
   }
 
@@ -127,7 +128,7 @@
   align-items: end;
 
   .post {
-    padding: 0 16px 0 48px;
+    padding: 6px 16px 6px 48px;
     flex-direction: row-reverse;
 
     .post-content {
@@ -156,6 +157,10 @@
   }
 }
 
-.post-clicked {
-  //background-color: var(--color-purple-white);
+.clicked {
+  background-color: var(--color-purple-white);
+
+  .post-content .text {
+    background-color: var(--color-white);
+  }
 }

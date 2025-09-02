@@ -4,7 +4,7 @@ import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 import { Overlay, OverlayRef, FlexibleConnectedPositionStrategy } from '@angular/cdk/overlay';
 import { ComponentPortal, TemplatePortal } from '@angular/cdk/portal';
 import { ChannelInterface } from '../shared/models/channel.interface';
-import { Observable, of } from 'rxjs';
+import { Observable, of, Subject } from 'rxjs';
 
 
 // here you kann add more interface to send data when the overlay is open.
@@ -62,7 +62,7 @@ export class OverlayService {
     },
     data?: Partial<T>,
 
-  ): ComponentRef<T> | undefined {
+  ): { ref: ComponentRef<T>, afterClosed$: Observable<void> } | undefined {
     this.close(); // falls schon ein Overlay offen ist
 
     let positionStrategy;
@@ -101,15 +101,21 @@ export class OverlayService {
     const portal = new ComponentPortal(component, null, this.injector);
     const componentRef = this.overlayRef?.attach(portal)!;
 
-    // Body scroll sperren
     document.body.style.overflow = 'hidden';
 
-    // Klick außerhalb schließt Overlay
     this.overlayRef?.backdropClick().subscribe(() => this.close());
 
     if (data) Object.assign(componentRef.instance, data);
 
-    return componentRef;
+    const afterClosed$ = new Subject<void>();
+
+    this.overlayRef?.detachments().subscribe(() => {
+      document.body.style.overflow = '';
+      afterClosed$.next();
+      afterClosed$.complete();
+    });
+
+    return { ref: componentRef, afterClosed$ };
   }
 
   /**
@@ -119,8 +125,6 @@ export class OverlayService {
     if (this.overlayRef) {
       this.overlayRef.dispose();
       this.overlayRef = undefined;
-
-      // Body scroll wieder freigeben
       document.body.style.overflow = '';
     }
   }

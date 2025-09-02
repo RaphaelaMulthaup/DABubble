@@ -1,0 +1,14 @@
+<div class="interaction-options flex place-content-center"
+    [ngClass]="{ 'post-current-user': senderIsCurrentUser$ | async }">
+    <button class="btn-tertiary">
+        <img class="reaction-img" src="../../../assets/img/emojis/check-mark.svg" alt="check-mark">
+    </button>
+    <button class="btn-tertiary">
+        <img class="reaction-img" src="../../../assets/img/emojis/thumbs-up.svg" alt="thumbs-up">
+    </button>
+    <button (click)="openEmojiPickerOverlay($event)" class="add-reaction btn-tertiary"></button>
+    <button class="open-thread btn-tertiary"></button>
+    @if (senderIsCurrentUser$|async) {
+    <button class="more-options btn-tertiary"></button>
+    }
+</div>

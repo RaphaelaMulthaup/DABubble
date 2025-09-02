@@ -16,6 +16,7 @@ import { ReactionInterface } from '../../../../../shared/models/reaction.interfa
 import { PostService } from '../../../../../services/post.service';
 import { EmojiPickerComponent } from '../../../../../overlay/emoji-picker/emoji-picker.component';
 import { ReactedUsersComponent } from '../../../../../overlay/reacted-users/reacted-users.component';
+import { PostInteractionOverlayComponent } from '../../../../../overlay/post-interaction-overlay/post-interaction-overlay.component';
 
 @Component({
   selector: 'app-displayed-post', // Component to display a single message in the conversation
@@ -52,15 +53,12 @@ export class DisplayedPostComponent {
   answers$?: Observable<PostInterface[]>;
   answers: PostInterface[] = [];
 
-  isMessageFromCurrentUser!: boolean;
   allReactionsVisible: boolean = false;
+  postClicked: boolean = false;
 
   @ViewChild('overlayTemplate') overlayTemplate!: TemplateRef<any>;
   private vcr = inject(ViewContainerRef);
 
-  ngOnInit() {
-    this.isMessageFromCurrentUser = this.post.senderId === this.authService.getCurrentUserId();
-  }
 
   ngOnChanges() {
     this.chatActiveRoute.getParams$(this.route).subscribe(({ type, id }) => {
@@ -145,11 +143,11 @@ export class DisplayedPostComponent {
         originPosition: { originX: 'end', originY: 'top', overlayX: 'start', overlayY: 'top' },
         originPositionFallback: { originX: 'start', originY: 'top', overlayX: 'end', overlayY: 'top' }
       },
-      { messageFromCurrentUser: this.isMessageFromCurrentUser }
+      { senderIsCurrentUser$: this.senderIsCurrentUser$ }
     );
 
     //das abonniert den event emitter vom emoji-picker component
-    overlay!.instance.selectedEmoji.subscribe((emoji: string) => {
+    overlay!.ref.instance.selectedEmoji.subscribe((emoji: string) => {
       this.postService.toggleReaction(
         '/' + this.currentType + 's/' + this.currentChannelId,
         'messages',
@@ -174,6 +172,34 @@ export class DisplayedPostComponent {
       },
       { reaction: reaction }
     );
+  }
+
+  /**
+   * This functions opens the post-interaction-overlay.
+   * Fist it sets postClicked to true. It subscribes the overlays afterClosed$ Observable and sets postClicked to false, as the overlay closes.
+   */
+  openPostInteractionOverlay(event: MouseEvent) {
+    this.postClicked = true;
+
+    const overlay = this.overlayService.openComponent(
+      PostInteractionOverlayComponent,
+      'cdk-overlay-transparent-backdrop',
+      {
+        origin: event.currentTarget as HTMLElement,
+        originPosition: { originX: 'start', originY: 'top', overlayX: 'start', overlayY: 'bottom' },
+        originPositionFallback: { originX: 'end', originY: 'top', overlayX: 'end', overlayY: 'bottom' }
+      },
+      {
+        senderIsCurrentUser$: this.senderIsCurrentUser$,
+        currentType: this.currentType,
+        currentChannelId: this.currentChannelId,
+        postId: this.post.id
+      }
+    );
+
+    overlay?.afterClosed$.subscribe(() => {
+      this.postClicked = false;
+    });
   }
 
   /**
