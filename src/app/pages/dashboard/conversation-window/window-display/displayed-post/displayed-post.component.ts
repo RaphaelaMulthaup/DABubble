@@ -136,6 +136,7 @@ export class DisplayedPostComponent {
     this.overlayService.openComponent(
       ProfileViewOtherUsersComponent,
       'cdk-overlay-dark-backdrop',
+      { globalPosition: 'center' },
       { user$: this.userService.getUserById(this.message.senderId) }
     );
   }
@@ -145,14 +146,15 @@ export class DisplayedPostComponent {
    * The overlay possibly emits an emoji and this emoji is used to react to the post.
    */
   openEmojiPickerOverlay(event: MouseEvent) {
-    const origin = event.currentTarget as HTMLElement;
     const overlay = this.overlayService.openComponent(
       EmojiPickerComponent,
       'cdk-overlay-transparent-backdrop',
-      { messageFromCurrentUser: this.isMessageFromCurrentUser },
-      origin,
-      { originX: 'end', originY: 'top', overlayX: 'start', overlayY: 'top' },
-      { originX: 'start', originY: 'top', overlayX: 'end', overlayY: 'top' },
+      {
+        origin: event.currentTarget as HTMLElement,
+        originPosition: { originX: 'end', originY: 'top', overlayX: 'start', overlayY: 'top' },
+        originPositionFallback: { originX: 'start', originY: 'top', overlayX: 'end', overlayY: 'top' }
+      },
+      { messageFromCurrentUser: this.isMessageFromCurrentUser }
     );
 
     //das abonniert den event emitter vom emoji-picker component
@@ -174,10 +176,12 @@ export class DisplayedPostComponent {
     this.overlayService.openComponent(
       ReactedUsersComponent,
       null,
-      { reaction: reaction },
-      event.currentTarget as HTMLElement,
-      { originX: 'center', originY: 'top', overlayX: 'start', overlayY: 'bottom' },
-      { originX: 'center', originY: 'top', overlayX: 'end', overlayY: 'bottom' },
+      {
+        origin: event.currentTarget as HTMLElement,
+        originPosition: { originX: 'center', originY: 'top', overlayX: 'start', overlayY: 'bottom' },
+        originPositionFallback: { originX: 'center', originY: 'top', overlayX: 'end', overlayY: 'bottom' }
+      },
+      { reaction: reaction }
     );
   }
 

@@ -86,21 +86,30 @@ export class OverlayService {
   openComponent<T extends Object>(
     component: Type<T>,
     backdropType: 'cdk-overlay-dark-backdrop' | 'cdk-overlay-transparent-backdrop' | null,
-    data: Partial<T>,
-    origin?: HTMLElement,
-    originPosition?: {},
-    originPositionFallback?: {},
+    position: {
+      origin?: HTMLElement,                 //the element, the overlay is connected to (leave empty for global overlays)
+      originPosition?: {},                  //the position of the overlay relative to the connected element (leave empty for global overlays)
+      originPositionFallback?: {},          //the position of the overlay, if the originPosition is not possible due to space(leave empty for global overlays)
+      globalPosition?: 'center' | 'bottom'  //If the overlay is not connected to an element: the parameter whether it is centered or at the bottom of the page (leave empty for overlays connected to an element)
+    },
+    data?: Partial<T>,
+
   ): ComponentRef<T> | undefined {
     this.close(); // falls schon ein Overlay offen ist
 
     let positionStrategy;
-    if (origin) {
+    if (position.origin) {
       positionStrategy = this.overlay.position()
-        .flexibleConnectedTo(origin)
+        .flexibleConnectedTo(position.origin)
         .withPositions([
-          originPosition,
-          originPositionFallback || originPosition   //falls das Erste platzmäßig nicht klappt
+          position.originPosition,
+          position.originPositionFallback || position.originPosition
         ]);
+    } else if (position.globalPosition === 'bottom') {
+      positionStrategy = this.overlay.position()
+        .global()
+        .centerHorizontally()
+        .bottom('0px');
     } else {
       positionStrategy = this.overlay.position()
         .global()
@@ -108,7 +117,7 @@ export class OverlayService {
         .centerVertically();
     }
 
-    if (backdropType == null) {
+    if (backdropType === null) {
       this.overlayRef = this.overlay.create({
         positionStrategy,
         hasBackdrop: false

@@ -82,7 +82,7 @@ export class ChannelListComponent {
     this.overlayService.openComponent(
       CreateChannelFormComponent,
       'cdk-overlay-dark-backdrop',
-      {}
+      { globalPosition: 'center' }
     );
   }
 
