@@ -69,7 +69,6 @@ export class SearchService {
   private loadChatsForUser(currentUserId: string) {
     const chatsCol = collection(this.firestore, 'chats');
     collectionData(chatsCol, { idField: 'id' }).subscribe((chats: any[]) => {
-      // Nur Chats, in denen der User beteiligt ist
       const userChats = chats.filter((chat) => {
         const [user1, user2] = chat.id.split('_');
         return user1 === currentUserId || user2 === currentUserId;
@@ -78,14 +77,15 @@ export class SearchService {
       userChats.forEach((chat) => {
         const msgCol = collection(this.firestore, `chats/${chat.id}/messages`);
         collectionData(msgCol, { idField: 'id' }).subscribe((msgs: any[]) => {
-          // enriched ist jetzt korrekt typisiert
           const enriched: (PostInterface & { chatId: string })[] = msgs.map(
-            (m) => ({
-              ...(m as PostInterface),
-              chatId: chat.id,
-            })
+            (m) => ({ ...(m as PostInterface), chatId: chat.id })
           );
-          this.chatPosts$.next([...this.chatPosts$.value, ...enriched]);
+
+          // **Duplikate vermeiden**
+          const newPosts = enriched.filter(
+            (m) => !this.chatPosts$.value.some((p) => p.id === m.id)
+          );
+          this.chatPosts$.next([...this.chatPosts$.value, ...newPosts]);
 
           // Antworten
           msgs.forEach((m) => {
@@ -100,10 +100,10 @@ export class SearchService {
                     ...(a as PostInterface),
                     chatId: chat.id,
                   }));
-                this.chatPosts$.next([
-                  ...this.chatPosts$.value,
-                  ...enrichedAns,
-                ]);
+                const newAnswers = enrichedAns.filter(
+                  (a) => !this.chatPosts$.value.some((p) => p.id === a.id)
+                );
+                this.chatPosts$.next([...this.chatPosts$.value, ...newAnswers]);
               }
             );
           });
@@ -123,15 +123,18 @@ export class SearchService {
           `channels/${channel.id}/messages`
         );
         collectionData(msgCol, { idField: 'id' }).subscribe((msgs: any[]) => {
-          // Attach channelId and channelName for context
           const enriched = msgs.map((m) => ({
             ...m,
             channelId: channel.id,
             channelName: channel.name,
           }));
-          this.channelPosts$.next([...this.channelPosts$.value, ...enriched]);
 
-          // Listen for answers inside channel messages
+          const newPosts = enriched.filter(
+            (m) => !this.channelPosts$.value.some((p) => p.id === m.id)
+          );
+          this.channelPosts$.next([...this.channelPosts$.value, ...newPosts]);
+
+          // Antworten
           msgs.forEach((m) => {
             const ansCol = collection(
               this.firestore,
@@ -145,10 +148,12 @@ export class SearchService {
                   channelName: channel.name,
                 }));
 
-                // Direkt in channelPosts$ speichern
+                const newAnswers = enrichedAns.filter(
+                  (a) => !this.channelPosts$.value.some((p) => p.id === a.id)
+                );
                 this.channelPosts$.next([
                   ...this.channelPosts$.value,
-                  ...enrichedAns,
+                  ...newAnswers,
                 ]);
               }
             );
