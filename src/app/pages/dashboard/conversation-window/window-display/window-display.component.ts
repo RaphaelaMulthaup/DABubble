@@ -36,7 +36,7 @@ export class WindowDisplayComponent {
   // messages$!: Observable<PostInterface[]>;
   // private route = inject(ActivatedRoute);
   // private chatActiveRouterService = inject(ChatActiveRouterService);
-private route = inject(ActivatedRoute);
+  private route = inject(ActivatedRoute);
   public postService = inject(PostService);
 
   //an array with all the days of the week, to show that one a post was created
@@ -50,7 +50,7 @@ private route = inject(ActivatedRoute);
     'Samstag',
   ];
 
-  constructor( private el: ElementRef) {}
+  constructor(private el: ElementRef) {}
   /**
    * Subscribe to the BehaviorSubject from PostService
    * Keeps 'messages' updated with the latest conversation in real-time
@@ -65,9 +65,7 @@ private route = inject(ActivatedRoute);
   }
 
   ngAfterViewInit() {
-    console.log('PostElemente',this.postElements.toArray());
-    const scrollToPost = () => {
-      const postId = this.route.snapshot.queryParams['scrollTo'];
+    const scrollToPost = (postId: string | undefined) => {
       if (!postId) return;
       const el = this.postElements.find(
         (e) => e.nativeElement.id === postId
@@ -75,14 +73,25 @@ private route = inject(ActivatedRoute);
       if (el) {
         el.scrollIntoView({ behavior: 'smooth', block: 'center' });
         el.classList.add('highlight');
+
+        // Optional: Highlight nach ein paar Sekunden wieder entfernen
+        setTimeout(() => el.classList.remove('highlight'), 2000);
       }
     };
 
-    // 1️⃣ direkt prüfen (erstes Rendering)
-    scrollToPost();
+    // 1️⃣ beim Initialrendern
+    scrollToPost(this.route.snapshot.queryParams['scrollTo']);
 
-    // 2️⃣ auf Änderungen warten (asynchrone Updates)
-    this.postElements.changes.subscribe(() => scrollToPost());
+    // 2️⃣ wenn QueryParams sich ändern
+    this.route.queryParams.subscribe((params) => {
+      scrollToPost(params['scrollTo']);
+    });
+
+    // 3️⃣ wenn neue Posts nachgeladen werden
+    this.postElements.changes.subscribe(() => {
+      const postId = this.route.snapshot.queryParams['scrollTo'];
+      scrollToPost(postId);
+    });
   }
 
   // ngOnInit() {
