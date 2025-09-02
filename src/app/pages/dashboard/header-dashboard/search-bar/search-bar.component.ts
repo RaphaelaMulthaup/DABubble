@@ -69,6 +69,7 @@ export class SearchBarComponent {
 
     for (const item of res) {
       if (item.type === 'chatMessage') {
+         if (!item.user) continue;
         if (!chatMap.has(item.user.uid)) {
           chatMap.set(item.user.uid, { user: item.user, posts: [] });
         }
