@@ -125,14 +125,6 @@ export class DisplayedPostComponent {
  * It triggers the overlay service to open the ProfileViewOtherUsersComponent.
  */
   openUserProfileOverlay() {
-    // const user$ = this.userService.getUserById(this.message.senderId);
-    // this.overlayService.displayOverlay(
-    //   ProfileViewOtherUsersComponent,
-    //   'Profil',
-    //   {
-    //     user$: user$,
-    //   }
-    // );
     this.overlayService.openComponent(
       ProfileViewOtherUsersComponent,
       'cdk-overlay-dark-backdrop',

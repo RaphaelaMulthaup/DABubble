@@ -35,14 +35,6 @@ export class HeaderChannelComponent {
     );
   }
 
-  // displayCreateChannelForm(channelName: string) {
-  //   this.overlayService.displayOverlay(
-  //     EditChannelComponent,
-  //     `${channelName}`,
-  //     this.channelDetails$
-  //   );
-  // }
-
   openEditChannelFormOverlay() {
     this.overlayService.openComponent(
       EditChannelComponent,

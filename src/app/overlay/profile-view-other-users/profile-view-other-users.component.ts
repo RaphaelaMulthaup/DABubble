@@ -73,6 +73,6 @@ export class ProfileViewOtherUsersComponent {
     this.router.navigate(['/dashboard', 'chat', chatId]);
 
     // Hide the overlay
-    this.overlayService.hideOverlay();
+    this.overlayService.close();
   }
 }

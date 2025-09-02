@@ -66,18 +66,6 @@ export class ChannelListComponent {
     this.channelSelectionService.selectChannel(channel);
   }
 
-  // displayCreateChannelForm() {
-  //   this.overlayService.displayOverlay(
-  //     CreateChannelFormComponent,
-  //     'Channel erstellen',
-  //     {}
-  //   );
-  // }
-
-  hideOverlay() {
-    this.overlayService.hideOverlay();
-  }
-
   openCreateChannelFormOverlay() {
     this.overlayService.openComponent(
       CreateChannelFormComponent,
