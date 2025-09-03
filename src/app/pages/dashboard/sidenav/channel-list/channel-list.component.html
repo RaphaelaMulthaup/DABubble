@@ -12,7 +12,7 @@
 </div>
 <div class="channel-list">
   @for (channel of channels$ | async; track $index) {
-  <app-channel-list-item (click)="mobileService.setMobileDashboardState('message-window')" [channel]="channel"></app-channel-list-item>
+  <app-channel-list-item [channel]="channel"></app-channel-list-item>
   }
 </div>
 <button (click)="openCreateChannelFormOverlay()">Channel hinzufügen</button>

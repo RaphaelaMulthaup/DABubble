@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
 })
 export class MobileService {
   private router = inject(Router);
-  mobileDashboardState = signal<MobileDashboardState>('message-window');
+  mobileDashboardState = signal<MobileDashboardState>('sidenav');
 
   setMobileDashboardState(state: MobileDashboardState) {
     this.mobileDashboardState.set(state);

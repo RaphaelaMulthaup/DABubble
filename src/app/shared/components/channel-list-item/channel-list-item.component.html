@@ -1,5 +1,6 @@
 <li
   class="list-item channel-list-item"
+  (click)="mobileService.setMobileDashboardState('message-window')"
   [routerLink]="['/dashboard', 'channel', channel.id]"
   [ngClass]="{ 'related-to-search-result-post': relatedToSearchResultPost }"
 >

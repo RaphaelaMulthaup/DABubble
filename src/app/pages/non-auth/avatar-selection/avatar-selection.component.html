@@ -20,7 +20,7 @@
         </div>
     </div>
 
-    <button (click)="authService.register(); this.showToast = true" class="submit-btn btn-primary self-end" [disabled]="selectedAvatar === 0">Fertigstellen</button>
+    <button (click)="submitRegistration()" class="submit-btn btn-primary self-end" [disabled]="selectedAvatar === 0">Fertigstellen</button>
 </section>
 
 <div [class.show-toast]="showToast" class="toast-notification">

@@ -34,7 +34,7 @@ export class AvatarSelectionComponent implements OnInit {
   * This function checks the userToRegister in the authService for an already chosen option and selects it.
   */
   ngOnInit() {
-    this.selectedAvatar = this.avatarOptions.indexOf(this.authService.userToRegister.photoURL) +1;
+    this.selectedAvatar = this.avatarOptions.indexOf(this.authService.userToRegister.photoURL) + 1;
   }
 
   /**
@@ -49,6 +49,14 @@ export class AvatarSelectionComponent implements OnInit {
   */
   selectAvatar(avatarOption: number) {
     this.selectedAvatar = avatarOption;
-    this.authService.userToRegister.photoURL = this.avatarOptions[avatarOption-1];
+    this.authService.userToRegister.photoURL = this.avatarOptions[avatarOption - 1];
+  }
+
+  submitRegistration() {
+    this.showToast = true;
+    setTimeout(() => {
+      this.authService.register();
+      this.changeAuthState.emit('login');
+    }, 1000)
   }
 }
