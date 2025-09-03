@@ -1,9 +1,12 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { OverlayService } from '../../services/overlay.service';
 import { EmojiPickerComponent } from '../emoji-picker/emoji-picker.component';
 import { PostService } from '../../services/post.service';
+import { PostInterface } from '../../shared/models/post.interface';
+import { AuthService } from '../../services/auth.service';
+import { EditPostOverlayComponent } from '../edit-post-overlay/edit-post-overlay.component';
 
 @Component({
   selector: 'app-post-interaction-overlay',
@@ -12,18 +15,23 @@ import { PostService } from '../../services/post.service';
   styleUrl: './post-interaction-overlay.component.scss'
 })
 export class PostInteractionOverlayComponent {
+  private authService = inject(AuthService);
   public overlayService = inject(OverlayService);
   public postService = inject(PostService);
 
   currentType!: string;
   currentChannelId!: string;
-  postId!: string;
+  post!: PostInterface;
   senderIsCurrentUser$!: Observable<boolean>;
+
+  ngOnInit() {
+    this.senderIsCurrentUser$ = of(this.post.senderId === this.authService.getCurrentUserId());
+  }
 
   /**
    * This functions opens the emoji-picker overlay and transmits the isMessageFromCurrentUser-variable.
    * The overlay possibly emits an emoji and this emoji is used to react to the post.
-   */
+  */
   openEmojiPickerOverlay(event: MouseEvent) {
     const overlay = this.overlayService.openComponent(
       EmojiPickerComponent,
@@ -41,10 +49,26 @@ export class PostInteractionOverlayComponent {
       this.postService.toggleReaction(
         '/' + this.currentType + 's/' + this.currentChannelId,
         'messages',
-        this.postId!,
+        this.post.id!,
         emoji
       )
       this.overlayService.close();
     });
+  }
+
+  /**
+   * This functions opens the edit-post-overlay.
+  */
+  openEditPostOverlay(event: MouseEvent) {
+    this.overlayService.openComponent(
+      EditPostOverlayComponent,
+      'cdk-overlay-transparent-backdrop',
+      {
+        origin: event.currentTarget as HTMLElement,
+        originPosition: { originX: 'center', originY: 'bottom', overlayX: 'start', overlayY: 'top' },
+        originPositionFallback: { originX: 'center', originY: 'bottom', overlayX: 'end', overlayY: 'top' }
+      },
+      { post: this.post }
+    );
   }
 }

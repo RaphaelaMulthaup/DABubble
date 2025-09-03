@@ -1,4 +1,4 @@
-import { Component, Input, TemplateRef, ViewChild, ViewContainerRef, inject } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { PostInterface } from '../../../../../shared/models/post.interface';
 import { AuthService } from '../../../../../services/auth.service';
 import { UserService } from '../../../../../services/user.service';
@@ -55,9 +55,6 @@ export class DisplayedPostComponent {
 
   allReactionsVisible: boolean = false;
   postClicked: boolean = false;
-
-  @ViewChild('overlayTemplate') overlayTemplate!: TemplateRef<any>;
-  private vcr = inject(ViewContainerRef);
 
 
   ngOnChanges() {
@@ -190,10 +187,9 @@ export class DisplayedPostComponent {
         originPositionFallback: { originX: 'end', originY: 'top', overlayX: 'end', overlayY: 'bottom' }
       },
       {
-        senderIsCurrentUser$: this.senderIsCurrentUser$,
         currentType: this.currentType,
         currentChannelId: this.currentChannelId,
-        postId: this.post.id
+        post: this.post
       }
     );
 
