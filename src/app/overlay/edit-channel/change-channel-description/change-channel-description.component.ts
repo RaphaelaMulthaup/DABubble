@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { ChannelsService } from '../../../services/channels.service';
 import { FormsModule } from '@angular/forms';
 import { ChannelInterface } from '../../../shared/models/channel.interface';
+import { Observable } from 'rxjs';
+import { UserInterface } from '../../../shared/models/user.interface';
 
 @Component({
   selector: 'app-change-channel-description',
@@ -12,7 +14,7 @@ import { ChannelInterface } from '../../../shared/models/channel.interface';
 })
 export class ChangeChannelDescriptionComponent {
 @Input() channelId?:string;
-
+@Input() user$?:Observable<UserInterface>;
 
 @Input() channel?:ChannelInterface;
 

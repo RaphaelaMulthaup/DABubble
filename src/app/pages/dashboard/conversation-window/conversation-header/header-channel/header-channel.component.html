@@ -1,11 +1,12 @@
 @if(channelDetails$ | async; as channel) {
-<section class="flex w-full justify-between">
+<section class="flex items-center">
     <div class="flex">
         <div class="tag"></div>
         <button #editChannelBtn (click)="openEditChannelFormOverlay()"><h2>{{channel.name}}</h2></button>
     </div>
-    <div>
-        <button>AddMember</button>
+    <div class="flex items-center gap-[10px]">
+        <app-channel-members-length [channel]="channel"/>
+        <button class="btn-tertiary" (click)="openChannelMembers()"><div class="add-person"></div></button>
     </div>
 </section>
 }

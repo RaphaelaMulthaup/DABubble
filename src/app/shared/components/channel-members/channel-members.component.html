@@ -1,8 +1,5 @@
 @for(user of users$| async; track $index){
-    <div class="flex gap-[20px] items-center list-item">
-        <img class="profil-img" src="{{ user.photoUrl }}" alt="Profilbild" />
-        <span>{{user.name}}</span>
-    </div>
+    <app-contact-list-item [user]="user"></app-contact-list-item>
 }
 <button class="list-item">
     <img src="./../../../../assets/img/add-answer.svg" alt="" >

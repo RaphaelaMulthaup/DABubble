@@ -2,11 +2,16 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { OverlayService } from '../../services/overlay.service';
 import { ChannelInterface } from '../../shared/models/channel.interface';
-import { Observable, of, switchMap } from 'rxjs';
+import { filter, Observable, of, switchMap } from 'rxjs';
 import { ChangeChannelNameComponent } from "./change-channel-name/change-channel-name.component";
 import { ChangeChannelDescriptionComponent } from "./change-channel-description/change-channel-description.component";
-import { ChannelMembersComponent } from "./channel-members/channel-members.component";
+import { ChannelMembersComponent } from "../../shared/components/channel-members/channel-members.component";
 import { HeaderOverlayComponent } from '../../shared/components/header-overlay/header-overlay.component';
+import { UserService } from '../../services/user.service';
+import { ChatInterface } from '../../shared/models/chat.interface';
+import { UserInterface } from '../../shared/models/user.interface';
+import { AuthService } from '../../services/auth.service';
+import { ChannelsService } from '../../services/channels.service';
 
 @Component({
   selector: 'app-edit-channel',
@@ -15,29 +20,36 @@ import { HeaderOverlayComponent } from '../../shared/components/header-overlay/h
   styleUrl: './edit-channel.component.scss'
 })
 export class EditChannelComponent {
+ 
+  private userService = inject(UserService);
+  private authService = inject(AuthService);
+  channelService = inject(ChannelsService);
 
+  currentUser = this.authService.getCurrentUserId();
 
-  channelId?: string;
-  memberIds?: string[];
+  channelId?:string;
   channelName?: string;
-
-  public overlayService = inject(OverlayService);
+  memberIds?:string[];
+  createdById?:string;
+  user$?:Observable<UserInterface>;
+    public overlayService = inject(OverlayService);
+    // CORECT: Inițializare corectă a observabilului
   channelDetails$: Observable<ChannelInterface | undefined> = this.overlayService.overlayInput.pipe(
-    switchMap(overlayData => overlayData?.channel ?? of(undefined))
+  switchMap(data => data?.channel ?? of(null)),
+  filter((channel): channel is ChannelInterface => !!channel) 
   );
 
 
-  ngOnInit() {
-    this.channelDetails$.subscribe(channel => {
+  ngOnInit(){
+    this.channelDetails$!.subscribe(channel => {
       if (channel) {
+        this.createdById = channel.createdBy;
         this.channelId = channel.id;
         this.memberIds = channel.memberIds;
-        this.channelName = channel.name
+        this.channelName = channel.name;
+        this.user$ = this.userService.getUserById(this.createdById);
       }
     });
   }
 
-  closeOverlay() {
-    this.overlayService.close();
-  }
 }
