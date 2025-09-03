@@ -257,6 +257,11 @@ export class AuthService {
     return updateDoc(userRef, { photoUrl });
   }
 
+  /**
+   * 
+   * funstion to save new Username
+   * 
+   */
   updateUserName(newName: string): Promise<void> {
     const user = this.auth.currentUser;
     const userRef = doc(this.firestore, `users/${user?.uid}`);

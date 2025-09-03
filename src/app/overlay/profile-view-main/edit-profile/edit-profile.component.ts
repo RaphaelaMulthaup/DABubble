@@ -33,10 +33,17 @@ export class EditProfileComponent implements OnInit {
       
   }
 
+  /**
+   * Shows overlay to select new avatar and close overlay
+   */
   showAvatarSelection() {
     this.overlayService.displayOverlay(NewAvatarSelectionComponent, 'Neuen Avatar wählen')
   }
 
+
+  /**
+   * Saves new Username from input
+   */
   saveName() {
    if (this.userName.trim()) {
     this.authService.updateUserName(this.userName.trim()).then(() => {

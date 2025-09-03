@@ -36,11 +36,21 @@ export class NewAvatarSelectionComponent {
     this.user$ = this.authService.currentUser$;
   }
 
+  /**
+   * 
+   * function to select new user avatar
+   *  
+   */
   selectAvatar(avatarIdx: number): void {
     this.selectedAvatar = avatarIdx;
     this.authService.userToRegister.photoURL = this.avatarOptions[avatarIdx - 1];
   }
 
+  /**
+   * 
+   * funstion saves selected avatar an close overlay
+   * 
+   */
   saveAvatar() {
     if (this.selectedAvatar > 0) {
       const avatarUrl = this.avatarOptions[this.selectedAvatar - 1];
