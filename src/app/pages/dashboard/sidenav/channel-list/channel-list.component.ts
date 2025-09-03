@@ -24,7 +24,7 @@ export class ChannelListComponent {
   showPopup = false;
 
   //With this variable show/hide channels from sidenav
-  showChannels: boolean = false;
+  channelsVisible: boolean = true;
 
   // Observable list of active channels for the current user
   channels$!: Observable<ChannelInterface[]>;

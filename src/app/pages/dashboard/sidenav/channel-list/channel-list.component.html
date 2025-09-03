@@ -1,18 +1,28 @@
-<div>
-  <div class="flex justify-around">
-    <div>
-      <button><img src="" alt="" /></button>
-      <div>
-        <img src="" alt="" />
-        <h2 class="font-bold text-xl">Channels</h2>
-      </div>
+<div class="flex justify-between w-full">
+  <button (click)="channelsVisible = !channelsVisible" [class.brightness-0]="!channelsVisible"
+    class="btn-dropdown">
+    <div class="flex items-center">
+      <img class="arrow-dropdown" src="/assets/img/arrow-drop-down.svg" alt="arrow-drop-down" />
+      <img src="./assets/img/workspaces.svg" alt="account-circle" />
+      <span>Channels</span>
     </div>
-    <button (click)="openCreateChannelFormOverlay()">+</button>
+  </button>
+
+  <div class="flex items-center">
+    <button (click)="openCreateChannelFormOverlay()" class="btn-tertiary">
+      <img src="./assets/img/add.svg" alt="add button">
+    </button>
   </div>
 </div>
+
+@if (channelsVisible) {
 <div class="channel-list">
   @for (channel of channels$ | async; track $index) {
   <app-channel-list-item [channel]="channel"></app-channel-list-item>
   }
+  <button (click)="openCreateChannelFormOverlay()" class="create-channel-btn list-item">
+    <img src="./assets/img/add-circle.svg" alt="add button">
+    Channel hinzufügen
+  </button>
 </div>
-<button (click)="openCreateChannelFormOverlay()">Channel hinzufügen</button>
+}
