@@ -183,40 +183,47 @@ export class WindowDisplayComponent {
   private scrollIfNeeded(el: HTMLElement) {
     const scrollParent = this.getScrollParent(el);
     const alreadyVisible = this.isFullyVisibleInContainer(el, scrollParent);
+
     if (alreadyVisible) {
-      // bereits sichtbar → wir wollen nur das Highlight zeigen (bereits passiert)
+      // bereits sichtbar → Highlight wird sowieso gezeigt
       return;
     }
 
-    // compute a scroll target that centers the element inside the scrollParent
-    const elRect = el.getBoundingClientRect();
-    const parentRect = scrollParent.getBoundingClientRect();
+    // scroll verzögern, damit DOM stabil ist
+    setTimeout(() => {
+      const elRect = el.getBoundingClientRect();
+      const parentRect = scrollParent.getBoundingClientRect();
 
-    if (
-      scrollParent === document.scrollingElement ||
-      scrollParent === document.documentElement ||
-      scrollParent === document.body
-    ) {
-      // scroll window
-      const absoluteTarget =
-        window.pageYOffset +
-        elRect.top -
-        (window.innerHeight / 2 - el.offsetHeight / 2);
-      window.scrollTo({ top: Math.max(0, absoluteTarget), behavior: 'smooth' });
-    } else {
-      const offset = elRect.top - parentRect.top;
-      const target = Math.max(
-        0,
-        scrollParent.scrollTop +
-          offset -
-          (scrollParent.clientHeight / 2 - el.offsetHeight / 2)
-      );
-      try {
-        scrollParent.scrollTo({ top: target, behavior: 'smooth' });
-      } catch {
-        scrollParent.scrollTop = target;
+      if (
+        scrollParent === document.scrollingElement ||
+        scrollParent === document.documentElement ||
+        scrollParent === document.body
+      ) {
+        // scroll window
+        const absoluteTarget =
+          window.pageYOffset +
+          elRect.top -
+          (window.innerHeight / 2 - el.offsetHeight / 2);
+        window.scrollTo({
+          top: Math.max(0, absoluteTarget),
+          behavior: 'smooth',
+        });
+      } else {
+        // scroll parent element
+        const offset = elRect.top - parentRect.top;
+        const target = Math.max(
+          0,
+          scrollParent.scrollTop +
+            offset -
+            (scrollParent.clientHeight / 2 - el.offsetHeight / 2)
+        );
+        try {
+          scrollParent.scrollTo({ top: target, behavior: 'smooth' });
+        } catch {
+          scrollParent.scrollTop = target;
+        }
       }
-    }
+    }, 0); // 0ms reicht, um Angular Layout stabilisieren zu lassen
   }
   // ngOnInit() {
   //   this.messages$ = this.chatActiveRouterService.getParams$(this.route).pipe(
