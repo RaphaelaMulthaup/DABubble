@@ -55,10 +55,10 @@ export class NewAvatarSelectionComponent {
     if (this.selectedAvatar > 0) {
       const avatarUrl = this.avatarOptions[this.selectedAvatar - 1];
       this.authService.updateUserPhotoUrl(avatarUrl).then(() => {
-        this.overlayService.hideOverlay();
+        this.overlayService.close();
       }) 
     } else {
-      this.overlayService.hideOverlay();
+      this.overlayService.close();
     }
   }
 }

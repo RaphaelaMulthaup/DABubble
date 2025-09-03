@@ -37,7 +37,7 @@ export class DisplayedPostComponent {
 
   typ$!: Observable<string>;
   currentType!: string;
-  currentChannelId!: string;
+  currentConversationId!: string;
 
   // Input message passed from the parent component
   @Input() post!: PostInterface;
@@ -60,10 +60,10 @@ export class DisplayedPostComponent {
   ngOnChanges() {
     this.chatActiveRoute.getParams$(this.route).subscribe(({ type, id }) => {
       this.currentType = type;
-      this.currentChannelId = id;
+      this.currentConversationId = id;
     });
 
-    this.reactions$ = this.postService.getReactions('/' + this.currentType + 's/' + this.currentChannelId, 'messages', this.post.id!);
+    this.reactions$ = this.postService.getReactions('/' + this.currentType + 's/' + this.currentConversationId, 'messages', this.post.id!);
     this.visibleReactions$ = this.reactions$.pipe(
       map(list => list
         .filter(r => r.users.length > 0)
@@ -71,7 +71,7 @@ export class DisplayedPostComponent {
       )
     );
 
-    this.answers$ = this.postService.getAnswers('/' + this.currentType + 's/' + this.currentChannelId, 'messages', this.post.id!).pipe(map(answers => answers ?? []));
+    this.answers$ = this.postService.getAnswers('/' + this.currentType + 's/' + this.currentConversationId, 'messages', this.post.id!).pipe(map(answers => answers ?? []));
     this.answers$.subscribe(data => {
       this.answers = data;
     });
@@ -106,7 +106,7 @@ export class DisplayedPostComponent {
 
   openAnswers(messageId: string) {
     const type = this.currentType;
-    const id = this.currentChannelId;
+    const id = this.currentConversationId;
     this.router.navigate(['/dashboard', type, id, 'answers', messageId]);
   }
 
@@ -142,7 +142,7 @@ export class DisplayedPostComponent {
     //das abonniert den event emitter vom emoji-picker component
     overlay!.ref.instance.selectedEmoji.subscribe((emoji: string) => {
       this.postService.toggleReaction(
-        '/' + this.currentType + 's/' + this.currentChannelId,
+        '/' + this.currentType + 's/' + this.currentConversationId,
         'messages',
         this.post.id!,
         emoji
@@ -184,7 +184,7 @@ export class DisplayedPostComponent {
       },
       {
         currentType: this.currentType,
-        currentChannelId: this.currentChannelId,
+        currentConversationId: this.currentConversationId,
         post: this.post
       }
     );
@@ -201,7 +201,7 @@ export class DisplayedPostComponent {
    */
   toggleExistingReaction(emoji: string) {
     this.postService.toggleReaction(
-      '/' + this.currentType + 's/' + this.currentChannelId,
+      '/' + this.currentType + 's/' + this.currentConversationId,
       'messages',
       this.post.id!,
       emoji

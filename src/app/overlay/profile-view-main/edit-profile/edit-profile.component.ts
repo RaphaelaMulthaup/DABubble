@@ -37,7 +37,11 @@ export class EditProfileComponent implements OnInit {
    * Shows overlay to select new avatar and close overlay
    */
   showAvatarSelection() {
-    this.overlayService.displayOverlay(NewAvatarSelectionComponent, 'Neuen Avatar wählen')
+    this.overlayService.openComponent(
+      NewAvatarSelectionComponent,
+      'cdk-overlay-dark-backdrop',
+      { globalPosition: 'center' }
+    )
   }
 
 
@@ -47,10 +51,10 @@ export class EditProfileComponent implements OnInit {
   saveName() {
    if (this.userName.trim()) {
     this.authService.updateUserName(this.userName.trim()).then(() => {
-      this.overlayService.hideOverlay();
+      this.overlayService.close();
     })
    } else {
-    this.overlayService.hideOverlay();
+    this.overlayService.close();
    }
   }
 }

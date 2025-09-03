@@ -12,12 +12,9 @@
   }
   &.related-to-search-result-post {
     &:hover {
-          .tag {
-      background-image: url("./../../../../assets/img/tag-black.svg");
-    }
-
+      .tag {
+        background-image: url("./../../../../assets/img/tag-black.svg");
+      }
     }
   }
 }
-
-

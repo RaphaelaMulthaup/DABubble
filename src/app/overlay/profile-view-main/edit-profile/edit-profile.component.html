@@ -11,7 +11,7 @@
         <input class="input-primary" [(ngModel)]="userName" type="text" placeholder="{{ user.name }}">
     </div>
     <div class="btn-area flex items-center justify-around w-full">
-        <button class="btn-secondary" (click)="overlayService.hideOverlay()">Abbrechen</button>
+        <button class="btn-secondary" (click)="overlayService.close()">Abbrechen</button>
         <button class="btn-primary" (click)="saveName()">Speichern</button>
     </div>
 </div>

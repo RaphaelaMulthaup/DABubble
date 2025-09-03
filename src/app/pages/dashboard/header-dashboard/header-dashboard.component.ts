@@ -1,4 +1,12 @@
-import { Component, EventEmitter, inject, Input, OnInit, Output, WritableSignal } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  OnInit,
+  Output,
+  WritableSignal,
+} from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
 import { Observable } from 'rxjs';
 import { UserInterface } from '../../../shared/models/user.interface';
@@ -11,29 +19,30 @@ import { OverlayService } from '../../../services/overlay.service';
 
 @Component({
   selector: 'app-header-dashboard',
-  imports: [
-    AsyncPipe,
-    SearchBarComponent,
-    ProfileViewMainComponent,
-  ],
+  imports: [AsyncPipe, SearchBarComponent, ProfileViewMainComponent],
   templateUrl: './header-dashboard.component.html',
   styleUrl: './header-dashboard.component.scss',
 })
 export class HeaderDashboardComponent implements OnInit {
-  private authService = inject(AuthService);
+  public authService = inject(AuthService);
   public overlayService = inject(OverlayService);
 
   currentUser$?: Observable<UserInterface | null>;
 
   public mobileService = inject(MobileService);
 
-  mobileDashboardState: WritableSignal<MobileDashboardState> = this.mobileService.mobileDashboardState;
+  mobileDashboardState: WritableSignal<MobileDashboardState> =
+    this.mobileService.mobileDashboardState;
 
   ngOnInit(): void {
     this.currentUser$ = this.authService.currentUser$;
   }
 
   showProfile() {
-    this.overlayService.displayOverlay(ProfileViewMainComponent, 'Profil');
+    this.overlayService.openComponent(
+      ProfileViewMainComponent,
+      'cdk-overlay-dark-backdrop',
+      { globalPosition: 'center' }
+    );
   }
 }

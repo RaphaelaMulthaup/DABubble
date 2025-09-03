@@ -20,7 +20,7 @@ export class PostInteractionOverlayComponent {
   public postService = inject(PostService);
 
   currentType!: string;
-  currentChannelId!: string;
+  currentConversationId!: string;
   post!: PostInterface;
   senderIsCurrentUser$!: Observable<boolean>;
 
@@ -47,7 +47,7 @@ export class PostInteractionOverlayComponent {
     //das abonniert den event emitter vom emoji-picker component
     overlay!.ref.instance.selectedEmoji.subscribe((emoji: string) => {
       this.postService.toggleReaction(
-        '/' + this.currentType + 's/' + this.currentChannelId,
+        '/' + this.currentType + 's/' + this.currentConversationId,
         'messages',
         this.post.id!,
         emoji

@@ -8,30 +8,27 @@ import { EditProfileComponent } from './edit-profile/edit-profile.component';
 
 @Component({
   selector: 'app-profile-view-main',
-  imports: [
-    AsyncPipe,
-    CommonModule,
-    EditProfileComponent
-  ],
+  imports: [AsyncPipe, CommonModule, EditProfileComponent],
   templateUrl: './profile-view-main.component.html',
   styleUrl: './profile-view-main.component.scss',
 })
-export class ProfileViewMainComponent implements OnInit{
+export class ProfileViewMainComponent implements OnInit {
   public overlayService = inject(OverlayService);
   private authService = inject(AuthService);
 
-  user$: Observable<UserInterface | null>
+  user$: Observable<UserInterface | null>;
 
   constructor() {
     this.user$ = this.authService.currentUser$;
   }
 
-  ngOnInit(): void {
-      
-  }
+  ngOnInit(): void {}
 
   showEdit() {
-    this.overlayService.displayOverlay(EditProfileComponent, 'Dein Profil bearbeiten');
+    this.overlayService.openComponent(
+      EditProfileComponent,
+      'cdk-overlay-dark-backdrop',
+      { globalPosition: 'center' }
+    );
   }
-
 }

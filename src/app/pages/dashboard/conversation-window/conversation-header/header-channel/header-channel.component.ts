@@ -10,26 +10,25 @@ import { ChannelsService } from '../../../../../services/channels.service';
 import { ChannelMembersLengthComponent } from './channel-members-length/channel-members-length.component';
 import { ChannelMembersComponent } from '../../../../../shared/components/channel-members/channel-members.component';
 
-
 @Component({
   selector: 'app-header-channel',
   imports: [CommonModule, ChannelMembersLengthComponent],
   templateUrl: './header-channel.component.html',
-  styleUrl: './header-channel.component.scss'
+  styleUrl: './header-channel.component.scss',
 })
 export class HeaderChannelComponent {
   channelId!: string;
   channelDetails$!: Observable<ChannelInterface | undefined>;
-  memberIds?:string[];
+  memberIds?: string[];
 
   private overlayService = inject(OverlayService);
   private chatActiveRouterService = inject(ChatActiveRouterService);
   private route = inject(ActivatedRoute);
   private channelService = inject(ChannelsService);
 
-  ngOnInit(){
+  ngOnInit() {
     this.channelDetails$ = this.chatActiveRouterService.getId$(this.route).pipe(
-      switchMap(id => {
+      switchMap((id) => {
         this.channelId = id;
         return this.channelService.getCurrentChannel(this.channelId);
       })
@@ -49,8 +48,8 @@ export class HeaderChannelComponent {
     this.overlayService.openComponent(
       ChannelMembersComponent,
       'cdk-overlay-dark-backdrop',
-      { channelDetails$: this.channelDetails$ as Observable<ChannelInterface>}
+      { globalPosition: 'center' },
+      { channelDetails$: this.channelDetails$ as Observable<ChannelInterface> }
     );
   }
 }
-

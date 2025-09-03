@@ -3,9 +3,9 @@ import { CommonModule } from '@angular/common';
 import { OverlayService } from '../../services/overlay.service';
 import { ChannelInterface } from '../../shared/models/channel.interface';
 import { filter, Observable, of, switchMap } from 'rxjs';
-import { ChangeChannelNameComponent } from "./change-channel-name/change-channel-name.component";
-import { ChangeChannelDescriptionComponent } from "./change-channel-description/change-channel-description.component";
-import { ChannelMembersComponent } from "../../shared/components/channel-members/channel-members.component";
+import { ChangeChannelNameComponent } from './change-channel-name/change-channel-name.component';
+import { ChangeChannelDescriptionComponent } from './change-channel-description/change-channel-description.component';
+import { ChannelMembersComponent } from '../../shared/components/channel-members/channel-members.component';
 import { HeaderOverlayComponent } from '../../shared/components/header-overlay/header-overlay.component';
 import { UserService } from '../../services/user.service';
 import { ChatInterface } from '../../shared/models/chat.interface';
@@ -15,33 +15,38 @@ import { ChannelsService } from '../../services/channels.service';
 
 @Component({
   selector: 'app-edit-channel',
-  imports: [CommonModule, ChangeChannelNameComponent, ChangeChannelDescriptionComponent, ChannelMembersComponent, HeaderOverlayComponent],
+  imports: [
+    CommonModule,
+    ChangeChannelNameComponent,
+    ChangeChannelDescriptionComponent,
+    ChannelMembersComponent,
+    HeaderOverlayComponent,
+  ],
   templateUrl: './edit-channel.component.html',
-  styleUrl: './edit-channel.component.scss'
+  styleUrl: './edit-channel.component.scss',
 })
 export class EditChannelComponent {
- 
   private userService = inject(UserService);
   private authService = inject(AuthService);
   channelService = inject(ChannelsService);
 
   currentUser = this.authService.getCurrentUserId();
 
-  channelId?:string;
+  channelId?: string;
   channelName?: string;
-  memberIds?:string[];
-  createdById?:string;
-  user$?:Observable<UserInterface>;
-    public overlayService = inject(OverlayService);
-    // CORECT: Inițializare corectă a observabilului
-  channelDetails$: Observable<ChannelInterface | undefined> = this.overlayService.overlayInput.pipe(
-  switchMap(data => data?.channel ?? of(null)),
-  filter((channel): channel is ChannelInterface => !!channel) 
-  );
+  memberIds?: string[];
+  createdById?: string;
+  user$?: Observable<UserInterface>;
+  public overlayService = inject(OverlayService);
+  // CORECT: Inițializare corectă a observabilului
+  channelDetails$: Observable<ChannelInterface | undefined> =
+    this.overlayService.overlayInput.pipe(
+      switchMap((data) => data?.channel ?? of(null)),
+      filter((channel): channel is ChannelInterface => !!channel)
+    );
 
-
-  ngOnInit(){
-    this.channelDetails$!.subscribe(channel => {
+  ngOnInit() {
+    this.channelDetails$!.subscribe((channel) => {
       if (channel) {
         this.createdById = channel.createdBy;
         this.channelId = channel.id;
@@ -51,5 +56,4 @@ export class EditChannelComponent {
       }
     });
   }
-
 }
