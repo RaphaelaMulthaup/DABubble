@@ -3,7 +3,7 @@ import { CommonModule, AsyncPipe } from '@angular/common';
 import { UserService } from '../../../../services/user.service';
 import { AuthService } from '../../../../services/auth.service';
 import { ChatService } from '../../../../services/chat.service';
-import { Observable, of, switchMap, map, combineLatest, filter } from 'rxjs';
+import { Observable, of, switchMap, map, combineLatest, filter, tap } from 'rxjs';
 import { UserInterface } from '../../../../shared/models/user.interface';
 import { UserListItemComponent } from '../../../../shared/components/user-list-item/user-list-item.component';
 import { MobileService } from '../../../../services/mobile.service';
@@ -61,6 +61,7 @@ export class ContactsListComponent implements OnInit {
               contactIds.map((id) => this.userService.getUserById(id))
             );
           }),
+          tap(users => console.log("Geladene Users:", users)),
           map((users) => users.filter((u) => u.uid !== this.currentUser.uid)) // 🔑 Filter raus
         );
       })
