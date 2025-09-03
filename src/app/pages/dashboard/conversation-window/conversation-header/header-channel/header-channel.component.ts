@@ -44,11 +44,25 @@ export class HeaderChannelComponent {
     );
   }
 
-  openChannelMembers() {
+  openChannelMembers(event: MouseEvent) {
     this.overlayService.openComponent(
       ChannelMembersComponent,
       'cdk-overlay-dark-backdrop',
-      { globalPosition: 'center' },
+      {
+        origin: event.currentTarget as HTMLElement,
+        originPosition: {
+          originX: 'center',
+          originY: 'bottom',
+          overlayX: 'center',
+          overlayY: 'top',
+        },
+        originPositionFallback: {
+          originX: 'center',
+          originY: 'top',
+          overlayX: 'center',
+          overlayY: 'bottom',
+        },
+      },
       { channelDetails$: this.channelDetails$ as Observable<ChannelInterface> }
     );
   }

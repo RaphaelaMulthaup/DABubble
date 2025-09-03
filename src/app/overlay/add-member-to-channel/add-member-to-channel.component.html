@@ -1,1 +1,5 @@
-<p>add-member-to-channel works!</p>
+<app-header-overlay [overlayHeadline]="'Leute hinzufugen'" />
+@if(channelDetails$ | async; as channelDetails){
+{{ channelDetails.name }}
+}
+<div></div>
