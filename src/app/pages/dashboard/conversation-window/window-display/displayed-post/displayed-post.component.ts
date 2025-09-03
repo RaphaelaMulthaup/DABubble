@@ -64,10 +64,6 @@ export class DisplayedPostComponent {
     });
 
     this.reactions$ = this.postService.getReactions('/' + this.currentType + 's/' + this.currentChannelId, 'messages', this.post.id!);
-    // this.reactions$.subscribe(data => {
-    //   this.reactions = data;
-    //   // console.log(this.reactions)
-    // });
     this.visibleReactions$ = this.reactions$.pipe(
       map(list => list
         .filter(r => r.users.length > 0)
