@@ -246,16 +246,25 @@ export class AuthService {
     return sendPasswordResetEmail(auth, email);
   }
 
-  // updateUserPassword(uid: string, newPassword: string): Observable<void> {
-  //   const userRef = doc(this.firestore, `users/${uid}`);
-  //   return new Observable((oberver) => {
-  //     // Nutzer anhand UID im Firebase Auth besorgen (falls authentifiziert),
-  //     // oder Admin-privilegierte Methode verwenden.
-  //     // Für Sicherheitszwecke in Firebase nur mit Admin-Rechten möglich.
-  //     // Beispiel: Falls du admin Zugriff hast, kannst du mit Admin SDK das Passwort setzen.
-  //     // Ohne Admin SDK (z.B. im Client) ist es nicht möglich, das Passwort eines Nutzers
-  //     // direkt zu ändern, wenn du nicht eingeloggt bist.
-  //     // Daher sollte diese Funktion im Backend umgesetzt werden, z.B. mit Cloud Functions.
-  //   });
-  // }
+  /**
+   * 
+   * funktion to save new user image 
+   * 
+   */
+  updateUserPhotoUrl(photoUrl: string): Promise<void> {
+    const user = this.auth.currentUser;
+    const userRef = doc(this.firestore, `users/${user?.uid}`);
+    return updateDoc(userRef, { photoUrl });
+  }
+
+  /**
+   * 
+   * funstion to save new Username
+   * 
+   */
+  updateUserName(newName: string): Promise<void> {
+    const user = this.auth.currentUser;
+    const userRef = doc(this.firestore, `users/${user?.uid}`);
+    return updateDoc(userRef, { name: newName });
+  }
 }

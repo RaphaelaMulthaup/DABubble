@@ -7,6 +7,7 @@ import { MobileDashboardState } from '../../../shared/types/mobile-dashboard-sta
 import { SearchBarComponent } from './search-bar/search-bar.component';
 import { MobileService } from '../../../services/mobile.service';
 import { ProfileViewMainComponent } from '../../../overlay/profile-view-main/profile-view-main.component';
+import { OverlayService } from '../../../services/overlay.service';
 
 @Component({
   selector: 'app-header-dashboard',
@@ -19,7 +20,8 @@ import { ProfileViewMainComponent } from '../../../overlay/profile-view-main/pro
   styleUrl: './header-dashboard.component.scss',
 })
 export class HeaderDashboardComponent implements OnInit {
-  public authService = inject(AuthService);
+  private authService = inject(AuthService);
+  public overlayService = inject(OverlayService);
 
   currentUser$?: Observable<UserInterface | null>;
 
@@ -32,7 +34,6 @@ export class HeaderDashboardComponent implements OnInit {
   }
 
   showProfile() {
-    let profile = document.querySelector('.profile-view');
-    profile?.classList.add('showProfile');
+    this.overlayService.displayOverlay(ProfileViewMainComponent, 'Profil');
   }
 }

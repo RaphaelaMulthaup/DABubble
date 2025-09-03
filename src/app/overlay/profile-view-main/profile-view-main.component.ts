@@ -30,14 +30,8 @@ export class ProfileViewMainComponent implements OnInit{
       
   }
 
-  closeProfile() {
-    let profile = document.querySelector('.profil-view-main');
-    profile?.classList.add('closeProfile');
-  }
-
   showEdit() {
-    let edit = document.querySelector('.edit-view');
-    edit?.classList.add('showEdit');
+    this.overlayService.displayOverlay(EditProfileComponent, 'Dein Profil bearbeiten');
   }
 
 }
