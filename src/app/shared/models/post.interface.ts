@@ -6,4 +6,5 @@ export interface PostInterface {
   channelId?:string;
   chatId?:string;
   channelName?: string;
+  answer?: boolean;
 }

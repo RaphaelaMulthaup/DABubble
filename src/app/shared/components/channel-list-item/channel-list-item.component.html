@@ -1,6 +1,8 @@
 <li
   class="list-item channel-list-item"
-  [routerLink]="['/dashboard', 'channel', channel.id]"
+  [routerLink]="
+    !inCurrentPostInput ? ['/dashboard', 'channel', channel.id] : null
+  "
   [ngClass]="{ 'related-to-search-result-post': relatedToSearchResultPost }"
 >
   <div class="tag"></div>

@@ -11,6 +11,9 @@ import { ChatService } from './chat.service';
 @Injectable({ providedIn: 'root' })
 export class SearchService {
   chatService = inject(ChatService);
+  private allChannels$ = new BehaviorSubject<ChannelInterface[]>([]);
+  private userChannels$ = new BehaviorSubject<ChannelInterface[]>([]);
+
   // Local state managed with BehaviorSubjects for real-time updates
   private users$ = new BehaviorSubject<UserInterface[]>([]);
   private channels$ = new BehaviorSubject<ChannelInterface[]>([]);
@@ -32,7 +35,17 @@ export class SearchService {
     this.listenToUsers(); // Users kann man immer laden
     this.initAfterLogin(); // Channels & Chats erst nach User
     this.listenToChannelMessages();
+    this.loadAllChannels();
+    this.userChannels$.subscribe((chs) => this.channels$.next(chs));
   }
+
+  private loadAllChannels() {
+    const channelsCol = collection(this.firestore, 'channels');
+    collectionData(channelsCol, { idField: 'id' }).subscribe((data: any[]) => {
+      this.allChannels$.next(data as ChannelInterface[]);
+    });
+  }
+
   /***
    * Listen to all users in Firestore and keep them updated in users$.
    * Data is cast to UserInterface for search functionality.
@@ -50,14 +63,13 @@ export class SearchService {
       const userChannels = data.filter((channel) =>
         channel.memberIds?.includes(userId)
       );
-      this.channels$.next(userChannels as ChannelInterface[]);
+      this.userChannels$.next(userChannels as ChannelInterface[]);
     });
   }
 
   private loadChatsForUser(currentUserId: string) {
     const chatsCol = collection(this.firestore, 'chats');
     collectionData(chatsCol, { idField: 'id' }).subscribe((chats: any[]) => {
-      // Nur Chats, in denen der User beteiligt ist
       const userChats = chats.filter((chat) => {
         const [user1, user2] = chat.id.split('_');
         return user1 === currentUserId || user2 === currentUserId;
@@ -66,14 +78,15 @@ export class SearchService {
       userChats.forEach((chat) => {
         const msgCol = collection(this.firestore, `chats/${chat.id}/messages`);
         collectionData(msgCol, { idField: 'id' }).subscribe((msgs: any[]) => {
-          // enriched ist jetzt korrekt typisiert
           const enriched: (PostInterface & { chatId: string })[] = msgs.map(
-            (m) => ({
-              ...(m as PostInterface),
-              chatId: chat.id,
-            })
+            (m) => ({ ...(m as PostInterface), chatId: chat.id })
           );
-          this.chatPosts$.next([...this.chatPosts$.value, ...enriched]);
+
+          // **Duplikate vermeiden**
+          const newPosts = enriched.filter(
+            (m) => !this.chatPosts$.value.some((p) => p.id === m.id)
+          );
+          this.chatPosts$.next([...this.chatPosts$.value, ...newPosts]);
 
           // Antworten
           msgs.forEach((m) => {
@@ -83,15 +96,19 @@ export class SearchService {
             );
             collectionData(ansCol, { idField: 'id' }).subscribe(
               (ans: any[]) => {
-                const enrichedAns: (PostInterface & { chatId: string })[] =
-                  ans.map((a) => ({
-                    ...(a as PostInterface),
-                    chatId: chat.id,
-                  }));
-                this.chatPosts$.next([
-                  ...this.chatPosts$.value,
-                  ...enrichedAns,
-                ]);
+                const enrichedAns: (PostInterface & {
+                  chatId: string;
+                  answer: true;
+                })[] = ans.map((a) => ({
+                  ...(a as PostInterface),
+                  chatId: chat.id,
+                  answer: true, // <-- hier setzen
+                }));
+
+                const newAnswers = enrichedAns.filter(
+                  (a) => !this.chatPosts$.value.some((p) => p.id === a.id)
+                );
+                this.chatPosts$.next([...this.chatPosts$.value, ...newAnswers]);
               }
             );
           });
@@ -111,15 +128,18 @@ export class SearchService {
           `channels/${channel.id}/messages`
         );
         collectionData(msgCol, { idField: 'id' }).subscribe((msgs: any[]) => {
-          // Attach channelId and channelName for context
           const enriched = msgs.map((m) => ({
             ...m,
             channelId: channel.id,
             channelName: channel.name,
           }));
-          this.channelPosts$.next([...this.channelPosts$.value, ...enriched]);
 
-          // Listen for answers inside channel messages
+          const newPosts = enriched.filter(
+            (m) => !this.channelPosts$.value.some((p) => p.id === m.id)
+          );
+          this.channelPosts$.next([...this.channelPosts$.value, ...newPosts]);
+
+          // Antworten
           msgs.forEach((m) => {
             const ansCol = collection(
               this.firestore,
@@ -127,16 +147,21 @@ export class SearchService {
             );
             collectionData(ansCol, { idField: 'id' }).subscribe(
               (ans: any[]) => {
-                const enrichedAns = ans.map((a) => ({
-                  ...a,
-                  channelId: channel.id,
-                  channelName: channel.name,
+                const enrichedAns: (PostInterface & {
+                  channelId: string;
+                  answer: true;
+                })[] = ans.map((a) => ({
+                  ...(a as PostInterface),
+                  channelId: channel.id!,
+                  answer: true, // <-- hier setzen
                 }));
 
-                // Direkt in channelPosts$ speichern
+                const newAnswers = enrichedAns.filter(
+                  (a) => !this.channelPosts$.value.some((p) => p.id === a.id)
+                );
                 this.channelPosts$.next([
                   ...this.channelPosts$.value,
-                  ...enrichedAns,
+                  ...newAnswers,
                 ]);
               }
             );
@@ -150,53 +175,50 @@ export class SearchService {
    * Perform a combined search across users, channels, chat messages,
    * channel messages, and answers. Matches are case-insensitive.
    */
-  search(term$: Observable<string>): Observable<SearchResult[]> {
+  search(
+    term$: Observable<string>,
+    opts?: { includeAllChannels?: boolean }
+  ): Observable<SearchResult[]> {
+    const channels$ = opts?.includeAllChannels
+      ? this.allChannels$
+      : this.userChannels$;
+
     return combineLatest([
       term$,
       this.users$,
-      this.channels$,
+      channels$,
       this.chatPosts$,
       this.channelPosts$,
     ]).pipe(
       map(([term, users, channels, chatMessages, channelMessages]) => {
         const t = (term ?? '').trim().toLowerCase();
-
         if (!t) return [] as SearchResult[];
 
-        // Wenn nur "@" eingegeben wurde, gib alle Users zurück
         if (t === '@') {
           return users.map((u) => ({ type: 'user' as const, ...u }));
         }
 
-        // Wenn nur "#" eingegeben wurde, gib alle Channels zurück
         if (t === '#') {
           return channels.map((c) => ({ type: 'channel' as const, ...c }));
         }
 
-        // Wenn es mit "@" beginnt, aber noch mehr Text folgt, filtere Users
         if (t.startsWith('@')) {
-          const query = t.slice(1); // entferne das "@"
+          const query = t.slice(1);
           return users
-            .filter(
-              (u) => u.name?.toLowerCase().includes(query) // <- E-Mail raus
-            )
+            .filter((u) => u.name?.toLowerCase().includes(query))
             .map((u) => ({ type: 'user' as const, ...u }));
         }
 
-        // Wenn es mit "#" beginnt, aber noch mehr Text folgt, filtere Channels
         if (t.startsWith('#')) {
-          const query = t.slice(1); // entferne das "#"
+          const query = t.slice(1);
           return channels
             .filter((c) => c.name?.toLowerCase().includes(query))
             .map((c) => ({ type: 'channel' as const, ...c }));
         }
 
-        // Normale Suche für alles andere
         return [
           ...users
-            .filter(
-              (u) => u.name?.toLowerCase().includes(t) // <- E-Mail raus
-            )
+            .filter((u) => u.name?.toLowerCase().includes(t))
             .map((u) => ({ type: 'user' as const, ...u })),
           ...channels
             .filter((c) => c.name?.toLowerCase().includes(t))
@@ -221,6 +243,46 @@ export class SearchService {
               return { type: 'channelMessage' as const, ...m, channel };
             }),
         ];
+      })
+    );
+  }
+
+  searchHeaderSearch(term$: Observable<string>): Observable<SearchResult[]> {
+    return combineLatest([term$, this.users$, this.userChannels$]).pipe(
+      map(([term, users, channels]) => {
+        const t = (term ?? '').trim().toLowerCase();
+        if (!t) return [] as SearchResult[];
+
+        // @ → alle User
+        if (t === '@') {
+          return users.map((u) => ({ type: 'user' as const, ...u }));
+        }
+
+        // # → alle Channels, in denen User Mitglied ist
+        if (t === '#') {
+          return channels.map((c) => ({ type: 'channel' as const, ...c }));
+        }
+
+        // @xyz → User anhand Name
+        if (t.startsWith('@')) {
+          const query = t.slice(1);
+          return users
+            .filter((u) => u.name?.toLowerCase().includes(query))
+            .map((u) => ({ type: 'user' as const, ...u }));
+        }
+
+        // #xyz → Channels anhand Name
+        if (t.startsWith('#')) {
+          const query = t.slice(1);
+          return channels
+            .filter((c) => c.name?.toLowerCase().includes(query))
+            .map((c) => ({ type: 'channel' as const, ...c }));
+        }
+
+        // Standard: User anhand ihrer Mailadresse
+        return users
+          .filter((u) => u.email?.toLowerCase().includes(t))
+          .map((u) => ({ type: 'user' as const, ...u }));
       })
     );
   }

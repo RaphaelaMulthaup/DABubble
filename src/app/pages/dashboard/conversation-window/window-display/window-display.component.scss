@@ -1,5 +1,6 @@
 app-displayed-post {
     display: flex;
+    border-radius: 30px;
 }
 
 .seperator-container {
@@ -21,4 +22,13 @@ app-displayed-post {
 
 .date {
     white-space: nowrap;
+}
+
+.messages-container {
+  height: 100%;
+  overflow-y: auto;  // wichtig!
+}
+
+.highlight {
+    background-color: var(--color-purple-light-lines);
 }

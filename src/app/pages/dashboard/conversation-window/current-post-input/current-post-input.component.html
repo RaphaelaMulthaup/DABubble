@@ -25,9 +25,9 @@
   <ul class="results-list">
     @for (item of searchResults; track $index) { @switch (item.type) { @case
     ('user') {
-    <app-contact-list-item [user]="item"></app-contact-list-item
+    <app-user-list-item [user]="item" [inCurrentPostInput]="true"></app-user-list-item
     >} @case ('channel') {
-    <app-channel-list-item [channel]="item"></app-channel-list-item>
+    <app-channel-list-item [channel]="item" [inCurrentPostInput]="true"></app-channel-list-item>
     } @default {
     {{
       item | json

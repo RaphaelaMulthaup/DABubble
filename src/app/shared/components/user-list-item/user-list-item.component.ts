@@ -8,18 +8,19 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-contact-list-item', // Component selector used in parent templates
+  selector: 'app-user-list-item', // Component selector used in parent templates
   imports: [CommonModule],
-  templateUrl: './contact-list-item.component.html', // External HTML template
+  templateUrl: './user-list-item.component.html', // External HTML template
   styleUrls: [
-    './contact-list-item.component.scss',
+    './user-list-item.component.scss',
     './../../styles/list-item.scss',
   ],
 })
-export class ContactListItemComponent {
+export class UserListItemComponent {
   // Input property that receives a user object from the parent component
   @Input() user!: UserInterface;
   @Input() relatedToSearchResultPost: boolean = false;
+  @Input() inCurrentPostInput = false;
 
   // Stores the ID of the currently logged-in user
   currentUserId: string | null = null;
@@ -41,14 +42,6 @@ export class ContactListItemComponent {
    */
   async pickOutAndNavigateToChat() {
     if (!this.currentUserId) return; // Stop if user is not logged in
-
-    // Try to find a chat between the current user and the selected user
-    const chatId = await this.chatService.getChatId(
-      this.currentUserId,
-      this.user.uid
-    );
-
-    if (!chatId) return; // No chat found → exit
-    this.router.navigate(['/dashboard', 'chat', chatId]);
+    this.chatService.navigateToChat(this.currentUserId, this.user.uid);
   }
 }

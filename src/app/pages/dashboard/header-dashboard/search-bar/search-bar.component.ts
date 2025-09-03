@@ -5,7 +5,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { SearchService } from '../../../../services/search.service';
 import { JsonPipe } from '@angular/common';
 import { SearchResult } from '../../../../shared/types/search-result.type';
-import { ContactListItemComponent } from '../../../../shared/components/contact-list-item/contact-list-item.component';
+import { UserListItemComponent } from '../../../../shared/components/user-list-item/user-list-item.component';
 import { ChannelListItemComponent } from '../../../../shared/components/channel-list-item/channel-list-item.component';
 import { PostListItemComponent } from '../../../../shared/components/post-list-item/post-list-item.component';
 import { UserInterface } from '../../../../shared/models/user.interface';
@@ -17,7 +17,7 @@ import { ChannelInterface } from '../../../../shared/models/channel.interface';
   imports: [
     ReactiveFormsModule,
     JsonPipe,
-    ContactListItemComponent,
+    UserListItemComponent,
     ChannelListItemComponent,
     PostListItemComponent,
   ],
@@ -69,6 +69,7 @@ export class SearchBarComponent {
 
     for (const item of res) {
       if (item.type === 'chatMessage') {
+         if (!item.user) continue;
         if (!chatMap.has(item.user.uid)) {
           chatMap.set(item.user.uid, { user: item.user, posts: [] });
         }

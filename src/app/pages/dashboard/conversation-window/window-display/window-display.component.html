@@ -1,9 +1,9 @@
-<section>
+<section class="messages-container">
   @if ((messages$ | async); as messages) {
   
     @if (messages.length > 0) {
     
-      @for (message of messages; track $index) {
+      @for (message of messages; track message.id) {
       
         @if (shouldShowDate($index)) {
           <div class="seperator-container flex flex-row place-items-center">
@@ -21,7 +21,7 @@
           </div>
         }
       
-        <app-displayed-post [message]="message"></app-displayed-post>
+        <app-displayed-post [message]="message" [id]="message.id"></app-displayed-post>
       }
     
     } @else {
