@@ -94,7 +94,7 @@ export class WindowDisplayComponent {
   }
   ngOnDestroy() {
     //Ich glaube der Aufruf von tryDeleteEmptyChat ist hier nicht nötig und reicht in onContentChange
-    // this.tryDeleteEmptyChat(); // Letzten angezeigten Chat prüfen
+    this.tryDeleteEmptyChat(this.currentChatId); // Letzten angezeigten Chat prüfen
     this.subs.forEach((s) => s.unsubscribe());
   }
   ngAfterViewInit() {
@@ -110,12 +110,11 @@ export class WindowDisplayComponent {
     const initial = this.route.snapshot.queryParams['scrollTo'];
     if (initial) this.handleScrollRequest(initial);
   }
-  private tryDeleteEmptyChat(previousChatId?: string): void {
-    const idToDelete = previousChatId ?? this.currentChatId;
-    if (idToDelete && this.postInfo.length === 0) {
+  private tryDeleteEmptyChat(chatId?: string): void {
+    if (chatId && this.postInfo.length === 0) {
       this.chatService
-        .deleteChat(idToDelete)
-        .then(() => console.log(`Leerer Chat ${idToDelete} gelöscht`))
+        .deleteChat(chatId)
+        .then(() => console.log(`Leerer Chat ${chatId} gelöscht`))
         .catch((err) => console.error('Fehler beim Löschen des Chats', err));
     }
   }
@@ -129,8 +128,9 @@ export class WindowDisplayComponent {
     this.currentChatId = newChatId;
     this.postInfo = newMessages;
 
-    // Alten Chat prüfen und ggf. löschen
-    this.tryDeleteEmptyChat(previousChatId);
+    if (previousChatId && previousChatId !== newChatId) {
+      this.tryDeleteEmptyChat(previousChatId);
+    }
   }
   private handleScrollRequest(postId: string) {
     if (!postId) return;
