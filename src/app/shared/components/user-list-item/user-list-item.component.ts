@@ -20,6 +20,7 @@ export class UserListItemComponent {
   // Input property that receives a user object from the parent component
   @Input() user!: UserInterface;
   @Input() relatedToSearchResultPost: boolean = false;
+  @Input() inCurrentPostInput = false;
 
   // Stores the ID of the currently logged-in user
   currentUserId: string | null = null;

@@ -16,4 +16,5 @@ export class ChannelListItemComponent {
   /** The channel whose information should be displayed. This is passed from the parent component. */
   @Input() channel!: ChannelInterface;
   @Input() relatedToSearchResultPost: boolean = false;
+  @Input() inCurrentPostInput = false;
 }
