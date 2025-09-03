@@ -66,12 +66,7 @@ export class ProfileViewOtherUsersComponent {
     const user = await firstValueFrom(this.user$);
     const otherUserId = user.uid;
 
-    // Retrieve or create chat between current user and other user
-    const chatId = await this.chatService.getChatId(currentUserId, otherUserId);
-    await this.chatService.createChat(currentUserId, otherUserId);
-
-    // Navigate to the chat screen
-    this.router.navigate(['/dashboard', 'chat', chatId]);
+    this.chatService.navigateToChat(currentUserId, otherUserId);
 
     // Hide the overlay
     this.overlayService.close();

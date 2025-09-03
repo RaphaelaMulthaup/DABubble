@@ -10,12 +10,14 @@ import {
 import { ChatInterface } from '../shared/models/chat.interface';
 import { map, Observable } from 'rxjs';
 import { MobileDashboardState } from '../shared/types/mobile-dashboard-state.type';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ChatService {
   private firestore: Firestore = inject(Firestore);
+  constructor(private router: Router) {}
 
   /**
    * Creates (or merges) a new chat document between two users in Firestore.
@@ -65,7 +67,7 @@ export class ChatService {
       )
     );
   }
-  
+
   // currentMobileDashboardState = signal<MobileDashboardState>('sidenav');
 
   /**
@@ -97,7 +99,7 @@ export class ChatService {
    * @param currentUserId - The ID of the currently logged-in user.
    * @returns The ID of the other user in the chat.
    */
-  getOtherUserId(chatId: string, currentUserId: string): string {    
+  getOtherUserId(chatId: string, currentUserId: string): string {
     const [userA, userB] = chatId.split('_');
     return userA === currentUserId ? userB : userA;
   }
@@ -110,5 +112,11 @@ export class ChatService {
   deleteChat(chatId: string): Promise<void> {
     const chatRef = doc(this.firestore, 'chats', chatId);
     return deleteDoc(chatRef);
+  }
+
+  async navigateToChat(currentUserId: string, otherUserId: string) {
+    const chatId = await this.getChatId(currentUserId, otherUserId);
+    await this.createChat(currentUserId, otherUserId);
+    this.router.navigate(['/dashboard', 'chat', chatId]);
   }
 }
