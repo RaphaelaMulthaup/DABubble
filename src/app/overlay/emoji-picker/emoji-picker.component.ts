@@ -1,8 +1,10 @@
+import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-emoji-picker',
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './emoji-picker.component.html',
   styleUrl: './emoji-picker.component.scss'
 })
@@ -63,7 +65,8 @@ export class EmojiPickerComponent {
     'assets/img/emojis/cross-mark.svg',
   ]
 
-  @Input() messageFromCurrentUser = false;
+  senderIsCurrentUser$!: Observable<boolean>;
+
   @Output() selectedEmoji = new EventEmitter<string>();
 
   /**

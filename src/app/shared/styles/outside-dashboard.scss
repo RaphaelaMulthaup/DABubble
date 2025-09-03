@@ -48,3 +48,60 @@ form {
     color: var(--color-pink);
     line-height: 1;
 }
+
+.toast-notification {
+    position: absolute;
+    width: fit-content;
+    padding: 20px 30px;
+    border-radius: 30px;
+    border-bottom-right-radius: 0;
+    background-color: var(--color-purple-dark);
+    color: var(--color-white);
+    font-size: 18px;
+    font-weight: 700;
+    box-shadow: 0px 6px 10px 0px #00000033;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    animation: slidInFromRight 0.3s ease-in;
+
+    img {
+        width: 20px;
+        aspect-ratio: 1 / 1;
+    }
+}
+
+.reset-toast {
+    position: absolute;
+    display: none;
+    width: 448px;
+    z-index: 5;
+    animation: slidInFromRight 0.3s ease-in;
+    background-color: var(--color-purple-dark);
+    color: white;
+    height: 148px;
+    padding: 0px 10px 0px 10px;
+    font-size: 36px;
+    font-weight: 700;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    border-bottom-left-radius: 20px;
+}
+
+.show-toast {
+    display: flex;
+    opacity: 1;
+}
+
+@keyframes slidInFromRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}

@@ -6,6 +6,7 @@ import { ChatService } from '../../../services/chat.service';
 import { OverlayService } from '../../../services/overlay.service';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { MobileService } from '../../../services/mobile.service';
 
 @Component({
   selector: 'app-user-list-item', // Component selector used in parent templates
@@ -30,6 +31,8 @@ export class UserListItemComponent {
 
   // Inject ChatService instance to manage chat-related operations
   private chatService = inject(ChatService);
+
+  public mobileService = inject(MobileService);
 
   constructor(private router: Router) {
     // Retrieve the currently logged-in user ID from AuthService

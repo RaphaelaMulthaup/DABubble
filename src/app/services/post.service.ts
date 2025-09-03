@@ -246,7 +246,12 @@ export class PostService {
    * @param index the index of the post
    */
   isPostCreatedToday(post: PostInterface): boolean {
-    let postDate = post.createdAt.toDate().setHours(0, 0, 0, 0);
+    let postDate;
+    if (post.createdAt === null) {
+      postDate = new Date().setHours(0, 0, 0, 0);
+    } else {
+      postDate = post.createdAt.toDate().setHours(0, 0, 0, 0);
+    }
     let today = new Date().setHours(0, 0, 0, 0);
     return postDate == today;
   }

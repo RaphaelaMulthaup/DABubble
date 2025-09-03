@@ -1,8 +1,36 @@
 @import './../../../../../styles.scss';
+@import '../../../../shared/styles/list-item.scss';
 
-.channel-list{
-    padding-left: 45px;
-    padding-top: 30px;
+.btn-dropdown,
+.btn-dropdown div {
+    height: 46px;
+    gap: 12px;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--color-purple-medium);
+    filter: brightness(0);
+
+    &:hover {
+        filter: brightness(1);
+    }
+}
+
+.arrow-rotate {
+    rotate: -90deg;
+}
+
+.channel-list {
+    padding-left: 24px;
+    padding-top: 28px;
     @include dFlex($g: 13px, $ai: flex-start);
     flex-direction: column;
+}
+
+.create-channel-btn {
+    gap: 10px !important;
+    border-radius: 20px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    color: var(--color-purple-medium);
+    font-weight: 600;
 }

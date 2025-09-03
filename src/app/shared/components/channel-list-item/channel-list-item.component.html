@@ -1,5 +1,10 @@
 <li
   class="list-item channel-list-item"
+  (click)="
+    !inCurrentPostInput
+      ? mobileService.setMobileDashboardState('message-window')
+      : null
+  "
   [routerLink]="
     !inCurrentPostInput ? ['/dashboard', 'channel', channel.id] : null
   "

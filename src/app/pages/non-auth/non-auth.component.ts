@@ -25,7 +25,6 @@ import { HeaderOutsideDashboardComponent } from '../../shared/components/header-
     CommonModule,
     LoginFormComponent,
     RegisterFormComponent,
-    IntroComponent,
     AvatarSelectionComponent,
     RouterLink,
     HeaderOutsideDashboardComponent,

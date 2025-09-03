@@ -1,96 +1,70 @@
-<div
-  class="message-card w-full"
-  [ngClass]="{ 'message-current-user': senderIsCurrentUser$ | async }"
->
-  <div>
-    @if(senderPhotoUrl$ | async; as photoUrl) {
-    <img
-      class="profil-img"
-      [src]="senderPhotoUrl$ | async"
-      alt="Profilbild"
-      (click)="openUserProfileOverlay()"
-    />
-    } @else {
-    <img
-      class="profil-img"
-      src="/assets/img/no-avatar.svg"
-      alt="Profilbild"
-      (click)="openUserProfileOverlay()"
-    />
-    }
-  </div>
-  <div class="message-content">
-    <div class="infos-message">
-      <h4>{{ senderName$ | async }}</h4>
-      <span class="message-time">{{ createdAtTime$ | async }} Uhr</span>
+<div class="post-container w-full flex flex-col" [ngClass]="{ 'post-current-user': senderIsCurrentUser$ | async }">
+  <div class="post flex w-full" [ngClass]="{'clicked': postClicked}">
+    <div class="profile-img">
+      @if(senderPhotoUrl$ | async; as photoUrl) {
+      <img class="profil-img" [src]="senderPhotoUrl$ | async" alt="Profilbild" (click)="openUserProfileOverlay()" />
+      } @else {
+      <img class="profil-img" src="/assets/img/no-avatar.svg" alt="Profilbild" (click)="openUserProfileOverlay()">
+      }
     </div>
-    <div class="text">{{ message.text }}</div>
 
-    @if (answers.length > 0) {
-    <!-- flex-row for desktop -->
-    <div class="answers flex flex-col-reverse items-start">
-      <button class="link w-full" (click)="openAnswers(message.id!)">
-        {{ (answers$ | async)?.length }}
-        {{ answers.length > 1 ? "Antworten" : "Antwort" }}
-      </button>
-      <span class="message-time w-full">
-        Letzte Antwort
-        <!-- hier muss die neueste zeit übergeben werden -->
-        @if(postService.isPostCreatedToday(answers[0])) { hh:mm Uhr } @else {
-        <!-- Monat voll ausschreiben, z.B. 01.August -->
-        dd.month }
-      </span>
-    </div>
-    }
-
-    <div
-      class="interactions w-full"
-      [class.fill-row]="((visibleReactions$ | async)?.length ?? 0) == 3"
-    >
-      @for (reaction of (visibleReactions$ | async); track $index) {
-      @if(allReactionsVisible || $index <= 4) {
-      <div
-        (mouseenter)="openReactedUsersOverlay($event, reaction)"
-        (mouseleave)="overlayService.close()"
-        (click)="toggleExistingReaction(reaction.emoji)"
-        class="reaction flex place-items-center"
-      >
-        <img class="reaction-img" [src]="reaction.emoji" />
-        <p>{{ reaction.users.length }}</p>
+    <div class="post-content flex flex-col">
+      <div class="post-header flex">
+        <h4>{{ senderName$ | async }}</h4>
+        <span class="post-time">{{ createdAtTime$ | async }} Uhr</span>
       </div>
-      } }
 
-      <div class="add-reaction relative flex">
-        @if (((visibleReactions$ | async)?.length ?? 0) > 5) {
-        <div class="reaction flex place-items-center">
-          <button (click)="allReactionsVisible = !allReactionsVisible">
-            @if (allReactionsVisible) { -- } @else { +
-            {{ ((visibleReactions$ | async)?.length ?? 0) - 5 }}
-            }
-          </button>
-        </div>
-        }
-        <button
-          (click)="openEmojiPickerOverlay($event)"
-          class="btn-tertiary"
-          (mouseenter)="
-            addReactionsImg.src = './assets/img/add-reaction-hover.svg'
-          "
-          (mouseleave)="addReactionsImg.src = './assets/img/add-reaction.svg'"
-        >
-          <img
-            #addReactionsImg
-            src="./assets/img/add-reaction.svg"
-            alt="add reaction"
-          />
+      <div (click)="openPostInteractionOverlay($event)" class="text">{{ post.text }}</div>
+
+      @if (answers.length > 0) {
+      <!-- flex-row for desktop -->
+      <div class="answers flex flex-col-reverse items-start">
+        <button class="link w-full" (click)="openAnswers(post.id!)">
+          {{(answers$ | async)?.length}} {{answers.length > 1? 'Antworten': 'Antwort'}}
         </button>
+        <span class="post-time w-full">
+          Letzte Antwort
+          <!-- hier muss die neueste zeit übergeben werden -->
+          @if(postService.isPostCreatedToday(answers[0])) {
+          hh:mm Uhr
+          } @else {
+          <!-- Monat voll ausschreiben, z.B. 01.August -->
+          dd.month
+          }
+        </span>
       </div>
+      }
+    </div>
+  </div>
+
+  <div class="interactions-container flex w-full">
+    <div class="interactions flex" [class.fill-row]="((visibleReactions$ | async)?.length ?? 0) == 3" [style.gap]="((visibleReactions$ | async)?.length === 0 ? '0px' : null)">
+      @for (reaction of (visibleReactions$ | async); track $index) {
+        @if(allReactionsVisible || $index <= 4) { 
+          <div (mouseenter)="openReactedUsersOverlay($event, reaction)"
+              (mouseleave)="overlayService.close()" (click)="toggleExistingReaction(reaction.emoji)"
+              class="reaction flex place-items-center">
+            <img class="reaction-img" [src]="reaction.emoji" />
+            <p>{{ reaction.users.length }}</p>
+          </div>
+        }
+      }
+
+    <div class="add-reaction flex justify-start">
+      @if (((visibleReactions$ | async)?.length ?? 0) > 5) {
+      <button (click)="allReactionsVisible = !allReactionsVisible" [class.minimize]="allReactionsVisible"
+        class="toggle-reactions-btn relative">
+        @if (!allReactionsVisible) {
+        + {{((visibleReactions$ | async)?.length?? 0) -5}}
+        }
+      </button>
+      }
+
+      <button (click)="openEmojiPickerOverlay($event)" class="btn-tertiary relative"
+        (mouseenter)="addReactionsImg.src = './assets/img/add-reaction-hover.svg'"
+        (mouseleave)="addReactionsImg.src = './assets/img/add-reaction.svg'">
+        <img #addReactionsImg src="./assets/img/add-reaction.svg" alt="add reaction" />
+      </button>
     </div>
   </div>
 </div>
-
-<!-- btn to add an answer -->
-<!-- <button class="btn-tertiary" (mouseenter)="addAnswerImg.src = './assets/img/add-answer-hover.svg'"
-  (mouseleave)="addAnswerImg.src = './assets/img/add-answer.svg'">
-  <img #addAnswerImg src="./assets/img/add-answer.svg" alt="add answer">
-</button> -->

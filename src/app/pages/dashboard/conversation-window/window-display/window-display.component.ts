@@ -272,14 +272,26 @@ export class WindowDisplayComponent {
    */
   shouldShowDate(index: number): boolean {
     if (index > 0) {
-      let currentPostDate = this.postInfo[index].createdAt
-        .toDate()
-        .toISOString()
-        .split('T')[0];
-      let previousPostDate = this.postInfo[index - 1].createdAt
-        .toDate()
-        .toISOString()
-        .split('T')[0];
+      let currentPostDate;
+      if (!this.postInfo[index].createdAt) {
+        currentPostDate = new Date().toISOString().split('T')[0];
+      } else {
+        currentPostDate = this.postInfo[index].createdAt
+          .toDate()
+          .toISOString()
+          .split('T')[0];
+      }
+
+      let previousPostDate: string;
+      if (!this.postInfo[index - 1].createdAt) {
+        previousPostDate = new Date().toISOString().split('T')[0];
+      } else {
+        previousPostDate = this.postInfo[index - 1].createdAt
+          .toDate()
+          .toISOString()
+          .split('T')[0];
+      }
+
       return currentPostDate !== previousPostDate;
     }
     return true;

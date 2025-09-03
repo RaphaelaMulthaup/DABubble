@@ -66,6 +66,7 @@ export class AuthService {
   constructor(private auth: Auth, private firestore: Firestore) {
     // Listen to authentication state changes and update the userSubject
     onAuthStateChanged(this.auth, (user) => {
+      this.emptyUserObject();
       this.userSubject.next(user);
       if (user) {      
         // Firestore-User laden
@@ -159,7 +160,6 @@ export class AuthService {
     return from(promise);
   }
 
-  //!!! Diese Funktion muss nach register ausgeführt werden, aber ich musste sie da entfernen, da es sonst mit dem eintragen von name und photourl nicht geklappt hätte.
   /**
    * sets the userToRegister-Object to default.
    */

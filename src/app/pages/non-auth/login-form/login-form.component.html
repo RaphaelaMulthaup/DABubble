@@ -11,7 +11,7 @@
                     <div class="flex items-center relative">
                         <img class="input-icon absolute" src="./assets/img/mail.svg" alt="mail">
                         <input class="input-primary" id="emailId" type="text" placeholder="beispielname@email.com"
-                            formControlName="email" name="email" required pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}">
+                            formControlName="email" name="email" required pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}" (keydown.enter)="$event.preventDefault(); onSubmit()">
                     </div>
                     <p class="error-message">
                     @if (loginForm.get('email')?.touched && loginForm.get('email')?.invalid)
@@ -22,7 +22,7 @@
                     <div class="flex items-center relative">
                         <img class="input-icon absolute" src="./assets/img/lock.svg" alt="lock">
                         <input class="input-primary" id="passwordId" type="password" placeholder="Passwort"
-                            formControlName="password" name="password" required>
+                            formControlName="password" name="password" required (keydown.enter)="$event.preventDefault(); onSubmit()">
                     </div>
                     <p class="error-message">
                     @if (loginForm.get('password')?.invalid &&loginForm.get('password')?.touched)

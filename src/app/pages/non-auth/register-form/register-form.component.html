@@ -28,14 +28,15 @@
                 <div class="flex items-center relative">
                     <img class="input-icon absolute" src="./assets/img/mail.svg" alt="mail">
                     <input (blur)="checkForExistingUser()" class="input-primary" id="email" type="text"
-                        placeholder="beispielname@email.com" formControlName="email" name="email" required pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}">
+                        placeholder="beispielname@email.com" formControlName="email" name="email" required
+                        pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}">
                 </div>
 
                 <p class="error-message">
                     @if (registerForm.get('email')?.touched && registerForm.get('email')?.invalid)
-                        {Bitte gib eine gültige E-Mail-Addresse ein.}
+                    {Bitte gib eine gültige E-Mail-Addresse ein.}
                     @else if (emailExists)
-                        {Diese E-Mail-Addresse existiert bereits.}
+                    {Diese E-Mail-Addresse existiert bereits.}
                 </p>
             </div>
 

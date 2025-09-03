@@ -15,7 +15,7 @@ import { MobileDashboardState } from '../../../../shared/types/mobile-dashboard-
 
 @Component({
   selector: 'app-channel-list',
-  imports: [AsyncPipe, CreateChannelFormComponent, RouterLink, ChannelListItemComponent],
+  imports: [AsyncPipe, ChannelListItemComponent],
   templateUrl: './channel-list.component.html',
   styleUrl: './channel-list.component.scss',
 })
@@ -24,7 +24,7 @@ export class ChannelListComponent {
   showPopup = false;
 
   //With this variable show/hide channels from sidenav
-  showChannels: boolean = false;
+  channelsVisible: boolean = true;
 
   // Observable list of active channels for the current user
   channels$!: Observable<ChannelInterface[]>;

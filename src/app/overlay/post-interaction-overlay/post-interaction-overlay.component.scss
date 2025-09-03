@@ -1,0 +1,49 @@
+.interaction-options {
+    margin-bottom: 40px;
+    padding: 4px 16px;
+    gap: 6px;
+    border: 1px solid var(--color-purple-light);
+    border-radius: 25px;
+    border-bottom-left-radius: 0;
+    background-color: var(--color-white);
+
+    .reaction-img {
+        width: 32px;
+        aspect-ratio: 1 / 1;
+        padding: 2px;
+
+        &:hover {
+            cursor: pointer;
+            transform: scale(1.1);
+        }
+    }
+
+    .add-reaction {
+        background-image: url("../../../assets/img/add-reaction.svg");
+
+        &:hover {
+            background-image: url("../../../assets/img/add-reaction-hover.svg");
+        }
+    }
+
+    .open-thread {
+        background-image: url("../../../assets/img/add-answer.svg");
+
+        &:hover {
+            background-image: url("../../../assets/img/add-answer-hover.svg");
+        }
+    }
+
+    .more-options {
+        background-image: url("../../../assets/img/more-options.svg");
+
+        &:hover {
+            background-image: url("../../../assets/img/more-options-hover.svg");
+        }
+    }
+}
+
+.post-current-user {
+    border-bottom-left-radius: 25px;
+    border-bottom-right-radius: 0;
+}

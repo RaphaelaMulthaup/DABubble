@@ -4,7 +4,7 @@ import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 import { Overlay, OverlayRef, FlexibleConnectedPositionStrategy } from '@angular/cdk/overlay';
 import { ComponentPortal, TemplatePortal } from '@angular/cdk/portal';
 import { ChannelInterface } from '../shared/models/channel.interface';
-import { Observable, of } from 'rxjs';
+import { Observable, of, Subject } from 'rxjs';
 
 
 // here you kann add more interface to send data when the overlay is open.
@@ -51,6 +51,8 @@ export class OverlayService {
   private overlayInputSubject = new BehaviorSubject<OverlayData | null>(null);
   overlayInput = this.overlayInputSubject.asObservable();
 
+  overlayRefs: OverlayRef[] = [];
+
   openComponent<T extends Object>(
     component: Type<T>,
     backdropType: 'cdk-overlay-dark-backdrop' | 'cdk-overlay-transparent-backdrop' | null,
@@ -62,8 +64,8 @@ export class OverlayService {
     },
     data?: Partial<T>,
 
-  ): ComponentRef<T> | undefined {
-    this.close(); // falls schon ein Overlay offen ist
+  ): { ref: ComponentRef<T>, afterClosed$: Observable<void> } | undefined {
+    // this.close(); // falls schon ein Overlay offen ist
 
     let positionStrategy;
     if (position.origin) {
@@ -101,27 +103,37 @@ export class OverlayService {
     const portal = new ComponentPortal(component, null, this.injector);
     const componentRef = this.overlayRef?.attach(portal)!;
 
-    // Body scroll sperren
-    document.body.style.overflow = 'hidden';
+    if (this.overlayRefs.length > 0) {
+      document.body.style.overflow = 'hidden';
+    }
 
-    // Klick außerhalb schließt Overlay
     this.overlayRef?.backdropClick().subscribe(() => this.close());
 
     if (data) Object.assign(componentRef.instance, data);
 
-    return componentRef;
+    this.overlayRefs.push(this.overlayRef!);
+
+    const afterClosed$ = new Subject<void>();
+
+    this.overlayRef?.detachments().subscribe(() => {
+      // document.body.style.overflow = '';
+      this.overlayRefs = this.overlayRefs.filter(ref => ref !== this.overlayRef);
+      if (this.overlayRefs.length === 0) {
+        document.body.style.overflow = '';
+      }
+      afterClosed$.next();
+      afterClosed$.complete();
+    });
+
+    return { ref: componentRef, afterClosed$ };
   }
 
   /**
-   * closes an overlay
+   * closes all overlays
    */
   close(): void {
-    if (this.overlayRef) {
-      this.overlayRef.dispose();
-      this.overlayRef = undefined;
-
-      // Body scroll wieder freigeben
-      document.body.style.overflow = '';
-    }
+    this.overlayRefs.forEach(ref => ref.dispose());
+    this.overlayRefs = [];
+    document.body.style.overflow = '';
   }
 }

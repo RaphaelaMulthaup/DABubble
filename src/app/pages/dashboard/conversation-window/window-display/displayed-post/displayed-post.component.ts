@@ -1,4 +1,4 @@
-import { Component, Input, TemplateRef, ViewChild, ViewContainerRef, inject } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { PostInterface } from '../../../../../shared/models/post.interface';
 import { AuthService } from '../../../../../services/auth.service';
 import { UserService } from '../../../../../services/user.service';
@@ -16,10 +16,11 @@ import { ReactionInterface } from '../../../../../shared/models/reaction.interfa
 import { PostService } from '../../../../../services/post.service';
 import { EmojiPickerComponent } from '../../../../../overlay/emoji-picker/emoji-picker.component';
 import { ReactedUsersComponent } from '../../../../../overlay/reacted-users/reacted-users.component';
+import { PostInteractionOverlayComponent } from '../../../../../overlay/post-interaction-overlay/post-interaction-overlay.component';
 
 @Component({
   selector: 'app-displayed-post', // Component to display a single message in the conversation
-  imports: [CommonModule, FormsModule, RouterLink, EmojiPickerComponent],
+  imports: [CommonModule, FormsModule],
   templateUrl: './displayed-post.component.html', // External HTML template
   styleUrl: './displayed-post.component.scss', // SCSS styles for this component
 })
@@ -39,7 +40,7 @@ export class DisplayedPostComponent {
   currentChannelId!: string;
 
   // Input message passed from the parent component
-  @Input() message!: PostInterface;
+  @Input() post!: PostInterface;
 
   /** Observable für alle abhängigen Werte */
   senderName$!: Observable<string>;
@@ -52,15 +53,9 @@ export class DisplayedPostComponent {
   answers$?: Observable<PostInterface[]>;
   answers: PostInterface[] = [];
 
-  isMessageFromCurrentUser!: boolean;
   allReactionsVisible: boolean = false;
+  postClicked: boolean = false;
 
-  @ViewChild('overlayTemplate') overlayTemplate!: TemplateRef<any>;
-  private vcr = inject(ViewContainerRef);
-
-  ngOnInit() {
-    this.isMessageFromCurrentUser = this.message.senderId === this.authService.getCurrentUserId();
-  }
 
   ngOnChanges() {
     this.chatActiveRoute.getParams$(this.route).subscribe(({ type, id }) => {
@@ -68,11 +63,7 @@ export class DisplayedPostComponent {
       this.currentChannelId = id;
     });
 
-    this.reactions$ = this.postService.getReactions('/' + this.currentType + 's/' + this.currentChannelId, 'messages', this.message.id!);
-    // this.reactions$.subscribe(data => {
-    //   this.reactions = data;
-    //   // console.log(this.reactions)
-    // });
+    this.reactions$ = this.postService.getReactions('/' + this.currentType + 's/' + this.currentChannelId, 'messages', this.post.id!);
     this.visibleReactions$ = this.reactions$.pipe(
       map(list => list
         .filter(r => r.users.length > 0)
@@ -80,24 +71,24 @@ export class DisplayedPostComponent {
       )
     );
 
-    this.answers$ = this.postService.getAnswers('/' + this.currentType + 's/' + this.currentChannelId, 'messages', this.message.id!).pipe(map(answers => answers ?? []));
+    this.answers$ = this.postService.getAnswers('/' + this.currentType + 's/' + this.currentChannelId, 'messages', this.post.id!).pipe(map(answers => answers ?? []));
     this.answers$.subscribe(data => {
       this.answers = data;
     });
 
-    if (!this.message) return;
+    if (!this.post) return;
     // Prüfen, ob der Sender aktuell ist
     this.senderIsCurrentUser$ = of(
-      this.message.senderId === this.authService.getCurrentUserId()
+      this.post.senderId === this.authService.getCurrentUserId()
     );
 
     // Userdaten laden
-    const user$ = this.userService.getUserById(this.message.senderId);
+    const user$ = this.userService.getUserById(this.post.senderId);
     this.senderName$ = user$.pipe(map((u) => u?.name ?? ''));
     this.senderPhotoUrl$ = user$.pipe(map((u) => u?.photoUrl ?? ''));
 
     // Zeit formatieren
-    this.createdAtTime$ = of(this.message.createdAt).pipe(
+    this.createdAtTime$ = of(this.post.createdAt).pipe(
       map((ts) => {
         let date: Date;
         if (ts instanceof Timestamp) {
@@ -128,7 +119,7 @@ export class DisplayedPostComponent {
       ProfileViewOtherUsersComponent,
       'cdk-overlay-dark-backdrop',
       { globalPosition: 'center' },
-      { user$: this.userService.getUserById(this.message.senderId) }
+      { user$: this.userService.getUserById(this.post.senderId) }
     );
   }
 
@@ -145,15 +136,15 @@ export class DisplayedPostComponent {
         originPosition: { originX: 'end', originY: 'top', overlayX: 'start', overlayY: 'top' },
         originPositionFallback: { originX: 'start', originY: 'top', overlayX: 'end', overlayY: 'top' }
       },
-      { messageFromCurrentUser: this.isMessageFromCurrentUser }
+      { senderIsCurrentUser$: this.senderIsCurrentUser$ }
     );
 
     //das abonniert den event emitter vom emoji-picker component
-    overlay!.instance.selectedEmoji.subscribe((emoji: string) => {
+    overlay!.ref.instance.selectedEmoji.subscribe((emoji: string) => {
       this.postService.toggleReaction(
         '/' + this.currentType + 's/' + this.currentChannelId,
         'messages',
-        this.message.id!,
+        this.post.id!,
         emoji
       )
       this.overlayService.close();
@@ -177,6 +168,33 @@ export class DisplayedPostComponent {
   }
 
   /**
+   * This functions opens the post-interaction-overlay.
+   * Fist it sets postClicked to true. It subscribes the overlays afterClosed$ Observable and sets postClicked to false, as the overlay closes.
+   */
+  openPostInteractionOverlay(event: MouseEvent) {
+    this.postClicked = true;
+
+    const overlay = this.overlayService.openComponent(
+      PostInteractionOverlayComponent,
+      'cdk-overlay-transparent-backdrop',
+      {
+        origin: event.currentTarget as HTMLElement,
+        originPosition: { originX: 'start', originY: 'top', overlayX: 'start', overlayY: 'bottom' },
+        originPositionFallback: { originX: 'end', originY: 'top', overlayX: 'end', overlayY: 'bottom' }
+      },
+      {
+        currentType: this.currentType,
+        currentChannelId: this.currentChannelId,
+        post: this.post
+      }
+    );
+
+    overlay?.afterClosed$.subscribe(() => {
+      this.postClicked = false;
+    });
+  }
+
+  /**
    * This functions toggles the users reaction, if the users clicks on an already chosen emoji (by any user) in the reactions-div
    * 
    *  @param emoji - the image-path for the chosen emoji.
@@ -185,7 +203,7 @@ export class DisplayedPostComponent {
     this.postService.toggleReaction(
       '/' + this.currentType + 's/' + this.currentChannelId,
       'messages',
-      this.message.id!,
+      this.post.id!,
       emoji
     )
   }

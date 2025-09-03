@@ -26,6 +26,7 @@ export class ResetPasswordComponent implements OnInit{
   uid!: string;
   oobCode!: string; 
   email: any;
+  showToast: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -103,7 +104,8 @@ export class ResetPasswordComponent implements OnInit{
     const newPassword = this.registerForm.get('password')?.value;
 
     confirmPasswordReset(auth, this.oobCode, newPassword).then(() => {
-      this.waveFlag();
+      // this.waveFlag();
+      this.showToast = true;
       setTimeout(() => {
         location.reload();
       }, 1500);
@@ -120,11 +122,11 @@ export class ResetPasswordComponent implements OnInit{
     this.router.navigate([""]);
   }
 
-  /**
-   * shows success message
-   */
-  waveFlag() {
-    let wavieFlagie = document.querySelector('.flag-resset');
-    wavieFlagie?.classList.add('showFlag');
-  }
+  // /**
+  //  * shows success message
+  //  */
+  // waveFlag() {
+  //   let wavieFlagie = document.querySelector('.reset-toast');
+  //   wavieFlagie?.classList.add('show-toast');
+  // }
 }

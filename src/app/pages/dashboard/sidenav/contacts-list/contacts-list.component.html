@@ -5,18 +5,18 @@
 >
   <img
     class="arrow-dropdown"
-    src="./../../../../../assets/img/arrow-drop-down.svg"
+    src="/assets/img/arrow-drop-down.svg"
     alt="arrow-drop-down"
   />
   <img
-    src="./../../../../../assets/img/account-circle.svg"
+    src="/assets/img/account-circle.svg"
     alt="account-circle"
   />
   <span>Direktnachrichten</span>
 </button>
 
 @if (directMessagesVisible) {
-<ul (click)="mobileService.setMobileDashboardState('message-window')" class="contacts-list">
+<ul class="contacts-list">
   @if (currentUser) {
   <app-user-list-item [user]="currentUser"></app-user-list-item>
   }

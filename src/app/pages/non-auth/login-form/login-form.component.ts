@@ -32,12 +32,18 @@ export class LoginFormComponent {
     password: new FormControl('', [Validators.required, Validators.minLength(6)]),
   });
 
+  constructor() { }
+
   onForgotPassword() {
     this.showLogin = false;
     this.forgotPassword.emit();
   }
 
-  constructor() { }
+  a(event: KeyboardEvent): boolean {
+    event.preventDefault();
+    event.stopPropagation();
+    return false;
+  }
 
   /**
    * Handles form submission
