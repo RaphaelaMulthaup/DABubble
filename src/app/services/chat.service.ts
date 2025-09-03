@@ -2,6 +2,7 @@ import { inject, Injectable, signal } from '@angular/core';
 import {
   collection,
   collectionSnapshots,
+  deleteDoc,
   doc,
   Firestore,
   setDoc,
@@ -99,5 +100,15 @@ export class ChatService {
   getOtherUserId(chatId: string, currentUserId: string): string {    
     const [userA, userB] = chatId.split('_');
     return userA === currentUserId ? userB : userA;
+  }
+
+  /**
+   * Löscht einen Chat anhand der Chat-ID.
+   * @param chatId - Die ID des zu löschenden Chats
+   * @returns Ein Promise, das resolved, wenn der Chat gelöscht wurde
+   */
+  deleteChat(chatId: string): Promise<void> {
+    const chatRef = doc(this.firestore, 'chats', chatId);
+    return deleteDoc(chatRef);
   }
 }

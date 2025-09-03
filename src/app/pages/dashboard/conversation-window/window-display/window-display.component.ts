@@ -14,6 +14,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { map, Observable, Subscription, switchMap } from 'rxjs';
 import { ChatActiveRouterService } from '../../../../services/chat-active-router.service';
 import { tap } from 'rxjs';
+import { ChatService } from '../../../../services/chat.service';
 
 @Component({
   selector: 'app-window-display', // Component selector used in parent templates
@@ -26,7 +27,7 @@ export class WindowDisplayComponent {
 
   //an array with all posts in this conversation
   postInfo: PostInterface[] = [];
-
+  currentChatId?: string; // <-- aktuell angezeigter Chat
   @ViewChildren(DisplayedPostComponent, { read: ElementRef })
   postElements!: QueryList<ElementRef>;
 
@@ -39,6 +40,7 @@ export class WindowDisplayComponent {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   public postService = inject(PostService);
+  chatService = inject(ChatService);
 
   //an array with all the days of the week, to show that one a post was created
   days = [
@@ -61,9 +63,17 @@ export class WindowDisplayComponent {
   ngOnInit() {
     // Deine bestehende messages$-Subscription
     this.subs.push(
+      this.route.params.subscribe((params) => {
+        const chatId = params['id']; // oder wie dein Param heißt
+        this.currentChatId = chatId;
+      })
+    );
+    this.subs.push(
       this.messages$.subscribe((data) => {
-        this.postInfo = data;
-        this.postInfo.sort((a: any, b: any) => a.createdAt - b.createdAt);
+        this.onContentChange(
+          this.currentChatId, // neue ID
+          data // neue Nachrichten
+        );
       })
     );
 
@@ -82,6 +92,11 @@ export class WindowDisplayComponent {
       })
     );
   }
+  ngOnDestroy() {
+    //Ich glaube der Aufruf von tryDeleteEmptyChat ist hier nicht nötig und reicht in onContentChange
+    // this.tryDeleteEmptyChat(); // Letzten angezeigten Chat prüfen
+    this.subs.forEach((s) => s.unsubscribe());
+  }
   ngAfterViewInit() {
     // Wenn neue ViewChildren kommen (z. B. nach nachladen), versuche pending id
     this.subs.push(
@@ -95,11 +110,28 @@ export class WindowDisplayComponent {
     const initial = this.route.snapshot.queryParams['scrollTo'];
     if (initial) this.handleScrollRequest(initial);
   }
-
-  ngOnDestroy() {
-    this.subs.forEach((s) => s.unsubscribe());
+  private tryDeleteEmptyChat(previousChatId?: string): void {
+    const idToDelete = previousChatId ?? this.currentChatId;
+    if (idToDelete && this.postInfo.length === 0) {
+      this.chatService
+        .deleteChat(idToDelete)
+        .then(() => console.log(`Leerer Chat ${idToDelete} gelöscht`))
+        .catch((err) => console.error('Fehler beim Löschen des Chats', err));
+    }
   }
+  /**
+   * Aufruf, wenn neue Inhalte geladen werden (z. B. anderer Chat oder Channel)
+   */
+  onContentChange(newChatId?: string, newMessages: PostInterface[] = []) {
+    const previousChatId = this.currentChatId;
 
+    // neue Daten übernehmen
+    this.currentChatId = newChatId;
+    this.postInfo = newMessages;
+
+    // Alten Chat prüfen und ggf. löschen
+    this.tryDeleteEmptyChat(previousChatId);
+  }
   private handleScrollRequest(postId: string) {
     if (!postId) return;
     this.pendingScrollTo = postId;

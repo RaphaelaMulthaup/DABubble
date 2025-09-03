@@ -61,7 +61,6 @@ export class ContactsListComponent implements OnInit {
               contactIds.map((id) => this.userService.getUserById(id))
             );
           }),
-          tap(users => console.log("Geladene Users:", users)),
           map((users) => users.filter((u) => u.uid !== this.currentUser.uid)) // 🔑 Filter raus
         );
       })
