@@ -13,7 +13,7 @@ import {
   setDoc,
   updateDoc,
 } from '@angular/fire/firestore';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import { PostInterface } from '../shared/models/post.interface';
 import { ReactionInterface } from '../shared/models/reaction.interface';
 import { ChatInterface } from '../shared/models/chat.interface';
@@ -249,5 +249,13 @@ export class PostService {
     let postDate = post.createdAt.toDate().setHours(0, 0, 0, 0);
     let today = new Date().setHours(0, 0, 0, 0);
     return postDate == today;
+  }
+
+  private _select$ = new Subject<string>();
+  selected$ = this._select$.asObservable();
+
+  select(postId: string) {
+    if (!postId) return;
+    this._select$.next(postId);
   }
 }
