@@ -6,6 +6,7 @@ import { AsyncPipe } from '@angular/common';
 import { MobileDashboardState } from '../../../shared/types/mobile-dashboard-state.type';
 import { SearchBarComponent } from './search-bar/search-bar.component';
 import { ProfileViewMainComponent } from '../../../overlay/profile-view-main/profile-view-main.component';
+import { OverlayService } from '../../../services/overlay.service';
 
 @Component({
   selector: 'app-header-dashboard',
@@ -19,6 +20,7 @@ import { ProfileViewMainComponent } from '../../../overlay/profile-view-main/pro
 })
 export class HeaderDashboardComponent implements OnInit {
   private authService = inject(AuthService);
+  public overlayService = inject(OverlayService);
 
   currentUser$?: Observable<UserInterface | null>;
 
@@ -34,7 +36,6 @@ export class HeaderDashboardComponent implements OnInit {
   }
 
   showProfile() {
-    let profile = document.querySelector('.profile-view');
-    profile?.classList.add('showProfile');
+    this.overlayService.displayOverlay(ProfileViewMainComponent, 'Profil');
   }
 }

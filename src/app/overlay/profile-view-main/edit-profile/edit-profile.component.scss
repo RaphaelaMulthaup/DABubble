@@ -2,7 +2,6 @@
 
 .edit-profile-main{
     background-color: white;
-    border: solid 1px lightgray;
     width: 500px;
     height: 600px;
     right: 10px;
@@ -13,9 +12,19 @@
     padding: 38px;
 }
 
+.img-area{
+  height: 208px;
+}
+
 .user-img{
     width: 200px;
     border-radius: 50%;
+    transition: 0.2s ease-out;
+
+    &:hover{
+      cursor: pointer;
+      width: 208px;
+    }
 }
 
 .edit-h3{
