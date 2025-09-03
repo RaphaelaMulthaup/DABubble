@@ -1,26 +1,23 @@
 <app-header-overlay [overlayHeadline]="'Leute hinzufugen'" />
-
-
 <div>
     @if(channelDetails$ | async; as channelDetails){
     {{ channelDetails.name }}
   <div>
-    <div>
-        @for(user of ListWithMember; track $index){
-            <div>
-                <span>{{ user.name}}</span>
-                <button (click)="removeFromList($index)">X</button>
-            </div>
-        }
-    </div>
-    <input
-      type="text"
-      class="input-secondary"
-      placeholder="Name eingeben"
-      [formControl]="searchControl"
-    />
+        <div>
+            @for(user of ListWithMember; track $index){
+                <div>
+                    <span>{{ user.name}}</span>
+                    <button (click)="removeFromList($index)">X</button>
+                </div>
+            }
+        </div>
+        <input
+        type="text"
+        class="input-secondary"
+        placeholder="Name eingeben"
+        [formControl]="searchControl"
+        />
   </div>
-
   <div>
     @if (results().length > 0) { @for (item of results(); track $index) {
     <div>

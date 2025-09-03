@@ -1,10 +1,12 @@
-@if(users$ | async; as users){
-    <div class="flex relative items-center gap-[10px] list-item contact-list-item">
-        @for(user of users.slice(0,3);  track $index){
-                <div class="flex " [ngClass]="$index === 0 ? '' : '-ml-[10px]'">
-                    <img class="profil-img rounded-full border-2 border-white" [src]="user.photoUrl" alt="Profilbild" />
-                </div>
-        }
-        <span>{{channel?.memberIds?.length}}</span>
+@if(channelWithUsers$ | async; as data) {
+@if(data.channel && data.users) {
+<div class="flex relative items-center gap-[10px] list-item contact-list-item">
+    @for(user of data.users.slice(0,3); track $index) {
+    <div class="flex" [ngClass]="$index === 0 ? '' : '-ml-[10px]'">
+        <img class="profil-img" [src]="user.photoUrl" alt="Profilbild" />
     </div>
+    }
+    <span>{{data.channel.memberIds!.length}}</span>
+</div>
+}
 }

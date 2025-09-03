@@ -8,7 +8,7 @@
   </div>
   <div class="flex items-center gap-[10px]">
     <app-channel-members-length
-      [channel]="channel"
+      [channel$]="channelDetails$"
       (click)="openChannelMembers($event)"
     />
     <button class="btn-tertiary"><div class="add-person"></div></button>

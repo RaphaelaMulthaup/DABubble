@@ -1,12 +1,13 @@
 <div class="overlay-right">
-  @if(!clickedAddMember){ @for(user of users$| async; track $index){
-  <app-user-list-item [user]="user" />
-  }
-  <button class="list-item" (click)="clickedAddMember = !clickedAddMember">
-    <img src="./../../../../assets/img/add-answer.svg" alt="" />
-    <span>Mitglieder hinzufugen</span>
-  </button>
+  @if(!clickedAddMember){ 
+    @for(user of users$| async; track $index){
+      <app-user-list-item [user]="user" />
+    }
+    <button class="list-item" (click)="clickedAddMember = !clickedAddMember">
+      <img src="./../../../../assets/img/add-answer.svg" alt="" />
+      <span>Mitglieder hinzufugen</span>
+    </button>
   }@else {
-  <app-add-member-to-channel [channelDetails$]="channelDetails$" />
+    <app-add-member-to-channel [channelDetails$]="channelDetails$" />
   }
 </div>

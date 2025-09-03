@@ -16,6 +16,7 @@ import { from, map, Observable, of, switchMap } from 'rxjs';
 import { AuthService } from './auth.service';
 import { ChannelInterface } from '../shared/models/channel.interface';
 import { Router } from '@angular/router';
+import { OverlayService } from './overlay.service';
 
 @Injectable({
   providedIn: 'root',
@@ -26,6 +27,7 @@ export class ChannelsService {
   // Inject Authentication service
   private authService = inject(AuthService);
   private router = inject(Router);
+  private overlayService = inject(OverlayService);
 
   // // Do we really ever need all channels?
   // getAllChannels(): Observable<ChannelInterface[]> {
@@ -99,6 +101,7 @@ export class ChannelsService {
     const channelDocRef = doc(this.firestore, `channels/${channelId}`);
     const promise = updateDoc(channelDocRef, { deleted: true });
     this.router.navigate(["/dashboard"]);
+    this.overlayService.close();
     return from(promise);
   }
 
@@ -124,6 +127,7 @@ export class ChannelsService {
   async leaveChannel(channelId:string , currentUserId:string){
       const channelDocRef = doc(this.firestore, `channels/${channelId}`);
       await updateDoc(channelDocRef, {memberIds: arrayRemove(currentUserId)});
+      this.overlayService.close();
       this.router.navigate(["/dashboard"]);
   }
 

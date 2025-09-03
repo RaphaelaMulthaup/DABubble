@@ -9,6 +9,8 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { UserListItemComponent } from '../../shared/components/user-list-item/user-list-item.component';
 import { UserInterface } from '../../shared/models/user.interface';
 import { ChannelsService } from '../../services/channels.service';
+import { Overlay } from '@angular/cdk/overlay';
+import { OverlayService } from '../../services/overlay.service';
 
 @Component({
   selector: 'app-add-member-to-channel',
@@ -25,6 +27,7 @@ export class AddMemberToChannelComponent {
   @Input() channelDetails$?: Observable<ChannelInterface | undefined>;
   private searchService = inject(SearchService);
   private channelService = inject(ChannelsService);
+  private overlayService = inject(OverlayService);
 
   ListWithMember: UserInterface[] = [];
 
@@ -60,5 +63,6 @@ export class AddMemberToChannelComponent {
   addMembertoChannel(channelId:string){
     const membersId = this.ListWithMember.map(user => user.uid);
     this.channelService.addMemberToChannel(channelId, membersId);
+    this.overlayService.close();
   }
 }
