@@ -10,7 +10,7 @@ import { CommonModule } from '@angular/common';
 import { PostService } from '../../../../services/post.service';
 import { DisplayedPostComponent } from './displayed-post/displayed-post.component';
 import { PostInterface } from '../../../../shared/models/post.interface';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { map, Observable, Subscription, switchMap } from 'rxjs';
 import { ChatActiveRouterService } from '../../../../services/chat-active-router.service';
 import { tap } from 'rxjs';
@@ -37,6 +37,7 @@ export class WindowDisplayComponent {
   // private route = inject(ActivatedRoute);
   // private chatActiveRouterService = inject(ChatActiveRouterService);
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
   public postService = inject(PostService);
 
   //an array with all the days of the week, to show that one a post was created
@@ -106,17 +107,24 @@ export class WindowDisplayComponent {
       (e) => (e.nativeElement as HTMLElement).id === postId
     );
     if (!maybe) {
-      // noch nicht im DOM → wird beim postElements.changes erneut versucht
+      // noch nicht im DOM → später versuchen
       return;
     }
     this.pendingScrollTo = undefined;
     const el = maybe.nativeElement as HTMLElement;
 
-    // 1) Highlight immer neu triggern
+    // 1) Highlight
     this.triggerHighlight(el);
 
-    // 2) Scrollen nur, wenn nicht sichtbar (relativ zum scrollParent)
+    // 2) Scrollen
     this.scrollIfNeeded(el);
+
+    // 3) Scroll-Param aus URL entfernen
+    this.router.navigate([], {
+      queryParams: { scrollTo: null },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
   }
 
   private triggerHighlight(el: HTMLElement) {
