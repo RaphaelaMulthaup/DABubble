@@ -9,7 +9,8 @@ import {
   docData,
   query,
   where,
-  arrayRemove
+  arrayRemove,
+  arrayUnion
 } from '@angular/fire/firestore';
 import { from, map, Observable, of, switchMap } from 'rxjs';
 import { AuthService } from './auth.service';
@@ -135,6 +136,11 @@ export class ChannelsService {
     const channelDocRef = doc(this.firestore, `channels/${channelId}`);
     const promise = updateDoc(channelDocRef, { deleted: false });
     return from(promise);
+  }
+
+  async addMemberToChannel(channelId:string, newMembers:string[]){
+    const channelDocRef = doc(this.firestore, `channels/${channelId}`);
+    await updateDoc(channelDocRef, {memberIds: arrayUnion(...newMembers)});
   }
 
 
