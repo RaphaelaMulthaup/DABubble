@@ -20,7 +20,7 @@ import { PostInteractionOverlayComponent } from '../../../../../overlay/post-int
 
 @Component({
   selector: 'app-displayed-post', // Component to display a single message in the conversation
-  imports: [CommonModule, FormsModule, RouterLink, EmojiPickerComponent],
+  imports: [CommonModule, FormsModule],
   templateUrl: './displayed-post.component.html', // External HTML template
   styleUrl: './displayed-post.component.scss', // SCSS styles for this component
 })

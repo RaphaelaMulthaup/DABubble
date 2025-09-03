@@ -20,16 +20,16 @@
   }
 }
 
+.post-time {
+  font-size: 16px;
+  color: var(--color-gray);
+}
+
 .post-content {
   gap: 8px;
 
   .post-header {
     gap: 20px;
-
-    .post-time {
-      font-size: 16px;
-      color: var(--color-gray);
-    }
   }
 
   .text {
@@ -142,6 +142,10 @@
         background-color: var(--color-purple-light);
         border-radius: 20px 0 20px 20px;
         color: var(--color-white);
+      }
+
+      .answers button {
+        text-align: end;
       }
     }
   }

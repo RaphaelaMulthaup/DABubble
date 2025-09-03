@@ -45,13 +45,6 @@ export class WindowDisplayComponent {
     })
   }
 
-  // ngOnInit() {
-  //   this.messages$ = this.chatActiveRouterService.getParams$(this.route).pipe(
-  //     tap((params) => console.log('PARAMS from service:', params)),
-  //     switchMap(({ type, id }) => this.chatActiveRouterService.getMessages(type, id))
-  //   );
-  // }
-
   /**
 * This function returns true when the creation-date of a post is not equal to the creation-date of the previous post.
 * This way, the creation-date is only shown, when a message is the first one with that creation-date.
@@ -60,8 +53,21 @@ export class WindowDisplayComponent {
 */
   shouldShowDate(index: number): boolean {
     if (index > 0) {
-      let currentPostDate = this.postInfo[index].createdAt.toDate().toISOString().split('T')[0];
-      let previousPostDate = this.postInfo[(index - 1)].createdAt.toDate().toISOString().split('T')[0];
+
+      let currentPostDate;
+      if (!this.postInfo[index].createdAt) {
+        currentPostDate = new Date().toISOString().split('T')[0];
+      } else {
+        currentPostDate = this.postInfo[index].createdAt.toDate().toISOString().split('T')[0];
+      }
+
+      let previousPostDate: string;
+      if (!this.postInfo[index - 1].createdAt) {
+        previousPostDate = new Date().toISOString().split('T')[0];
+      } else {
+        previousPostDate = this.postInfo[index - 1].createdAt.toDate().toISOString().split('T')[0];
+      }
+
       return currentPostDate !== previousPostDate;
     }
     return true;

@@ -15,7 +15,7 @@ import { MobileDashboardState } from '../../../../shared/types/mobile-dashboard-
 
 @Component({
   selector: 'app-channel-list',
-  imports: [AsyncPipe, CreateChannelFormComponent, RouterLink, ChannelListItemComponent],
+  imports: [AsyncPipe, ChannelListItemComponent],
   templateUrl: './channel-list.component.html',
   styleUrl: './channel-list.component.scss',
 })
