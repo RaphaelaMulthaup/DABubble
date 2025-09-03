@@ -51,6 +51,8 @@ export class OverlayService {
   private overlayInputSubject = new BehaviorSubject<OverlayData | null>(null);
   overlayInput = this.overlayInputSubject.asObservable();
 
+  overlayRefs: OverlayRef[] = [];
+
   openComponent<T extends Object>(
     component: Type<T>,
     backdropType: 'cdk-overlay-dark-backdrop' | 'cdk-overlay-transparent-backdrop' | null,
@@ -63,7 +65,7 @@ export class OverlayService {
     data?: Partial<T>,
 
   ): { ref: ComponentRef<T>, afterClosed$: Observable<void> } | undefined {
-    this.close(); // falls schon ein Overlay offen ist
+    // this.close(); // falls schon ein Overlay offen ist
 
     let positionStrategy;
     if (position.origin) {
@@ -101,16 +103,24 @@ export class OverlayService {
     const portal = new ComponentPortal(component, null, this.injector);
     const componentRef = this.overlayRef?.attach(portal)!;
 
-    document.body.style.overflow = 'hidden';
+    if (this.overlayRefs.length > 0) {
+      document.body.style.overflow = 'hidden';
+    }
 
     this.overlayRef?.backdropClick().subscribe(() => this.close());
 
     if (data) Object.assign(componentRef.instance, data);
 
+    this.overlayRefs.push(this.overlayRef!);
+
     const afterClosed$ = new Subject<void>();
 
     this.overlayRef?.detachments().subscribe(() => {
-      document.body.style.overflow = '';
+      // document.body.style.overflow = '';
+      this.overlayRefs = this.overlayRefs.filter(ref => ref !== this.overlayRef);
+      if (this.overlayRefs.length === 0) {
+        document.body.style.overflow = '';
+      }
       afterClosed$.next();
       afterClosed$.complete();
     });
@@ -119,13 +129,11 @@ export class OverlayService {
   }
 
   /**
-   * closes an overlay
+   * closes all overlays
    */
   close(): void {
-    if (this.overlayRef) {
-      this.overlayRef.dispose();
-      this.overlayRef = undefined;
-      document.body.style.overflow = '';
-    }
+    this.overlayRefs.forEach(ref => ref.dispose());
+    this.overlayRefs = [];
+    document.body.style.overflow = '';
   }
 }

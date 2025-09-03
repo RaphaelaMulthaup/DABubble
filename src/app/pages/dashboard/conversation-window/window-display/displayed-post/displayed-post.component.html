@@ -50,7 +50,7 @@
         }
       }
 
-    <div class="add-reaction flex justify-end">
+    <div class="add-reaction flex justify-start">
       @if (((visibleReactions$ | async)?.length ?? 0) > 5) {
       <button (click)="allReactionsVisible = !allReactionsVisible" [class.minimize]="allReactionsVisible"
         class="toggle-reactions-btn relative">

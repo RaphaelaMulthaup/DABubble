@@ -6,7 +6,7 @@
     <button class="btn-tertiary">
         <img class="reaction-img" src="../../../assets/img/emojis/thumbs-up.svg" alt="thumbs-up">
     </button>
-    <button (click)="openEmojiPickerOverlay($event)" class="add-reaction btn-tertiary"></button>
+    <button (click)="openEmojiPickerOverlay($event); $event.preventDefault()" class="add-reaction btn-tertiary"></button>
     <button class="open-thread btn-tertiary"></button>
     @if (senderIsCurrentUser$|async) {
     <button class="more-options btn-tertiary"></button>

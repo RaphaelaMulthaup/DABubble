@@ -30,8 +30,8 @@ export class PostInteractionOverlayComponent {
       'cdk-overlay-transparent-backdrop',
       {
         origin: event.currentTarget as HTMLElement,
-        originPosition: { originX: 'end', originY: 'top', overlayX: 'start', overlayY: 'top' },
-        originPositionFallback: { originX: 'start', originY: 'top', overlayX: 'end', overlayY: 'top' }
+        originPosition: { originX: 'center', originY: 'bottom', overlayX: 'start', overlayY: 'top' },
+        originPositionFallback: { originX: 'center', originY: 'bottom', overlayX: 'end', overlayY: 'top' }
       },
       { senderIsCurrentUser$: this.senderIsCurrentUser$ }
     );
