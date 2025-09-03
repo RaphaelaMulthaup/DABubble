@@ -26,7 +26,8 @@ export class ConfirmPasswordComponent implements OnInit {
   @Output() changeAuthState = new EventEmitter<AuthState>();
 
   showErrorMessage: boolean = false;
-  wavieFlagie: boolean = false;
+  // wavieFlagie: boolean = false;
+  showToast: boolean = false;
 
   emailList: string[] = [];
   userColl: any;
@@ -64,7 +65,8 @@ export class ConfirmPasswordComponent implements OnInit {
     let inputMail = this.confirmForm.get('email')?.value;
     if (this.emailList.includes(inputMail)) {
      this.authService.sendPasswordRessetEmail(inputMail).then(() => {
-      this.waveFlag();
+      // this.waveFlag();
+      this.showToast= true;
       setTimeout(() => {
         console.log('Mail erfolgreich gesendet');
         this.backToLogin();
@@ -93,20 +95,21 @@ export class ConfirmPasswordComponent implements OnInit {
     this.changeAuthState.emit('reset-password-confirm');
   }
 
-  /**
-   * Shows "mail send" message bevor function "procedToReset"
-   */
-  waveFlag() {
-    let wavieFlagie = document.querySelector('.flag');
-    wavieFlagie?.classList.add('showFlag');
-  }
+  // /**
+  //  * Shows "mail send" message bevor function "procedToReset"
+  //  */
+  // waveFlag() {
+  //   let wavieFlagie = document.querySelector('.toast-notification');
+  //   wavieFlagie?.classList.add('.show-toast');
+  // }
 
   /**
   * Sends linkt to reset password to found email
   */
   sendPasswortResset(email: string) {
     this.authService.sendPasswordRessetEmail(email).then(() => {
-      this.waveFlag();
+      // this.waveFlag();
+      this.showToast = true;
     }).catch((error) => {
       console.error('Fehler beim senden der Reset-Mail', error);
     })
