@@ -9,6 +9,8 @@ import {
   doc,
   Firestore,
   getDoc,
+  orderBy,
+  query,
   serverTimestamp,
   setDoc,
   updateDoc,
@@ -101,7 +103,7 @@ export class PostService {
     postId: string,
     emoji: string
   ) {
-    let userId = this.authService.getCurrentUserId()!;
+    let userId = this.authService.currentUser.uid;
     let reactionId = this.getReactionId(emoji);
     const reactionRef = doc(
       this.firestore,
@@ -180,11 +182,12 @@ export class PostService {
     subcollectionName: string,
     messageId: string
   ): Observable<PostInterface[]> {
-    const reactionsRef = collection(
+    const ref = collection(
       this.firestore,
       `${parentPath}/${subcollectionName}/${messageId}/answers`
     );
-    return collectionData(reactionsRef, { idField: 'id' }) as Observable<
+    const q = query(ref, orderBy('createdAt', 'asc'));
+    return collectionData(q, { idField: 'id' }) as Observable<
       PostInterface[]
     >;
   }

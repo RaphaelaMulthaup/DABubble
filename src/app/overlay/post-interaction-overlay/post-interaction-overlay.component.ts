@@ -25,7 +25,7 @@ export class PostInteractionOverlayComponent {
   senderIsCurrentUser$!: Observable<boolean>;
 
   ngOnInit() {
-    this.senderIsCurrentUser$ = of(this.post.senderId === this.authService.getCurrentUserId());
+    this.senderIsCurrentUser$ = of(this.post.senderId === this.authService.currentUser.uid);
   }
 
   /**

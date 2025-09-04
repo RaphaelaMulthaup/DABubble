@@ -19,7 +19,7 @@ export class ReactedUsersComponent {
   currentUserReacted:boolean = false;
 
   ngOnInit() {
-    const currentUserId = this.authService.getCurrentUserId()!;
+    const currentUserId = this.authService.currentUser.uid!;
     this.currentUserReacted = this.reaction.users.includes(currentUserId);
 
     if (this.currentUserReacted) {

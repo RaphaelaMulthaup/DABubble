@@ -30,7 +30,7 @@ export class EditChannelComponent {
   private authService = inject(AuthService);
   channelService = inject(ChannelsService);
 
-  currentUser = this.authService.getCurrentUserId();
+  currentUser = this.authService.currentUser.uid;
 
   channelId?: string;
   channelName?: string;

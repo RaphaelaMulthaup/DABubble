@@ -70,10 +70,13 @@ export class WindowDisplayComponent {
     );
     this.subs.push(
       this.messages$.subscribe((data) => {
+        // let reversedOrder = [...data].reverse();
+
         this.onContentChange(
           this.currentChatId, // neue ID
           data // neue Nachrichten
         );
+        console.log(data);
       })
     );
 
@@ -92,11 +95,13 @@ export class WindowDisplayComponent {
       })
     );
   }
+
   ngOnDestroy() {
     //Ich glaube der Aufruf von tryDeleteEmptyChat ist hier nicht nötig und reicht in onContentChange
     this.tryDeleteEmptyChat(this.currentChatId); // Letzten angezeigten Chat prüfen
     this.subs.forEach((s) => s.unsubscribe());
   }
+
   ngAfterViewInit() {
     // Wenn neue ViewChildren kommen (z. B. nach nachladen), versuche pending id
     this.subs.push(
@@ -110,6 +115,7 @@ export class WindowDisplayComponent {
     const initial = this.route.snapshot.queryParams['scrollTo'];
     if (initial) this.handleScrollRequest(initial);
   }
+  
   private tryDeleteEmptyChat(chatId?: string): void {
     if (chatId && this.postInfo.length === 0) {
       this.chatService
@@ -132,6 +138,7 @@ export class WindowDisplayComponent {
       this.tryDeleteEmptyChat(previousChatId);
     }
   }
+
   private handleScrollRequest(postId: string) {
     if (!postId) return;
     this.pendingScrollTo = postId;

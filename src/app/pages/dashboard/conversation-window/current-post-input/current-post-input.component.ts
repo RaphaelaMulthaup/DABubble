@@ -107,7 +107,7 @@ export class CurrentPostInput {
    */
   onSubmit() {
     const post = this.postForm.get('text')?.value;
-    const currentUserId: string | null = this.authService.getCurrentUserId();
+    const currentUserId: string | null = this.authService.currentUser.uid;
 
     if (this.messageToReplyId) {
       this.postService.createAnswer(
