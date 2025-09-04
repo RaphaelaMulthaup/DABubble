@@ -116,9 +116,8 @@ export class OverlayService {
     const afterClosed$ = new Subject<void>();
 
     this.overlayRef?.detachments().subscribe(() => {
-      // document.body.style.overflow = '';
       this.overlayRefs = this.overlayRefs.filter(ref => ref !== this.overlayRef);
-      if (this.overlayRefs.length === 0) {
+      if (this.overlayRefs.length == 0) {
         document.body.style.overflow = '';
       }
       afterClosed$.next();

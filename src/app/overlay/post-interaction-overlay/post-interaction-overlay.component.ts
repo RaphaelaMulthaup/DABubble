@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Observable, of } from 'rxjs';
 import { OverlayService } from '../../services/overlay.service';
@@ -6,7 +6,7 @@ import { EmojiPickerComponent } from '../emoji-picker/emoji-picker.component';
 import { PostService } from '../../services/post.service';
 import { PostInterface } from '../../shared/models/post.interface';
 import { AuthService } from '../../services/auth.service';
-import { EditPostOverlayComponent } from '../edit-post-overlay/edit-post-overlay.component';
+import { EditPostOverlayComponent } from '../edit-post/edit-post.component';
 import { MobileService } from '../../services/mobile.service';
 
 @Component({
@@ -74,7 +74,7 @@ export class PostInteractionOverlayComponent {
    * This functions opens the edit-post-overlay.
    */
   openEditPostOverlay(event: MouseEvent) {
-    this.overlayService.openComponent(
+    const overlay = this.overlayService.openComponent(
       EditPostOverlayComponent,
       'cdk-overlay-transparent-backdrop',
       {
@@ -94,5 +94,8 @@ export class PostInteractionOverlayComponent {
       },
       { post: this.post }
     );
+    // (overlay!.ref.instance as EditPostOverlayComponent).editConfirmed.subscribe(() => {
+    //   this.editingPost.emit(true);
+    // });
   }
 }

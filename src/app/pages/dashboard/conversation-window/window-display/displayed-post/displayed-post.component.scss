@@ -168,3 +168,15 @@
     background-color: var(--color-white);
   }
 }
+
+.editing {
+  background-color: var(--color-purple-white) !important;
+  .post-content {
+    .text {
+      border-radius: 20px !important;
+      background-color: var(--color-white) !important;
+      color: var(--color-gray) !important;
+      cursor: default !important;
+    }
+  }
+}

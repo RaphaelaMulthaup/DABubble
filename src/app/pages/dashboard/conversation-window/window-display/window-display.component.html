@@ -1,32 +1,24 @@
 <section class="messages-container">
-  @if ((messages$ | async); as messages) {
-  
-    @if (messages.length > 0) {
-    
-      @for (message of messages; track message.id) {
-      
-        @if (shouldShowDate($index)) {
-          <div class="seperator-container flex flex-row place-items-center">
-            <div class="seperator"></div>
-              <p class="date">
-              @if(postService.isPostCreatedToday(postInfo[$index].createdAt)) {
-                Heute
-              } @else {
-                {{days[message.createdAt.toDate().getDay()]}},
-                {{message.createdAt.toDate().getDate()}}. 
-                {{message.createdAt.toDate().toLocaleString('de-DE', { month: 'long' })}}
-              }
-            </p>
-            <div class="seperator"></div>
-          </div>
-        }
-      
-        <app-displayed-post [post]="message" [id]="message.id"></app-displayed-post>
+  @if ((messages$ | async); as messages) { @if (messages.length > 0) { @for
+  (message of messages; track message.id) { @if (shouldShowDate($index)) {
+  <div class="seperator-container flex flex-row place-items-center">
+    <div class="seperator"></div>
+    <p class="date">
+      @if(postService.isPostCreatedToday(postInfo[$index].createdAt)) { Heute }
+      @else {
+      {{ days[message.createdAt.toDate().getDay()] }},
+      {{ message.createdAt.toDate().getDate().toString().padStart(2, "0") }}.
+      {{
+        message.createdAt.toDate().toLocaleString("de-DE", { month: "long" })
+      }}
       }
-    
-    } @else {
-      <span>Noch keine Messages vorhanden</span>
-    }
-    
-  }  
+    </p>
+    <div class="seperator"></div>
+  </div>
+  }
+
+  <app-displayed-post [post]="message" [id]="message.id"></app-displayed-post>
+  } } @else {
+  <span>Noch keine Messages vorhanden</span>
+  } }
 </section>

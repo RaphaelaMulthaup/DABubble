@@ -2,7 +2,11 @@
   class="post-container w-full flex flex-col"
   [ngClass]="{ 'post-current-user': senderIsCurrentUser$ | async }"
 >
-  <div class="post flex w-full" [ngClass]="{ clicked: postClicked }">
+  <div
+    class="post flex w-full"
+    [ngClass]="{ clicked: postClicked }"
+    [ngClass]="{ editing: editingPost }"
+  >
     <div class="profile-img">
       @if(senderPhotoUrl$ | async; as photoUrl) {
       <img
@@ -48,7 +52,8 @@
           {{ post.ansCounter == 1 ? "Antwort" : "Antworten" }}
         </button>
         <span class="post-time w-full">
-          Letzte Antwort @if (postService.isPostCreatedToday(post.ansLastCreatedAt)) {
+          Letzte Antwort @if
+          (postService.isPostCreatedToday(post.ansLastCreatedAt)) {
           {{
             post
               .ansLastCreatedAt!.toDate()
@@ -62,7 +67,14 @@
               .toString()
               .padStart(2, "0")
           }}
-          Uhr } @else { {{ post.ansLastCreatedAt!.toDate().getDate() }}.
+          Uhr } @else {
+          {{
+            post
+              .ansLastCreatedAt!.toDate()
+              .getDate()
+              .toString()
+              .padStart(2, "0")
+          }}.
           {{
             post
               .ansLastCreatedAt!.toDate()
