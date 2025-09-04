@@ -79,21 +79,24 @@ export class ChatActiveRouterService {
     id: string,
     messageId: string
   ): Observable<PostInterface[]> {
+    let ref;
+    let q;
     if (type === 'channel') {
-      const ref = collection(
+      ref = collection(
         this.firestore,
         `channels/${id}/messages/${messageId}/answers`
       );
-      const q = query(ref, orderBy('createdAt', 'asc'));
+      q = query(ref, orderBy('createdAt', 'asc'));
       return collectionData(q, { idField: 'id' }) as Observable<
         PostInterface[]
       >;
     } else if (type === 'chat') {
-      const answersRef = collection(
+      ref = collection(
         this.firestore,
         `chats/${id}/messages/${messageId}/answers`
       );
-      return collectionData(answersRef, { idField: 'id' }) as Observable<
+      q = query(ref, orderBy('createdAt', 'asc'));
+      return collectionData(q, { idField: 'id' }) as Observable<
         PostInterface[]
       >;
     }
