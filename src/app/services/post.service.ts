@@ -7,8 +7,11 @@ import {
   collectionData,
   deleteDoc,
   doc,
+  docData,
   Firestore,
+  getCountFromServer,
   getDoc,
+  increment,
   orderBy,
   query,
   serverTimestamp,
@@ -207,7 +210,7 @@ export class PostService {
     conversationId: string,
     senderId: string,
     text: string,
-    type: 'channel' | 'chat'
+    type: string
   ) {
     await this.sendPost(`${type}s/${conversationId}`, 'messages', {
       senderId: senderId,
@@ -219,7 +222,7 @@ export class PostService {
   /**
    * Creates an answer (reply) to an existing message inside a channel thread.
    *
-   * @param conversationId - ID of the channel.
+   * @param conversationId - ID of the conversation.
    * @param messageId - ID of the parent message being replied to.
    * @param senderId - ID of the replying user.
    * @param text - Text content of the reply.
@@ -231,7 +234,7 @@ export class PostService {
     messageId: string,
     senderId: string,
     text: string,
-    type: 'channel' | 'chat'
+    type: string
   ) {
     await this.sendPost(
       `${type}s/${conversationId}/messages/${messageId}`,
@@ -241,7 +244,23 @@ export class PostService {
         text,
       }
     );
+    this.updatePost(type as 'channel' | 'chat', conversationId, messageId);
     return of([]);
+  }
+
+  async updatePost(
+    type: 'channel' | 'chat',
+    conversationId: string,
+    postId: string
+  ) {
+    const answerRef = doc(
+      this.firestore,
+      `${type}s/${conversationId}/messages/${postId}`
+    );
+    await updateDoc(answerRef, {
+      ansCounter: increment(1),
+      ansLastCreatedAt: new Date(),
+    });
   }
 
   /**
@@ -276,7 +295,11 @@ export class PostService {
    * @param type conversation-type (channel or chat)
    * @param conversationId the id of the conversation
    */
-  openAnswers(postId: string, type: string, conversationId: string) {
+  openAnswers(
+    postId: string,
+    type: 'channel' | 'chat',
+    conversationId: string
+  ) {
     this.mobileService.setMobileDashboardState('thread-window');
     this.router.navigate([
       '/dashboard',

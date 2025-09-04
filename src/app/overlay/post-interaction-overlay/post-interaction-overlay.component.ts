@@ -21,7 +21,7 @@ export class PostInteractionOverlayComponent {
   public postService = inject(PostService);
   public mobileService = inject(MobileService);
 
-  currentType!: string;
+  currentType!: 'channel' | 'chat';
   currentConversationId!: string;
   post!: PostInterface;
   senderIsCurrentUser$!: Observable<boolean>;

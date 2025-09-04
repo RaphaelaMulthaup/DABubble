@@ -34,7 +34,7 @@ export class DisplayedPostComponent {
   private chatActiveRoute = inject(ChatActiveRouterService);
 
   typ$!: Observable<string>;
-  currentType!: string;
+  currentType!: 'channel' | 'chat';
   currentConversationId!: string;
 
   // Input message passed from the parent component
@@ -56,7 +56,7 @@ export class DisplayedPostComponent {
 
   ngOnChanges() {
     this.chatActiveRoute.getParams$(this.route).subscribe(({ type, id }) => {
-      this.currentType = type;
+      this.currentType = type as 'channel' | 'chat';
       this.currentConversationId = id;
     });
 

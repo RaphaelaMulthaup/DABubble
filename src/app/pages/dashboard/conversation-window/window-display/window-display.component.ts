@@ -76,7 +76,7 @@ export class WindowDisplayComponent {
           this.currentChatId, // neue ID
           data // neue Nachrichten
         );
-        console.log(data);
+        // console.log(data);
       })
     );
 
