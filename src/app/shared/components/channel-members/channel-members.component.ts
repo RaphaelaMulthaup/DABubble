@@ -23,13 +23,15 @@ export class ChannelMembersComponent implements OnDestroy, OnInit {
   memberIds?: string[];
   clickedAddMember: boolean = false;
 
+  
+  @Input()overlay:string = "";
+
   private userService = inject(UserService);
   private overlayService = inject(OverlayService);
   users$!: Observable<UserInterface[]>;
   private subscription: Subscription = new Subscription();
 
   ngOnInit() {
-    // this.users$ = this.userService.getMembersFromChannel(this.memberIds!);
     const sub = this.channelDetails$!.subscribe((channel) => {
       this.memberIds = channel!.memberIds;
       this.users$ = this.userService.getMembersFromChannel(this.memberIds!);
@@ -60,9 +62,7 @@ export class ChannelMembersComponent implements OnDestroy, OnInit {
         },
       },
       {
-        channelDetails$: this.channelDetails$ as Observable<
-          ChannelInterface | undefined
-        >,
+        channelDetails$: this.channelDetails$ as Observable<ChannelInterface | undefined>,
       }
     );
   }

@@ -1,12 +1,15 @@
-<div class="overlay-right">
+<div [ngClass]="overlay">
   @if(!clickedAddMember){ 
-    @for(user of users$| async; track $index){
-      <app-user-list-item [user]="user" />
-    }
-    <button class="list-item" (click)="clickedAddMember = !clickedAddMember">
-      <img src="./../../../../assets/img/add-answer.svg" alt="" />
-      <span>Mitglieder hinzufugen</span>
-    </button>
+    <div class="flex flex-col items-start gap-[15px]">
+        @for(user of users$| async; track $index){
+        <app-user-list-item [user]="user" [showProfile]="true"/>
+        }
+        <button class="list-item user-list-item" (click)="clickedAddMember = !clickedAddMember">
+          <div class="flex w-[32px] container"><span class="add-person"></span></div>
+
+          <span> Mitglieder hinzufugen</span>
+        </button>
+    </div>
   }@else {
     <app-add-member-to-channel [channelDetails$]="channelDetails$" />
   }

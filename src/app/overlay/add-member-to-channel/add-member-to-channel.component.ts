@@ -30,6 +30,7 @@ export class AddMemberToChannelComponent {
   private overlayService = inject(OverlayService);
 
   ListWithMember: UserInterface[] = [];
+  overlay:string= "";
 
   // Eingabefeld
   searchControl = new FormControl<string>('', { nonNullable: true });

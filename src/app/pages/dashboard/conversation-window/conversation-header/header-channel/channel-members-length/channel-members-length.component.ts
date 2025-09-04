@@ -15,7 +15,7 @@ export class ChannelMembersLengthComponent {
   private destroy$ = new Subject<void>();
   @Input() channel$!:Observable<ChannelInterface | undefined>;
 
-    userService = inject(UserService);
+  userService = inject(UserService);
   users$?:Observable<UserInterface[]>;
 
   channelWithUsers$!: Observable<{ channel: ChannelInterface | undefined; users: UserInterface[] }>;

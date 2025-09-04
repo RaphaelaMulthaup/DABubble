@@ -1,3 +1,4 @@
+<div [ngClass]="overlay">
 <app-header-overlay [overlayHeadline]="'Leute hinzufugen'" />
 <div>
     @if(channelDetails$ | async; as channelDetails){
@@ -19,17 +20,18 @@
         />
   </div>
   <div>
-    @if (results().length > 0) { @for (item of results(); track $index) {
-    <div>
-      <button (click)="addMemberToArray(item)">{{ item.name }}</button>
-    </div>
-    } }
+    @if (results().length > 0) { 
+        @for (item of results(); track $index) {
+            <app-user-list-item (click)="addMemberToArray(item)" [user]="item"[doNothing]="true"/>
+        }
+    }
   </div>
   <div>
-    @for(user of ListWithMember; track $index){
-    {{ user.name }}
-    }
+      @for(user of ListWithMember; track $index){
+      {{ user.name }} 
+      }
   </div>
   <button class="btn-primary" (click)="addMembertoChannel(channelDetails.id!)" [disabled]="ListWithMember.length === 0">Hinzufügen</button>
 }
+</div>
 </div>

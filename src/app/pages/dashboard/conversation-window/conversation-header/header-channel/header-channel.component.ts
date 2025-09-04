@@ -9,6 +9,7 @@ import { Observable, switchMap } from 'rxjs';
 import { ChannelsService } from '../../../../../services/channels.service';
 import { ChannelMembersLengthComponent } from './channel-members-length/channel-members-length.component';
 import { ChannelMembersComponent } from '../../../../../shared/components/channel-members/channel-members.component';
+import { AddMemberToChannelComponent } from '../../../../../overlay/add-member-to-channel/add-member-to-channel.component';
 
 @Component({
   selector: 'app-header-channel',
@@ -63,7 +64,34 @@ export class HeaderChannelComponent {
           overlayY: 'bottom',
         },
       },
-      { channelDetails$: this.channelDetails$ as Observable<ChannelInterface> }
+      { channelDetails$: this.channelDetails$ as Observable<ChannelInterface>,
+        overlay: "overlay-right"
+       }
+    );
+  }
+
+  openAddMembersToChannel(event: MouseEvent) {
+    this.overlayService.openComponent(
+      AddMemberToChannelComponent,
+      'cdk-overlay-dark-backdrop',
+      {
+        origin: event.currentTarget as HTMLElement,
+        originPosition: {
+          originX: 'center',
+          originY: 'bottom',
+          overlayX: 'center',
+          overlayY: 'top',
+        },
+        originPositionFallback: {
+          originX: 'center',
+          originY: 'top',
+          overlayX: 'center',
+          overlayY: 'bottom',
+        },
+      },
+      { channelDetails$: this.channelDetails$ as Observable<ChannelInterface>,
+        overlay: "overlay-right"
+       }
     );
   }
 }
