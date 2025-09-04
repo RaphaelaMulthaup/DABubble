@@ -8,6 +8,7 @@ import { UserListItemComponent } from '../user-list-item/user-list-item.componen
 import { OverlayService } from '../../../services/overlay.service';
 import { AddMemberToChannelComponent } from '../../../overlay/add-member-to-channel/add-member-to-channel.component';
 import { Subscription } from 'rxjs';
+import { MobileService } from '../../../services/mobile.service';
 
 @Component({
   selector: 'app-channel-members',
@@ -23,6 +24,13 @@ export class ChannelMembersComponent implements OnDestroy, OnInit {
   memberIds?: string[];
   clickedAddMember: boolean = false;
 
+  mobileService = inject(MobileService);
+  isMobile = false;
+
+    private updateMobile = () => {
+    this.isMobile = this.mobileService.isMobile();
+  };
+
   
   @Input()overlay:string = "";
 
@@ -37,32 +45,35 @@ export class ChannelMembersComponent implements OnDestroy, OnInit {
       this.users$ = this.userService.getMembersFromChannel(this.memberIds!);
     });
     this.subscription.add(sub);
+
+
+    this.isMobile = this.mobileService.isMobile();
+    window.addEventListener('resize', this.updateMobile);
   }
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
+    window.removeEventListener('resize', this.updateMobile);
   }
-  openAddMemberToChannelOverlay(event: MouseEvent) {
+
+  onAddMemberClick() {
+    this.clickedAddMember = true;
+
+    if (this.isMobile) {
+      this.openAddMemberToChannelOverlay();
+    }
+  }
+
+  openAddMemberToChannelOverlay() {
     this.overlayService.openComponent(
       AddMemberToChannelComponent,
       'cdk-overlay-dark-backdrop',
       {
-        origin: event.currentTarget as HTMLElement,
-        originPosition: {
-          originX: 'center',
-          originY: 'bottom',
-          overlayX: 'center',
-          overlayY: 'top',
-        },
-        originPositionFallback: {
-          originX: 'center',
-          originY: 'top',
-          overlayX: 'center',
-          overlayY: 'bottom',
-        },
+        globalPosition: "bottom"
       },
       {
         channelDetails$: this.channelDetails$ as Observable<ChannelInterface | undefined>,
+        overlay:'overlay'
       }
     );
   }

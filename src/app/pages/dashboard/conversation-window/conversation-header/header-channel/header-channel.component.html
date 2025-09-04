@@ -6,12 +6,15 @@
       <h2>{{ channel.name }}</h2>
     </button>
   </div>
+
   <div class="flex items-center gap-[10px]">
-    <app-channel-members-length
-      [channel$]="channelDetails$"
-      (click)="openChannelMembers($event)"
-    />
-    <button class="btn-tertiary" (click)="openAddMembersToChannel($event)"><div class="add-person"></div></button>
+      @if(!isMobile){
+        <app-channel-members-length [channel$]="channelDetails$" (click)="openChannelMembers($event)" />
+      }
+    <button class="btn-tertiary" (click)="openAddMembersToChannel($event)">
+      <div class="add-person"></div>
+    </button>
   </div>
+
 </section>
 }

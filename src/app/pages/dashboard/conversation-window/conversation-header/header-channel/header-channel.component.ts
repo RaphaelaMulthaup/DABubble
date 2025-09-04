@@ -10,6 +10,7 @@ import { ChannelsService } from '../../../../../services/channels.service';
 import { ChannelMembersLengthComponent } from './channel-members-length/channel-members-length.component';
 import { ChannelMembersComponent } from '../../../../../shared/components/channel-members/channel-members.component';
 import { AddMemberToChannelComponent } from '../../../../../overlay/add-member-to-channel/add-member-to-channel.component';
+import { MobileService } from '../../../../../services/mobile.service';
 
 @Component({
   selector: 'app-header-channel',
@@ -27,6 +28,14 @@ export class HeaderChannelComponent {
   private route = inject(ActivatedRoute);
   private channelService = inject(ChannelsService);
 
+
+  mobileService = inject(MobileService);
+  isMobile = false;
+
+    private updateMobile = () => {
+    this.isMobile = this.mobileService.isMobile();
+  };
+
   ngOnInit() {
     this.channelDetails$ = this.chatActiveRouterService.getId$(this.route).pipe(
       switchMap((id) => {
@@ -34,6 +43,12 @@ export class HeaderChannelComponent {
         return this.channelService.getCurrentChannel(this.channelId);
       })
     );
+    this.isMobile = this.mobileService.isMobile();
+    window.addEventListener('resize', this.updateMobile);
+  }
+
+    ngOnDestroy() {
+    window.removeEventListener('resize', this.updateMobile);
   }
 
   openEditChannelFormOverlay() {
