@@ -49,8 +49,18 @@
         </button>
         <span class="post-time w-full">
           Letzte Antwort @if (lastAnswerToday()) {
-          {{ post.ansLastCreatedAt!.toDate().getHours() }}:{{
-            post.ansLastCreatedAt!.toDate().getMinutes()
+          {{
+            post
+              .ansLastCreatedAt!.toDate()
+              .getHours()
+              .toString()
+              .padStart(2, "0")
+          }}:{{
+            post
+              .ansLastCreatedAt!.toDate()
+              .getMinutes()
+              .toString()
+              .padStart(2, "0")
           }}
           Uhr } @else { {{ post.ansLastCreatedAt!.toDate().getDate() }}.
           {{
