@@ -48,8 +48,8 @@ export class DisplayedPostComponent {
   reactions$!: Observable<ReactionInterface[]>;
   // reactions: ReactionInterface[] = [];
   visibleReactions$!: Observable<ReactionInterface[]>;
-  answers$?: Observable<PostInterface[]>;
-  answers: PostInterface[] = [];
+  // answers$?: Observable<PostInterface[]>;
+  // answers: PostInterface[] = [];
 
   allReactionsVisible: boolean = false;
   postClicked: boolean = false;
@@ -73,16 +73,16 @@ export class DisplayedPostComponent {
       )
     );
 
-    this.answers$ = this.postService
-      .getAnswers(
-        '/' + this.currentType + 's/' + this.currentConversationId,
-        'messages',
-        this.post.id!
-      )
-      .pipe(map((answers) => answers ?? []));
-    this.answers$.subscribe((data) => {
-      this.answers = data;
-    });
+    // this.answers$ = this.postService
+    //   .getAnswers(
+    //     '/' + this.currentType + 's/' + this.currentConversationId,
+    //     'messages',
+    //     this.post.id!
+    //   )
+    //   .pipe(map((answers) => answers ?? []));
+    // this.answers$.subscribe((data) => {
+    //   this.answers = data;
+    // });
 
     if (!this.post) return;
     // Prüfen, ob der Sender aktuell ist
@@ -238,5 +238,11 @@ export class DisplayedPostComponent {
       this.post.id!,
       emoji
     );
+  }
+
+  lastAnswerToday() {
+    let answerDate = this.post.ansLastCreatedAt?.toDate().setHours(0, 0, 0, 0);
+    let today = new Date().setHours(0, 0, 0, 0);
+    return answerDate == today;
   }
 }
