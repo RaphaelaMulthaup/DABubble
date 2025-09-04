@@ -1,5 +1,6 @@
 <div class="new-avatar-selection flex flex-col items-center justify-between"
     *ngIf="(user$ | async) as user">
+            <app-header-overlay class="flex items-center justifiy-center w-full" [overlayHeadline]="'Neuen Avatar wählen'"/>
     <div class="img-selection-area">
         <img class="selectedImg" [src]="selectedAvatar ? avatarOptions[selectedAvatar - 1] : user.photoUrl" alt="selected img">
     </div>

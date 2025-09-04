@@ -4,13 +4,16 @@ import { AuthService } from '../../../../services/auth.service';
 import { Observable } from 'rxjs';
 import { UserInterface } from '../../../../shared/models/user.interface';
 import { AsyncPipe, CommonModule } from '@angular/common';
+import { HeaderOverlayComponent } from "../../../../shared/components/header-overlay/header-overlay.component";
+import { EditProfileComponent } from '../edit-profile.component';
 
 @Component({
   selector: 'app-new-avatar-selection',
   imports: [
     AsyncPipe,
     CommonModule,
-  ],
+    HeaderOverlayComponent
+],
   templateUrl: './new-avatar-selection.component.html',
   styleUrl: './new-avatar-selection.component.scss'
 })
@@ -56,9 +59,18 @@ export class NewAvatarSelectionComponent {
       const avatarUrl = this.avatarOptions[this.selectedAvatar - 1];
       this.authService.updateUserPhotoUrl(avatarUrl).then(() => {
         this.overlayService.close();
+        this.backToEdit();
       }) 
     } else {
       this.overlayService.close();
     }
+  }
+
+  backToEdit() {
+    this.overlayService.openComponent(
+      EditProfileComponent,
+      'cdk-overlay-dark-backdrop',
+      { globalPosition: 'center' }
+    );
   }
 }
