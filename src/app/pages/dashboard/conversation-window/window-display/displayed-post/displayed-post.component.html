@@ -48,7 +48,7 @@
           {{ post.ansCounter == 1 ? "Antwort" : "Antworten" }}
         </button>
         <span class="post-time w-full">
-          Letzte Antwort @if (lastAnswerToday()) {
+          Letzte Antwort @if (postService.isPostCreatedToday(post.ansLastCreatedAt)) {
           {{
             post
               .ansLastCreatedAt!.toDate()

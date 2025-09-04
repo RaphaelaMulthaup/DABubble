@@ -9,7 +9,7 @@
           <div class="seperator-container flex flex-row place-items-center">
             <div class="seperator"></div>
               <p class="date">
-              @if(postService.isPostCreatedToday(postInfo[$index])) {
+              @if(postService.isPostCreatedToday(postInfo[$index].createdAt)) {
                 Heute
               } @else {
                 {{days[message.createdAt.toDate().getDay()]}},

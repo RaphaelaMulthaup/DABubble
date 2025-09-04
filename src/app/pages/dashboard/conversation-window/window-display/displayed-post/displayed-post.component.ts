@@ -239,10 +239,4 @@ export class DisplayedPostComponent {
       emoji
     );
   }
-
-  lastAnswerToday() {
-    let answerDate = this.post.ansLastCreatedAt?.toDate().setHours(0, 0, 0, 0);
-    let today = new Date().setHours(0, 0, 0, 0);
-    return answerDate == today;
-  }
 }
