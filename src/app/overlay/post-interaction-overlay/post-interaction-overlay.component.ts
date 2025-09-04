@@ -7,6 +7,7 @@ import { PostService } from '../../services/post.service';
 import { PostInterface } from '../../shared/models/post.interface';
 import { AuthService } from '../../services/auth.service';
 import { EditPostOverlayComponent } from '../edit-post-overlay/edit-post-overlay.component';
+import { MobileService } from '../../services/mobile.service';
 
 @Component({
   selector: 'app-post-interaction-overlay',
@@ -18,6 +19,7 @@ export class PostInteractionOverlayComponent {
   private authService = inject(AuthService);
   public overlayService = inject(OverlayService);
   public postService = inject(PostService);
+  public mobileService = inject(MobileService);
 
   currentType!: string;
   currentConversationId!: string;
