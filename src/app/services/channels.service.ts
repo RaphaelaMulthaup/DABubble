@@ -9,9 +9,9 @@ import {
   docData,
   query,
   where,
-  arrayRemove
+  arrayRemove,
 } from '@angular/fire/firestore';
-import { from, map, Observable, of, switchMap } from 'rxjs';
+import { from, map, Observable, of, switchMap, tap } from 'rxjs';
 import { AuthService } from './auth.service';
 import { ChannelInterface } from '../shared/models/channel.interface';
 import { Router } from '@angular/router';
@@ -34,9 +34,13 @@ export class ChannelsService {
   //   ) as Observable<ChannelInterface[]>;
   // }
 
-  getCurrentChannel(channelId: string): Observable<ChannelInterface | undefined> {
+  getCurrentChannel(
+    channelId: string
+  ): Observable<ChannelInterface | undefined> {
     const channelRef = doc(this.firestore, `channels/${channelId}`);
-    return docData(channelRef, { idField: 'id' }) as Observable<ChannelInterface | undefined>;
+    return docData(channelRef, { idField: 'id' }) as Observable<
+      ChannelInterface | undefined
+    >;
   }
 
   /**
@@ -85,7 +89,7 @@ export class ChannelsService {
       createdAt: new Date(),
     };
     const channelsCollection = collection(this.firestore, 'channels');
-    const promise = addDoc(channelsCollection, channelData).then(() => { });
+    const promise = addDoc(channelsCollection, channelData).then(() => {});
     return from(promise);
   }
 
@@ -97,11 +101,9 @@ export class ChannelsService {
   deleteChannel(channelId: string): Observable<void> {
     const channelDocRef = doc(this.firestore, `channels/${channelId}`);
     const promise = updateDoc(channelDocRef, { deleted: true });
-    this.router.navigate(["/dashboard"]);
+    this.router.navigate(['/dashboard']);
     return from(promise);
   }
-
-
 
   /**
    * 🔹 Removes the current user from a channel's member list.
@@ -120,10 +122,10 @@ export class ChannelsService {
    * await this.leaveChannel("123abc", "user_456");
    * // -> "user_456" will be removed from the channel's memberIds array.
    */
-  async leaveChannel(channelId:string , currentUserId:string){
-      const channelDocRef = doc(this.firestore, `channels/${channelId}`);
-      await updateDoc(channelDocRef, {memberIds: arrayRemove(currentUserId)});
-      this.router.navigate(["/dashboard"]);
+  async leaveChannel(channelId: string, currentUserId: string) {
+    const channelDocRef = doc(this.firestore, `channels/${channelId}`);
+    await updateDoc(channelDocRef, { memberIds: arrayRemove(currentUserId) });
+    this.router.navigate(['/dashboard']);
   }
 
   /**
@@ -137,8 +139,6 @@ export class ChannelsService {
     return from(promise);
   }
 
-
-  
   /**
    * 🔹 Updates the name of an existing channel in the "channels" collection.
    *
@@ -153,13 +153,12 @@ export class ChannelsService {
    * @example
    * await this.changeChannelName("123abc", "General Chat");
    */
-  async changeChannelName(channelId:string, newValue:string){
+  async changeChannelName(channelId: string, newValue: string) {
     const channelDocRef = doc(this.firestore, `channels/${channelId}`);
     await updateDoc(channelDocRef, { name: newValue });
   }
-  
 
-    /**
+  /**
    * 🔹 Updates the description of an existing channel in the "channels" collection.
    *
    * Updates the `description` field of the specified document.
@@ -173,7 +172,7 @@ export class ChannelsService {
    * @example
    * await this.changeChannelDescription("123abc", "Channel for project discussions.");
    */
-  async changeChannelDescription(channelId:string, newValue:string){
+  async changeChannelDescription(channelId: string, newValue: string) {
     const channelDocRef = doc(this.firestore, `channels/${channelId}`);
     await updateDoc(channelDocRef, { description: newValue });
   }
