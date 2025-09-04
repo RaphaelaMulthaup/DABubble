@@ -2,16 +2,15 @@ import { Component, Input, inject } from '@angular/core';
 import { PostInterface } from '../../../../../shared/models/post.interface';
 import { AuthService } from '../../../../../services/auth.service';
 import { UserService } from '../../../../../services/user.service';
-import { map, switchMap, of } from 'rxjs';
+import { map, of } from 'rxjs';
 import { Timestamp } from '@angular/fire/firestore';
 import { CommonModule } from '@angular/common';
 import { OverlayService } from '../../../../../services/overlay.service';
 import { FormsModule } from '@angular/forms';
 import { ProfileViewOtherUsersComponent } from '../../../../../overlay/profile-view-other-users/profile-view-other-users.component';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { ChatActiveRouterService } from '../../../../../services/chat-active-router.service';
 import { Observable } from 'rxjs';
-import { Router } from '@angular/router';
 import { ReactionInterface } from '../../../../../shared/models/reaction.interface';
 import { PostService } from '../../../../../services/post.service';
 import { EmojiPickerComponent } from '../../../../../overlay/emoji-picker/emoji-picker.component';
@@ -31,10 +30,7 @@ export class DisplayedPostComponent {
   public overlayService = inject(OverlayService);
   public postService = inject(PostService);
   public mobileService = inject(MobileService);
-
   private route = inject(ActivatedRoute);
-  private router = inject(Router);
-
   private chatActiveRoute = inject(ChatActiveRouterService);
 
   typ$!: Observable<string>;
@@ -114,13 +110,6 @@ export class DisplayedPostComponent {
         });
       })
     );
-  }
-
-  openAnswers(messageId: string) {
-    const type = this.currentType;
-    const id = this.currentConversationId;
-    this.mobileService.setMobileDashboardState('thread-window');
-    this.router.navigate(['/dashboard', type, id, 'answers', messageId]);
   }
 
   /**

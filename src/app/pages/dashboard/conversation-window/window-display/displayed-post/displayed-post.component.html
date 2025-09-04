@@ -19,7 +19,7 @@
       @if (answers.length > 0) {
       <!-- flex-row for desktop -->
       <div class="answers flex flex-col-reverse items-start">
-        <button class="link w-full" (click)="openAnswers(post.id!)">
+        <button class="link w-full" (click)="postService.openAnswers(post.id!, currentType, currentConversationId)">
           {{(answers$ | async)?.length}} {{answers.length > 1? 'Antworten': 'Antwort'}}
         </button>
         <span class="post-time w-full">

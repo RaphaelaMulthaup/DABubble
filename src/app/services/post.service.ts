@@ -20,6 +20,8 @@ import { PostInterface } from '../shared/models/post.interface';
 import { ReactionInterface } from '../shared/models/reaction.interface';
 import { ChatInterface } from '../shared/models/chat.interface';
 import { AuthService } from './auth.service';
+import { MobileService } from './mobile.service';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root', // Service is available globally in the application
@@ -28,6 +30,8 @@ export class PostService {
   // Inject Firestore instance
   private firestore: Firestore = inject(Firestore);
   private authService = inject(AuthService);
+  private mobileService = inject(MobileService);
+  private router = inject(Router);
 
   // // Holds the current list of messages for the displayed conversation
   // private _messagesDisplayedConversation = new BehaviorSubject<
@@ -187,9 +191,7 @@ export class PostService {
       `${parentPath}/${subcollectionName}/${messageId}/answers`
     );
     const q = query(ref, orderBy('createdAt', 'asc'));
-    return collectionData(q, { idField: 'id' }) as Observable<
-      PostInterface[]
-    >;
+    return collectionData(q, { idField: 'id' }) as Observable<PostInterface[]>;
   }
 
   /**
@@ -265,5 +267,23 @@ export class PostService {
   select(postId: string) {
     if (!postId) return;
     this._select$.next(postId);
+  }
+
+  /**
+   * This function navigates to the thread-window with the answers to the selected post
+   *
+   * @param postId the id of the post
+   * @param type conversation-type (channel or chat)
+   * @param conversationId the id of the conversation
+   */
+  openAnswers(postId: string, type: string, conversationId: string) {
+    this.mobileService.setMobileDashboardState('thread-window');
+    this.router.navigate([
+      '/dashboard',
+      type,
+      conversationId,
+      'answers',
+      postId,
+    ]);
   }
 }
