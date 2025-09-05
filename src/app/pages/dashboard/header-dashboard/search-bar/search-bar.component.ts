@@ -50,20 +50,14 @@ export class SearchBarComponent {
     this.term$.subscribe((term) => {
       if (term.length > 0) {
         this.overlayService.close();
-        const originElement = document.querySelector(
-          '.input-wrapper'
-        ) as HTMLElement;
+        // const originElement = document.querySelector(
+        //   '.input-wrapper'
+        // ) as HTMLElement;
         this.overlayService.openComponent(
           SearchResultsComponent,
           'cdk-overlay-transparent-backdrop',
           {
-            origin: originElement,
-            originPosition: {
-              originX: 'start',
-              originY: 'bottom',
-              overlayX: 'start',
-              overlayY: 'top',
-            },
+            globalPosition: 'belowSearchbar'
           },
           { results$: this.groupedResults() }
         );

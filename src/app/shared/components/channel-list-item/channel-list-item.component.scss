@@ -5,6 +5,11 @@
   border-radius: 20px;
   padding-top: 4.5px;
   padding-bottom: 4.5px;
+  .tag {
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: auto;
+  }
   &:hover {
     .tag {
       background-image: url("./../../../../assets/img/tag-blue.svg");

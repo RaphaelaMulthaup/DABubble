@@ -6,6 +6,10 @@
   padding-right: 20px;
   cursor: pointer;
   width: fit-content;
+  max-width: 100%;
+  > div:first-child {
+    flex-shrink: 0;
+  }
   &:hover {
     background-color: var(--color-purple-white);
     span {
@@ -16,13 +20,19 @@
   span {
     white-space: nowrap;
     font-size: 18px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    max-width: 100%;
+    flex: 1 1 auto;
+    min-width: 0;
   }
   &.related-to-search-result-post {
     cursor: auto;
     gap: 10px !important;
     &:hover {
       background-color: unset;
-      
+
       span {
         color: inherit;
         font-weight: 600;
@@ -33,4 +43,3 @@
     }
   }
 }
-

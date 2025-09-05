@@ -202,9 +202,16 @@ h4 {
   padding: 40px 20px;
 }
 
-.results-list {
-  @include dFlex($ai: flex-start, $g: 13px);
-  flex-direction: column;
+.cdk-overlay-pane.search-results-mobile {
+  width: 100vw;
+  height: calc(100vh - 160px); // Restfläche ab Suchleiste
+  max-width: 100vw !important;
+  max-height: calc(100vh - 160px) !important;
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  top: 160px !important;
+  bottom: 0 !important;
 }
 
 .tag {
