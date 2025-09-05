@@ -59,7 +59,7 @@ export class SearchBarComponent {
           {
             origin: originElement,
             originPosition: {
-              originX: 'center',
+              originX: 'start',
               originY: 'bottom',
               overlayX: 'start',
               overlayY: 'top',
