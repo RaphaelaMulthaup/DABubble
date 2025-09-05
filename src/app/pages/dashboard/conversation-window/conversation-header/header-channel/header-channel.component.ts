@@ -92,17 +92,11 @@ export class HeaderChannelComponent {
       {
         origin: event.currentTarget as HTMLElement,
         originPosition: {
-          originX: 'center',
+          originX: 'start',
           originY: 'bottom',
-          overlayX: 'center',
+          overlayX: 'end',
           overlayY: 'top',
-        },
-        originPositionFallback: {
-          originX: 'center',
-          originY: 'top',
-          overlayX: 'center',
-          overlayY: 'bottom',
-        },
+        }
       },
       { channelDetails$: this.channelDetails$ as Observable<ChannelInterface>,
         overlay: "overlay-right"
