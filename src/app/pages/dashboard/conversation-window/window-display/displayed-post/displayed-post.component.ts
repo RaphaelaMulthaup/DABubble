@@ -1,4 +1,4 @@
-import { Component, Input, inject } from '@angular/core';
+import { Component, Input, Output, WritableSignal, inject } from '@angular/core';
 import { PostInterface } from '../../../../../shared/models/post.interface';
 import { AuthService } from '../../../../../services/auth.service';
 import { UserService } from '../../../../../services/user.service';
@@ -17,10 +17,11 @@ import { EmojiPickerComponent } from '../../../../../overlay/emoji-picker/emoji-
 import { ReactedUsersComponent } from '../../../../../overlay/reacted-users/reacted-users.component';
 import { PostInteractionOverlayComponent } from '../../../../../overlay/post-interaction-overlay/post-interaction-overlay.component';
 import { MobileService } from '../../../../../services/mobile.service';
+import { EditDisplayedPostComponent } from './edit-displayed-post/edit-displayed-post.component';
 
 @Component({
   selector: 'app-displayed-post', // Component to display a single message in the conversation
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, EditDisplayedPostComponent],
   templateUrl: './displayed-post.component.html', // External HTML template
   styleUrl: './displayed-post.component.scss', // SCSS styles for this component
 })
@@ -38,7 +39,7 @@ export class DisplayedPostComponent {
   currentConversationId!: string;
 
   // Input message passed from the parent component
-  @Input() post!: PostInterface;
+  @Input() @Output() post!: PostInterface;
 
   /** Observable für alle abhängigen Werte */
   senderName$!: Observable<string>;
@@ -53,6 +54,7 @@ export class DisplayedPostComponent {
 
   allReactionsVisible: boolean = false;
   postClicked: boolean = false;
+  @Input() editingPost?: boolean;
 
   ngOnChanges() {
     this.chatActiveRoute.getParams$(this.route).subscribe(({ type, id }) => {
@@ -220,14 +222,14 @@ export class DisplayedPostComponent {
         post: this.post,
       }
     );
-
     overlay?.afterClosed$.subscribe(() => {
       this.postClicked = false;
+      this.editingPost = this.overlayService.editConfirmed;
     });
   }
 
   /**
-   * This functions toggles the users reaction, if the users clicks on an already chosen emoji (by any user) in the reactions-div
+   * This function toggles the users reaction, if the users clicks on an already chosen emoji (by any user) in the reactions-div
    *
    *  @param emoji - the image-path for the chosen emoji.
    */

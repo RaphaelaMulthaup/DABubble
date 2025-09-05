@@ -31,11 +31,13 @@
         <span class="post-time">{{ createdAtTime$ | async }} Uhr</span>
       </div>
 
+      @if(editingPost) {
+      <app-edit-displayed-post [post]="post" (endEditingPost)="editingPost = false" class="w-full h-full" />
+      } @else {
       <div (click)="openPostInteractionOverlay($event)" class="text">
-        {{ post.text }}
+        <p>{{ post.text }}</p>
       </div>
-
-      @if (post.ansCounter){
+      } @if (post.ansCounter){
       <!-- flex-row for desktop -->
       <div class="answers flex flex-col-reverse items-start">
         <button
@@ -121,18 +123,8 @@
 
         <button
           (click)="openEmojiPickerOverlay($event)"
-          class="btn-tertiary relative"
-          (mouseenter)="
-            addReactionsImg.src = './assets/img/add-reaction-hover.svg'
-          "
-          (mouseleave)="addReactionsImg.src = './assets/img/add-reaction.svg'"
-        >
-          <img
-            #addReactionsImg
-            src="./assets/img/add-reaction.svg"
-            alt="add reaction"
-          />
-        </button>
+          class="add-reaction-btn btn-tertiary relative"
+        ></button>
       </div>
     </div>
   </div>

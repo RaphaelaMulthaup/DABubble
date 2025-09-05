@@ -94,8 +94,5 @@ export class PostInteractionOverlayComponent {
       },
       { post: this.post }
     );
-    // (overlay!.ref.instance as EditPostOverlayComponent).editConfirmed.subscribe(() => {
-    //   this.editingPost.emit(true);
-    // });
   }
 }

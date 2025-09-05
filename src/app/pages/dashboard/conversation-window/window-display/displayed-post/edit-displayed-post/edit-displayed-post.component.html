@@ -1,0 +1,10 @@
+<div class="text">
+  <textarea #textArea [value]="post.text" class="w-full"></textarea>
+  <div class="flex justify-between align-center">
+    <button class="add-emoji btn-tertiary relative"></button>
+    <div class="btns-submit flex">
+      <button (click)="endEdit()" class="btn-secondary">Abbrechen</button>
+      <button (click)="submitEdit(textArea.value)" class="btn-primary">Speichern</button>
+    </div>
+  </div>
+</div>

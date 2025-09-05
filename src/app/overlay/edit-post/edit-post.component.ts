@@ -11,4 +11,9 @@ import { OverlayService } from '../../services/overlay.service';
 export class EditPostOverlayComponent {
   overlayService = inject(OverlayService);
   post!: PostInterface;
+
+  confirmEdit() {
+    this.overlayService.editConfirmed = true;
+    this.overlayService.close();
+  }
 }

@@ -118,9 +118,16 @@
     }
   }
 
-  .btn-tertiary {
+  .add-reaction-btn {
     width: 40px;
     aspect-ratio: 1 / 1;
+    background-image: url("./../../../../../../assets/img/add-reaction.svg");
+    background-repeat: no-repeat;
+    background-position: center;
+
+    &:hover {
+      background-image: url("./../../../../../../assets/img/add-reaction-hover.svg");
+    }
   }
 }
 
@@ -170,13 +177,10 @@
 }
 
 .editing {
+  padding-left: 16px !important;
   background-color: var(--color-purple-white) !important;
+
   .post-content {
-    .text {
-      border-radius: 20px !important;
-      background-color: var(--color-white) !important;
-      color: var(--color-gray) !important;
-      cursor: default !important;
-    }
+    width: 100% !important;
   }
 }

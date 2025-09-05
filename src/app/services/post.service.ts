@@ -244,23 +244,24 @@ export class PostService {
         text,
       }
     );
-    this.updatePost(type as 'channel' | 'chat', conversationId, messageId);
+    this.updatePost(type as 'channel' | 'chat', conversationId, messageId, {
+      ansCounter: increment(1),
+      ansLastCreatedAt: new Date(),
+    });
     return of([]);
   }
 
   async updatePost(
     type: 'channel' | 'chat',
     conversationId: string,
-    postId: string
+    postId: string,
+    data: any = {}
   ) {
     const answerRef = doc(
       this.firestore,
       `${type}s/${conversationId}/messages/${postId}`
     );
-    await updateDoc(answerRef, {
-      ansCounter: increment(1),
-      ansLastCreatedAt: new Date(),
-    });
+    await updateDoc(answerRef, data);
   }
 
   /**
@@ -270,7 +271,7 @@ export class PostService {
    * @param index the index of the post
    */
   isPostCreatedToday(postDate: any): boolean {
-    if (postDate=== null) {
+    if (postDate === null) {
       postDate = new Date().setHours(0, 0, 0, 0);
     } else {
       postDate = postDate.toDate().setHours(0, 0, 0, 0);

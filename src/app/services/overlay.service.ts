@@ -1,4 +1,4 @@
-import { inject, Injectable, Type, TemplateRef, ViewContainerRef, Injector, ComponentRef } from '@angular/core';
+import { inject, Injectable, Type, TemplateRef, ViewContainerRef, Injector, ComponentRef, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 import { Overlay, OverlayRef, FlexibleConnectedPositionStrategy } from '@angular/cdk/overlay';
@@ -20,16 +20,16 @@ export interface OverlayData {
   providedIn: 'root',
 })
 export class OverlayService {
-  /**
-   * A private BehaviorSubject that holds the state (visible or hidden) of the overlay.
-   * Initialized with 'false', meaning the overlay is hidden by default.
-   */
-  private overlaySubject = new BehaviorSubject<boolean>(false);
+  // /**
+  //  * A private BehaviorSubject that holds the state (visible or hidden) of the overlay.
+  //  * Initialized with 'false', meaning the overlay is hidden by default.
+  //  */
+  // private overlaySubject = new BehaviorSubject<boolean>(false);
 
-  /**
-   * Observable that other components can subscribe to in order to react to changes in overlay visibility.
-   */
-  overlayDisplayed = this.overlaySubject.asObservable();
+  // /**
+  //  * Observable that other components can subscribe to in order to react to changes in overlay visibility.
+  //  */
+  // overlayDisplayed = this.overlaySubject.asObservable();
 
   /**
    * The component to be displayed in the overlay, can be set dynamically.
@@ -37,14 +37,16 @@ export class OverlayService {
    */
   overlayComponent: Type<any> | null = null;
 
-  /** The headline for the overlay. */
-  headline: string = '';
+  // // /** The headline for the overlay. */
+  // // headline: string = '';
 
-  overlayInputs: Record<string, any> = {};
+  // overlayInputs: Record<string, any> = {};
 
   private overlayRef?: OverlayRef;
   private overlay: any = inject(Overlay);
   private injector: any = inject(Injector);
+
+  editConfirmed: boolean = false;
 
   constructor() { }
 
