@@ -224,7 +224,7 @@ export class DisplayedPostComponent {
     );
     overlay?.afterClosed$.subscribe(() => {
       this.postClicked = false;
-      this.editingPost = this.overlayService.editConfirmed;
+      this.editingPost = this.overlayService.editPostActive;
     });
   }
 

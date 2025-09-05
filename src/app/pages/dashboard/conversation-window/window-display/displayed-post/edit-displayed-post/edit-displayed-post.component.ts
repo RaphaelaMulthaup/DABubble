@@ -3,6 +3,7 @@ import { PostInterface } from '../../../../../../shared/models/post.interface';
 import { ChatActiveRouterService } from '../../../../../../services/chat-active-router.service';
 import { ActivatedRoute } from '@angular/router';
 import { PostService } from '../../../../../../services/post.service';
+import { OverlayService } from '../../../../../../services/overlay.service';
 
 @Component({
   selector: 'app-edit-displayed-post',
@@ -14,6 +15,7 @@ export class EditDisplayedPostComponent {
   chatActiveRouterService = inject(ChatActiveRouterService);
   route = inject(ActivatedRoute);
   postService = inject(PostService);
+  overlayService = inject(OverlayService);
 
   @Input() post!: PostInterface;
   @Output() endEditingPost = new EventEmitter<void>();
@@ -42,6 +44,7 @@ export class EditDisplayedPostComponent {
    * This way, the edit-displayed-post is replaced by a p-tag with the posts text.
    */
   endEdit() {
+    this.overlayService.editPostActive = false;
     this.endEditingPost.emit();
   }
 

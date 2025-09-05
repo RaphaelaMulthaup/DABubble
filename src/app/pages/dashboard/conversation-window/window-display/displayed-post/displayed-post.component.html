@@ -31,13 +31,15 @@
         <span class="post-time">{{ createdAtTime$ | async }} Uhr</span>
       </div>
 
-      @if(editingPost) {
+      @if((senderIsCurrentUser$ | async) && editingPost) {
       <app-edit-displayed-post [post]="post" (endEditingPost)="editingPost = false" class="w-full h-full" />
       } @else {
       <div (click)="openPostInteractionOverlay($event)" class="text">
         <p>{{ post.text }}</p>
       </div>
-      } @if (post.ansCounter){
+      } 
+      
+      @if (post.ansCounter){
       <!-- flex-row for desktop -->
       <div class="answers flex flex-col-reverse items-start">
         <button

@@ -46,7 +46,7 @@ export class OverlayService {
   private overlay: any = inject(Overlay);
   private injector: any = inject(Injector);
 
-  editConfirmed: boolean = false;
+  editPostActive: boolean = false;
 
   constructor() { }
 
