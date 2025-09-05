@@ -1,37 +1,20 @@
 <div [ngClass]="overlay">
-<app-header-overlay [overlayHeadline]="'Leute hinzufugen'" />
-<div>
-    @if(channelDetails$ | async; as channelDetails){
-    {{ channelDetails.name }}
-  <div>
-        <div>
-            @for(user of ListWithMember; track $index){
-                <div>
-                    <span>{{ user.name}}</span>
+    <app-header-overlay [overlayHeadline]="'Leute hinzufugen'" />
+    <div class="flex flex-col">
+        @if(channelDetails$ | async; as channelDetails){
+        {{ channelDetails.name }}
+        <div class="cont">
+                @for(user of ListWithMember; track $index){
+                <li class="container">
+                    <img class="profil-img" src="{{ user.photoUrl }}" alt="Profilbild" />
+                    <span>{{getFirstWord(user.name)}}</span>
                     <button (click)="removeFromList($index)">X</button>
-                </div>
-            }
+                </li>
+                }
+            <input type="text" class="" [placeholder]="ListWithMember.length > 0 ? '' : 'Name eingeben'" [formControl]="searchControl" />
         </div>
-        <input
-        type="text"
-        class="input-secondary"
-        placeholder="Name eingeben"
-        [formControl]="searchControl"
-        />
-  </div>
-  <div>
-    @if (results().length > 0) { 
-        @for (item of results(); track $index) {
-            <app-user-list-item (click)="addMemberToArray(item)" [user]="item"[doNothing]="true"/>
-        }
+
+    <button class="btn-primary" (click)="addMembertoChannel(channelDetails.id!)" [disabled]="ListWithMember.length === 0">Hinzufügen</button>
     }
-  </div>
-  <div>
-      @for(user of ListWithMember; track $index){
-      {{ user.name }} 
-      }
-  </div>
-  <button class="btn-primary" (click)="addMembertoChannel(channelDetails.id!)" [disabled]="ListWithMember.length === 0">Hinzufügen</button>
-}
-</div>
+    </div>
 </div>
