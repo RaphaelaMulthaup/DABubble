@@ -30,8 +30,9 @@ import { HeaderOutsideDashboardComponent } from '../../shared/components/header-
     HeaderOutsideDashboardComponent,
     ConfirmPasswordComponent,
     ResetPasswordComponent,
-    CreateAccountBtnComponent
-  ],
+    CreateAccountBtnComponent,
+    IntroComponent
+],
   templateUrl: './non-auth.component.html',
   styleUrl: './non-auth.component.scss'
 })

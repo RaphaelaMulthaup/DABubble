@@ -75,6 +75,10 @@ h1 {
   height: 50px;
   aspect-ratio: 1;
   border-radius: 50%;
+
+  &:hover{
+    cursor: pointer;
+  }
 }
 
 .arrow-btn {

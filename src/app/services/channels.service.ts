@@ -10,6 +10,9 @@ import {
   query,
   where,
   arrayRemove,
+  getDoc,
+  getDocs,
+  QuerySnapshot
 } from '@angular/fire/firestore';
 import { from, map, Observable, of, switchMap, tap } from 'rxjs';
 import { AuthService } from './auth.service';
@@ -73,24 +76,34 @@ export class ChannelsService {
 
   /**
    * Creates a new channel with the current user as the creator and first member
-   * @param name Name of the channel
+   * @param name Name of the channel (check is channel-name already taken)
    * @param description Optional description of the channel
    * @returns Observable that completes when the channel is created
    */
   createChannel(name: string, description?: string): Observable<void> {
     const user = this.authService.currentUser;
     if (!user) throw new Error('User not logged in');
-    const channelData: ChannelInterface = {
-      createdBy: user.uid,
-      description: '',
-      memberIds: [user.uid],
-      name,
-      deleted: false,
-      createdAt: new Date(),
-    };
-    const channelsCollection = collection(this.firestore, 'channels');
-    const promise = addDoc(channelsCollection, channelData).then(() => {});
-    return from(promise);
+
+    let channelRef = collection(this.firestore, 'channels');
+    let q = query(channelRef, where('name', '==', name));
+
+    return from(getDocs(q)).pipe(
+      switchMap((querySnapshot) => {
+        if (!querySnapshot.empty) {
+          throw new Error('name vergeben');
+        }
+
+        const channelData: ChannelInterface = {
+          createdBy: user.uid,
+          description: description ?? '',
+          memberIds: [user.uid],
+          name,
+          deleted: false,
+          createdAt: new Date(),
+        };
+        return from(addDoc(channelRef, channelData)).pipe(map(() => {}));
+      })
+    )
   }
 
   /**
