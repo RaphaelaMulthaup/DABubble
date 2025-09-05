@@ -23,3 +23,13 @@ span{
   font-size: 16px;
   pointer-events: none; /* prevents blocking typing */
 }
+
+.error-massage {
+    color: red;
+    height: 16px;
+    padding-top: 4px;
+    padding-left: 12px;
+    font-size: 16px;
+    color: var(--color-pink);
+    line-height: 1;
+}

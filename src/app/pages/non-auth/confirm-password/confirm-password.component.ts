@@ -72,7 +72,7 @@ export class ConfirmPasswordComponent implements OnInit {
         this.backToLogin();
       }, 1500);
      }).catch((error) => {
-      console.error('Password_rest E-Mail konnte nicht gesendet werden', error);
+      console.error('Password-rest E-Mail konnte nicht gesendet werden', error);
       this.showErrorMessage = true;
      });
     } else {

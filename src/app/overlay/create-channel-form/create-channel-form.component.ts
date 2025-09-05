@@ -9,10 +9,11 @@ import {
 } from '@angular/forms';
 import { OverlayService } from '../../services/overlay.service';
 import { HeaderOverlayComponent } from '../../shared/components/header-overlay/header-overlay.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-create-channel-form',
-  imports: [FormsModule, ReactiveFormsModule, HeaderOverlayComponent],
+  imports: [FormsModule, ReactiveFormsModule, HeaderOverlayComponent, CommonModule],
   templateUrl: './create-channel-form.component.html',
   styleUrl: './create-channel-form.component.scss',
 })
@@ -38,6 +39,8 @@ export class CreateChannelFormComponent {
     description: new FormControl(''),
   });
 
+  showErrorMessage: boolean = false;
+
   public overlayService = inject(OverlayService);
   
   constructor() {}
@@ -46,6 +49,7 @@ export class CreateChannelFormComponent {
    * Handles form submission
    */
   onSubmit(): void {
+    console.log('Fehler', this.errorMessage);
     // Check if the form is valid
     if (this.createChannel.invalid) {
       this.errorMessage = 'Please fill in all required fields correctly.';
@@ -57,6 +61,7 @@ export class CreateChannelFormComponent {
       .get('description')
       ?.value?.trim();
 
+    this.handlePossibleError(name);
     // Convert empty string to undefined
     const description = descriptionValue ? descriptionValue : undefined;
 
@@ -72,5 +77,27 @@ export class CreateChannelFormComponent {
         this.errorMessage = err.code; // Set error message from backend
       },
     });
+  }
+
+  /**
+   * 
+   * Throws error-message if channel-name is taken 
+   */
+  handlePossibleError(name: string, description?: string): void {
+    this.channelService.createChannel(name, description).subscribe({
+      next: () => {
+        this.errorMessage = null;
+        this.createChannel.reset();
+        this.overlayService.close();
+      },
+      error: (err) => {
+        if (err.message === 'name vergeben') {
+          this.showErrorMessage = true;
+          console.log('ALARM! AAAALAAAHAARM!!!');
+        } else {
+          this.errorMessage = err.message;
+        }
+      }
+    })
   }
 }
