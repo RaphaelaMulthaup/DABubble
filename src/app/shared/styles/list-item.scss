@@ -10,6 +10,22 @@
   > div:first-child {
     flex-shrink: 0;
   }
+  > div:last-child {
+    @include dFlex($jc: flex-start, $ai: center); // Name + (Du) in einer Reihe
+    gap: 4px; // kleiner Abstand dazwischen
+    flex: 1 1 auto; // nimmt den restlichen Platz
+    min-width: 0; // nötig für ellipsis
+    overflow: hidden; // damit ellipsis funktioniert
+    > span:first-child {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+    > span:last-child {
+      flex-shrink: 0;
+    }
+  }
   &:hover {
     background-color: var(--color-purple-white);
     span {
