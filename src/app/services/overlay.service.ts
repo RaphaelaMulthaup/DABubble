@@ -72,9 +72,6 @@ export class OverlayService {
   users = signal<UserInterface[]>([]);
   searchReset = signal(false);
 
-  setUsers(newUsers: UserInterface[]) {
-    this.users.set(newUsers);
-  }
 
   addUser(user: UserInterface) {
     this.users.update(list => [...list, user]);

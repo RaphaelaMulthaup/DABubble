@@ -13,7 +13,6 @@
                 }
             <input type="text" class="" [placeholder]="ListWithMember.length > 0 ? '' : 'Name eingeben'" [formControl]="searchControl" />
         </div>
-
     <button class="btn-primary" (click)="addMembertoChannel(channelDetails.id!)" [disabled]="ListWithMember.length === 0">Hinzufügen</button>
     }
     </div>

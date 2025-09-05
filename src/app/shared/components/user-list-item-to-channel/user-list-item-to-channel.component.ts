@@ -8,7 +8,11 @@ import { OverlayRef } from '@angular/cdk/overlay';
   selector: 'app-user-list-item-to-channel',
   imports: [],
   templateUrl: './user-list-item-to-channel.component.html',
-  styleUrl: './user-list-item-to-channel.component.scss'
+
+    styleUrls: [
+    './user-list-item-to-channel.component.scss',
+    './../../styles/list-item.scss',
+  ],
 })
 export class UserListItemToChannelComponent {
 
@@ -16,7 +20,6 @@ export class UserListItemToChannelComponent {
 @Input() overlayRef!: OverlayRef;
 
 private overlayService = inject(OverlayService);
-  ListWithMember: UserInterface[] = [];
   overlay:string= "";
 
 
@@ -29,7 +32,8 @@ constructor(){
 }
 
   addMemberToArray(user: UserInterface) {
-    const exists = this.ListWithMember.some(u => u.name === user.name);
+    const currentUsers = this.overlayService.users();
+    const exists = currentUsers.some(u => u.name === user.name);
     if(exists){
       return;
     }else{

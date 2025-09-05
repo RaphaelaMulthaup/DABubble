@@ -1,7 +1,14 @@
-<div class="overlay">
-@for (item of results(); track $index) {
-<div class="" (click)=" addMemberToArray(item)">
-    {{item.name}}
-</div>
-}
+<div class="overlay-left container">
+    <ul>
+        @for (user of results(); track $index) {
+        <li class="list-item user-list-item" (click)="addMemberToArray(user)">
+            <img class="profil-img" src="{{ user.photoUrl }}" alt="Profilbild" />
+            <div>
+                <span>
+                    {{ user.name }}
+                </span>
+            </div>
+        </li>
+        }
+    </ul>
 </div>

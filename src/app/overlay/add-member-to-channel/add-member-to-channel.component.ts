@@ -52,7 +52,7 @@ export class AddMemberToChannelComponent {
 
   constructor(){
         effect(() =>{
-      this.overlayService.clearUsers();
+      this.overlayService.users();
     })
     effect(() => {
       if (this.overlayService.searchReset()) {
