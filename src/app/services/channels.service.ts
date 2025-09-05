@@ -13,13 +13,15 @@ import {
   getDoc,
   getDocs,
   QuerySnapshot,
-  arrayUnion
+  arrayUnion,
+  deleteDoc
 } from '@angular/fire/firestore';
 import { from, map, Observable, of, switchMap, tap } from 'rxjs';
 import { AuthService } from './auth.service';
 import { ChannelInterface } from '../shared/models/channel.interface';
 import { Router } from '@angular/router';
 import { OverlayService } from './overlay.service';
+import { MobileService } from './mobile.service';
 
 @Injectable({
   providedIn: 'root',
@@ -31,6 +33,7 @@ export class ChannelsService {
   private authService = inject(AuthService);
   private router = inject(Router);
   private overlayService = inject(OverlayService);
+  private mobileService = inject(MobileService);
 
   // // Do we really ever need all channels?
   // getAllChannels(): Observable<ChannelInterface[]> {
@@ -116,8 +119,9 @@ export class ChannelsService {
    */
   deleteChannel(channelId: string): Observable<void> {
     const channelDocRef = doc(this.firestore, `channels/${channelId}`);
-    const promise = updateDoc(channelDocRef, { deleted: true });
+    const promise = deleteDoc(channelDocRef);
     this.router.navigate(["/dashboard"]);
+    this.mobileService.setMobileDashboardState('sidenav')
     this.overlayService.close();
     return from(promise);
   }
