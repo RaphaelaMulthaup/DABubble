@@ -1,10 +1,27 @@
-<div class="post-container w-full flex flex-col" [ngClass]="{ 'post-current-user': senderIsCurrentUser$ | async }">
-  <div class="post flex w-full" [ngClass]="{'clicked': postClicked}">
+<div
+  class="post-container w-full flex flex-col"
+  [ngClass]="{ 'post-current-user': senderIsCurrentUser$ | async }"
+>
+  <div
+    class="post flex w-full"
+    [ngClass]="{ clicked: postClicked }"
+    [ngClass]="{ editing: editingPost }"
+  >
     <div class="profile-img">
       @if(senderPhotoUrl$ | async; as photoUrl) {
-      <img class="profil-img" [src]="senderPhotoUrl$ | async" alt="Profilbild" (click)="openUserProfileOverlay()" />
+      <img
+        class="profil-img"
+        [src]="senderPhotoUrl$ | async"
+        alt="Profilbild"
+        (click)="openUserProfileOverlay()"
+      />
       } @else {
-      <img class="profil-img" src="/assets/img/no-avatar.svg" alt="Profilbild" (click)="openUserProfileOverlay()">
+      <img
+        class="profil-img"
+        src="/assets/img/no-avatar.svg"
+        alt="Profilbild"
+        (click)="openUserProfileOverlay()"
+      />
       }
     </div>
 
@@ -14,22 +31,59 @@
         <span class="post-time">{{ createdAtTime$ | async }} Uhr</span>
       </div>
 
-      <div (click)="openPostInteractionOverlay($event)" class="text">{{ post.text }}</div>
-
-      @if (answers.length > 0) {
+      @if((senderIsCurrentUser$ | async) && editingPost) {
+      <app-edit-displayed-post [post]="post" (endEditingPost)="editingPost = false" class="w-full h-full" />
+      } @else {
+      <div (click)="openPostInteractionOverlay($event)" class="text">
+        <p>{{ post.text }}</p>
+      </div>
+      } 
+      
+      @if (post.ansCounter){
       <!-- flex-row for desktop -->
       <div class="answers flex flex-col-reverse items-start">
-        <button class="link w-full" (click)="openAnswers(post.id!)">
-          {{(answers$ | async)?.length}} {{answers.length > 1? 'Antworten': 'Antwort'}}
+        <button
+          class="link w-full"
+          (click)="
+            postService.openAnswers(
+              post.id!,
+              currentType,
+              currentConversationId
+            )
+          "
+        >
+          {{ post.ansCounter }}
+          {{ post.ansCounter == 1 ? "Antwort" : "Antworten" }}
         </button>
         <span class="post-time w-full">
-          Letzte Antwort
-          <!-- hier muss die neueste zeit übergeben werden -->
-          @if(postService.isPostCreatedToday(answers[0])) {
-          hh:mm Uhr
-          } @else {
-          <!-- Monat voll ausschreiben, z.B. 01.August -->
-          dd.month
+          Letzte Antwort @if
+          (postService.isPostCreatedToday(post.ansLastCreatedAt)) {
+          {{
+            post
+              .ansLastCreatedAt!.toDate()
+              .getHours()
+              .toString()
+              .padStart(2, "0")
+          }}:{{
+            post
+              .ansLastCreatedAt!.toDate()
+              .getMinutes()
+              .toString()
+              .padStart(2, "0")
+          }}
+          Uhr } @else {
+          {{
+            post
+              .ansLastCreatedAt!.toDate()
+              .getDate()
+              .toString()
+              .padStart(2, "0")
+          }}.
+          {{
+            post
+              .ansLastCreatedAt!.toDate()
+              .toLocaleString("de-DE", { month: "long" })
+          }}
           }
         </span>
       </div>
@@ -38,33 +92,42 @@
   </div>
 
   <div class="interactions-container flex w-full">
-    <div class="interactions flex" [class.fill-row]="((visibleReactions$ | async)?.length ?? 0) == 3" [style.gap]="((visibleReactions$ | async)?.length === 0 ? '0px' : null)">
+    <div
+      class="interactions flex"
+      [class.fill-row]="((visibleReactions$ | async)?.length ?? 0) == 3"
+      [style.gap]="(visibleReactions$ | async)?.length === 0 ? '0px' : null"
+    >
       @for (reaction of (visibleReactions$ | async); track $index) {
-        @if(allReactionsVisible || $index <= 4) { 
-          <div (mouseenter)="openReactedUsersOverlay($event, reaction)"
-              (mouseleave)="overlayService.close()" (click)="toggleExistingReaction(reaction.emoji)"
-              class="reaction flex place-items-center">
-            <img class="reaction-img" [src]="reaction.emoji" />
-            <p>{{ reaction.users.length }}</p>
-          </div>
-        }
-      }
+      @if(allReactionsVisible || $index <= 4) {
+      <div
+        (mouseenter)="openReactedUsersOverlay($event, reaction)"
+        (mouseleave)="overlayService.close()"
+        (click)="toggleExistingReaction(reaction.emoji)"
+        class="reaction flex place-items-center"
+      >
+        <img class="reaction-img" [src]="reaction.emoji" />
+        <p>{{ reaction.users.length }}</p>
+      </div>
+      } }
 
-    <div class="add-reaction flex justify-start">
-      @if (((visibleReactions$ | async)?.length ?? 0) > 5) {
-      <button (click)="allReactionsVisible = !allReactionsVisible" [class.minimize]="allReactionsVisible"
-        class="toggle-reactions-btn relative">
-        @if (!allReactionsVisible) {
-        + {{((visibleReactions$ | async)?.length?? 0) -5}}
+      <div class="add-reaction flex justify-start">
+        @if (((visibleReactions$ | async)?.length ?? 0) > 5) {
+        <button
+          (click)="allReactionsVisible = !allReactionsVisible"
+          [class.minimize]="allReactionsVisible"
+          class="toggle-reactions-btn relative"
+        >
+          @if (!allReactionsVisible) { +
+          {{ ((visibleReactions$ | async)?.length ?? 0) - 5 }}
+          }
+        </button>
         }
-      </button>
-      }
 
-      <button (click)="openEmojiPickerOverlay($event)" class="btn-tertiary relative"
-        (mouseenter)="addReactionsImg.src = './assets/img/add-reaction-hover.svg'"
-        (mouseleave)="addReactionsImg.src = './assets/img/add-reaction.svg'">
-        <img #addReactionsImg src="./assets/img/add-reaction.svg" alt="add reaction" />
-      </button>
+        <button
+          (click)="openEmojiPickerOverlay($event)"
+          class="add-reaction-btn btn-tertiary relative"
+        ></button>
+      </div>
     </div>
   </div>
 </div>

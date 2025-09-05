@@ -31,16 +31,16 @@ export interface OverlayData {
   providedIn: 'root',
 })
 export class OverlayService {
-  /**
-   * A private BehaviorSubject that holds the state (visible or hidden) of the overlay.
-   * Initialized with 'false', meaning the overlay is hidden by default.
-   */
-  private overlaySubject = new BehaviorSubject<boolean>(false);
+  // /**
+  //  * A private BehaviorSubject that holds the state (visible or hidden) of the overlay.
+  //  * Initialized with 'false', meaning the overlay is hidden by default.
+  //  */
+  // private overlaySubject = new BehaviorSubject<boolean>(false);
 
-  /**
-   * Observable that other components can subscribe to in order to react to changes in overlay visibility.
-   */
-  overlayDisplayed = this.overlaySubject.asObservable();
+  // /**
+  //  * Observable that other components can subscribe to in order to react to changes in overlay visibility.
+  //  */
+  // overlayDisplayed = this.overlaySubject.asObservable();
 
   /**
    * The component to be displayed in the overlay, can be set dynamically.
@@ -48,16 +48,18 @@ export class OverlayService {
    */
   overlayComponent: Type<any> | null = null;
 
-  /** The headline for the overlay. */
-  headline: string = '';
+  // // /** The headline for the overlay. */
+  // // headline: string = '';
 
-  overlayInputs: Record<string, any> = {};
+  // overlayInputs: Record<string, any> = {};
 
   private overlayRef?: OverlayRef;
   private overlay: any = inject(Overlay);
   private injector: any = inject(Injector);
 
-  constructor() {}
+  editPostActive: boolean = false;
+
+  constructor() { }
 
   private overlayInputSubject = new BehaviorSubject<OverlayData | null>(null);
   overlayInput = this.overlayInputSubject.asObservable();
@@ -152,11 +154,8 @@ export class OverlayService {
     const afterClosed$ = new Subject<void>();
 
     this.overlayRef?.detachments().subscribe(() => {
-      // document.body.style.overflow = '';
-      this.overlayRefs = this.overlayRefs.filter(
-        (ref) => ref !== this.overlayRef
-      );
-      if (this.overlayRefs.length === 0) {
+      this.overlayRefs = this.overlayRefs.filter(ref => ref !== this.overlayRef);
+      if (this.overlayRefs.length == 0) {
         document.body.style.overflow = '';
       }
       afterClosed$.next();

@@ -76,7 +76,7 @@ export class AuthService {
       } else {
         this.currentUserSubject.next(null);
       }
-    });
+    }); 
   }
 
   /**
@@ -85,10 +85,10 @@ export class AuthService {
    * @returns The current user object (`UserInterface`) if logged in, otherwise `null`.
    */
   get currentUser(): UserInterface {
-    if (!this.currentUserSubject.value) {
-      throw new Error('Kein User eingeloggt!');
-    }
-    return this.currentUserSubject.value;
+    // if (!this.currentUserSubject.value) {
+    //   throw new Error('Kein User eingeloggt!');
+    // }
+    return this.currentUserSubject.value!
   }
 
   /**
