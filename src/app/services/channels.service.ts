@@ -12,12 +12,14 @@ import {
   arrayRemove,
   getDoc,
   getDocs,
-  QuerySnapshot
+  QuerySnapshot,
+  arrayUnion
 } from '@angular/fire/firestore';
 import { from, map, Observable, of, switchMap, tap } from 'rxjs';
 import { AuthService } from './auth.service';
 import { ChannelInterface } from '../shared/models/channel.interface';
 import { Router } from '@angular/router';
+import { OverlayService } from './overlay.service';
 
 @Injectable({
   providedIn: 'root',
@@ -28,6 +30,7 @@ export class ChannelsService {
   // Inject Authentication service
   private authService = inject(AuthService);
   private router = inject(Router);
+  private overlayService = inject(OverlayService);
 
   // // Do we really ever need all channels?
   // getAllChannels(): Observable<ChannelInterface[]> {
@@ -114,7 +117,8 @@ export class ChannelsService {
   deleteChannel(channelId: string): Observable<void> {
     const channelDocRef = doc(this.firestore, `channels/${channelId}`);
     const promise = updateDoc(channelDocRef, { deleted: true });
-    this.router.navigate(['/dashboard']);
+    this.router.navigate(["/dashboard"]);
+    this.overlayService.close();
     return from(promise);
   }
 
@@ -135,10 +139,11 @@ export class ChannelsService {
    * await this.leaveChannel("123abc", "user_456");
    * // -> "user_456" will be removed from the channel's memberIds array.
    */
-  async leaveChannel(channelId: string, currentUserId: string) {
-    const channelDocRef = doc(this.firestore, `channels/${channelId}`);
-    await updateDoc(channelDocRef, { memberIds: arrayRemove(currentUserId) });
-    this.router.navigate(['/dashboard']);
+  async leaveChannel(channelId:string , currentUserId:string){
+      const channelDocRef = doc(this.firestore, `channels/${channelId}`);
+      await updateDoc(channelDocRef, {memberIds: arrayRemove(currentUserId)});
+      this.overlayService.close();
+      this.router.navigate(["/dashboard"]);
   }
 
   /**
@@ -150,6 +155,11 @@ export class ChannelsService {
     const channelDocRef = doc(this.firestore, `channels/${channelId}`);
     const promise = updateDoc(channelDocRef, { deleted: false });
     return from(promise);
+  }
+
+  async addMemberToChannel(channelId:string, newMembers:string[]){
+    const channelDocRef = doc(this.firestore, `channels/${channelId}`);
+    await updateDoc(channelDocRef, {memberIds: arrayUnion(...newMembers)});
   }
 
   /**

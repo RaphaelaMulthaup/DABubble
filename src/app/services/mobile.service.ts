@@ -6,6 +6,12 @@ import { Router } from '@angular/router';
   providedIn: 'root'
 })
 export class MobileService {
+  
+  isMobile(): boolean {
+    return window.innerWidth < 768; // you can adjust breakpoint
+  }
+
+
   private router = inject(Router);
   mobileDashboardState = signal<MobileDashboardState>('sidenav');
 
