@@ -29,7 +29,14 @@
   }
 }
 
+// .container{
+//       background-color: var(--color-purple-white);
+//       border-radius: 50%;
+// }
+
+
 .container{
-      background-color: var(--color-purple-white);
-      border-radius: 50%;
+  max-height: 400px;
+  overflow-y: auto;
+  overflow-x: hidden;
 }

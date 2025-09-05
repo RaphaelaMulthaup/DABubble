@@ -55,7 +55,7 @@ export class ChannelListComponent {
   ngOnInit() {
     this.currentUserId = this.authService.getCurrentUserId();
     this.channels$ = this.channnelsService.getCurrentUserChannels();
-    this.deletedChannels$ = this.channnelsService.getAllDeletedChannels();
+    // this.deletedChannels$ = this.channnelsService.getAllDeletedChannels();
   }
 
   /**
@@ -79,34 +79,34 @@ export class ChannelListComponent {
    * @param channel The channel to delete
    * Displays an alert on success or failure
    */
-  deleteChannel(channel: ChannelInterface) {
-    console.log('Deleting channel:', channel.id);
-    this.channnelsService.deleteChannel(channel.id!).subscribe({
-      next: () => {
-        alert('Channel deleted successfully!');
-      },
-      error: (error) => {
-        console.error('Error deleting channel:', error);
-        alert('Failed to delete channel. Please try again later.');
-      },
-    });
-  }
+  // deleteChannel(channel: ChannelInterface) {
+  //   console.log('Deleting channel:', channel.id);
+  //   this.channnelsService.deleteChannel(channel.id!).subscribe({
+  //     next: () => {
+  //       alert('Channel deleted successfully!');
+  //     },
+  //     error: (error) => {
+  //       console.error('Error deleting channel:', error);
+  //       alert('Failed to delete channel. Please try again later.');
+  //     },
+  //   });
+  // }
 
   /**
    * Adds a channel by its ID
    * @param channel The channel to add
    * Displays an alert on success or failure
    */
-  addChannel(channel: ChannelInterface) {
-    console.log('Adding channel:', channel);
-    this.channnelsService.addChannel(channel.id!).subscribe({
-      next: () => {
-        alert('Channel added successfully!');
-      },
-      error: (error) => {
-        console.error('Error adding channel:', error);
-        alert('Failed to add channel. Please try again later.');
-      },
-    });
-  }
+  // addChannel(channel: ChannelInterface) {
+  //   console.log('Adding channel:', channel);
+  //   this.channnelsService.createChannel(channel.id!).subscribe({
+  //     next: () => {
+  //       alert('Channel added successfully!');
+  //     },
+  //     error: (error) => {
+  //       console.error('Error adding channel:', error);
+  //       alert('Failed to add channel. Please try again later.');
+  //     },
+  //   });
+  // }
 }

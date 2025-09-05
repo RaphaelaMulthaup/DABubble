@@ -70,17 +70,6 @@ export class ChannelsService {
   }
 
   /**
-   * Retrieves all channels that are marked as deleted
-   * @returns Observable list of deleted channels
-   */
-  getAllDeletedChannels(): Observable<ChannelInterface[]> {
-    const channelCollection = collection(this.firestore, 'channels');
-    return collectionData(channelCollection, { idField: 'id' }).pipe(
-      map((channels) => channels.filter((channel) => channel['deleted']))
-    ) as Observable<ChannelInterface[]>;
-  }
-
-  /**
    * Creates a new channel with the current user as the creator and first member
    * @param name Name of the channel (check is channel-name already taken)
    * @param description Optional description of the channel
@@ -148,17 +137,6 @@ export class ChannelsService {
       await updateDoc(channelDocRef, {memberIds: arrayRemove(currentUserId)});
       this.overlayService.close();
       this.router.navigate(["/dashboard"]);
-  }
-
-  /**
-   * Restores a previously deleted channel
-   * @param channelId ID of the channel to restore
-   * @returns Observable that completes when the channel is restored
-   */
-  addChannel(channelId: string): Observable<void> {
-    const channelDocRef = doc(this.firestore, `channels/${channelId}`);
-    const promise = updateDoc(channelDocRef, { deleted: false });
-    return from(promise);
   }
 
   async addMemberToChannel(channelId:string, newMembers:string[]){

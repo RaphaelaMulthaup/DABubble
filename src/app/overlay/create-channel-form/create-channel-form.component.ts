@@ -61,7 +61,7 @@ export class CreateChannelFormComponent {
       .get('description')
       ?.value?.trim();
 
-    this.handlePossibleError(name);
+    // this.handlePossibleError(name);
     // Convert empty string to undefined
     const description = descriptionValue ? descriptionValue : undefined;
 
