@@ -49,6 +49,7 @@ export class SearchBarComponent {
   ngOnInit() {
     this.term$.subscribe((term) => {
       if (term.length > 0) {
+        this.overlayService.close();
         const originElement = document.querySelector(
           '.input-wrapper'
         ) as HTMLElement;
