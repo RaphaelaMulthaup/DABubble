@@ -10,6 +10,8 @@ import { SearchResult } from '../../../../shared/types/search-result.type';
 import { SearchService } from '../../../../services/search.service';
 import { UserListItemComponent } from '../../../../shared/components/user-list-item/user-list-item.component';
 import { ChannelListItemComponent } from '../../../../shared/components/channel-list-item/channel-list-item.component';
+import { OverlayService } from '../../../../services/overlay.service';
+import { EmojiPickerComponent } from '../../../../overlay/emoji-picker/emoji-picker.component';
 
 @Component({
   selector: 'app-current-post-input',
@@ -36,6 +38,7 @@ export class CurrentPostInput {
   private authService = inject(AuthService);
 
   private searchService = inject(SearchService);
+  private overlayService = inject(OverlayService);
 
   /** Gives access to the current route parameters. */
   private route = inject(ActivatedRoute);
@@ -96,6 +99,43 @@ export class CurrentPostInput {
       .subscribe((results: SearchResult[]) => {
         this.searchResults = results;
       });
+  }
+
+  /**
+   * This functions opens the emoji-picker overlay.
+   * The overlay possibly emits an emoji and this emoji is added to the posts text.
+   */
+  openEmojiPickerOverlay(event: MouseEvent) {
+    const overlay = this.overlayService.openComponent(
+      EmojiPickerComponent,
+      'cdk-overlay-transparent-backdrop',
+      {
+        origin: event.currentTarget as HTMLElement,
+        originPosition: {
+          originX: 'end',
+          originY: 'bottom',
+          overlayX: 'start',
+          overlayY: 'bottom',
+        },
+        originPositionFallback: {
+          originX: 'end',
+          originY: 'bottom',
+          overlayX: 'start',
+          overlayY: 'top',
+        },
+      },
+      { }
+    );
+
+    // overlay!.ref.instance.selectedEmoji.subscribe((emoji: string) => {
+    //   this.postService.toggleReaction(
+    //     '/' + this.currentType + 's/' + this.currentConversationId,
+    //     'messages',
+    //     this.post.id!,
+    //     emoji
+    //   );
+    //   this.overlayService.close();
+    // });
   }
 
   /**

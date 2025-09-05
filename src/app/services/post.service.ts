@@ -177,27 +177,6 @@ export class PostService {
   }
 
   /**
-   * Fetches all answers of a message in real time.
-   *
-   * @param parentPath - Path to the parent document (e.g. "chats/{chatId}").
-   * @param subcollectionName - Name of the subcollection (e.g. "messages").
-   * @param messageId - ID of the message whose reactions should be fetched.
-   * @returns Observable that emits the list of reactions (with emoji name and user IDs).
-   */
-  getAnswers(
-    parentPath: string,
-    subcollectionName: string,
-    messageId: string
-  ): Observable<PostInterface[]> {
-    const ref = collection(
-      this.firestore,
-      `${parentPath}/${subcollectionName}/${messageId}/answers`
-    );
-    const q = query(ref, orderBy('createdAt', 'asc'));
-    return collectionData(q, { idField: 'id' }) as Observable<PostInterface[]>;
-  }
-
-  /**
    * Creates a new message inside a conversation.
    *
    * @param conversationId - ID of the conversation (chat or channel).
