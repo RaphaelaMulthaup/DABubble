@@ -20,6 +20,7 @@ export class EditDisplayedPostComponent {
 
   currentType!: 'channel' | 'chat';
   currentConversationId!: string;
+  messageId!: string;
 
   constructor() {
     this.chatActiveRouterService
@@ -27,6 +28,12 @@ export class EditDisplayedPostComponent {
       .subscribe(({ type, id }) => {
         this.currentType = type as 'channel' | 'chat';
         this.currentConversationId = id;
+      });
+
+    this.chatActiveRouterService
+      .getMessageId$(this.route)
+      .subscribe((messageId) => {
+        this.messageId = messageId;
       });
   }
 
@@ -46,10 +53,11 @@ export class EditDisplayedPostComponent {
    */
   async submitEdit(text: string) {
     await this.postService.updatePost(
+      { text: text },
       this.currentType,
       this.currentConversationId,
-      this.post.id!,
-      { text: text }
+      this.messageId == null ? this.post.id! : this.messageId,
+      this.messageId == null ? '' : this.post.id!
     );
     this.endEdit();
   }

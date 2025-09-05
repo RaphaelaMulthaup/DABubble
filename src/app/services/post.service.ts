@@ -244,24 +244,47 @@ export class PostService {
         text,
       }
     );
-    this.updatePost(type as 'channel' | 'chat', conversationId, messageId, {
-      ansCounter: increment(1),
-      ansLastCreatedAt: new Date(),
-    });
+    this.updatePost(
+      {
+        ansCounter: increment(1),
+        ansLastCreatedAt: new Date(),
+      },
+      type as 'channel' | 'chat',
+      conversationId,
+      messageId
+    );
     return of([]);
   }
 
+  /**
+   * This function updates the data of a post in firebase with the given information.
+   *
+   * @param data - the data that should be updated
+   * @param type - Type of conversation ('channel' or 'chat')
+   * @param conversationId - ID of the conversation
+   * @param messageId - ID of the post
+   * @param postId - ID of the post
+   */
   async updatePost(
+    data: any = {},
     type: 'channel' | 'chat',
     conversationId: string,
-    postId: string,
-    data: any = {}
+    messageId: string,
+    answerId?: string
   ) {
-    const answerRef = doc(
-      this.firestore,
-      `${type}s/${conversationId}/messages/${postId}`
-    );
-    await updateDoc(answerRef, data);
+    let ref;
+    if (answerId) {
+      ref = doc(
+        this.firestore,
+        `${type}s/${conversationId}/messages/${messageId}/answers/${answerId}`
+      );
+    } else {
+      ref = doc(
+        this.firestore,
+        `${type}s/${conversationId}/messages/${messageId}`
+      );
+    }
+    await updateDoc(ref, data);
   }
 
   /**

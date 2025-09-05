@@ -38,7 +38,7 @@ export class ChatActiveRouterService {
     return route.paramMap.pipe(
       map((params) => ({
         type: params.get('type')!,
-        id: params.get('id')!,
+        id: params.get('id')!
       }))
     );
   }
