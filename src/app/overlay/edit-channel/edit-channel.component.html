@@ -14,9 +14,8 @@
       [user$]="user$"
     />
     @if(isMobile){
-    <app-channel-members class="container items-start" [channelDetails$]="channelDetails$" />
+      <app-channel-members class="container items-start" [channelDetails$]="channelDetails$" />
     }
-
   </div>
   <div class="flex justify-end">
     @if(currentUser == createdById){

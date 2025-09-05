@@ -10,7 +10,8 @@
         </button>
     </div>
   }@else {
-
-    <app-add-member-to-channel [channelDetails$]="channelDetails$" />
+    @if(!isMobile){
+      <app-add-member-to-channel [channelDetails$]="channelDetails$" />
+    }
   }
 </div>
