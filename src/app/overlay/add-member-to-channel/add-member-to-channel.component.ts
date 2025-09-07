@@ -72,6 +72,10 @@ export class AddMemberToChannelComponent {
     });
   }
 
+  ngOnInit(){
+    this.overlayService.clearUsers();
+  }
+
   getFirstWord(name: string): string {
     return name.split(' ')[0];  // Split by space and return the first word
   }
@@ -83,6 +87,7 @@ export class AddMemberToChannelComponent {
   addMembertoChannel(channelId:string){
     const membersId = this.ListWithMember.map(user => user.uid);
     this.channelService.addMemberToChannel(channelId, membersId);
+     this.overlayService.clearUsers();
     this.overlayService.close();
   }
 
@@ -95,7 +100,7 @@ export class AddMemberToChannelComponent {
         originPosition: {
           originX: 'start',
           originY: 'bottom',
-          overlayX: 'end',
+          overlayX: 'start',
           overlayY: 'top',
         }
       },

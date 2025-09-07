@@ -67,7 +67,7 @@ export class HeaderChannelComponent {
       {
         origin: event.currentTarget as HTMLElement,
         originPosition: {
-          originX: 'start',
+          originX: 'end',
           originY: 'bottom',
           overlayX: 'end',
           overlayY: 'top',
