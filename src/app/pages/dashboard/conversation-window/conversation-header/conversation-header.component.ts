@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, WritableSignal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ChatActiveRouterService } from '../../../../services/chat-active-router.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -6,17 +6,21 @@ import { UserService } from '../../../../services/user.service';
 import { HeaderChannelComponent } from "./header-channel/header-channel.component";
 import { HeaderSearchbarComponent } from './header-searchbar/header-searchbar.component';
 import { HeaderChatComponent } from "./header-chat/header-chat.component";
+import { MobileService } from '../../../../services/mobile.service';
+import { MobileDashboardState } from '../../../../shared/types/mobile-dashboard-state.type';
+import { HeaderThreadComponent } from './header-thread/header-thread.component';
 
 
 @Component({
   selector: 'app-conversation-header',
-  imports: [CommonModule, HeaderChannelComponent, HeaderSearchbarComponent, HeaderChatComponent],
+  imports: [CommonModule, HeaderChannelComponent, HeaderSearchbarComponent, HeaderChatComponent, HeaderThreadComponent],
   templateUrl: './conversation-header.component.html',
   styleUrl: './conversation-header.component.scss',
 })
 export class ConversationHeaderComponent {
-
+ mobileService = inject (MobileService)
   private userService = inject(UserService);
+  mobileDashboardState: WritableSignal<MobileDashboardState> = this.mobileService.mobileDashboardState;
 
   type!: string;
   conversationId!: string;

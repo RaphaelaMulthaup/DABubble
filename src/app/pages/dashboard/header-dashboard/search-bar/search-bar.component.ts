@@ -10,6 +10,8 @@ import { ChannelListItemComponent } from '../../../../shared/components/channel-
 import { PostListItemComponent } from '../../../../shared/components/post-list-item/post-list-item.component';
 import { UserInterface } from '../../../../shared/models/user.interface';
 import { ChannelInterface } from '../../../../shared/models/channel.interface';
+import { OverlayService } from '../../../../services/overlay.service';
+import { SearchResultsComponent } from '../../../../overlay/search-results/search-results.component';
 
 @Component({
   selector: 'app-search-bar',
@@ -27,6 +29,7 @@ import { ChannelInterface } from '../../../../shared/models/channel.interface';
 export class SearchBarComponent {
   // Inject the SearchService to use it inside the component
   searchService = inject(SearchService);
+  overlayService = inject(OverlayService);
 
   // Reactive form control for capturing the search input value
   searchControl = new FormControl<string>('', { nonNullable: true });
@@ -42,6 +45,27 @@ export class SearchBarComponent {
     debounceTime(300),
     map((v) => v.trim())
   );
+
+  ngOnInit() {
+    this.term$.subscribe((term) => {
+      if (term.length > 0) {
+        this.overlayService.close();
+        // const originElement = document.querySelector(
+        //   '.input-wrapper'
+        // ) as HTMLElement;
+        this.overlayService.openComponent(
+          SearchResultsComponent,
+          'cdk-overlay-transparent-backdrop',
+          {
+            globalPosition: 'belowSearchbar'
+          },
+          { results$: this.groupedResults() }
+        );
+      } else {
+        this.overlayService.close(); // optional: Overlay schließen, wenn Eingabe leer
+      }
+    });
+  }
 
   /***
    * Converts the search results Observable into a signal for template binding.
@@ -69,7 +93,7 @@ export class SearchBarComponent {
 
     for (const item of res) {
       if (item.type === 'chatMessage') {
-         if (!item.user) continue;
+        if (!item.user) continue;
         if (!chatMap.has(item.user.uid)) {
           chatMap.set(item.user.uid, { user: item.user, posts: [] });
         }

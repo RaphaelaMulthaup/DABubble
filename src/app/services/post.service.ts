@@ -7,8 +7,13 @@ import {
   collectionData,
   deleteDoc,
   doc,
+  docData,
   Firestore,
+  getCountFromServer,
   getDoc,
+  increment,
+  orderBy,
+  query,
   serverTimestamp,
   setDoc,
   updateDoc,
@@ -18,6 +23,8 @@ import { PostInterface } from '../shared/models/post.interface';
 import { ReactionInterface } from '../shared/models/reaction.interface';
 import { ChatInterface } from '../shared/models/chat.interface';
 import { AuthService } from './auth.service';
+import { MobileService } from './mobile.service';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root', // Service is available globally in the application
@@ -26,6 +33,8 @@ export class PostService {
   // Inject Firestore instance
   private firestore: Firestore = inject(Firestore);
   private authService = inject(AuthService);
+  private mobileService = inject(MobileService);
+  private router = inject(Router);
 
   // // Holds the current list of messages for the displayed conversation
   // private _messagesDisplayedConversation = new BehaviorSubject<
@@ -101,7 +110,7 @@ export class PostService {
     postId: string,
     emoji: string
   ) {
-    let userId = this.authService.getCurrentUserId()!;
+    let userId = this.authService.currentUser.uid;
     let reactionId = this.getReactionId(emoji);
     const reactionRef = doc(
       this.firestore,
@@ -168,28 +177,6 @@ export class PostService {
   }
 
   /**
-   * Fetches all answers of a message in real time.
-   *
-   * @param parentPath - Path to the parent document (e.g. "chats/{chatId}").
-   * @param subcollectionName - Name of the subcollection (e.g. "messages").
-   * @param messageId - ID of the message whose reactions should be fetched.
-   * @returns Observable that emits the list of reactions (with emoji name and user IDs).
-   */
-  getAnswers(
-    parentPath: string,
-    subcollectionName: string,
-    messageId: string
-  ): Observable<PostInterface[]> {
-    const reactionsRef = collection(
-      this.firestore,
-      `${parentPath}/${subcollectionName}/${messageId}/answers`
-    );
-    return collectionData(reactionsRef, { idField: 'id' }) as Observable<
-      PostInterface[]
-    >;
-  }
-
-  /**
    * Creates a new message inside a conversation.
    *
    * @param conversationId - ID of the conversation (chat or channel).
@@ -202,7 +189,7 @@ export class PostService {
     conversationId: string,
     senderId: string,
     text: string,
-    type: 'channel' | 'chat'
+    type: string
   ) {
     await this.sendPost(`${type}s/${conversationId}`, 'messages', {
       senderId: senderId,
@@ -214,7 +201,7 @@ export class PostService {
   /**
    * Creates an answer (reply) to an existing message inside a channel thread.
    *
-   * @param conversationId - ID of the channel.
+   * @param conversationId - ID of the conversation.
    * @param messageId - ID of the parent message being replied to.
    * @param senderId - ID of the replying user.
    * @param text - Text content of the reply.
@@ -226,7 +213,7 @@ export class PostService {
     messageId: string,
     senderId: string,
     text: string,
-    type: 'channel' | 'chat'
+    type: string
   ) {
     await this.sendPost(
       `${type}s/${conversationId}/messages/${messageId}`,
@@ -236,7 +223,47 @@ export class PostService {
         text,
       }
     );
+    this.updatePost(
+      {
+        ansCounter: increment(1),
+        ansLastCreatedAt: new Date(),
+      },
+      type as 'channel' | 'chat',
+      conversationId,
+      messageId
+    );
     return of([]);
+  }
+
+  /**
+   * This function updates the data of a post in firebase with the given information.
+   *
+   * @param data - the data that should be updated
+   * @param type - Type of conversation ('channel' or 'chat')
+   * @param conversationId - ID of the conversation
+   * @param messageId - ID of the post
+   * @param postId - ID of the post
+   */
+  async updatePost(
+    data: any = {},
+    type: 'channel' | 'chat',
+    conversationId: string,
+    messageId: string,
+    answerId?: string
+  ) {
+    let ref;
+    if (answerId) {
+      ref = doc(
+        this.firestore,
+        `${type}s/${conversationId}/messages/${messageId}/answers/${answerId}`
+      );
+    } else {
+      ref = doc(
+        this.firestore,
+        `${type}s/${conversationId}/messages/${messageId}`
+      );
+    }
+    await updateDoc(ref, data);
   }
 
   /**
@@ -245,12 +272,11 @@ export class PostService {
    *
    * @param index the index of the post
    */
-  isPostCreatedToday(post: PostInterface): boolean {
-    let postDate;
-    if (post.createdAt === null) {
+  isPostCreatedToday(postDate: any): boolean {
+    if (postDate === null) {
       postDate = new Date().setHours(0, 0, 0, 0);
     } else {
-      postDate = post.createdAt.toDate().setHours(0, 0, 0, 0);
+      postDate = postDate.toDate().setHours(0, 0, 0, 0);
     }
     let today = new Date().setHours(0, 0, 0, 0);
     return postDate == today;
@@ -262,5 +288,27 @@ export class PostService {
   select(postId: string) {
     if (!postId) return;
     this._select$.next(postId);
+  }
+
+  /**
+   * This function navigates to the thread-window with the answers to the selected post
+   *
+   * @param postId the id of the post
+   * @param type conversation-type (channel or chat)
+   * @param conversationId the id of the conversation
+   */
+  openAnswers(
+    postId: string,
+    type: 'channel' | 'chat',
+    conversationId: string
+  ) {
+    this.mobileService.setMobileDashboardState('thread-window');
+    this.router.navigate([
+      '/dashboard',
+      type,
+      conversationId,
+      'answers',
+      postId,
+    ]);
   }
 }

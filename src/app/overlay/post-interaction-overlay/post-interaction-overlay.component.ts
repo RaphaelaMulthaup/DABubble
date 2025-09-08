@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Observable, of } from 'rxjs';
 import { OverlayService } from '../../services/overlay.service';
@@ -6,40 +6,54 @@ import { EmojiPickerComponent } from '../emoji-picker/emoji-picker.component';
 import { PostService } from '../../services/post.service';
 import { PostInterface } from '../../shared/models/post.interface';
 import { AuthService } from '../../services/auth.service';
-import { EditPostOverlayComponent } from '../edit-post-overlay/edit-post-overlay.component';
+import { EditPostOverlayComponent } from '../edit-post/edit-post.component';
+import { MobileService } from '../../services/mobile.service';
 
 @Component({
   selector: 'app-post-interaction-overlay',
   imports: [CommonModule],
   templateUrl: './post-interaction-overlay.component.html',
-  styleUrl: './post-interaction-overlay.component.scss'
+  styleUrl: './post-interaction-overlay.component.scss',
 })
 export class PostInteractionOverlayComponent {
   private authService = inject(AuthService);
   public overlayService = inject(OverlayService);
   public postService = inject(PostService);
+  public mobileService = inject(MobileService);
 
-  currentType!: string;
+  currentType!: 'channel' | 'chat';
   currentConversationId!: string;
   post!: PostInterface;
   senderIsCurrentUser$!: Observable<boolean>;
 
   ngOnInit() {
-    this.senderIsCurrentUser$ = of(this.post.senderId === this.authService.getCurrentUserId());
+    this.senderIsCurrentUser$ = of(
+      this.post.senderId === this.authService.currentUser.uid
+    );
   }
 
   /**
    * This functions opens the emoji-picker overlay and transmits the isMessageFromCurrentUser-variable.
    * The overlay possibly emits an emoji and this emoji is used to react to the post.
-  */
+   */
   openEmojiPickerOverlay(event: MouseEvent) {
     const overlay = this.overlayService.openComponent(
       EmojiPickerComponent,
       'cdk-overlay-transparent-backdrop',
       {
         origin: event.currentTarget as HTMLElement,
-        originPosition: { originX: 'center', originY: 'bottom', overlayX: 'start', overlayY: 'top' },
-        originPositionFallback: { originX: 'center', originY: 'bottom', overlayX: 'end', overlayY: 'top' }
+        originPosition: {
+          originX: 'center',
+          originY: 'bottom',
+          overlayX: 'start',
+          overlayY: 'top',
+        },
+        originPositionFallback: {
+          originX: 'center',
+          originY: 'bottom',
+          overlayX: 'end',
+          overlayY: 'top',
+        },
       },
       { senderIsCurrentUser$: this.senderIsCurrentUser$ }
     );
@@ -51,22 +65,32 @@ export class PostInteractionOverlayComponent {
         'messages',
         this.post.id!,
         emoji
-      )
+      );
       this.overlayService.close();
     });
   }
 
   /**
    * This functions opens the edit-post-overlay.
-  */
+   */
   openEditPostOverlay(event: MouseEvent) {
-    this.overlayService.openComponent(
+    const overlay = this.overlayService.openComponent(
       EditPostOverlayComponent,
       'cdk-overlay-transparent-backdrop',
       {
         origin: event.currentTarget as HTMLElement,
-        originPosition: { originX: 'center', originY: 'bottom', overlayX: 'start', overlayY: 'top' },
-        originPositionFallback: { originX: 'center', originY: 'bottom', overlayX: 'end', overlayY: 'top' }
+        originPosition: {
+          originX: 'center',
+          originY: 'bottom',
+          overlayX: 'start',
+          overlayY: 'top',
+        },
+        originPositionFallback: {
+          originX: 'center',
+          originY: 'bottom',
+          overlayX: 'end',
+          overlayY: 'top',
+        },
       },
       { post: this.post }
     );

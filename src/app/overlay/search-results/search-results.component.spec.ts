@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { EditPostOverlayComponent } from './edit-post-overlay.component';
+import { SearchResultsComponent } from './search-results.component';
 
-describe('EditPostOverlayComponent', () => {
-  let component: EditPostOverlayComponent;
-  let fixture: ComponentFixture<EditPostOverlayComponent>;
+describe('SearchResultsComponent', () => {
+  let component: SearchResultsComponent;
+  let fixture: ComponentFixture<SearchResultsComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [EditPostOverlayComponent]
+      imports: [SearchResultsComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(EditPostOverlayComponent);
+    fixture = TestBed.createComponent(SearchResultsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

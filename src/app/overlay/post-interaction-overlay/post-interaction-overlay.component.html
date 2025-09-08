@@ -1,14 +1,34 @@
-<div class="interaction-options flex place-content-center"
-    [ngClass]="{ 'post-current-user': senderIsCurrentUser$ | async }">
-    <button class="btn-tertiary">
-        <img class="reaction-img" src="../../../assets/img/emojis/thumbs-up.svg" alt="check-mark">
-    </button>
-    <button class="btn-tertiary">
-        <img class="reaction-img" src="../../../assets/img/emojis/thumbs-down.svg" alt="thumbs-up">
-    </button>
-    <button (click)="openEmojiPickerOverlay($event)" class="add-reaction btn-tertiary"></button>
-    <button class="open-thread btn-tertiary"></button>
-    @if (senderIsCurrentUser$|async) {
-    <button (click)="openEditPostOverlay($event)" class="more-options btn-tertiary"></button>
-    }
+<div
+  class="interaction-options flex place-content-center"
+  [ngClass]="{ 'post-current-user': senderIsCurrentUser$ | async }"
+>
+  <button class="btn-tertiary">
+    <img
+      class="reaction-img"
+      src="../../../assets/img/emojis/thumbs-up.svg"
+      alt="check-mark"
+    />
+  </button>
+  <button class="btn-tertiary">
+    <img
+      class="reaction-img"
+      src="../../../assets/img/emojis/thumbs-down.svg"
+      alt="thumbs-up"
+    />
+  </button>
+  <button
+    (click)="openEmojiPickerOverlay($event)"
+    class="add-reaction btn-tertiary"
+  ></button>
+
+  @if(mobileService.mobileDashboardState() !== 'thread-window') {
+  <button (click)="postService.openAnswers(post.id!, currentType, currentConversationId); overlayService.close()" class="open-answers btn-tertiary"></button>
+  } 
+  
+  @if (senderIsCurrentUser$|async) {
+  <button
+    (click)="openEditPostOverlay($event)"
+    class="more-options btn-tertiary"
+  ></button>
+  }
 </div>

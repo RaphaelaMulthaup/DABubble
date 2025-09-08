@@ -1,6 +1,19 @@
 @if(messageToReplyId){
-<button (click)="redirectTo(type,conversationId)">x</button>
+<button (click)="redirectTo(type, conversationId)">x</button>
 }
-<app-header-channel class="flex"/>
-<app-header-searchbar></app-header-searchbar>
-<app-header-chat></app-header-chat>
+
+@switch (mobileDashboardState()) {
+    @case ('message-window') {
+        @if (type === 'channel') {
+            <app-header-channel class="flex" />
+        }
+        @if (type === 'chat') {
+            <app-header-chat></app-header-chat>
+        }} 
+    @case ('thread-window') { 
+        <app-header-thread></app-header-thread>
+    } 
+    @default {
+        <app-header-searchbar></app-header-searchbar>
+    }
+}

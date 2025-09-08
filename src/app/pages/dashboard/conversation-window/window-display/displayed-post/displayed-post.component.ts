@@ -1,26 +1,27 @@
-import { Component, Input, inject } from '@angular/core';
+import { Component, Input, Output, WritableSignal, inject } from '@angular/core';
 import { PostInterface } from '../../../../../shared/models/post.interface';
 import { AuthService } from '../../../../../services/auth.service';
 import { UserService } from '../../../../../services/user.service';
-import { map, switchMap, of } from 'rxjs';
+import { map, of } from 'rxjs';
 import { Timestamp } from '@angular/fire/firestore';
 import { CommonModule } from '@angular/common';
 import { OverlayService } from '../../../../../services/overlay.service';
 import { FormsModule } from '@angular/forms';
 import { ProfileViewOtherUsersComponent } from '../../../../../overlay/profile-view-other-users/profile-view-other-users.component';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { ChatActiveRouterService } from '../../../../../services/chat-active-router.service';
 import { Observable } from 'rxjs';
-import { Router } from '@angular/router';
 import { ReactionInterface } from '../../../../../shared/models/reaction.interface';
 import { PostService } from '../../../../../services/post.service';
 import { EmojiPickerComponent } from '../../../../../overlay/emoji-picker/emoji-picker.component';
 import { ReactedUsersComponent } from '../../../../../overlay/reacted-users/reacted-users.component';
 import { PostInteractionOverlayComponent } from '../../../../../overlay/post-interaction-overlay/post-interaction-overlay.component';
+import { MobileService } from '../../../../../services/mobile.service';
+import { EditDisplayedPostComponent } from './edit-displayed-post/edit-displayed-post.component';
 
 @Component({
   selector: 'app-displayed-post', // Component to display a single message in the conversation
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, EditDisplayedPostComponent],
   templateUrl: './displayed-post.component.html', // External HTML template
   styleUrl: './displayed-post.component.scss', // SCSS styles for this component
 })
@@ -29,18 +30,16 @@ export class DisplayedPostComponent {
   private userService = inject(UserService);
   public overlayService = inject(OverlayService);
   public postService = inject(PostService);
-
+  public mobileService = inject(MobileService);
   private route = inject(ActivatedRoute);
-  private router = inject(Router);
-
   private chatActiveRoute = inject(ChatActiveRouterService);
 
   typ$!: Observable<string>;
-  currentType!: string;
+  currentType!: 'channel' | 'chat';
   currentConversationId!: string;
 
   // Input message passed from the parent component
-  @Input() post!: PostInterface;
+  @Input() @Output() post!: PostInterface;
 
   /** Observable für alle abhängigen Werte */
   senderName$!: Observable<string>;
@@ -50,36 +49,47 @@ export class DisplayedPostComponent {
   reactions$!: Observable<ReactionInterface[]>;
   // reactions: ReactionInterface[] = [];
   visibleReactions$!: Observable<ReactionInterface[]>;
-  answers$?: Observable<PostInterface[]>;
-  answers: PostInterface[] = [];
+  // answers$?: Observable<PostInterface[]>;
+  // answers: PostInterface[] = [];
 
   allReactionsVisible: boolean = false;
   postClicked: boolean = false;
-
+  @Input() editingPost?: boolean;
 
   ngOnChanges() {
     this.chatActiveRoute.getParams$(this.route).subscribe(({ type, id }) => {
-      this.currentType = type;
+      this.currentType = type as 'channel' | 'chat';
       this.currentConversationId = id;
     });
 
-    this.reactions$ = this.postService.getReactions('/' + this.currentType + 's/' + this.currentConversationId, 'messages', this.post.id!);
+    this.reactions$ = this.postService.getReactions(
+      '/' + this.currentType + 's/' + this.currentConversationId,
+      'messages',
+      this.post.id!
+    );
     this.visibleReactions$ = this.reactions$.pipe(
-      map(list => list
-        .filter(r => r.users.length > 0)
-        .sort((a, b) => b.users.length - a.users.length)
+      map((list) =>
+        list
+          .filter((r) => r.users.length > 0)
+          .sort((a, b) => b.users.length - a.users.length)
       )
     );
 
-    this.answers$ = this.postService.getAnswers('/' + this.currentType + 's/' + this.currentConversationId, 'messages', this.post.id!).pipe(map(answers => answers ?? []));
-    this.answers$.subscribe(data => {
-      this.answers = data;
-    });
+    // this.answers$ = this.postService
+    //   .getAnswers(
+    //     '/' + this.currentType + 's/' + this.currentConversationId,
+    //     'messages',
+    //     this.post.id!
+    //   )
+    //   .pipe(map((answers) => answers ?? []));
+    // this.answers$.subscribe((data) => {
+    //   this.answers = data;
+    // });
 
     if (!this.post) return;
     // Prüfen, ob der Sender aktuell ist
     this.senderIsCurrentUser$ = of(
-      this.post.senderId === this.authService.getCurrentUserId()
+      this.post.senderId === this.authService.currentUser.uid
     );
 
     // Userdaten laden
@@ -104,16 +114,10 @@ export class DisplayedPostComponent {
     );
   }
 
-  openAnswers(messageId: string) {
-    const type = this.currentType;
-    const id = this.currentConversationId;
-    this.router.navigate(['/dashboard', type, id, 'answers', messageId]);
-  }
-
   /**
- * This method displays the profile view of another user.
- * It triggers the overlay service to open the ProfileViewOtherUsersComponent.
- */
+   * This method displays the profile view of another user.
+   * It triggers the overlay service to open the ProfileViewOtherUsersComponent.
+   */
   openUserProfileOverlay() {
     this.overlayService.openComponent(
       ProfileViewOtherUsersComponent,
@@ -133,8 +137,18 @@ export class DisplayedPostComponent {
       'cdk-overlay-transparent-backdrop',
       {
         origin: event.currentTarget as HTMLElement,
-        originPosition: { originX: 'end', originY: 'top', overlayX: 'start', overlayY: 'top' },
-        originPositionFallback: { originX: 'start', originY: 'top', overlayX: 'end', overlayY: 'top' }
+        originPosition: {
+          originX: 'end',
+          originY: 'top',
+          overlayX: 'start',
+          overlayY: 'top',
+        },
+        originPositionFallback: {
+          originX: 'start',
+          originY: 'top',
+          overlayX: 'end',
+          overlayY: 'top',
+        },
       },
       { senderIsCurrentUser$: this.senderIsCurrentUser$ }
     );
@@ -146,7 +160,7 @@ export class DisplayedPostComponent {
         'messages',
         this.post.id!,
         emoji
-      )
+      );
       this.overlayService.close();
     });
   }
@@ -160,8 +174,18 @@ export class DisplayedPostComponent {
       null,
       {
         origin: event.currentTarget as HTMLElement,
-        originPosition: { originX: 'center', originY: 'top', overlayX: 'start', overlayY: 'bottom' },
-        originPositionFallback: { originX: 'center', originY: 'top', overlayX: 'end', overlayY: 'bottom' }
+        originPosition: {
+          originX: 'center',
+          originY: 'top',
+          overlayX: 'start',
+          overlayY: 'bottom',
+        },
+        originPositionFallback: {
+          originX: 'center',
+          originY: 'top',
+          overlayX: 'end',
+          overlayY: 'bottom',
+        },
       },
       { reaction: reaction }
     );
@@ -179,24 +203,34 @@ export class DisplayedPostComponent {
       'cdk-overlay-transparent-backdrop',
       {
         origin: event.currentTarget as HTMLElement,
-        originPosition: { originX: 'start', originY: 'top', overlayX: 'start', overlayY: 'bottom' },
-        originPositionFallback: { originX: 'end', originY: 'top', overlayX: 'end', overlayY: 'bottom' }
+        originPosition: {
+          originX: 'start',
+          originY: 'top',
+          overlayX: 'start',
+          overlayY: 'bottom',
+        },
+        originPositionFallback: {
+          originX: 'end',
+          originY: 'top',
+          overlayX: 'end',
+          overlayY: 'bottom',
+        },
       },
       {
         currentType: this.currentType,
         currentConversationId: this.currentConversationId,
-        post: this.post
+        post: this.post,
       }
     );
-
     overlay?.afterClosed$.subscribe(() => {
       this.postClicked = false;
+      this.editingPost = this.overlayService.editPostActive;
     });
   }
 
   /**
-   * This functions toggles the users reaction, if the users clicks on an already chosen emoji (by any user) in the reactions-div
-   * 
+   * This function toggles the users reaction, if the users clicks on an already chosen emoji (by any user) in the reactions-div
+   *
    *  @param emoji - the image-path for the chosen emoji.
    */
   toggleExistingReaction(emoji: string) {
@@ -205,6 +239,6 @@ export class DisplayedPostComponent {
       'messages',
       this.post.id!,
       emoji
-    )
+    );
   }
 }

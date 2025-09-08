@@ -12,6 +12,7 @@ import { ChatInterface } from '../../shared/models/chat.interface';
 import { UserInterface } from '../../shared/models/user.interface';
 import { AuthService } from '../../services/auth.service';
 import { ChannelsService } from '../../services/channels.service';
+import { MobileService } from '../../services/mobile.service';
 
 @Component({
   selector: 'app-edit-channel',
@@ -30,7 +31,14 @@ export class EditChannelComponent {
   private authService = inject(AuthService);
   channelService = inject(ChannelsService);
 
-  currentUser = this.authService.getCurrentUserId();
+  currentUser = this.authService.currentUser.uid;
+
+    mobileService = inject(MobileService);
+    isMobile = false;
+  
+      private updateMobile = () => {
+      this.isMobile = this.mobileService.isMobile();
+    };
 
   channelId?: string;
   channelName?: string;
@@ -55,5 +63,11 @@ export class EditChannelComponent {
         this.user$ = this.userService.getUserById(this.createdById);
       }
     });
+        this.isMobile = this.mobileService.isMobile();
+    window.addEventListener('resize', this.updateMobile);
+  }
+
+    ngOnDestroy() {
+    window.removeEventListener('resize', this.updateMobile);
   }
 }

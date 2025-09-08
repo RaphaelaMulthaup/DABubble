@@ -38,7 +38,7 @@ export class ChatActiveRouterService {
     return route.paramMap.pipe(
       map((params) => ({
         type: params.get('type')!,
-        id: params.get('id')!,
+        id: params.get('id')!
       }))
     );
   }
@@ -79,20 +79,24 @@ export class ChatActiveRouterService {
     id: string,
     messageId: string
   ): Observable<PostInterface[]> {
+    let ref;
+    let q;
     if (type === 'channel') {
-      const answersRef = collection(
+      ref = collection(
         this.firestore,
         `channels/${id}/messages/${messageId}/answers`
       );
-      return collectionData(answersRef, { idField: 'id' }) as Observable<
+      q = query(ref, orderBy('createdAt', 'asc'));
+      return collectionData(q, { idField: 'id' }) as Observable<
         PostInterface[]
       >;
     } else if (type === 'chat') {
-      const answersRef = collection(
+      ref = collection(
         this.firestore,
         `chats/${id}/messages/${messageId}/answers`
       );
-      return collectionData(answersRef, { idField: 'id' }) as Observable<
+      q = query(ref, orderBy('createdAt', 'asc'));
+      return collectionData(q, { idField: 'id' }) as Observable<
         PostInterface[]
       >;
     }
