@@ -37,7 +37,7 @@ export class HeaderChannelComponent {
   };
 
   ngOnInit() {
-    this.channelDetails$ = this.chatActiveRouterService.getId$(this.route).pipe(
+    this.channelDetails$ = this.chatActiveRouterService.getConversationId$(this.route).pipe(
       switchMap((id) => {
         this.channelId = id;
         return this.channelService.getCurrentChannel(this.channelId);
@@ -67,16 +67,10 @@ export class HeaderChannelComponent {
       {
         origin: event.currentTarget as HTMLElement,
         originPosition: {
-          originX: 'center',
+          originX: 'end',
           originY: 'bottom',
-          overlayX: 'center',
+          overlayX: 'end',
           overlayY: 'top',
-        },
-        originPositionFallback: {
-          originX: 'center',
-          originY: 'top',
-          overlayX: 'center',
-          overlayY: 'bottom',
         },
       },
       { channelDetails$: this.channelDetails$ as Observable<ChannelInterface>,

@@ -13,13 +13,15 @@ import {
   getDoc,
   getDocs,
   QuerySnapshot,
-  arrayUnion
+  arrayUnion,
+  deleteDoc
 } from '@angular/fire/firestore';
 import { from, map, Observable, of, switchMap, tap } from 'rxjs';
 import { AuthService } from './auth.service';
 import { ChannelInterface } from '../shared/models/channel.interface';
 import { Router } from '@angular/router';
 import { OverlayService } from './overlay.service';
+import { MobileService } from './mobile.service';
 
 @Injectable({
   providedIn: 'root',
@@ -31,6 +33,7 @@ export class ChannelsService {
   private authService = inject(AuthService);
   private router = inject(Router);
   private overlayService = inject(OverlayService);
+  private mobileService = inject(MobileService);
 
   // // Do we really ever need all channels?
   // getAllChannels(): Observable<ChannelInterface[]> {
@@ -67,17 +70,6 @@ export class ChannelsService {
   }
 
   /**
-   * Retrieves all channels that are marked as deleted
-   * @returns Observable list of deleted channels
-   */
-  getAllDeletedChannels(): Observable<ChannelInterface[]> {
-    const channelCollection = collection(this.firestore, 'channels');
-    return collectionData(channelCollection, { idField: 'id' }).pipe(
-      map((channels) => channels.filter((channel) => channel['deleted']))
-    ) as Observable<ChannelInterface[]>;
-  }
-
-  /**
    * Creates a new channel with the current user as the creator and first member
    * @param name Name of the channel (check is channel-name already taken)
    * @param description Optional description of the channel
@@ -106,7 +98,7 @@ export class ChannelsService {
         };
         return from(addDoc(channelRef, channelData)).pipe(map(() => {}));
       })
-    )
+    );
   }
 
   /**
@@ -116,8 +108,9 @@ export class ChannelsService {
    */
   deleteChannel(channelId: string): Observable<void> {
     const channelDocRef = doc(this.firestore, `channels/${channelId}`);
-    const promise = updateDoc(channelDocRef, { deleted: true });
+    const promise = deleteDoc(channelDocRef);
     this.router.navigate(["/dashboard"]);
+    this.mobileService.setMobileDashboardState('sidenav')
     this.overlayService.close();
     return from(promise);
   }
@@ -139,11 +132,11 @@ export class ChannelsService {
    * await this.leaveChannel("123abc", "user_456");
    * // -> "user_456" will be removed from the channel's memberIds array.
    */
-  async leaveChannel(channelId:string , currentUserId:string){
-      const channelDocRef = doc(this.firestore, `channels/${channelId}`);
-      await updateDoc(channelDocRef, {memberIds: arrayRemove(currentUserId)});
-      this.overlayService.close();
-      this.router.navigate(["/dashboard"]);
+  async leaveChannel(channelId: string, currentUserId: string) {
+    const channelDocRef = doc(this.firestore, `channels/${channelId}`);
+    await updateDoc(channelDocRef, { memberIds: arrayRemove(currentUserId) });
+    this.overlayService.close();
+    this.router.navigate(['/dashboard']);
   }
 
   /**
@@ -157,9 +150,9 @@ export class ChannelsService {
     return from(promise);
   }
 
-  async addMemberToChannel(channelId:string, newMembers:string[]){
+  async addMemberToChannel(channelId: string, newMembers: string[]) {
     const channelDocRef = doc(this.firestore, `channels/${channelId}`);
-    await updateDoc(channelDocRef, {memberIds: arrayUnion(...newMembers)});
+    await updateDoc(channelDocRef, { memberIds: arrayUnion(...newMembers) });
   }
 
   /**

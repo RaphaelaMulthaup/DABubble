@@ -56,13 +56,13 @@ export class ChannelMembersComponent implements OnDestroy, OnInit {
     window.removeEventListener('resize', this.updateMobile);
   }
 
-  onAddMemberClick() {
-    this.clickedAddMember = true;
+  // onAddMemberClick() {
+  //   this.clickedAddMember = true;
 
-    if (this.isMobile) {
-      this.openAddMemberToChannelOverlay();
-    }
-  }
+  //   if (this.isMobile) {
+  //     this.openAddMemberToChannelOverlay();
+  //   }
+  // }
 
   openAddMemberToChannelOverlay() {
     this.overlayService.openComponent(

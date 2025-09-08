@@ -8,12 +8,13 @@
   </div>
 
   <div class="flex items-center gap-[10px]">
+    <app-channel-members-length [channel$]="channelDetails$" (click)="openChannelMembers($event)" />
       @if(!isMobile){
-        <app-channel-members-length [channel$]="channelDetails$" (click)="openChannelMembers($event)" />
+          <button class="btn-tertiary" (click)="openAddMembersToChannel($event)">
+            <div class="add-person"></div>
+          </button>
       }
-    <button class="btn-tertiary" (click)="openAddMembersToChannel($event)">
-      <div class="add-person"></div>
-    </button>
+ 
   </div>
 
 </section>

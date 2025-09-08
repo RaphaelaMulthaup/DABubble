@@ -57,6 +57,8 @@ export class IntroComponent implements OnInit {
     let animatedLogo = document.querySelector(".animated-logo");
     animatedLogo?.classList.add("moveUp");
     animatedLogo?.classList.add("addMargin");
+
+    this.changeColor();
   }
 
   /**
@@ -68,6 +70,14 @@ export class IntroComponent implements OnInit {
     setTimeout(() => {
       logoContainer?.classList.add("getRid");
     }, 1600);
+  }
+
+  /**
+   * Changes span color from white to black
+   */
+  changeColor() {
+    let name = document.querySelector('.animat-name');
+    name?.classList.add('name-black');
   }
 
 }

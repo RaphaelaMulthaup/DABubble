@@ -4,6 +4,7 @@ import { catchError, filter, Observable, of, Subject, switchMap, takeUntil } fro
 import { ChannelInterface } from '../../../../../../shared/models/channel.interface';
 import { UserInterface } from '../../../../../../shared/models/user.interface';
 import { UserService } from '../../../../../../services/user.service';
+import { MobileService } from '../../../../../../services/mobile.service';
 
 @Component({
   selector: 'app-channel-members-length',
@@ -19,6 +20,13 @@ export class ChannelMembersLengthComponent {
   users$?:Observable<UserInterface[]>;
 
   channelWithUsers$!: Observable<{ channel: ChannelInterface | undefined; users: UserInterface[] }>;
+
+    mobileService = inject(MobileService);
+    isMobile = false;
+  
+      private updateMobile = () => {
+      this.isMobile = this.mobileService.isMobile();
+    };
 
 
   ngOnInit() {
@@ -36,11 +44,14 @@ export class ChannelMembersLengthComponent {
         takeUntil(this.destroy$)
       );
     }
+        this.isMobile = this.mobileService.isMobile();
+    window.addEventListener('resize', this.updateMobile);
   }
 
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
+    window.removeEventListener('resize', this.updateMobile);
   }
 
 }

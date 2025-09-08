@@ -20,16 +20,16 @@ export class EditDisplayedPostComponent {
   @Input() post!: PostInterface;
   @Output() endEditingPost = new EventEmitter<void>();
 
-  currentType!: 'channel' | 'chat';
+  currentConversationType!: 'channel' | 'chat';
   currentConversationId!: string;
   messageId!: string;
 
   constructor() {
     this.chatActiveRouterService
       .getParams$(this.route)
-      .subscribe(({ type, id }) => {
-        this.currentType = type as 'channel' | 'chat';
-        this.currentConversationId = id;
+      .subscribe(({ conversationType, conversationId }) => {
+        this.currentConversationType = conversationType as 'channel' | 'chat';
+        this.currentConversationId = conversationId;
       });
 
     this.chatActiveRouterService
@@ -57,7 +57,7 @@ export class EditDisplayedPostComponent {
   async submitEdit(text: string) {
     await this.postService.updatePost(
       { text: text },
-      this.currentType,
+      this.currentConversationType,
       this.currentConversationId,
       this.messageId == null ? this.post.id! : this.messageId,
       this.messageId == null ? '' : this.post.id!

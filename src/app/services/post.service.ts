@@ -182,16 +182,16 @@ export class PostService {
    * @param conversationId - ID of the conversation (chat or channel).
    * @param senderId - User ID of the sender.
    * @param text - Text content of the message.
-   * @param type - Type of conversation ("chat" or "channel").
+   * @param conversationType - Type of conversation ("chat" or "channel").
    * @returns An observable placeholder (currently resolves to an empty array).
    */
   async createMessage(
     conversationId: string,
     senderId: string,
     text: string,
-    type: string
+    conversationType: string
   ) {
-    await this.sendPost(`${type}s/${conversationId}`, 'messages', {
+    await this.sendPost(`${conversationType}s/${conversationId}`, 'messages', {
       senderId: senderId,
       text,
     });
@@ -205,7 +205,7 @@ export class PostService {
    * @param messageId - ID of the parent message being replied to.
    * @param senderId - ID of the replying user.
    * @param text - Text content of the reply.
-   * @param type - Type of conversation (currently only supports "channel").
+   * @param conversationType - Type of conversation (currently only supports "channel").
    * @returns A Promise with the created answer document reference, or an empty observable if not in a channel.
    */
   async createAnswer(
@@ -213,10 +213,10 @@ export class PostService {
     messageId: string,
     senderId: string,
     text: string,
-    type: string
+    conversationType: string
   ) {
     await this.sendPost(
-      `${type}s/${conversationId}/messages/${messageId}`,
+      `${conversationType}s/${conversationId}/messages/${messageId}`,
       'answers',
       {
         senderId: senderId,
@@ -228,7 +228,7 @@ export class PostService {
         ansCounter: increment(1),
         ansLastCreatedAt: new Date(),
       },
-      type as 'channel' | 'chat',
+      conversationType as 'channel' | 'chat',
       conversationId,
       messageId
     );
@@ -239,14 +239,14 @@ export class PostService {
    * This function updates the data of a post in firebase with the given information.
    *
    * @param data - the data that should be updated
-   * @param type - Type of conversation ('channel' or 'chat')
+   * @param conversationType - Type of conversation ('channel' or 'chat')
    * @param conversationId - ID of the conversation
    * @param messageId - ID of the post
    * @param postId - ID of the post
    */
   async updatePost(
     data: any = {},
-    type: 'channel' | 'chat',
+    conversationType: 'channel' | 'chat',
     conversationId: string,
     messageId: string,
     answerId?: string
@@ -255,12 +255,12 @@ export class PostService {
     if (answerId) {
       ref = doc(
         this.firestore,
-        `${type}s/${conversationId}/messages/${messageId}/answers/${answerId}`
+        `${conversationType}s/${conversationId}/messages/${messageId}/answers/${answerId}`
       );
     } else {
       ref = doc(
         this.firestore,
-        `${type}s/${conversationId}/messages/${messageId}`
+        `${conversationType}s/${conversationId}/messages/${messageId}`
       );
     }
     await updateDoc(ref, data);
@@ -294,18 +294,18 @@ export class PostService {
    * This function navigates to the thread-window with the answers to the selected post
    *
    * @param postId the id of the post
-   * @param type conversation-type (channel or chat)
+   * @param conversationType conversation-type (channel or chat)
    * @param conversationId the id of the conversation
    */
   openAnswers(
     postId: string,
-    type: 'channel' | 'chat',
+    conversationType: 'channel' | 'chat',
     conversationId: string
   ) {
     this.mobileService.setMobileDashboardState('thread-window');
     this.router.navigate([
       '/dashboard',
-      type,
+      conversationType,
       conversationId,
       'answers',
       postId,

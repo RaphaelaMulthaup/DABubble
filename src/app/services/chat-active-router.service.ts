@@ -20,13 +20,13 @@ export class ChatActiveRouterService {
   private firestore = inject(Firestore);
 
   // expui un observable pentru id
-  getId$(route: ActivatedRoute): Observable<string> {
-    return route.paramMap.pipe(map((params) => params.get('id')!));
+  getConversationId$(route: ActivatedRoute): Observable<string> {
+    return route.paramMap.pipe(map((params) => params.get('conversationId')!));
   }
 
   // expui un observable pentru type
-  getType$(route: ActivatedRoute): Observable<string> {
-    return route.paramMap.pipe(map((params) => params.get('type')!));
+  getConversationType$(route: ActivatedRoute): Observable<string> {
+    return route.paramMap.pipe(map((params) => params.get('conversationType')!));
   }
 
   // expui un observable pentru type
@@ -34,23 +34,23 @@ export class ChatActiveRouterService {
     return route.paramMap.pipe(map((params) => params.get('messageId')!));
   }
 
-  getParams$(route: ActivatedRoute): Observable<{ type: string; id: string }> {
+  getParams$(route: ActivatedRoute): Observable<{ conversationType: string; conversationId: string }> {
     return route.paramMap.pipe(
       map((params) => ({
-        type: params.get('type')!,
-        id: params.get('id')!
+        conversationType: params.get('conversationType')!,
+        conversationId: params.get('conversationId')!
       }))
     );
   }
 
-  getMessages(type: string, id: string): Observable<PostInterface[]> {
+  getMessages(conversationType: string, conversationId: string): Observable<PostInterface[]> {
     // den Pfad dynamisch je nach type bauen
     let path: string | null = null;
 
-    if (type === 'channel') {
-      path = `channels/${id}/messages`;
-    } else if (type === 'chat') {
-      path = `chats/${id}/messages`;
+    if (conversationType === 'channel') {
+      path = `channels/${conversationId}/messages`;
+    } else if (conversationType === 'chat') {
+      path = `chats/${conversationId}/messages`;
     }
 
     if (!path) {
@@ -66,8 +66,8 @@ export class ChatActiveRouterService {
           (doc) =>
             ({
               ...doc,
-              channelId: type === 'channel' ? id : undefined,
-              chatId: type === 'chat' ? id : undefined,
+              channelId: conversationType === 'channel' ? conversationId : undefined,
+              chatId: conversationType === 'chat' ? conversationId : undefined,
             } as PostInterface)
         )
       )
@@ -75,25 +75,25 @@ export class ChatActiveRouterService {
   }
 
   getAnswers(
-    type: string,
-    id: string,
+    conversationType: string,
+    conversationId: string,
     messageId: string
   ): Observable<PostInterface[]> {
     let ref;
     let q;
-    if (type === 'channel') {
+    if (conversationType === 'channel') {
       ref = collection(
         this.firestore,
-        `channels/${id}/messages/${messageId}/answers`
+        `channels/${conversationId}/messages/${messageId}/answers`
       );
       q = query(ref, orderBy('createdAt', 'asc'));
       return collectionData(q, { idField: 'id' }) as Observable<
         PostInterface[]
       >;
-    } else if (type === 'chat') {
+    } else if (conversationType === 'chat') {
       ref = collection(
         this.firestore,
-        `chats/${id}/messages/${messageId}/answers`
+        `chats/${conversationId}/messages/${messageId}/answers`
       );
       q = query(ref, orderBy('createdAt', 'asc'));
       return collectionData(q, { idField: 'id' }) as Observable<
@@ -103,30 +103,30 @@ export class ChatActiveRouterService {
     return of([]);
   }
 
-  getMessageInfo(type: string, id: string, messageId: string) {
-    if (type === 'channel') {
-      const messageRef = doc(
-        this.firestore,
-        `channels/${id}/messages/${messageId}`
-      );
-      return docData(messageRef).pipe(
-        map((data) => ({ id: messageRef.id, ...data }))
-      );
-    } else if (type === 'chat') {
-      const messageRef = doc(
-        this.firestore,
-        `chats/${id}/messages/${messageId}`
-      );
-      return docData(messageRef).pipe(
-        map((data) => ({ id: messageRef.id, ...data }))
-      );
-    }
-    return of(null);
-  }
+  // getMessageInfo(conversationType: string, conversationId: string, messageId: string) {
+  //   if (conversationType === 'channel') {
+  //     const messageRef = doc(
+  //       this.firestore,
+  //       `channels/${conversationId}/messages/${messageId}`
+  //     );
+  //     return docData(messageRef).pipe(
+  //       map((data) => ({ id: messageRef.id, ...data }))
+  //     );
+  //   } else if (conversationType === 'chat') {
+  //     const messageRef = doc(
+  //       this.firestore,
+  //       `chats/${conversationId}/messages/${messageId}`
+  //     );
+  //     return docData(messageRef).pipe(
+  //       map((data) => ({ id: messageRef.id, ...data }))
+  //     );
+  //   }
+  //   return of(null);
+  // }
 
-  getChannelInfo(type: string, id: string): Observable<any> {
-    if (type === 'channel') {
-      const channelRef = doc(this.firestore, `channels/${id}`);
+  getChannelInfo(conversationType: string, conversationId: string): Observable<any> {
+    if (conversationType === 'channel') {
+      const channelRef = doc(this.firestore, `channels/${conversationId}`);
       return docData(channelRef);
     }
     return of([]);

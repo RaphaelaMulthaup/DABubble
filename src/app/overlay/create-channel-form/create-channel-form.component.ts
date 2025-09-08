@@ -61,22 +61,9 @@ export class CreateChannelFormComponent {
       .get('description')
       ?.value?.trim();
 
-    this.handlePossibleError(name);
     // Convert empty string to undefined
     const description = descriptionValue ? descriptionValue : undefined;
-
-    // Call the service to create a channel
-    this.channelService.createChannel(name, description).subscribe({
-      next: () => {
-        console.log('Channel created successfully');
-        this.errorMessage = null;
-        this.createChannel.reset();
-        this.overlayService.close();
-      },
-      error: (err: { code: string | null }) => {
-        this.errorMessage = err.code; // Set error message from backend
-      },
-    });
+    this.handlePossibleError(name);
   }
 
   /**
@@ -93,7 +80,6 @@ export class CreateChannelFormComponent {
       error: (err) => {
         if (err.message === 'name vergeben') {
           this.showErrorMessage = true;
-          console.log('ALARM! AAAALAAAHAARM!!!');
         } else {
           this.errorMessage = err.message;
         }

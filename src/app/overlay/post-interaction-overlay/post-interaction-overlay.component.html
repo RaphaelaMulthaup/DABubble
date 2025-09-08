@@ -22,7 +22,7 @@
   ></button>
 
   @if(mobileService.mobileDashboardState() !== 'thread-window') {
-  <button (click)="postService.openAnswers(post.id!, currentType, currentConversationId); overlayService.close()" class="open-answers btn-tertiary"></button>
+  <button (click)="postService.openAnswers(post.id!, currentConversationType, currentConversationId); overlayService.close()" class="open-answers btn-tertiary"></button>
   } 
   
   @if (senderIsCurrentUser$|async) {
