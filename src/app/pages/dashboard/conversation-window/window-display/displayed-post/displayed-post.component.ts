@@ -35,7 +35,7 @@ export class DisplayedPostComponent {
   private chatActiveRoute = inject(ChatActiveRouterService);
 
   typ$!: Observable<string>;
-  currentType!: 'channel' | 'chat';
+  currentConversationType!: 'channel' | 'chat';
   currentConversationId!: string;
 
   // Input message passed from the parent component
@@ -57,13 +57,13 @@ export class DisplayedPostComponent {
   @Input() editingPost?: boolean;
 
   ngOnChanges() {
-    this.chatActiveRoute.getParams$(this.route).subscribe(({ type, id }) => {
-      this.currentType = type as 'channel' | 'chat';
-      this.currentConversationId = id;
+    this.chatActiveRoute.getParams$(this.route).subscribe(({ conversationType, conversationId }) => {
+      this.currentConversationType = conversationType as 'channel' | 'chat';
+      this.currentConversationId = conversationId;
     });
 
     this.reactions$ = this.postService.getReactions(
-      '/' + this.currentType + 's/' + this.currentConversationId,
+      '/' + this.currentConversationType + 's/' + this.currentConversationId,
       'messages',
       this.post.id!
     );
@@ -77,7 +77,7 @@ export class DisplayedPostComponent {
 
     // this.answers$ = this.postService
     //   .getAnswers(
-    //     '/' + this.currentType + 's/' + this.currentConversationId,
+    //     '/' + this.currentConversationType + 's/' + this.currentConversationId,
     //     'messages',
     //     this.post.id!
     //   )
@@ -156,7 +156,7 @@ export class DisplayedPostComponent {
     //das abonniert den event emitter vom emoji-picker component
     overlay!.ref.instance.selectedEmoji.subscribe((emoji: string) => {
       this.postService.toggleReaction(
-        '/' + this.currentType + 's/' + this.currentConversationId,
+        '/' + this.currentConversationType + 's/' + this.currentConversationId,
         'messages',
         this.post.id!,
         emoji
@@ -217,7 +217,7 @@ export class DisplayedPostComponent {
         },
       },
       {
-        currentType: this.currentType,
+        currentConversationType: this.currentConversationType,
         currentConversationId: this.currentConversationId,
         post: this.post,
       }
@@ -235,7 +235,7 @@ export class DisplayedPostComponent {
    */
   toggleExistingReaction(emoji: string) {
     this.postService.toggleReaction(
-      '/' + this.currentType + 's/' + this.currentConversationId,
+      '/' + this.currentConversationType + 's/' + this.currentConversationId,
       'messages',
       this.post.id!,
       emoji

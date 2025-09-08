@@ -42,15 +42,15 @@ export class DashboardComponent {
 
   messages$ = this.route.paramMap.pipe(
     switchMap((params) =>
-      this.chatActiveRouterService.getMessages(params.get('type')!, params.get('id')!)
+      this.chatActiveRouterService.getMessages(params.get('conversationType')!, params.get('conversationId')!)
     )
   );
 
   answers$ = this.route.paramMap.pipe(
     switchMap((params) =>
       this.chatActiveRouterService.getAnswers(
-        params.get('type')!,
-        params.get('id')!,
+        params.get('conversationType')!,
+        params.get('conversationId')!,
         params.get('messageId')!
       )
     )

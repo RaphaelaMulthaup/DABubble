@@ -3,7 +3,6 @@ import { ChannelsService } from '../../../../services/channels.service';
 import { Observable } from 'rxjs';
 import { ChannelInterface } from '../../../../shared/models/channel.interface';
 import { AsyncPipe } from '@angular/common';
-import { ChannelSelectionService } from '../../../../services/channel-selection.service';
 import { AuthService } from '../../../../services/auth.service';
 import { CreateChannelFormComponent } from '../../../../overlay/create-channel-form/create-channel-form.component';
 import { RouterLink } from '@angular/router';
@@ -40,7 +39,6 @@ export class ChannelListComponent {
   mobileDashboardState: WritableSignal<MobileDashboardState> = this.mobileService.mobileDashboardState;
 
   // Services injected via Angular's DI system
-  private channelSelectionService = inject(ChannelSelectionService);
   private channnelsService = inject(ChannelsService);
   private authService = inject(AuthService);
   private overlayService = inject(OverlayService);
@@ -56,14 +54,6 @@ export class ChannelListComponent {
     this.currentUserId = this.authService.getCurrentUserId();
     this.channels$ = this.channnelsService.getCurrentUserChannels();
     // this.deletedChannels$ = this.channnelsService.getAllDeletedChannels();
-  }
-
-  /**
-   * Selects a channel using the ChannelSelectionService
-   * @param channel The channel to select
-   */
-  selectChannel(channel: ChannelInterface) {
-    this.channelSelectionService.selectChannel(channel);
   }
 
   openCreateChannelFormOverlay() {

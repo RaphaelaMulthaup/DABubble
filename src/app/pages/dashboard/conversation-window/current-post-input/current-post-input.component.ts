@@ -25,7 +25,7 @@ import { EmojiPickerComponent } from '../../../../overlay/emoji-picker/emoji-pic
   styleUrl: './current-post-input.component.scss',
 })
 export class CurrentPostInput {
-  type!: any;
+  conversationType!: any;
   conversationId!: string;
 
   /** If replying, holds the ID of the message being replied to; otherwise null. */
@@ -62,11 +62,11 @@ export class CurrentPostInput {
    * and updates local state accordingly.
    */
   ngOnInit() {
-    this.chatActiveRouterService.getType$(this.route).subscribe((t) => {
-      this.type = t;
+    this.chatActiveRouterService.getConversationType$(this.route).subscribe((t) => {
+      this.conversationType = t;
       //console.log(`aici trebuie tip  |  ${this.type} `);
     });
-    this.chatActiveRouterService.getId$(this.route).subscribe((id) => {
+    this.chatActiveRouterService.getConversationId$(this.route).subscribe((id) => {
       this.conversationId = id;
       //console.log(`aici channelid    | ${this.conversationId}`);
     });
@@ -155,14 +155,14 @@ export class CurrentPostInput {
         this.messageToReplyId,
         currentUserId!,
         post,
-        this.type
+        this.conversationType
       );
     } else {
       this.postService.createMessage(
         this.conversationId,
         currentUserId!,
         post,
-        this.type
+        this.conversationType
       );
     }
     this.postForm.reset();

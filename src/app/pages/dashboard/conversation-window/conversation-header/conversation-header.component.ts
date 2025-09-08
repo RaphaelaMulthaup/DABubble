@@ -22,7 +22,7 @@ export class ConversationHeaderComponent {
   private userService = inject(UserService);
   mobileDashboardState: WritableSignal<MobileDashboardState> = this.mobileService.mobileDashboardState;
 
-  type!: string;
+  conversationType!: string;
   conversationId!: string;
   messageToReplyId: string | null = null;
 
@@ -31,11 +31,11 @@ export class ConversationHeaderComponent {
   private router = inject(Router);
   
   ngOnInit() {
-    this.chatActiveRouterService.getType$(this.route).subscribe(t => {
-      this.type = t;
+    this.chatActiveRouterService.getConversationType$(this.route).subscribe(t => {
+      this.conversationType = t;
       //console.log(`aici trebuie tip  |  ${this.type} `);
     });
-    this.chatActiveRouterService.getId$(this.route).subscribe(id => {
+    this.chatActiveRouterService.getConversationId$(this.route).subscribe(id => {
       this.conversationId = id;
       //console.log(`aici channelid    | ${this.conversationId}`);
     });
@@ -46,8 +46,8 @@ export class ConversationHeaderComponent {
 
   }
 
-  redirectTo(type: string, id: string) {
-    this.router.navigate(['/dashboard', type, id]);
+  redirectTo(conversationType: string, id: string) {
+    this.router.navigate(['/dashboard', conversationType, id]);
   }
 
   // channelTyp!: string;
@@ -63,7 +63,7 @@ export class ConversationHeaderComponent {
   // //     );
   // // }
   // onChange() {
-  //   this.chatActiveRouterService.getType$(this.route).subscribe((type) => {
+  //   this.chatActiveRouterService.getConversationType$(this.route).subscribe((type) => {
   //     this.channelTyp = type;
   //     console.log('type:', type);
   //   });
