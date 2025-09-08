@@ -28,4 +28,10 @@ export class ConversationWindowComponent {
   @Input() data$!: Observable<PostInterface[]>;
   @Output() changeMobileDashboardState =
     new EventEmitter<MobileDashboardState>();
+  mobileService = inject(MobileService);
+  mobileDashboardState!: WritableSignal<MobileDashboardState>;
+
+  ngOnInit() {
+    this.mobileDashboardState = this.mobileService.mobileDashboardState;
+  }
 }
