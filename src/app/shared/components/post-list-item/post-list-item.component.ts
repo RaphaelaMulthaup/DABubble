@@ -20,7 +20,7 @@ export class PostListItemComponent {
   constructor(private router: Router) {}
 
   navigateToConversation() {
-    const type = this.post.chatId ? 'chat' : 'channel';
+    const conversationType = this.post.chatId ? 'chat' : 'channel';
     const conversationId = this.post.chatId ?? this.post.channelId ?? 'unknown';
     const postId = this.post.id;
     const parentMessageId = this.post.parentMessageId;
@@ -29,13 +29,13 @@ export class PostListItemComponent {
       if (this.post.answer) {
         this.mobileService.setMobileDashboardState('thread-window');
         this.router.navigate(
-          ['/dashboard', type, conversationId, 'answers', parentMessageId],
+          ['/dashboard', conversationType, conversationId, 'answers', parentMessageId],
           {
             queryParams: { scrollTo: postId },
           }
         );
       } else {
-        this.router.navigate(['/dashboard', type, conversationId], {
+        this.router.navigate(['/dashboard', conversationType, conversationId], {
           queryParams: { scrollTo: postId },
         });
       }

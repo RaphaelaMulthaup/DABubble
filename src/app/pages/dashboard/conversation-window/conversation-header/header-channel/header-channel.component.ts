@@ -37,7 +37,7 @@ export class HeaderChannelComponent {
   };
 
   ngOnInit() {
-    this.channelDetails$ = this.chatActiveRouterService.getId$(this.route).pipe(
+    this.channelDetails$ = this.chatActiveRouterService.getConversationId$(this.route).pipe(
       switchMap((id) => {
         this.channelId = id;
         return this.channelService.getCurrentChannel(this.channelId);

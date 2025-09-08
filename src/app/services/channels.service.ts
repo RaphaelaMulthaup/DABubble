@@ -13,7 +13,7 @@ import {
   getDoc,
   getDocs,
   QuerySnapshot,
-  arrayUnion
+  arrayUnion,
 } from '@angular/fire/firestore';
 import { from, map, Observable, of, switchMap, tap } from 'rxjs';
 import { AuthService } from './auth.service';
@@ -106,7 +106,7 @@ export class ChannelsService {
         };
         return from(addDoc(channelRef, channelData)).pipe(map(() => {}));
       })
-    )
+    );
   }
 
   /**
@@ -117,7 +117,7 @@ export class ChannelsService {
   deleteChannel(channelId: string): Observable<void> {
     const channelDocRef = doc(this.firestore, `channels/${channelId}`);
     const promise = updateDoc(channelDocRef, { deleted: true });
-    this.router.navigate(["/dashboard"]);
+    this.router.navigate(['/dashboard']);
     this.overlayService.close();
     return from(promise);
   }
@@ -139,11 +139,11 @@ export class ChannelsService {
    * await this.leaveChannel("123abc", "user_456");
    * // -> "user_456" will be removed from the channel's memberIds array.
    */
-  async leaveChannel(channelId:string , currentUserId:string){
-      const channelDocRef = doc(this.firestore, `channels/${channelId}`);
-      await updateDoc(channelDocRef, {memberIds: arrayRemove(currentUserId)});
-      this.overlayService.close();
-      this.router.navigate(["/dashboard"]);
+  async leaveChannel(channelId: string, currentUserId: string) {
+    const channelDocRef = doc(this.firestore, `channels/${channelId}`);
+    await updateDoc(channelDocRef, { memberIds: arrayRemove(currentUserId) });
+    this.overlayService.close();
+    this.router.navigate(['/dashboard']);
   }
 
   /**
@@ -157,9 +157,9 @@ export class ChannelsService {
     return from(promise);
   }
 
-  async addMemberToChannel(channelId:string, newMembers:string[]){
+  async addMemberToChannel(channelId: string, newMembers: string[]) {
     const channelDocRef = doc(this.firestore, `channels/${channelId}`);
-    await updateDoc(channelDocRef, {memberIds: arrayUnion(...newMembers)});
+    await updateDoc(channelDocRef, { memberIds: arrayUnion(...newMembers) });
   }
 
   /**
