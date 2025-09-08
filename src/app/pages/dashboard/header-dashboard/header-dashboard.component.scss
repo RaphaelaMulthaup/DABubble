@@ -1,13 +1,7 @@
 @import "./../../../../styles.scss";
 
 header {
-  // @include dFlex($g: 20px);
-  background-color: var(--color-purple-white);
-  // padding: 25px 34px 20px 50px;
-  padding: 16px;
-
   .logo-box {
-
     .logo-final {
       // width: 242px;
       // height: 70px;
@@ -76,7 +70,7 @@ h1 {
   aspect-ratio: 1;
   border-radius: 50%;
 
-  &:hover{
+  &:hover {
     cursor: pointer;
   }
 }
@@ -95,13 +89,34 @@ h1 {
   rotate: 90deg;
 }
 
-.profile-view{
+.profile-view {
   display: none;
   position: absolute;
   top: 60px;
   z-index: 10;
 }
 
-.showProfile{
+.showProfile {
   display: flex;
+}
+
+.header-desktop {
+  background-color: var(--color-purple-white);
+  @include dFlex($g: 20px);
+  padding: 25px 34px 20px 50px;
+}
+
+.header-mobile {
+  background-color: white;
+  app-search-bar {
+    margin: 32px 16px 0 16px;
+  }
+}
+
+.header-mobile-upper-area {
+  width: 100%;
+  @include dFlex($jc: space-between);
+  background-color: var(--color-purple-white);
+  padding: 16px;
+  // margin-bottom: 32px;
 }
