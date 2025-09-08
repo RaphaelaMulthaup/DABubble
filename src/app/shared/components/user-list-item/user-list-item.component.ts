@@ -49,8 +49,8 @@ export class UserListItemComponent {
    * then navigates to it if it exists.
    */
   async pickOutAndNavigateToChat() {
-    this.mobileService.setMobileDashboardState('message-window');
     if (!this.currentUserId) return; // Stop if user is not logged in
+    this.mobileService.setMobileDashboardState('message-window');
     this.chatService.navigateToChat(this.currentUserId, this.user.uid);
   }
 

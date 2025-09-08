@@ -6,7 +6,7 @@ import {
   signOut,
   User,
 } from '@angular/fire/auth';
-import { signInWithEmailAndPassword, updatePassword, sendEmailVerification, ActionCodeSettings } from 'firebase/auth';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 
 import {
   Firestore,
@@ -16,7 +16,12 @@ import {
   updateDoc,
 } from '@angular/fire/firestore';
 
-import { getAuth, signInWithPopup, GoogleAuthProvider, sendPasswordResetEmail } from 'firebase/auth';
+import {
+  getAuth,
+  signInWithPopup,
+  GoogleAuthProvider,
+  sendPasswordResetEmail,
+} from 'firebase/auth';
 
 import { from, Observable } from 'rxjs';
 import { BehaviorSubject } from 'rxjs';
@@ -68,7 +73,7 @@ export class AuthService {
     onAuthStateChanged(this.auth, (user) => {
       this.emptyUserObject();
       this.userSubject.next(user);
-      if (user) {      
+      if (user) {
         // Firestore-User laden
         this.userService.getUserById(user.uid).subscribe((userData) => {
           this.currentUserSubject.next(userData);
@@ -76,7 +81,7 @@ export class AuthService {
       } else {
         this.currentUserSubject.next(null);
       }
-    }); 
+    });
   }
 
   /**
@@ -88,7 +93,7 @@ export class AuthService {
     // if (!this.currentUserSubject.value) {
     //   throw new Error('Kein User eingeloggt!');
     // }
-    return this.currentUserSubject.value!
+    return this.currentUserSubject.value!;
   }
 
   /**
@@ -225,7 +230,7 @@ export class AuthService {
   }
 
   /**
-   * Atempt to send link with selfmade url 
+   * Atempt to send link with selfmade url
    */
   // sendPasswordRessetEmail(email: string) {
   //   const auth = getAuth();
@@ -237,9 +242,9 @@ export class AuthService {
   // }
 
   /**
-   * 
-   * Sends link to firesore mail reset url 
-   * 
+   *
+   * Sends link to firesore mail reset url
+   *
    */
   sendPasswordRessetEmail(email: string): Promise<void> {
     const auth = getAuth();
@@ -247,9 +252,9 @@ export class AuthService {
   }
 
   /**
-   * 
-   * funktion to save new user image 
-   * 
+   *
+   * funktion to save new user image
+   *
    */
   updateUserPhotoUrl(photoUrl: string): Promise<void> {
     const user = this.auth.currentUser;
@@ -258,9 +263,9 @@ export class AuthService {
   }
 
   /**
-   * 
+   *
    * funstion to save new Username
-   * 
+   *
    */
   updateUserName(newName: string): Promise<void> {
     const user = this.auth.currentUser;

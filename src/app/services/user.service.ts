@@ -5,7 +5,6 @@ import {
   collection,
   doc,
   updateDoc,
-  deleteField,
   query,
   where,
   getDocs,
@@ -13,7 +12,6 @@ import {
 import { UserInterface } from '../shared/models/user.interface';
 import { map, Observable } from 'rxjs';
 import { docData } from '@angular/fire/firestore';
-import { User } from '@angular/fire/auth';
 
 @Injectable({
   providedIn: 'root',
@@ -22,34 +20,16 @@ export class UserService {
   // Inject Firestore instance
   private firestore: Firestore = inject(Firestore);
 
-  /**
-   * Fetch all users from the 'users' collection
-   * Returns an Observable of an array of UserInterface
-   */
-  getAllUsers(): Observable<UserInterface[]> {
-    const usersCollection = collection(this.firestore, 'users'); // Reference to 'users' collection
-    return collectionData(usersCollection, { idField: 'uid' }) as Observable<
-      UserInterface[]
-    >;
-  }
-
-  /**
-   * Add a contact to a specific user
-   * @param userId - ID of the user to update
-   * @param contactId - ID of the contact to add
-   * @param contactData - Data of the contact (userId and chatId)
-   */
-  addContactToUser(
-    userId: string,
-    contactId: string,
-    contactData: { userId: string; chatId: string }
-  ): Promise<void> {
-    const userDocRef = doc(this.firestore, `users/${userId}`); // Reference to the specific user document
-    // Set a single field in the 'contacts' subfield
-    return updateDoc(userDocRef, {
-      [`contacts.${contactId}`]: contactData,
-    });
-  }
+  // /**
+  //  * Fetch all users from the 'users' collection
+  //  * Returns an Observable of an array of UserInterface
+  //  */
+  // getAllUsers(): Observable<UserInterface[]> {
+  //   const usersCollection = collection(this.firestore, 'users'); // Reference to 'users' collection
+  //   return collectionData(usersCollection, { idField: 'uid' }) as Observable<
+  //     UserInterface[]
+  //   >;
+  // }
 
   /**
    * Fetch a single user by UID

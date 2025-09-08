@@ -29,12 +29,19 @@ export class PostListItemComponent {
       if (this.post.answer) {
         this.mobileService.setMobileDashboardState('thread-window');
         this.router.navigate(
-          ['/dashboard', conversationType, conversationId, 'answers', parentMessageId],
+          [
+            '/dashboard',
+            conversationType,
+            conversationId,
+            'answers',
+            parentMessageId,
+          ],
           {
             queryParams: { scrollTo: postId },
           }
         );
       } else {
+        this.mobileService.setMobileDashboardState('message-window');
         this.router.navigate(['/dashboard', conversationType, conversationId], {
           queryParams: { scrollTo: postId },
         });

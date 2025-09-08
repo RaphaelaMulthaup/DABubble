@@ -11,6 +11,7 @@ import { ChatInterface } from '../shared/models/chat.interface';
 import { map, Observable } from 'rxjs';
 import { MobileDashboardState } from '../shared/types/mobile-dashboard-state.type';
 import { Router } from '@angular/router';
+import { MobileService } from './mobile.service';
 
 @Injectable({
   providedIn: 'root',
@@ -18,6 +19,7 @@ import { Router } from '@angular/router';
 export class ChatService {
   private firestore: Firestore = inject(Firestore);
   constructor(private router: Router) {}
+  mobileService = inject(MobileService);
 
   /**
    * Creates (or merges) a new chat document between two users in Firestore.
@@ -117,6 +119,7 @@ export class ChatService {
   async navigateToChat(currentUserId: string, otherUserId: string) {
     const chatId = await this.getChatId(currentUserId, otherUserId);
     await this.createChat(currentUserId, otherUserId);
+    this.mobileService.setMobileDashboardState('message-window');
     this.router.navigate(['/dashboard', 'chat', chatId]);
   }
 }
