@@ -9,9 +9,10 @@ import { OverlayService } from '../../services/overlay.service';
   styleUrl: './edit-post.component.scss',
 })
 export class EditPostOverlayComponent {
-  overlayService = inject(OverlayService);
   post!: PostInterface;
   @Output() editPostActive = new EventEmitter<boolean>;
+
+  constructor(private overlayService :OverlayService){}
 
   confirmEdit() {
     this.editPostActive.emit(true)

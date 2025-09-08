@@ -10,8 +10,6 @@ import { AuthState } from '../../types/auth-state.type';
 export class CreateAccountBtnComponent {
   @Output()changeAuthState = new EventEmitter<AuthState>();
 
-  constructor(){}
-
   emitStateChange() {
     this.changeAuthState.emit('registration-form');
   }

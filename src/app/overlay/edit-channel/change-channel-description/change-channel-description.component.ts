@@ -8,30 +8,29 @@ import { UserInterface } from '../../../shared/models/user.interface';
 
 @Component({
   selector: 'app-change-channel-description',
-  imports: [CommonModule,FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './change-channel-description.component.html',
-  styleUrl: './change-channel-description.component.scss'
+  styleUrl: './change-channel-description.component.scss',
 })
 export class ChangeChannelDescriptionComponent {
-@Input() channelId?:string;
-@Input() user$?:Observable<UserInterface>;
+  @Input() channelId?: string;
+  @Input() user$?: Observable<UserInterface>;
 
-@Input() channel?:ChannelInterface;
+  @Input() channel?: ChannelInterface;
 
-  isEditActive:boolean = false;
+  isEditActive: boolean = false;
   descriptionInput?: string;
 
- 
-private channelService = inject(ChannelsService);
+  constructor(private channelService: ChannelsService) {}
 
-async saveDescription(newName: string) {
-  this.channelService.changeChannelDescription(this.channelId!, newName);
-  this.isEditActive = !this.isEditActive;
-}
+  async saveDescription(newName: string) {
+    this.channelService.changeChannelDescription(this.channelId!, newName);
+    this.isEditActive = !this.isEditActive;
+  }
 
   toggleEdit() {
     this.isEditActive = !this.isEditActive;
-    if (this.isEditActive && this.channel){
+    if (this.isEditActive && this.channel) {
       this.descriptionInput = this.channel.description;
     }
   }

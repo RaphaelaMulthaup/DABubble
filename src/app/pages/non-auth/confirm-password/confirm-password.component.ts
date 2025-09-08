@@ -28,7 +28,6 @@ export class ConfirmPasswordComponent implements OnInit {
   @Output() changeAuthState = new EventEmitter<AuthState>();
 
   showErrorMessage: boolean = false;
-  // wavieFlagie: boolean = false;
   showToast: boolean = false;
 
   // emailList: string[] = [];

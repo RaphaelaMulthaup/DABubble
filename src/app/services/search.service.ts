@@ -10,15 +10,25 @@ import { ChatService } from './chat.service';
 
 @Injectable({ providedIn: 'root' })
 export class SearchService {
-  chatService = inject(ChatService);
   private allChannels$ = new BehaviorSubject<ChannelInterface[]>([]);
   private userChannels$ = new BehaviorSubject<ChannelInterface[]>([]);
-
   // Local state managed with BehaviorSubjects for real-time updates
   private users$ = new BehaviorSubject<UserInterface[]>([]);
   private channels$ = new BehaviorSubject<ChannelInterface[]>([]);
   private chatPosts$ = new BehaviorSubject<PostInterface[]>([]);
   private channelPosts$ = new BehaviorSubject<PostInterface[]>([]);
+
+  constructor(
+    private firestore: Firestore,
+    private authService: AuthService,
+    private chatService: ChatService
+  ) {
+    this.listenToUsers(); // Users kann man immer laden
+    this.initAfterLogin(); // Channels & Chats erst nach User
+    this.listenToChannelMessages();
+    this.loadAllChannels();
+    this.userChannels$.subscribe((chs) => this.channels$.next(chs));
+  }
 
   private initAfterLogin() {
     this.authService.currentUser$.subscribe((user) => {
@@ -28,14 +38,6 @@ export class SearchService {
       this.loadChannelsForUser(uid);
       this.loadChatsForUser(uid);
     });
-  }
-
-  constructor(private firestore: Firestore, private authService: AuthService) {
-    this.listenToUsers(); // Users kann man immer laden
-    this.initAfterLogin(); // Channels & Chats erst nach User
-    this.listenToChannelMessages();
-    this.loadAllChannels();
-    this.userChannels$.subscribe((chs) => this.channels$.next(chs));
   }
 
   private loadAllChannels() {

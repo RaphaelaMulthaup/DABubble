@@ -18,12 +18,10 @@ export class UserListItemToChannelComponent {
   @Input() results!: Signal<UserInterface[]>;
   @Input() overlayRef!: OverlayRef;
 
-  private overlayService = inject(OverlayService);
   overlay: string = '';
-
   users: UserInterface[] = [];
 
-  constructor() {
+  constructor(private overlayService: OverlayService) {
     effect(() => {
       this.users = this.results(); // automat actualizat când signal-ul se schimbă
     });

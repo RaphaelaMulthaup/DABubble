@@ -20,9 +20,6 @@ export class LoginFormComponent {
   @Output() forgotPassword = new EventEmitter<void>();
   showLogin: boolean = true;
 
-  // Injects the AuthService to handle authentication
-  authService = inject(AuthService);
-
   // turns true, if loginWithGoogle() is executed and therefor disabling the error-message;
   isSubmittingWithGoogle: boolean = false;
 
@@ -41,7 +38,7 @@ export class LoginFormComponent {
     ]),
   });
 
-  constructor() {}
+  constructor(private authService: AuthService) {}
 
   onForgotPassword() {
     this.showLogin = false;

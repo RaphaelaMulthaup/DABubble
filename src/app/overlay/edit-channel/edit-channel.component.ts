@@ -27,32 +27,36 @@ import { MobileService } from '../../services/mobile.service';
   styleUrl: './edit-channel.component.scss',
 })
 export class EditChannelComponent {
-  private userService = inject(UserService);
-  private authService = inject(AuthService);
-  channelService = inject(ChannelsService);
-
-  currentUser = this.authService.currentUser.uid;
-
-  mobileService = inject(MobileService);
-  isMobile = false;
-
   private updateMobile = () => {
     this.isMobile = this.mobileService.isMobile();
   };
 
+  currentUser!: string;
   channelId?: string;
   channelName?: string;
   memberIds?: string[];
   createdById?: string;
   user$?: Observable<UserInterface>;
-  public overlayService = inject(OverlayService);
+  isMobile = false;
+
   // CORECT: Inițializare corectă a observabilului
-  channelDetails$: Observable<ChannelInterface | undefined> =
-    this.overlayService.overlayInput.pipe(
+  channelDetails$!: Observable<ChannelInterface | undefined>;
+  private destroy$ = new Subject<void>();
+
+  constructor(
+    private userService: UserService,
+    private authService: AuthService,
+    private mobileService: MobileService,
+    public channelService: ChannelsService,
+    public overlayService: OverlayService
+  ) {
+    this.currentUser = this.authService.currentUser.uid;
+    this.channelDetails$ = this.overlayService.overlayInput.pipe(
       switchMap((data) => data?.channel ?? of(null)),
       filter((channel): channel is ChannelInterface => !!channel)
     );
-  private destroy$ = new Subject<void>();
+    this.isMobile = this.mobileService.isMobile();
+  }
 
   ngOnInit() {
     this.channelDetails$!.pipe(takeUntil(this.destroy$)).subscribe(
@@ -66,7 +70,6 @@ export class EditChannelComponent {
         }
       }
     );
-    this.isMobile = this.mobileService.isMobile();
     window.addEventListener('resize', this.updateMobile);
   }
 

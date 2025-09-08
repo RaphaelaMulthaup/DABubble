@@ -14,7 +14,7 @@ import { MobileService } from '../../../services/mobile.service';
   ],
 })
 export class ChannelListItemComponent {
-  public mobileService = inject(MobileService);
+  constructor(public mobileService: MobileService) {}
 
   /** The channel whose information should be displayed. This is passed from the parent component. */
   @Input() channel!: ChannelInterface;

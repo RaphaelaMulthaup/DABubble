@@ -14,7 +14,7 @@ import {
   getDocs,
   QuerySnapshot,
   arrayUnion,
-  deleteDoc
+  deleteDoc,
 } from '@angular/fire/firestore';
 import { from, map, Observable, of, switchMap, tap } from 'rxjs';
 import { AuthService } from './auth.service';
@@ -27,14 +27,6 @@ import { MobileService } from './mobile.service';
   providedIn: 'root',
 })
 export class ChannelsService {
-  // Inject Firestore instance
-  private firestore = inject(Firestore);
-  // Inject Authentication service
-  private authService = inject(AuthService);
-  private router = inject(Router);
-  private overlayService = inject(OverlayService);
-  private mobileService = inject(MobileService);
-
   // // Do we really ever need all channels?
   // getAllChannels(): Observable<ChannelInterface[]> {
   //   const channelCollection = collection(this.firestore, 'channels');
@@ -42,6 +34,14 @@ export class ChannelsService {
   //     map((channels) => channels.filter((channel) => !channel['deleted']))
   //   ) as Observable<ChannelInterface[]>;
   // }
+
+  constructor(
+    private firestore: Firestore,
+    private authService: AuthService,
+    private router: Router,
+    private overlayService: OverlayService,
+    private mobileService: MobileService
+  ) {}
 
   getCurrentChannel(
     channelId: string
@@ -109,8 +109,8 @@ export class ChannelsService {
   deleteChannel(channelId: string): Observable<void> {
     const channelDocRef = doc(this.firestore, `channels/${channelId}`);
     const promise = deleteDoc(channelDocRef);
-    this.router.navigate(["/dashboard"]);
-    this.mobileService.setMobileDashboardState('sidenav')
+    this.router.navigate(['/dashboard']);
+    this.mobileService.setMobileDashboardState('sidenav');
     this.overlayService.close();
     return from(promise);
   }

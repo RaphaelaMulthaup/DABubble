@@ -10,7 +10,6 @@ import { MobileService } from '../../../services/mobile.service';
 import { ProfileViewOtherUsersComponent } from '../../../overlay/profile-view-other-users/profile-view-other-users.component';
 import { Observable, of } from 'rxjs';
 
-
 @Component({
   selector: 'app-user-list-item', // Component selector used in parent templates
   imports: [CommonModule],
@@ -25,21 +24,19 @@ export class UserListItemComponent {
   @Input() user!: UserInterface;
   @Input() relatedToSearchResultPost: boolean = false;
   @Input() inCurrentPostInput = false;
-  @Input() doNothing:boolean = false;
-  @Input() showProfile:boolean = false;
+  @Input() doNothing: boolean = false;
+  @Input() showProfile: boolean = false;
 
   // Stores the ID of the currently logged-in user
   currentUserId: string | null = null;
 
-  // Inject AuthService instance to access authentication-related methods
-  private authService = inject(AuthService);
-
-  // Inject ChatService instance to manage chat-related operations
-  private chatService = inject(ChatService);
-  private overlayService = inject(OverlayService);
-  public mobileService = inject(MobileService);
-
-  constructor(private router: Router) {
+  constructor(
+    private router: Router,
+    private authService: AuthService,
+    private chatService: ChatService,
+    private overlayService: OverlayService,
+    public mobileService: MobileService
+  ) {
     // Retrieve the currently logged-in user ID from AuthService
     this.currentUserId = this.authService.currentUser.uid;
   }
@@ -54,23 +51,22 @@ export class UserListItemComponent {
     this.chatService.navigateToChat(this.currentUserId, this.user.uid);
   }
 
-
-  async choiceBetweenNavigateAndProfile(){
+  async choiceBetweenNavigateAndProfile() {
     if (!this.currentUserId) return; // Stop if user is not logged in
     if (this.doNothing) return;
-    if(this.showProfile){
+    if (this.showProfile) {
       this.openProfileOverlay();
-    }else if(!this.showProfile){
+    } else if (!this.showProfile) {
       this.pickOutAndNavigateToChat();
     }
   }
 
   openProfileOverlay() {
     this.overlayService.openComponent(
-        ProfileViewOtherUsersComponent,
-        'cdk-overlay-dark-backdrop',
-        { globalPosition: 'center' },
-        {user$: of(this.user)}
+      ProfileViewOtherUsersComponent,
+      'cdk-overlay-dark-backdrop',
+      { globalPosition: 'center' },
+      { user$: of(this.user) }
     );
   }
 }

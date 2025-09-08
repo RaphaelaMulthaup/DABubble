@@ -16,8 +16,7 @@ import { Router } from '@angular/router';
   providedIn: 'root',
 })
 export class ChatService {
-  private firestore: Firestore = inject(Firestore);
-  constructor(private router: Router) {}
+  constructor(private router: Router, private firestore: Firestore) {}
 
   /**
    * Creates (or merges) a new chat document between two users in Firestore.

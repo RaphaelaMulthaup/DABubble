@@ -8,7 +8,6 @@ import { doc } from '@angular/fire/firestore';
   styleUrl: './intro.component.scss'
 })
 export class IntroComponent implements OnInit {
-
   ngOnInit(): void {
       this.introAnimation();
   }

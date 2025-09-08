@@ -6,10 +6,14 @@ import { PostListItemComponent } from '../../shared/components/post-list-item/po
 
 @Component({
   selector: 'app-search-results',
-  imports: [UserListItemComponent, ChannelListItemComponent, PostListItemComponent],
+  imports: [
+    UserListItemComponent,
+    ChannelListItemComponent,
+    PostListItemComponent,
+  ],
   templateUrl: './search-results.component.html',
   styleUrl: './search-results.component.scss',
 })
 export class SearchResultsComponent {
-   @Input() results$: any; 
+  @Input() results$: any;
 }

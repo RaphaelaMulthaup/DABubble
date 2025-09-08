@@ -19,10 +19,14 @@ import { HeaderOverlayComponent } from '../../shared/components/header-overlay/h
   styleUrl: './profile-view-main.component.scss',
 })
 export class ProfileViewMainComponent {
-  public overlayService = inject(OverlayService);
-  private authService = inject(AuthService);
+  user$: Observable<UserInterface | null>;
 
-  user$: Observable<UserInterface | null> = this.authService.currentUser$;
+  constructor(
+    public overlayService: OverlayService,
+    private authService: AuthService
+  ) {
+    this.user$ = this.authService.currentUser$;
+  }
 
   showEdit() {
     this.overlayService.openComponent(

@@ -30,11 +30,12 @@ import { Router } from '@angular/router';
   providedIn: 'root', // Service is available globally in the application
 })
 export class PostService {
-  // Inject Firestore instance
-  private firestore: Firestore = inject(Firestore);
-  private authService = inject(AuthService);
-  private mobileService = inject(MobileService);
-  private router = inject(Router);
+  constructor(
+    private firestore: Firestore,
+    private authService: AuthService,
+    private mobileService: MobileService,
+    private router: Router
+  ) {}
 
   // // Holds the current list of messages for the displayed conversation
   // private _messagesDisplayedConversation = new BehaviorSubject<

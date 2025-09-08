@@ -81,6 +81,12 @@ export class SearchBarComponent {
               overlayX: 'center',
               overlayY: 'top',
             },
+            originPositionFallback: {
+              originX: 'center',
+              originY: 'bottom',
+              overlayX: 'center',
+              overlayY: 'top',
+            },
           },
           { results$: this.groupedResults() }
         );

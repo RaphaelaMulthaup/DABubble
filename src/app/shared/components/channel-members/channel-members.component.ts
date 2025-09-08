@@ -21,22 +21,24 @@ import { MobileService } from '../../../services/mobile.service';
 })
 export class ChannelMembersComponent implements OnDestroy, OnInit {
   @Input() channelDetails$?: Observable<ChannelInterface | undefined>;
+  @Input() overlay: string = '';
   memberIds?: string[];
   clickedAddMember: boolean = false;
-
-  mobileService = inject(MobileService);
   isMobile = false;
-
-  private updateMobile = () => {
-    this.isMobile = this.mobileService.isMobile();
-  };
-
-  @Input() overlay: string = '';
-
-  private userService = inject(UserService);
-  private overlayService = inject(OverlayService);
   users$!: Observable<UserInterface[]>;
+  private updateMobile: () => void;
   private destroy$ = new Subject<void>();
+
+  constructor(
+    private mobileService: MobileService,
+    private userService: UserService,
+    private overlayService: OverlayService
+  ) {
+    this.updateMobile = () => {
+      this.isMobile = this.mobileService.isMobile();
+    };
+    this.isMobile = this.mobileService.isMobile();
+  }
 
   ngOnInit() {
     this.channelDetails$!.pipe(takeUntil(this.destroy$)).subscribe(
@@ -45,8 +47,6 @@ export class ChannelMembersComponent implements OnDestroy, OnInit {
         this.users$ = this.userService.getMembersFromChannel(this.memberIds!);
       }
     );
-
-    this.isMobile = this.mobileService.isMobile();
     window.addEventListener('resize', this.updateMobile);
   }
 

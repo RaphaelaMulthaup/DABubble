@@ -12,13 +12,15 @@ import { Subject, takeUntil } from 'rxjs';
   styleUrl: './reacted-users.component.scss',
 })
 export class ReactedUsersComponent {
-  userService = inject(UserService);
-  authService = inject(AuthService);
-
   reaction!: ReactionInterface;
   userNames: string[] = [];
   currentUserReacted: boolean = false;
   private destroy$ = new Subject<void>();
+
+  constructor(
+    private userService: UserService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit() {
     const currentUserId = this.authService.currentUser.uid!;
