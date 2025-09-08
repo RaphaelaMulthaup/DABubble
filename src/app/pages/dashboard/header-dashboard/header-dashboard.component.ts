@@ -23,20 +23,17 @@ import { OverlayService } from '../../../services/overlay.service';
   templateUrl: './header-dashboard.component.html',
   styleUrl: './header-dashboard.component.scss',
 })
-export class HeaderDashboardComponent implements OnInit {
+export class HeaderDashboardComponent {
   public authService = inject(AuthService);
   public overlayService = inject(OverlayService);
 
-  currentUser$?: Observable<UserInterface | null>;
+  currentUser$?: Observable<UserInterface | null> =
+    this.authService.currentUser$;
 
   public mobileService = inject(MobileService);
 
   mobileDashboardState: WritableSignal<MobileDashboardState> =
     this.mobileService.mobileDashboardState;
-
-  ngOnInit(): void {
-    this.currentUser$ = this.authService.currentUser$;
-  }
 
   showProfile() {
     this.overlayService.openComponent(

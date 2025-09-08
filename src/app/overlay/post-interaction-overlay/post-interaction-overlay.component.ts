@@ -1,6 +1,6 @@
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Observable, of } from 'rxjs';
+import { Observable, of, take } from 'rxjs';
 import { OverlayService } from '../../services/overlay.service';
 import { EmojiPickerComponent } from '../emoji-picker/emoji-picker.component';
 import { PostService } from '../../services/post.service';
@@ -59,7 +59,7 @@ export class PostInteractionOverlayComponent {
     );
 
     //das abonniert den event emitter vom emoji-picker component
-    overlay!.ref.instance.selectedEmoji.subscribe((emoji: string) => {
+    overlay!.ref.instance.selectedEmoji.pipe(take(1)).subscribe((emoji: string) => {
       this.postService.toggleReaction(
         '/' + this.currentConversationType + 's/' + this.currentConversationId,
         'messages',

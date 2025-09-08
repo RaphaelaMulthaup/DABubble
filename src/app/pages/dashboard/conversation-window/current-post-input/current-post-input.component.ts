@@ -5,7 +5,7 @@ import { AuthService } from '../../../../services/auth.service';
 import { ActivatedRoute } from '@angular/router';
 import { ChatActiveRouterService } from '../../../../services/chat-active-router.service';
 import { PostService } from '../../../../services/post.service';
-import { startWith, debounceTime, filter, switchMap } from 'rxjs';
+import { startWith, debounceTime, filter, switchMap, Subject, takeUntil } from 'rxjs';
 import { SearchResult } from '../../../../shared/types/search-result.type';
 import { SearchService } from '../../../../services/search.service';
 import { UserListItemComponent } from '../../../../shared/components/user-list-item/user-list-item.component';
@@ -55,6 +55,7 @@ export class CurrentPostInput {
     text: new FormControl('', []),
   });
   searchResults: SearchResult[] = [];
+  private destroy$ = new Subject<void>();
 
   /**
    * Angular lifecycle hook that runs after the component is initialized.
@@ -62,16 +63,23 @@ export class CurrentPostInput {
    * and updates local state accordingly.
    */
   ngOnInit() {
-    this.chatActiveRouterService.getConversationType$(this.route).subscribe((t) => {
-      this.conversationType = t;
-      //console.log(`aici trebuie tip  |  ${this.type} `);
-    });
-    this.chatActiveRouterService.getConversationId$(this.route).subscribe((id) => {
-      this.conversationId = id;
-      //console.log(`aici channelid    | ${this.conversationId}`);
-    });
+    this.chatActiveRouterService
+      .getConversationType$(this.route)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((t) => {
+        this.conversationType = t;
+        //console.log(`aici trebuie tip  |  ${this.type} `);
+      });
+    this.chatActiveRouterService
+      .getConversationId$(this.route)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((id) => {
+        this.conversationId = id;
+        //console.log(`aici channelid    | ${this.conversationId}`);
+      });
     this.chatActiveRouterService
       .getMessageId$(this.route)
+      .pipe(takeUntil(this.destroy$))
       .subscribe((msgId) => {
         this.messageToReplyId = msgId;
         //console.log(` aici messageid    |  ${this.messageToReplyId}`);
@@ -96,9 +104,15 @@ export class CurrentPostInput {
           return [[]]; // leeres Array sonst
         })
       )
+      .pipe(takeUntil(this.destroy$))
       .subscribe((results: SearchResult[]) => {
         this.searchResults = results;
       });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   /**
@@ -123,8 +137,7 @@ export class CurrentPostInput {
           overlayX: 'start',
           overlayY: 'top',
         },
-      },
-      { }
+      }
     );
 
     // overlay!.ref.instance.selectedEmoji.subscribe((emoji: string) => {

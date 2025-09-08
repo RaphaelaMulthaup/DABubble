@@ -1,6 +1,12 @@
 import { Component, EventEmitter, inject, OnInit, Output } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
-import { FormControl, FormsModule, ReactiveFormsModule, FormGroup, Validators } from '@angular/forms';
+import {
+  FormControl,
+  FormsModule,
+  ReactiveFormsModule,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 
 import { UserService } from '../../../services/user.service';
 import { AngularFireFunctions } from '@angular/fire/compat/functions';
@@ -14,13 +20,9 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-confirm-password',
-  imports: [
-    FormsModule,
-    ReactiveFormsModule,
-    CommonModule,
-  ],
+  imports: [FormsModule, ReactiveFormsModule, CommonModule],
   templateUrl: './confirm-password.component.html',
-  styleUrl: './confirm-password.component.scss'
+  styleUrl: './confirm-password.component.scss',
 })
 export class ConfirmPasswordComponent implements OnInit {
   @Output() changeAuthState = new EventEmitter<AuthState>();
@@ -29,11 +31,12 @@ export class ConfirmPasswordComponent implements OnInit {
   // wavieFlagie: boolean = false;
   showToast: boolean = false;
 
-  emailList: string[] = [];
+  // emailList: string[] = [];
+  emailExists: boolean = false;
   userColl: any;
 
   confirmForm: FormGroup = new FormGroup({
-    email: new FormControl('', [Validators.required, Validators.email])
+    email: new FormControl('', [Validators.required, Validators.email]),
   });
   userList!: any[];
   functions: any;
@@ -42,39 +45,46 @@ export class ConfirmPasswordComponent implements OnInit {
     private userService: UserService,
     private router: Router,
     private authService: AuthService
-  ) { }
+  ) {}
 
   /**
    * Get on init list of all emails and UIDs from firestore
    */
   ngOnInit(): void {
-    this.userService.getAllUserEmails().subscribe((users: any) => {
-      this.emailList = users.map((user: { email: any; }) => user.email);
-      users.forEach((user: { uid: any; email: any; }) => {
-        console.log(`UID: ${user.uid}, EMAIL: ${user.email}`);
-      })
-    })
+    // this.userService.getAllUserEmails().subscribe((users: any) => {
+    //   this.emailList = users.map((user: { email: any; }) => user.email);
+    //   users.forEach((user: { uid: any; email: any; }) => {
+    //     console.log(`UID: ${user.uid}, EMAIL: ${user.email}`);
+    //   })
+    // })
   }
 
   /**
    * Compares email from input with emails from loaded mail list.
    * Throws error message if no matching mail
    */
-  onSubmit() {
+  async onSubmit() {
     console.log('onSub');
     let inputMail = this.confirmForm.get('email')?.value;
-    if (this.emailList.includes(inputMail)) {
-     this.authService.sendPasswordRessetEmail(inputMail).then(() => {
-      // this.waveFlag();
-      this.showToast= true;
-      setTimeout(() => {
-        console.log('Mail erfolgreich gesendet');
-        this.backToLogin();
-      }, 1500);
-     }).catch((error) => {
-      console.error('Password-rest E-Mail konnte nicht gesendet werden', error);
-      this.showErrorMessage = true;
-     });
+    this.emailExists = await this.userService.checkForExistingUser(inputMail);
+    if (this.emailExists) {
+      this.authService
+        .sendPasswordRessetEmail(inputMail)
+        .then(() => {
+          // this.waveFlag();
+          this.showToast = true;
+          setTimeout(() => {
+            console.log('Mail erfolgreich gesendet');
+            this.backToLogin();
+          }, 1500);
+        })
+        .catch((error) => {
+          console.error(
+            'Password-rest E-Mail konnte nicht gesendet werden',
+            error
+          );
+          this.showErrorMessage = true;
+        });
     } else {
       this.showErrorMessage = true;
     }
@@ -104,14 +114,17 @@ export class ConfirmPasswordComponent implements OnInit {
   // }
 
   /**
-  * Sends linkt to reset password to found email
-  */
+   * Sends linkt to reset password to found email
+   */
   sendPasswortResset(email: string) {
-    this.authService.sendPasswordRessetEmail(email).then(() => {
-      // this.waveFlag();
-      this.showToast = true;
-    }).catch((error) => {
-      console.error('Fehler beim senden der Reset-Mail', error);
-    })
+    this.authService
+      .sendPasswordRessetEmail(email)
+      .then(() => {
+        // this.waveFlag();
+        this.showToast = true;
+      })
+      .catch((error) => {
+        console.error('Fehler beim senden der Reset-Mail', error);
+      });
   }
 }

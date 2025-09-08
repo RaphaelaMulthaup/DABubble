@@ -8,17 +8,16 @@ import { MobileDashboardState } from '../../../shared/types/mobile-dashboard-sta
 
 @Component({
   selector: 'app-conversation-window',
-  imports: [ConversationHeaderComponent, WindowDisplayComponent, CurrentPostInput],
+  imports: [
+    ConversationHeaderComponent,
+    WindowDisplayComponent,
+    CurrentPostInput,
+  ],
   templateUrl: './conversation-window.component.html',
-  styleUrl: './conversation-window.component.scss'
+  styleUrl: './conversation-window.component.scss',
 })
 export class ConversationWindowComponent {
-@Input() data$!:Observable<PostInterface[]>
-@Output() changeMobileDashboardState = new EventEmitter<MobileDashboardState>();
-
-ngOnInit(){
-    this.data$.subscribe(messages => {
-    //console.log('here are data from conversation-windows', messages);
-  });
-}
+  @Input() data$!: Observable<PostInterface[]>;
+  @Output() changeMobileDashboardState =
+    new EventEmitter<MobileDashboardState>();
 }

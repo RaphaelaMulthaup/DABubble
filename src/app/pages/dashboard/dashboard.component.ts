@@ -5,7 +5,14 @@ import { SidenavComponent } from './sidenav/sidenav.component';
 import { ConversationWindowComponent } from './conversation-window/conversation-window.component';
 import { CommonModule } from '@angular/common';
 import { OverlayService } from '../../services/overlay.service';
-import { map, switchMap, tap } from 'rxjs/operators';
+import {
+  distinctUntilChanged,
+  filter,
+  map,
+  shareReplay,
+  switchMap,
+  tap,
+} from 'rxjs/operators';
 import { HeaderDashboardComponent } from './header-dashboard/header-dashboard.component';
 import { ChatActiveRouterService } from '../../services/chat-active-router.service';
 import { ActivatedRoute } from '@angular/router';
@@ -14,6 +21,7 @@ import { HttpParams } from '@angular/common/http';
 import { MobileDashboardState } from '../../shared/types/mobile-dashboard-state.type';
 import { ChatService } from '../../services/chat.service';
 import { MobileService } from '../../services/mobile.service';
+import { PostInterface } from '../../shared/models/post.interface';
 
 @Component({
   selector: 'app-dashboard',
@@ -22,41 +30,76 @@ import { MobileService } from '../../services/mobile.service';
     SidenavComponent,
     ConversationWindowComponent,
     CommonModule,
-    HeaderDashboardComponent
+    HeaderDashboardComponent,
   ],
   templateUrl: './dashboard.component.html', // HTML template for the dashboard
   styleUrl: './dashboard.component.scss', // Styles for the dashboard
 })
 export class DashboardComponent {
-  // Inject OverlayService to handle the overlays
-  public overlayService = inject(OverlayService);
+  mobileDashboardState!: WritableSignal<MobileDashboardState>;
+  messages$!: Observable<PostInterface[]>;
+  answers$!: Observable<PostInterface[]>;
 
-  // Inject the authentication service to manage user login/logout
-  private authService = inject(AuthService);
-  // private chatService = inject(ChatService);
-  private chatActiveRouterService = inject(ChatActiveRouterService);
-  private route = inject(ActivatedRoute);
-  private mobileService = inject(MobileService);
+  constructor(
+    public overlayService: OverlayService,
+    private authService: AuthService,
+    private chatActiveRouterService: ChatActiveRouterService,
+    private route: ActivatedRoute,
+    private mobileService: MobileService
+  ) {}
 
-  mobileDashboardState: WritableSignal<MobileDashboardState> = this.mobileService.mobileDashboardState;
+  ngOnInit() {
+    this.mobileDashboardState = this.mobileService.mobileDashboardState;
+    
+    this.messages$ = this.route.paramMap.pipe(
+      map((params) => ({
+        conversationType: params.get('conversationType'),
+        conversationId: params.get('conversationId'),
+      })),
+      distinctUntilChanged(
+        (a, b) =>
+          a.conversationType === b.conversationType &&
+          a.conversationId === b.conversationId
+      ),
+      filter(
+        ({ conversationType, conversationId }) =>
+          !!conversationType && !!conversationId
+      ),
+      switchMap(({ conversationType, conversationId }) =>
+        this.chatActiveRouterService.getMessages(
+          conversationType!,
+          conversationId!
+        )
+      ),
+      shareReplay({ bufferSize: 1, refCount: true })
+    );
 
-  messages$ = this.route.paramMap.pipe(
-    switchMap((params) =>
-      this.chatActiveRouterService.getMessages(params.get('conversationType')!, params.get('conversationId')!)
-    )
-  );
-
-  answers$ = this.route.paramMap.pipe(
-    switchMap((params) =>
-      this.chatActiveRouterService.getAnswers(
-        params.get('conversationType')!,
-        params.get('conversationId')!,
-        params.get('messageId')!
-      )
-    )
-  );
-
-  msgId$ = this.route.paramMap.pipe(map((params) => params.get('messageId')));
+    this.answers$ = this.route.paramMap.pipe(
+      map((params) => ({
+        conversationType: params.get('conversationType'),
+        conversationId: params.get('conversationId'),
+        messageId: params.get('messageId'),
+      })),
+      distinctUntilChanged(
+        (a, b) =>
+          a.conversationType === b.conversationType &&
+          a.conversationId === b.conversationId &&
+          a.messageId === b.messageId
+      ),
+      filter(
+        ({ conversationType, conversationId, messageId }) =>
+          !!conversationType && !!conversationId && !!messageId
+      ),
+      switchMap(({ conversationType, conversationId, messageId }) =>
+        this.chatActiveRouterService.getAnswers(
+          conversationType!,
+          conversationId!,
+          messageId!
+        )
+      ),
+      shareReplay({ bufferSize: 1, refCount: true })
+    );
+  }
 
   /**
    * Logs out the current user

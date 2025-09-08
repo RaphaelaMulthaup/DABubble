@@ -115,11 +115,11 @@ export class ResetPasswordComponent implements OnInit{
     })
   }
 
-    /**
+  /**
    * This function emits the showLogin-variable to change the non-auth-components variable noAccount to false.
    */
   backToLogin() {
-    this.router.navigate([""]);
+    this.changeAuthState.emit('login');
   }
 
   // /**

@@ -103,27 +103,6 @@ export class ChatActiveRouterService {
     return of([]);
   }
 
-  // getMessageInfo(conversationType: string, conversationId: string, messageId: string) {
-  //   if (conversationType === 'channel') {
-  //     const messageRef = doc(
-  //       this.firestore,
-  //       `channels/${conversationId}/messages/${messageId}`
-  //     );
-  //     return docData(messageRef).pipe(
-  //       map((data) => ({ id: messageRef.id, ...data }))
-  //     );
-  //   } else if (conversationType === 'chat') {
-  //     const messageRef = doc(
-  //       this.firestore,
-  //       `chats/${conversationId}/messages/${messageId}`
-  //     );
-  //     return docData(messageRef).pipe(
-  //       map((data) => ({ id: messageRef.id, ...data }))
-  //     );
-  //   }
-  //   return of(null);
-  // }
-
   getChannelInfo(conversationType: string, conversationId: string): Observable<any> {
     if (conversationType === 'channel') {
       const channelRef = doc(this.firestore, `channels/${conversationId}`);

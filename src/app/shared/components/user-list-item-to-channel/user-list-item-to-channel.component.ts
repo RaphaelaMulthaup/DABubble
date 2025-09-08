@@ -9,34 +9,32 @@ import { OverlayRef } from '@angular/cdk/overlay';
   imports: [],
   templateUrl: './user-list-item-to-channel.component.html',
 
-    styleUrls: [
+  styleUrls: [
     './user-list-item-to-channel.component.scss',
     './../../styles/list-item.scss',
   ],
 })
 export class UserListItemToChannelComponent {
+  @Input() results!: Signal<UserInterface[]>;
+  @Input() overlayRef!: OverlayRef;
 
-@Input() results!: Signal<UserInterface[]>; 
-@Input() overlayRef!: OverlayRef;
+  private overlayService = inject(OverlayService);
+  overlay: string = '';
 
-private overlayService = inject(OverlayService);
-  overlay:string= "";
+  users: UserInterface[] = [];
 
-
-users: UserInterface[] = [];
-
-constructor(){
-      effect(() => {
-      this.users = this.results();  // automat actualizat când signal-ul se schimbă
+  constructor() {
+    effect(() => {
+      this.users = this.results(); // automat actualizat când signal-ul se schimbă
     });
-}
+  }
 
   addMemberToArray(user: UserInterface) {
     const currentUsers = this.overlayService.users();
-    const exists = currentUsers.some(u => u.name === user.name);
-    if(exists){
+    const exists = currentUsers.some((u) => u.name === user.name);
+    if (exists) {
       return;
-    }else{
+    } else {
       this.overlayService.addUser(user); // actualizezi signal-ul
       this.overlayService.triggerReset();
       this.overlayRef.dispose();

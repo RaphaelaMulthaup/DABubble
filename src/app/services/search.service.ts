@@ -24,7 +24,6 @@ export class SearchService {
     this.authService.currentUser$.subscribe((user) => {
       if (!user) return; // noch kein User, nichts machen
       const uid = user.uid;
-
       // Channels und Chats laden
       this.loadChannelsForUser(uid);
       this.loadChatsForUser(uid);

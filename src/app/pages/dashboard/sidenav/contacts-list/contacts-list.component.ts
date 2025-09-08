@@ -3,7 +3,18 @@ import { CommonModule, AsyncPipe } from '@angular/common';
 import { UserService } from '../../../../services/user.service';
 import { AuthService } from '../../../../services/auth.service';
 import { ChatService } from '../../../../services/chat.service';
-import { Observable, of, switchMap, map, combineLatest, filter, tap } from 'rxjs';
+import {
+  Observable,
+  of,
+  switchMap,
+  map,
+  combineLatest,
+  filter,
+  tap,
+  takeUntil,
+  Subject,
+  shareReplay,
+} from 'rxjs';
 import { UserInterface } from '../../../../shared/models/user.interface';
 import { UserListItemComponent } from '../../../../shared/components/user-list-item/user-list-item.component';
 import { MobileService } from '../../../../services/mobile.service';
@@ -26,7 +37,10 @@ export class ContactsListComponent implements OnInit {
 
   public mobileService = inject(MobileService);
 
-  mobileDashboardState: WritableSignal<MobileDashboardState> = this.mobileService.mobileDashboardState;
+  mobileDashboardState: WritableSignal<MobileDashboardState> =
+    this.mobileService.mobileDashboardState;
+
+  private destroy$ = new Subject<void>();
 
   constructor(
     private userService: UserService,
@@ -40,10 +54,13 @@ export class ContactsListComponent implements OnInit {
    */
   ngOnInit(): void {
     this.authService.currentUser$
-      .pipe(filter((user): user is UserInterface => user !== null))
+      .pipe(
+        takeUntil(this.destroy$),
+        filter((user): user is UserInterface => user !== null)
+      )
       .subscribe((user) => (this.currentUser = user));
 
-    this.contacts$ = this.authService.user$.pipe(
+    this.contacts$ = this.authService.currentUser$.pipe(
       switchMap((user) => {
         if (!user) {
           return of([]);
@@ -61,9 +78,15 @@ export class ContactsListComponent implements OnInit {
               contactIds.map((id) => this.userService.getUserById(id))
             );
           }),
-          map((users) => users.filter((u) => u.uid !== this.currentUser.uid)) // 🔑 Filter raus
+          map((users) => users.filter((u) => u.uid !== this.currentUser.uid))
         );
-      })
+      }),
+      shareReplay({ bufferSize: 1, refCount: true })
     );
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

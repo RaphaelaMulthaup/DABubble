@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { OverlayService } from '../../services/overlay.service';
 import { ChannelInterface } from '../../shared/models/channel.interface';
-import { filter, Observable, of, switchMap } from 'rxjs';
+import { filter, Observable, of, Subject, switchMap, takeUntil } from 'rxjs';
 import { ChangeChannelNameComponent } from './change-channel-name/change-channel-name.component';
 import { ChangeChannelDescriptionComponent } from './change-channel-description/change-channel-description.component';
 import { ChannelMembersComponent } from '../../shared/components/channel-members/channel-members.component';
@@ -33,12 +33,12 @@ export class EditChannelComponent {
 
   currentUser = this.authService.currentUser.uid;
 
-    mobileService = inject(MobileService);
-    isMobile = false;
-  
-      private updateMobile = () => {
-      this.isMobile = this.mobileService.isMobile();
-    };
+  mobileService = inject(MobileService);
+  isMobile = false;
+
+  private updateMobile = () => {
+    this.isMobile = this.mobileService.isMobile();
+  };
 
   channelId?: string;
   channelName?: string;
@@ -52,22 +52,27 @@ export class EditChannelComponent {
       switchMap((data) => data?.channel ?? of(null)),
       filter((channel): channel is ChannelInterface => !!channel)
     );
+  private destroy$ = new Subject<void>();
 
   ngOnInit() {
-    this.channelDetails$!.subscribe((channel) => {
-      if (channel) {
-        this.createdById = channel.createdBy;
-        this.channelId = channel.id;
-        this.memberIds = channel.memberIds;
-        this.channelName = channel.name;
-        this.user$ = this.userService.getUserById(this.createdById);
+    this.channelDetails$!.pipe(takeUntil(this.destroy$)).subscribe(
+      (channel) => {
+        if (channel) {
+          this.createdById = channel.createdBy;
+          this.channelId = channel.id;
+          this.memberIds = channel.memberIds;
+          this.channelName = channel.name;
+          this.user$ = this.userService.getUserById(this.createdById);
+        }
       }
-    });
-        this.isMobile = this.mobileService.isMobile();
+    );
+    this.isMobile = this.mobileService.isMobile();
     window.addEventListener('resize', this.updateMobile);
   }
 
-    ngOnDestroy() {
+  ngOnDestroy() {
     window.removeEventListener('resize', this.updateMobile);
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

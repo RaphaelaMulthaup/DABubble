@@ -17,7 +17,7 @@ import {
 } from '@angular/cdk/overlay';
 import { ComponentPortal, TemplatePortal } from '@angular/cdk/portal';
 import { ChannelInterface } from '../shared/models/channel.interface';
-import { Observable, of, Subject } from 'rxjs';
+import { Observable, of, Subject, takeUntil } from 'rxjs';
 import { UserInterface } from '../shared/models/user.interface';
 
 // here you kann add more interface to send data when the overlay is open.
@@ -68,13 +68,12 @@ export class OverlayService {
 
   overlayRefs: OverlayRef[] = [];
 
-// test to send data from a overlay to another one
+  // test to send data from a overlay to another one
   users = signal<UserInterface[]>([]);
   searchReset = signal(false);
 
-
   addUser(user: UserInterface) {
-    this.users.update(list => [...list, user]);
+    this.users.update((list) => [...list, user]);
   }
 
   clearUsers() {
@@ -88,8 +87,6 @@ export class OverlayService {
   clearReset() {
     this.searchReset.set(false);
   }
-// //////
-
 
   openComponent<T extends Object>(
     component: Type<T>,
@@ -104,9 +101,16 @@ export class OverlayService {
       globalPosition?: 'center' | 'bottom' | 'belowSearchbar'; //If the overlay is not connected to an element: the parameter whether it is centered or at the bottom of the page (leave empty for overlays connected to an element)
     },
     data?: Partial<T>
-  ): { ref: ComponentRef<T>;  overlayRef?: OverlayRef; afterClosed$: Observable<void> } | undefined {
+  ):
+    | {
+        ref: ComponentRef<T>;
+        overlayRef?: OverlayRef;
+        afterClosed$: Observable<void>;
+      }
+    | undefined {
     // this.close(); // falls schon ein Overlay offen ist
 
+    const destroy$ = new Subject<void>();
     let positionStrategy;
     if (position.origin) {
       positionStrategy = this.overlay
@@ -163,7 +167,10 @@ export class OverlayService {
     const portal = new ComponentPortal(component, null, this.injector);
     const componentRef = this.overlayRef?.attach(portal)!;
 
-    this.overlayRef?.backdropClick().subscribe(() => this.close());
+    this.overlayRef
+      ?.backdropClick()
+      .pipe(takeUntil(destroy$))
+      .subscribe(() => this.close());
 
     if (data) Object.assign(componentRef.instance, data);
 
@@ -174,16 +181,21 @@ export class OverlayService {
 
     const afterClosed$ = new Subject<void>();
 
-    this.overlayRef?.detachments().subscribe(() => {
-      this.overlayRefs = this.overlayRefs.filter(
-        (ref) => ref !== this.overlayRef
-      );
-      if (this.overlayRefs.length == 0) {
-        document.body.style.overflow = '';
-      }
-      afterClosed$.next();
-      afterClosed$.complete();
-    });
+    this.overlayRef
+      ?.detachments()
+      .pipe(takeUntil(destroy$))
+      .subscribe(() => {
+        this.overlayRefs = this.overlayRefs.filter(
+          (ref) => ref !== this.overlayRef
+        );
+        if (this.overlayRefs.length == 0) {
+          document.body.style.overflow = '';
+        }
+        afterClosed$.next();
+        afterClosed$.complete();
+        destroy$.next();
+        destroy$.complete();
+      });
 
     return { ref: componentRef, overlayRef: this.overlayRef, afterClosed$ };
   }

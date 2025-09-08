@@ -1,6 +1,12 @@
 import { Component, inject, Output, EventEmitter } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
-import { FormControl, FormsModule, ReactiveFormsModule, FormGroup, Validators } from '@angular/forms';
+import {
+  FormControl,
+  FormsModule,
+  ReactiveFormsModule,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 import { AuthState } from '../../../shared/types/auth-state.type';
 import { CommonModule } from '@angular/common';
 
@@ -8,7 +14,7 @@ import { CommonModule } from '@angular/common';
   selector: 'app-login-form',
   imports: [FormsModule, CommonModule, ReactiveFormsModule],
   templateUrl: './login-form.component.html',
-  styleUrl: './login-form.component.scss'
+  styleUrl: './login-form.component.scss',
 })
 export class LoginFormComponent {
   @Output() forgotPassword = new EventEmitter<void>();
@@ -29,10 +35,13 @@ export class LoginFormComponent {
     email: new FormControl('', [Validators.required, Validators.email]),
 
     // Password input with required and minimum length validators
-    password: new FormControl('', [Validators.required, Validators.minLength(6)]),
+    password: new FormControl('', [
+      Validators.required,
+      Validators.minLength(6),
+    ]),
   });
 
-  constructor() { }
+  constructor() {}
 
   onForgotPassword() {
     this.showLogin = false;
@@ -60,13 +69,13 @@ export class LoginFormComponent {
       error: () => {
         // Sets the errorMessage to the returned error code
         this.showErrorMessage = true;
-      }
+      },
     });
   }
 
   /**
- * Login using Google OAuth via AuthService
- */
+   * Login using Google OAuth via AuthService
+   */
   loginWithGoogle() {
     this.isSubmittingWithGoogle = true;
     this.authService.loginWithGoogle().subscribe({
@@ -76,8 +85,7 @@ export class LoginFormComponent {
       error: (err) => {
         console.error('Login with Google failed', err);
         this.isSubmittingWithGoogle = false;
-      }
+      },
     });
   }
-
 }

@@ -1,6 +1,6 @@
 import { Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Observable } from 'rxjs';
+import { Observable, Subject, takeUntil } from 'rxjs';
 import { UserInterface } from '../../models/user.interface';
 import { UserService } from '../../../services/user.service';
 import { ChannelInterface } from '../../models/channel.interface';
@@ -27,32 +27,32 @@ export class ChannelMembersComponent implements OnDestroy, OnInit {
   mobileService = inject(MobileService);
   isMobile = false;
 
-    private updateMobile = () => {
+  private updateMobile = () => {
     this.isMobile = this.mobileService.isMobile();
   };
 
-  
-  @Input()overlay:string = "";
+  @Input() overlay: string = '';
 
   private userService = inject(UserService);
   private overlayService = inject(OverlayService);
   users$!: Observable<UserInterface[]>;
-  private subscription: Subscription = new Subscription();
+  private destroy$ = new Subject<void>();
 
   ngOnInit() {
-    const sub = this.channelDetails$!.subscribe((channel) => {
-      this.memberIds = channel!.memberIds;
-      this.users$ = this.userService.getMembersFromChannel(this.memberIds!);
-    });
-    this.subscription.add(sub);
-
+    this.channelDetails$!.pipe(takeUntil(this.destroy$)).subscribe(
+      (channel) => {
+        this.memberIds = channel!.memberIds;
+        this.users$ = this.userService.getMembersFromChannel(this.memberIds!);
+      }
+    );
 
     this.isMobile = this.mobileService.isMobile();
     window.addEventListener('resize', this.updateMobile);
   }
 
   ngOnDestroy() {
-    this.subscription.unsubscribe();
+    this.destroy$.next();
+    this.destroy$.complete();
     window.removeEventListener('resize', this.updateMobile);
   }
 
@@ -69,11 +69,13 @@ export class ChannelMembersComponent implements OnDestroy, OnInit {
       AddMemberToChannelComponent,
       'cdk-overlay-dark-backdrop',
       {
-        globalPosition: "bottom"
+        globalPosition: 'bottom',
       },
       {
-        channelDetails$: this.channelDetails$ as Observable<ChannelInterface | undefined>,
-        overlay:'overlay'
+        channelDetails$: this.channelDetails$ as Observable<
+          ChannelInterface | undefined
+        >,
+        overlay: 'overlay',
       }
     );
   }
