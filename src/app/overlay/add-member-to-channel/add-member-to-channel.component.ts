@@ -44,7 +44,7 @@ export class AddMemberToChannelComponent {
 
   // Ergebnisse aus dem Service
   results = toSignal(
-    this.searchService.searchHeaderSearch(this.term$) as Observable<
+    this.searchService.search(this.term$) as Observable<
       UserInterface[]
     >,
     { initialValue: [] as UserInterface[] }
