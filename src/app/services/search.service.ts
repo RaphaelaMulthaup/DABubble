@@ -99,10 +99,12 @@ export class SearchService {
                 const enrichedAns: (PostInterface & {
                   chatId: string;
                   answer: true;
+                  parentMessageId: string;
                 })[] = ans.map((a) => ({
                   ...(a as PostInterface),
                   chatId: chat.id,
-                  answer: true, // <-- hier setzen
+                  answer: true,
+                  parentMessageId: m.id,
                 }));
 
                 const newAnswers = enrichedAns.filter(
@@ -150,10 +152,12 @@ export class SearchService {
                 const enrichedAns: (PostInterface & {
                   channelId: string;
                   answer: true;
+                  parentMessageId: string;
                 })[] = ans.map((a) => ({
                   ...(a as PostInterface),
                   channelId: channel.id!,
-                  answer: true, // <-- hier setzen
+                  answer: true,
+                  parentMessageId: m.id,
                 }));
 
                 const newAnswers = enrichedAns.filter(

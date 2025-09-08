@@ -31,19 +31,4 @@ export const routes: Routes = [
   { path: '**', redirectTo: '' },
   { path: 'confirm', component: ConfirmPasswordComponent },
   { path: 'reset', component: ResetPasswordComponent },
-  // {
-  //   path: 'overlay',
-  //   component: OverlayComponent,
-  //   outlet: 'overlay', // ← Named-Outlet hinzufügen
-  //   children: [
-  //     {
-  //       path: 'profileViewOtherUsers',
-  //       component: ProfileViewOtherUsersComponent,
-  //     },
-  //     {
-  //       path: 'createChannelFormComponent',
-  //       component: CreateChannelFormComponent,
-  //     },
-  //   ],
-  // },
 ];
