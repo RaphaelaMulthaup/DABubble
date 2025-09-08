@@ -2,7 +2,6 @@ import { Component, inject, WritableSignal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ChatActiveRouterService } from '../../../../services/chat-active-router.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { UserService } from '../../../../services/user.service';
 import { HeaderChannelComponent } from './header-channel/header-channel.component';
 import { HeaderSearchbarComponent } from './header-searchbar/header-searchbar.component';
 import { HeaderChatComponent } from './header-chat/header-chat.component';
@@ -24,19 +23,20 @@ import { Subject, takeUntil } from 'rxjs';
   styleUrl: './conversation-header.component.scss',
 })
 export class ConversationHeaderComponent {
-  mobileService = inject(MobileService);
-  private userService = inject(UserService);
-  mobileDashboardState: WritableSignal<MobileDashboardState> =
-    this.mobileService.mobileDashboardState;
-
+  mobileDashboardState: WritableSignal<MobileDashboardState>;
   conversationType!: string;
   conversationId!: string;
   messageToReplyId: string | null = null;
-
-  private chatActiveRouterService = inject(ChatActiveRouterService);
-  private route = inject(ActivatedRoute);
-  private router = inject(Router);
   private destroy$ = new Subject<void>();
+
+  constructor(
+    private mobileService: MobileService,
+    private route: ActivatedRoute,
+    private router: Router,
+    private chatActiveRouterService: ChatActiveRouterService
+  ) {
+    this.mobileDashboardState = this.mobileService.mobileDashboardState;
+  }
 
   ngOnInit() {
     this.chatActiveRouterService

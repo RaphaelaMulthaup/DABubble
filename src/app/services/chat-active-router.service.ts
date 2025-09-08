@@ -16,8 +16,7 @@ import { PostInterface } from '../shared/models/post.interface';
   providedIn: 'root',
 })
 export class ChatActiveRouterService {
-  // Inject Firestore instance
-  private firestore = inject(Firestore);
+  constructor(private firestore: Firestore) {}
 
   // expui un observable pentru id
   getConversationId$(route: ActivatedRoute): Observable<string> {

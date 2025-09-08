@@ -21,10 +21,8 @@ import { MobileDashboardState } from '../../../../shared/types/mobile-dashboard-
 export class ChannelListComponent {
   // Boolean to control the visibility of the popup form
   showPopup = false;
-
   //With this variable show/hide channels from sidenav
   channelsVisible: boolean = true;
-
   // Observable list of active channels for the current user
   channels$!: Observable<ChannelInterface[]>;
   // Observable list of deleted channels
@@ -33,27 +31,18 @@ export class ChannelListComponent {
   selectedChannel: ChannelInterface | null = null;
   // ID of the currently logged-in user
   currentUserId!: string | null;
+  //the current State of the dashboard (for mobile)
+  mobileDashboardState: WritableSignal<MobileDashboardState>;
 
-  public mobileService = inject(MobileService);
-
-  mobileDashboardState: WritableSignal<MobileDashboardState> = this.mobileService.mobileDashboardState;
-
-  // Services injected via Angular's DI system
-  private channnelsService = inject(ChannelsService);
-  private authService = inject(AuthService);
-  private overlayService = inject(OverlayService);
-  constructor() { }
-
-  /**
-   * Lifecycle hook that initializes component data
-   * - Gets the current user ID
-   * - Fetches the channels of the current user
-   * - Fetches all deleted channels
-   */
-  ngOnInit() {
+  constructor(
+    private channnelsService: ChannelsService,
+    private authService: AuthService,
+    private overlayService: OverlayService,
+    private mobileService: MobileService
+  ) {
+    this.mobileDashboardState = this.mobileService.mobileDashboardState;
     this.currentUserId = this.authService.getCurrentUserId();
     this.channels$ = this.channnelsService.getCurrentUserChannels();
-    // this.deletedChannels$ = this.channnelsService.getAllDeletedChannels();
   }
 
   openCreateChannelFormOverlay() {

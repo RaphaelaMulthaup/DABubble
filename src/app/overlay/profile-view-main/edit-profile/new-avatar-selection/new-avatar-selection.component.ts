@@ -14,11 +14,7 @@ import { EditProfileComponent } from '../edit-profile.component';
   styleUrl: './new-avatar-selection.component.scss',
 })
 export class NewAvatarSelectionComponent {
-  public overlayService = inject(OverlayService);
-  private authService = inject(AuthService);
-
-  user$: Observable<UserInterface | null> = this.authService.currentUser$;
-
+  user$: Observable<UserInterface | null>;
   selectedAvatar: number = 0;
 
   //an array with all the names of the available avatar-options
@@ -30,6 +26,13 @@ export class NewAvatarSelectionComponent {
     './assets/img/avatar-option-5.svg',
     './assets/img/avatar-option-6.svg',
   ];
+
+  constructor(
+    public overlayService: OverlayService,
+    private authService: AuthService
+  ) {
+    this.user$ = this.authService.currentUser$;
+  }
 
   /**
    *

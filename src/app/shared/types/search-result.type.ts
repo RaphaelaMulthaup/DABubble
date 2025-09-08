@@ -7,4 +7,4 @@ export type SearchResult =
   | (ChannelInterface & { type: 'channel' })
   | (PostInterface & { type: 'chatMessage'; user: UserInterface })
   | (PostInterface & { type: 'channelMessage'; channel: ChannelInterface })
-  | { type: 'channelGroup'; channel: ChannelInterface; posts: PostInterface[] }
+  | { type: 'channelGroup'; channel: ChannelInterface; posts: PostInterface[] };

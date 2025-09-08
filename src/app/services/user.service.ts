@@ -17,8 +17,7 @@ import { docData } from '@angular/fire/firestore';
   providedIn: 'root',
 })
 export class UserService {
-  // Inject Firestore instance
-  private firestore: Firestore = inject(Firestore);
+  constructor(private firestore: Firestore) {}
 
   // /**
   //  * Fetch all users from the 'users' collection
@@ -79,9 +78,9 @@ export class UserService {
     );
   }
 
-  getMembersFromChannel(memberIds:string[]):Observable<UserInterface[]>{
+  getMembersFromChannel(memberIds: string[]): Observable<UserInterface[]> {
     const userColl = collection(this.firestore, 'users');
-    const q = query(userColl, where('uid', 'in', memberIds))
-    return collectionData(q, {idField: 'id'}) as Observable<UserInterface[]>;
+    const q = query(userColl, where('uid', 'in', memberIds));
+    return collectionData(q, { idField: 'id' }) as Observable<UserInterface[]>;
   }
 }

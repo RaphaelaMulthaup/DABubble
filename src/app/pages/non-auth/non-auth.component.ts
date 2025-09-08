@@ -39,13 +39,6 @@ import { HeaderOutsideDashboardComponent } from '../../shared/components/header-
 export class NonAuthComponent {
   // the currently shown non-auth-component
   currentState: AuthState = 'login';
-
-  // Firestore instance injected for database operations
-  firestore: Firestore = inject(Firestore);
-
-  // AuthService instance injected for authentication methods
-  authService = inject(AuthService);
-
   showConfirm: boolean = false;
   showLogin: boolean = true;
   showIntro: any;
@@ -53,7 +46,9 @@ export class NonAuthComponent {
   constructor(
     private auth: Auth,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private firestore: Firestore,
+    private authService: AuthService
   ) {
     const navaigation = this.router.getCurrentNavigation();
     const uid = navaigation?.extras.state?.['uid'];
@@ -68,6 +63,7 @@ export class NonAuthComponent {
         this.router.navigate(['/']);
       }
     });
+    const usersRef = collection(this.firestore, 'users');
   }
 
   /**
@@ -75,7 +71,6 @@ export class NonAuthComponent {
    * Fetches all users from Firestore and logs their names
    */
   ngOnInit() {
-    const usersRef = collection(this.firestore, 'users');
     this.showLogo();
 
     // // URL-Parameter abfragen

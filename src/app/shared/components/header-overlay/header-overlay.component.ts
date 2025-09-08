@@ -5,10 +5,10 @@ import { OverlayService } from '../../../services/overlay.service';
   selector: 'app-header-overlay',
   imports: [],
   templateUrl: './header-overlay.component.html',
-  styleUrl: './header-overlay.component.scss'
+  styleUrl: './header-overlay.component.scss',
 })
 export class HeaderOverlayComponent {
-  overlayService = inject(OverlayService);
+  constructor(public overlayService: OverlayService) {}
 
   @Input() overlayHeadline: string = '';
 }

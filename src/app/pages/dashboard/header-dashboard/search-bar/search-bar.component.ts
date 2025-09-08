@@ -3,6 +3,7 @@ import {
   computed,
   ElementRef,
   inject,
+  Signal,
   ViewChild,
 } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
@@ -40,28 +41,38 @@ import { SearchResultsComponent } from '../../../../overlay/search-results/searc
   styleUrls: ['./search-bar.component.scss'],
 })
 export class SearchBarComponent {
-  // Inject the SearchService to use it inside the component
-  searchService = inject(SearchService);
-  overlayService = inject(OverlayService);
-
   // Reactive form control for capturing the search input value
   searchControl = new FormControl<string>('', { nonNullable: true });
-
   /***
    * Observable that emits the search term as the user types.
    * - startWith initializes with the current control value
    * - debounceTime waits 300ms after typing stops
    * - map trims whitespace from the input
    */
-  private term$: Observable<string> = this.searchControl.valueChanges.pipe(
-    startWith(this.searchControl.value),
-    debounceTime(300),
-    map((v) => v.trim())
-  );
-
+  private term$: Observable<string>;
   @ViewChild('searchbar', { static: true }) searchbar!: ElementRef<HTMLElement>;
-
   private destroy$ = new Subject<void>();
+  /***
+   * Converts the search results Observable into a signal for template binding.
+   * Explicitly typed as SearchResult[] to ensure strong typing.
+   * Provides an initial empty array until results are received.
+   */
+  results: Signal<SearchResult[]>;
+
+  constructor(
+    private overlayService: OverlayService,
+    private searchService: SearchService
+  ) {
+    this.term$ = this.searchControl.valueChanges.pipe(
+      startWith(this.searchControl.value),
+      debounceTime(300),
+      map((v) => v.trim())
+    );
+    this.results = toSignal(
+      this.searchService.search(this.term$) as Observable<SearchResult[]>,
+      { initialValue: [] as SearchResult[] }
+    );
+  }
 
   ngOnInit() {
     this.term$.pipe(takeUntil(this.destroy$)).subscribe((term) => {
@@ -81,6 +92,12 @@ export class SearchBarComponent {
               overlayX: 'center',
               overlayY: 'top',
             },
+            originPositionFallback: {
+              originX: 'center',
+              originY: 'bottom',
+              overlayX: 'center',
+              overlayY: 'top',
+            },
           },
           { results$: this.groupedResults() }
         );
@@ -94,16 +111,6 @@ export class SearchBarComponent {
     this.destroy$.next();
     this.destroy$.complete();
   }
-
-  /***
-   * Converts the search results Observable into a signal for template binding.
-   * Explicitly typed as SearchResult[] to ensure strong typing.
-   * Provides an initial empty array until results are received.
-   */
-  results = toSignal(
-    this.searchService.search(this.term$) as Observable<SearchResult[]>,
-    { initialValue: [] as SearchResult[] }
-  );
 
   groupedResults = computed(() => {
     const res = this.results();

@@ -24,23 +24,24 @@ import { MobileService } from '../../../../../../services/mobile.service';
   ],
 })
 export class ChannelMembersLengthComponent {
-  private destroy$ = new Subject<void>();
   @Input() channel$!: Observable<ChannelInterface | undefined>;
-
-  userService = inject(UserService);
   users$?: Observable<UserInterface[]>;
-
   channelWithUsers$!: Observable<{
     channel: ChannelInterface | undefined;
     users: UserInterface[];
   }>;
-
-  mobileService = inject(MobileService);
   isMobile = false;
+  private updateMobile: () => void;
+  private destroy$ = new Subject<void>();
 
-  private updateMobile = () => {
-    this.isMobile = this.mobileService.isMobile();
-  };
+  constructor(
+    private userService: UserService,
+    private mobileService: MobileService
+  ) {
+    this.updateMobile = () => {
+      this.isMobile = this.mobileService.isMobile();
+    };
+  }
 
   ngOnInit() {
     if (this.channel$) {

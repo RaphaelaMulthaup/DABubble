@@ -16,21 +16,22 @@ import { MobileService } from '../../services/mobile.service';
   styleUrl: './post-interaction-overlay.component.scss',
 })
 export class PostInteractionOverlayComponent {
-  private authService = inject(AuthService);
-  public overlayService = inject(OverlayService);
-  public postService = inject(PostService);
-  public mobileService = inject(MobileService);
-
   currentConversationType!: 'channel' | 'chat';
   currentConversationId!: string;
   post!: PostInterface;
   senderIsCurrentUser$!: Observable<boolean>;
 
-  ngOnInit() {
+  constructor(
+    private authService: AuthService,
+    public overlayService: OverlayService,
+    public postService: PostService,
+    public mobileService: MobileService
+  ) {
     this.senderIsCurrentUser$ = of(
       this.post.senderId === this.authService.currentUser.uid
     );
   }
+
 
   /**
    * This functions opens the emoji-picker overlay and transmits the isMessageFromCurrentUser-variable.
@@ -59,15 +60,20 @@ export class PostInteractionOverlayComponent {
     );
 
     //das abonniert den event emitter vom emoji-picker component
-    overlay!.ref.instance.selectedEmoji.pipe(take(1)).subscribe((emoji: string) => {
-      this.postService.toggleReaction(
-        '/' + this.currentConversationType + 's/' + this.currentConversationId,
-        'messages',
-        this.post.id!,
-        emoji
-      );
-      this.overlayService.close();
-    });
+    overlay!.ref.instance.selectedEmoji
+      .pipe(take(1))
+      .subscribe((emoji: string) => {
+        this.postService.toggleReaction(
+          '/' +
+            this.currentConversationType +
+            's/' +
+            this.currentConversationId,
+          'messages',
+          this.post.id!,
+          emoji
+        );
+        this.overlayService.close();
+      });
   }
 
   /**

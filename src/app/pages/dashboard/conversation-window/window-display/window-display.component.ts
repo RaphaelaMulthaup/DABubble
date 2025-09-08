@@ -31,7 +31,6 @@ import { ChatService } from '../../../../services/chat.service';
 })
 export class WindowDisplayComponent {
   @Input() messages$!: import('rxjs').Observable<PostInterface[]>;
-
   //an array with all posts in this conversation
   postInfo: PostInterface[] = [];
   currentChatId?: string; // <-- aktuell angezeigter Chat
@@ -44,10 +43,6 @@ export class WindowDisplayComponent {
   // messages$!: Observable<PostInterface[]>;
   // private route = inject(ActivatedRoute);
   // private chatActiveRouterService = inject(ChatActiveRouterService);
-  private route = inject(ActivatedRoute);
-  private router = inject(Router);
-  public postService = inject(PostService);
-  chatService = inject(ChatService);
 
   //an array with all the days of the week, to show that one a post was created
   days = [
@@ -59,12 +54,17 @@ export class WindowDisplayComponent {
     'Freitag',
     'Samstag',
   ];
-
+  private pendingScrollTo?: string;
   private destroy$ = new Subject<void>();
 
-  constructor(private el: ElementRef) {}
-  private subs: Subscription[] = [];
-  private pendingScrollTo?: string;
+  constructor(
+    private el: ElementRef,
+    private route: ActivatedRoute,
+    private router: Router,
+    public postService: PostService,
+    private chatService: ChatService
+  ) {}
+
   /**
    * Subscribe to the BehaviorSubject from PostService
    * Keeps 'messages' updated with the latest conversation in real-time

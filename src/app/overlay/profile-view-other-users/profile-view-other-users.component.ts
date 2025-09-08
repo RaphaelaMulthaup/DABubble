@@ -28,28 +28,21 @@ import { HeaderOverlayComponent } from '../../shared/components/header-overlay/h
  * Allows the current user to open a chat with the displayed user.
  */
 export class ProfileViewOtherUsersComponent {
-  /** Firestore instance used for database operations */
-  private firestore: Firestore = inject(Firestore);
-
-  /** Service for controlling overlays */
-  overlayService = inject(OverlayService);
-
-  /** Service for authentication-related data */
-  authService = inject(AuthService);
-
-  /** Service for managing user-related data */
-  userService = inject(UserService);
-
-  /** Service for managing chat-related logic */
-  chatService = inject(ChatService);
-
-  // /** Observable providing the user data displayed in the overlay */
-  // user$ = this.overlayService.overlayInputs[
-  //   'user$'
-  // ] as Observable<UserInterface>;
   user$!: Observable<UserInterface>;
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router 
+    /** Firestore instance used for database operations */,
+    private firestore: Firestore,
+    /** Service for controlling overlays */
+    private overlayService: OverlayService,
+    /** Service for authentication-related data */
+    private authService: AuthService,
+    /** Service for managing user-related data */
+    private userService: UserService,
+    /** Service for managing chat-related logic */
+    private chatService: ChatService
+  ) {}
 
   /**
    * Opens a chat with the user currently displayed in the overlay.

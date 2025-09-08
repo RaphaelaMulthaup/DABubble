@@ -27,10 +27,11 @@ export class AppComponent {
    * This is a static property used to display the name of the app in the UI.
    */
   title = 'DABubble';
-
-  /**
-   * Firestore instance for database access.
-   * It is injected to interact with Firestore for database operations.
-   */
-  firestore: Firestore = inject(Firestore);
+  constructor(
+    /**
+     * Firestore instance for database access.
+     * It is injected to interact with Firestore for database operations.
+     */
+    firestore: Firestore
+  ) {}
 }

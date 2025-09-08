@@ -5,7 +5,14 @@ import { AuthService } from '../../../../services/auth.service';
 import { ActivatedRoute } from '@angular/router';
 import { ChatActiveRouterService } from '../../../../services/chat-active-router.service';
 import { PostService } from '../../../../services/post.service';
-import { startWith, debounceTime, filter, switchMap, Subject, takeUntil } from 'rxjs';
+import {
+  startWith,
+  debounceTime,
+  filter,
+  switchMap,
+  Subject,
+  takeUntil,
+} from 'rxjs';
 import { SearchResult } from '../../../../shared/types/search-result.type';
 import { SearchService } from '../../../../services/search.service';
 import { UserListItemComponent } from '../../../../shared/components/user-list-item/user-list-item.component';
@@ -27,28 +34,10 @@ import { EmojiPickerComponent } from '../../../../overlay/emoji-picker/emoji-pic
 export class CurrentPostInput {
   conversationType!: any;
   conversationId!: string;
-
   /** If replying, holds the ID of the message being replied to; otherwise null. */
   messageToReplyId: string | null = null;
-
-  /** Provides methods to create messages and replies. */
-  private postService = inject(PostService);
-
-  /** Provides information about the currently logged-in user. */
-  private authService = inject(AuthService);
-
-  private searchService = inject(SearchService);
-  private overlayService = inject(OverlayService);
-
-  /** Gives access to the current route parameters. */
-  private route = inject(ActivatedRoute);
-
-  /** Provides helper methods for extracting conversation and message IDs from the route. */
-  private chatActiveRouterService = inject(ChatActiveRouterService);
-
   /** Stores any error message to be displayed in the input form. */
   errorMessage: string | null = null;
-
   /** Reactive form for creating a new message or reply. */
   postForm: FormGroup = new FormGroup({
     /** Input field for the message text. */
@@ -56,6 +45,15 @@ export class CurrentPostInput {
   });
   searchResults: SearchResult[] = [];
   private destroy$ = new Subject<void>();
+
+  constructor(
+    private authService: AuthService,
+    public overlayService: OverlayService,
+    public postService: PostService,
+    public searchService: SearchService,
+    private route: ActivatedRoute,
+    private chatActiveRouterService: ChatActiveRouterService
+  ) {}
 
   /**
    * Angular lifecycle hook that runs after the component is initialized.

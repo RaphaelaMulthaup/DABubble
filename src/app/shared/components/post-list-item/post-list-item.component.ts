@@ -15,9 +15,11 @@ import { MobileService } from '../../../services/mobile.service';
 })
 export class PostListItemComponent {
   @Input() post!: PostInterface;
-  postService = inject(PostService);
-  mobileService = inject(MobileService);
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private postService: PostService,
+    private mobileService: MobileService
+  ) {}
 
   navigateToConversation() {
     const conversationType = this.post.chatId ? 'chat' : 'channel';

@@ -47,9 +47,6 @@ export class AuthService {
   // Observable for external components to subscribe to user changes
   user$ = this.userSubject.asObservable();
 
-  // Injected user service for fetching user data
-  userService = inject(UserService);
-
   //the data of the user in the registration-process
   userToRegister = {
     displayName: '',
@@ -70,7 +67,11 @@ export class AuthService {
    * @param auth - The Firebase Auth instance used for authentication state tracking.
    * @param firestore - The Firestore instance used to fetch user data.
    */
-  constructor(private auth: Auth, private firestore: Firestore) {
+  constructor(
+    private auth: Auth,
+    private firestore: Firestore,
+    private userService: UserService
+  ) {
     // Listen to authentication state changes and update the userSubject
     onAuthStateChanged(this.auth, (user) => {
       this.emptyUserObject();

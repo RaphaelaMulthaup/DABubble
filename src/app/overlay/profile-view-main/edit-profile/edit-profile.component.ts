@@ -22,12 +22,16 @@ import { HeaderOverlayComponent } from '../../../shared/components/header-overla
 })
 export class EditProfileComponent implements OnInit {
   @ViewChild('userNameInput') userNameInput!: ElementRef;
-  public overlayService = inject(OverlayService);
-  private authService = inject(AuthService);
-
-  user$: Observable<UserInterface | null> = this.authService.currentUser$;
+  user$: Observable<UserInterface | null>;
   userName: string = '';
   private destroy$ = new Subject<void>();
+
+  constructor(
+    public overlayService: OverlayService,
+    private authService: AuthService
+  ) {
+    this.user$= this.authService.currentUser$;
+  }
 
   ngOnInit(): void {
     this.user$.pipe(takeUntil(this.destroy$)).subscribe((user) => {

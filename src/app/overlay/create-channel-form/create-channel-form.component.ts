@@ -13,7 +13,12 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-create-channel-form',
-  imports: [FormsModule, ReactiveFormsModule, HeaderOverlayComponent, CommonModule],
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    HeaderOverlayComponent,
+    CommonModule,
+  ],
   templateUrl: './create-channel-form.component.html',
   styleUrl: './create-channel-form.component.scss',
 })
@@ -23,9 +28,6 @@ export class CreateChannelFormComponent {
 
   // Event emitter to notify parent when the form is submitted
   @Output() submitForm = new EventEmitter<any>();
-
-  // Inject the channel service to interact with backend
-  channelService = inject(ChannelsService);
 
   // Stores an error message if form submission fails
   errorMessage: string | null = null;
@@ -41,9 +43,10 @@ export class CreateChannelFormComponent {
 
   showErrorMessage: boolean = false;
 
-  public overlayService = inject(OverlayService);
-  
-  constructor() {}
+  constructor(
+    public overlayService: OverlayService,
+    private channelService: ChannelsService
+  ) {}
 
   /**
    * Handles form submission
@@ -67,8 +70,8 @@ export class CreateChannelFormComponent {
   }
 
   /**
-   * 
-   * Throws error-message if channel-name is taken 
+   *
+   * Throws error-message if channel-name is taken
    */
   handlePossibleError(name: string, description?: string): void {
     this.channelService.createChannel(name, description).subscribe({
@@ -83,7 +86,7 @@ export class CreateChannelFormComponent {
         } else {
           this.errorMessage = err.message;
         }
-      }
-    })
+      },
+    });
   }
 }
