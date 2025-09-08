@@ -1,8 +1,14 @@
-import { Component, Input, Output, WritableSignal, inject } from '@angular/core';
+import {
+  Component,
+  Input,
+  Output,
+  WritableSignal,
+  inject,
+} from '@angular/core';
 import { PostInterface } from '../../../../../shared/models/post.interface';
 import { AuthService } from '../../../../../services/auth.service';
 import { UserService } from '../../../../../services/user.service';
-import { map, of } from 'rxjs';
+import { map, of, Subject, take, takeUntil } from 'rxjs';
 import { Timestamp } from '@angular/fire/firestore';
 import { CommonModule } from '@angular/common';
 import { OverlayService } from '../../../../../services/overlay.service';
@@ -56,11 +62,16 @@ export class DisplayedPostComponent {
   postClicked: boolean = false;
   @Input() editingPost?: boolean;
 
+  private destroy$ = new Subject<void>();
+
   ngOnChanges() {
-    this.chatActiveRoute.getParams$(this.route).subscribe(({ conversationType, conversationId }) => {
-      this.currentConversationType = conversationType as 'channel' | 'chat';
-      this.currentConversationId = conversationId;
-    });
+    this.chatActiveRoute
+      .getParams$(this.route)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(({ conversationType, conversationId }) => {
+        this.currentConversationType = conversationType as 'channel' | 'chat';
+        this.currentConversationId = conversationId;
+      });
 
     this.reactions$ = this.postService.getReactions(
       '/' + this.currentConversationType + 's/' + this.currentConversationId,
@@ -74,17 +85,6 @@ export class DisplayedPostComponent {
           .sort((a, b) => b.users.length - a.users.length)
       )
     );
-
-    // this.answers$ = this.postService
-    //   .getAnswers(
-    //     '/' + this.currentConversationType + 's/' + this.currentConversationId,
-    //     'messages',
-    //     this.post.id!
-    //   )
-    //   .pipe(map((answers) => answers ?? []));
-    // this.answers$.subscribe((data) => {
-    //   this.answers = data;
-    // });
 
     if (!this.post) return;
     // Prüfen, ob der Sender aktuell ist
@@ -112,6 +112,11 @@ export class DisplayedPostComponent {
         });
       })
     );
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   /**
@@ -154,15 +159,20 @@ export class DisplayedPostComponent {
     );
 
     //das abonniert den event emitter vom emoji-picker component
-    overlay!.ref.instance.selectedEmoji.subscribe((emoji: string) => {
-      this.postService.toggleReaction(
-        '/' + this.currentConversationType + 's/' + this.currentConversationId,
-        'messages',
-        this.post.id!,
-        emoji
-      );
-      this.overlayService.close();
-    });
+    overlay!.ref.instance.selectedEmoji
+      .pipe(take(1))
+      .subscribe((emoji: string) => {
+        this.postService.toggleReaction(
+          '/' +
+            this.currentConversationType +
+            's/' +
+            this.currentConversationId,
+          'messages',
+          this.post.id!,
+          emoji
+        );
+        this.overlayService.close();
+      });
   }
 
   /**
@@ -222,7 +232,7 @@ export class DisplayedPostComponent {
         post: this.post,
       }
     );
-    overlay?.afterClosed$.subscribe(() => {
+    overlay?.afterClosed$.pipe(take(1)).subscribe(() => {
       this.postClicked = false;
       this.editingPost = this.overlayService.editPostActive;
     });

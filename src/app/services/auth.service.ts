@@ -6,7 +6,9 @@ import {
   signOut,
   User,
 } from '@angular/fire/auth';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import {
+  signInWithEmailAndPassword
+} from 'firebase/auth';
 
 import {
   Firestore,

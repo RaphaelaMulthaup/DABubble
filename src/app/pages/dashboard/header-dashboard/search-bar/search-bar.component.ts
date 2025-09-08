@@ -1,6 +1,19 @@
-import { Component, computed, inject } from '@angular/core';
+import {
+  Component,
+  computed,
+  ElementRef,
+  inject,
+  ViewChild,
+} from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { debounceTime, startWith, map, Observable } from 'rxjs';
+import {
+  debounceTime,
+  startWith,
+  map,
+  Observable,
+  takeUntil,
+  Subject,
+} from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { SearchService } from '../../../../services/search.service';
 import { JsonPipe } from '@angular/common';
@@ -46,8 +59,12 @@ export class SearchBarComponent {
     map((v) => v.trim())
   );
 
+  @ViewChild('searchbar', { static: true }) searchbar!: ElementRef<HTMLElement>;
+
+  private destroy$ = new Subject<void>();
+
   ngOnInit() {
-    this.term$.subscribe((term) => {
+    this.term$.pipe(takeUntil(this.destroy$)).subscribe((term) => {
       if (term.length > 0) {
         this.overlayService.close();
         // const originElement = document.querySelector(
@@ -57,7 +74,13 @@ export class SearchBarComponent {
           SearchResultsComponent,
           'cdk-overlay-transparent-backdrop',
           {
-            globalPosition: 'belowSearchbar'
+            origin: this.searchbar.nativeElement,
+            originPosition: {
+              originX: 'center',
+              originY: 'bottom',
+              overlayX: 'center',
+              overlayY: 'top',
+            },
           },
           { results$: this.groupedResults() }
         );
@@ -65,6 +88,11 @@ export class SearchBarComponent {
         this.overlayService.close(); // optional: Overlay schließen, wenn Eingabe leer
       }
     });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   /***

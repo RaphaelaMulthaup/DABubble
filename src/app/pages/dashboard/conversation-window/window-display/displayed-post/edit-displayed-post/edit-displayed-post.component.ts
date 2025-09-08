@@ -1,9 +1,17 @@
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { PostInterface } from '../../../../../../shared/models/post.interface';
 import { ChatActiveRouterService } from '../../../../../../services/chat-active-router.service';
 import { ActivatedRoute } from '@angular/router';
 import { PostService } from '../../../../../../services/post.service';
 import { OverlayService } from '../../../../../../services/overlay.service';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-edit-displayed-post',
@@ -11,7 +19,7 @@ import { OverlayService } from '../../../../../../services/overlay.service';
   templateUrl: './edit-displayed-post.component.html',
   styleUrl: './edit-displayed-post.component.scss',
 })
-export class EditDisplayedPostComponent {
+export class EditDisplayedPostComponent implements OnInit {
   chatActiveRouterService = inject(ChatActiveRouterService);
   route = inject(ActivatedRoute);
   postService = inject(PostService);
@@ -23,10 +31,12 @@ export class EditDisplayedPostComponent {
   currentConversationType!: 'channel' | 'chat';
   currentConversationId!: string;
   messageId!: string;
+  private destroy$ = new Subject<void>();
 
-  constructor() {
+  ngOnInit() {
     this.chatActiveRouterService
       .getParams$(this.route)
+      .pipe(takeUntil(this.destroy$))
       .subscribe(({ conversationType, conversationId }) => {
         this.currentConversationType = conversationType as 'channel' | 'chat';
         this.currentConversationId = conversationId;
@@ -34,9 +44,15 @@ export class EditDisplayedPostComponent {
 
     this.chatActiveRouterService
       .getMessageId$(this.route)
+      .pipe(takeUntil(this.destroy$))
       .subscribe((messageId) => {
         this.messageId = messageId;
       });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   /**

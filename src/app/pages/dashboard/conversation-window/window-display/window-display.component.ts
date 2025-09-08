@@ -11,7 +11,14 @@ import { PostService } from '../../../../services/post.service';
 import { DisplayedPostComponent } from './displayed-post/displayed-post.component';
 import { PostInterface } from '../../../../shared/models/post.interface';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { map, Observable, Subscription, switchMap } from 'rxjs';
+import {
+  map,
+  Observable,
+  Subject,
+  Subscription,
+  switchMap,
+  takeUntil,
+} from 'rxjs';
 import { ChatActiveRouterService } from '../../../../services/chat-active-router.service';
 import { tap } from 'rxjs';
 import { ChatService } from '../../../../services/chat.service';
@@ -53,6 +60,8 @@ export class WindowDisplayComponent {
     'Samstag',
   ];
 
+  private destroy$ = new Subject<void>();
+
   constructor(private el: ElementRef) {}
   private subs: Subscription[] = [];
   private pendingScrollTo?: string;
@@ -62,60 +71,57 @@ export class WindowDisplayComponent {
    */
   ngOnInit() {
     // Deine bestehende messages$-Subscription
-    this.subs.push(
-      this.route.params.subscribe((params) => {
-        const chatId = params['id']; // oder wie dein Param heißt
-        this.currentChatId = chatId;
-      })
-    );
-    this.subs.push(
-      this.messages$.subscribe((data) => {
-        // let reversedOrder = [...data].reverse();
 
-        this.onContentChange(
-          this.currentChatId, // neue ID
-          data // neue Nachrichten
-        );
-        // console.log(data);
-      })
-    );
+    this.route.params.pipe(takeUntil(this.destroy$)).subscribe((params) => {
+      const chatId = params['conversationId']; // oder wie dein Param heißt
+      this.currentChatId = chatId;
+    });
+
+    this.messages$.pipe(takeUntil(this.destroy$)).subscribe((data) => {
+      // let reversedOrder = [...data].reverse();
+      this.onContentChange(
+        this.currentChatId, // neue ID
+        data // neue Nachrichten
+      );
+      // console.log(data);
+    });
 
     // Subscription auf service → immer feuern, auch bei "gleicher" URL
-    this.subs.push(
-      this.postService.selected$.subscribe((postId) => {
+    this.postService.selected$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((postId) => {
         this.handleScrollRequest(postId);
-      })
-    );
+      });
 
     // Subscription auf queryParams (für Links / Bookmark)
-    this.subs.push(
-      this.route.queryParams.subscribe((params) => {
+
+    this.route.queryParams
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((params) => {
         const id = params['scrollTo'];
         if (id) this.handleScrollRequest(id);
-      })
-    );
-  }
-
-  ngOnDestroy() {
-    //Ich glaube der Aufruf von tryDeleteEmptyChat ist hier nicht nötig und reicht in onContentChange
-    this.tryDeleteEmptyChat(this.currentChatId); // Letzten angezeigten Chat prüfen
-    this.subs.forEach((s) => s.unsubscribe());
+      });
   }
 
   ngAfterViewInit() {
     // Wenn neue ViewChildren kommen (z. B. nach nachladen), versuche pending id
-    this.subs.push(
-      this.postElements.changes.subscribe(() => {
-        if (this.pendingScrollTo) {
-          this.handleScrollRequest(this.pendingScrollTo);
-        }
-      })
-    );
+    this.postElements.changes.pipe(takeUntil(this.destroy$)).subscribe(() => {
+      if (this.pendingScrollTo) {
+        this.handleScrollRequest(this.pendingScrollTo);
+      }
+    });
+
     // Falls beim ersten Rendern schon eine scrollTo im URL ist
     const initial = this.route.snapshot.queryParams['scrollTo'];
     if (initial) this.handleScrollRequest(initial);
   }
-  
+
+  ngOnDestroy() {
+    this.tryDeleteEmptyChat(this.currentChatId);
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   private tryDeleteEmptyChat(chatId?: string): void {
     if (chatId && this.postInfo.length === 0) {
       this.chatService
@@ -264,12 +270,6 @@ export class WindowDisplayComponent {
       }
     }, 0); // 0ms reicht, um Angular Layout stabilisieren zu lassen
   }
-  // ngOnInit() {
-  //   this.messages$ = this.chatActiveRouterService.getParams$(this.route).pipe(
-  //     tap((params) => console.log('PARAMS from service:', params)),
-  //     switchMap(({ type, id }) => this.chatActiveRouterService.getMessages(type, id))
-  //   );
-  // }
 
   /**
    * This function returns true when the creation-date of a post is not equal to the creation-date of the previous post.

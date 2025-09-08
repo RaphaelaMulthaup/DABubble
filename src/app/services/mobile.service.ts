@@ -3,17 +3,15 @@ import { MobileDashboardState } from '../shared/types/mobile-dashboard-state.typ
 import { Router } from '@angular/router';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class MobileService {
-  
+  private router = inject(Router);
+  mobileDashboardState = signal<MobileDashboardState>('sidenav');
+
   isMobile(): boolean {
     return window.innerWidth < 768; // you can adjust breakpoint
   }
-
-
-  private router = inject(Router);
-  mobileDashboardState = signal<MobileDashboardState>('sidenav');
 
   setMobileDashboardState(state: MobileDashboardState) {
     this.mobileDashboardState.set(state);

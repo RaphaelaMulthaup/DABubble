@@ -28,26 +28,27 @@ export class HeaderChannelComponent {
   private route = inject(ActivatedRoute);
   private channelService = inject(ChannelsService);
 
-
   mobileService = inject(MobileService);
   isMobile = false;
 
-    private updateMobile = () => {
+  private updateMobile = () => {
     this.isMobile = this.mobileService.isMobile();
   };
 
   ngOnInit() {
-    this.channelDetails$ = this.chatActiveRouterService.getConversationId$(this.route).pipe(
-      switchMap((id) => {
-        this.channelId = id;
-        return this.channelService.getCurrentChannel(this.channelId);
-      })
-    );
+    this.channelDetails$ = this.chatActiveRouterService
+      .getConversationId$(this.route)
+      .pipe(
+        switchMap((id) => {
+          this.channelId = id;
+          return this.channelService.getCurrentChannel(this.channelId);
+        })
+      );
     this.isMobile = this.mobileService.isMobile();
     window.addEventListener('resize', this.updateMobile);
   }
 
-    ngOnDestroy() {
+  ngOnDestroy() {
     window.removeEventListener('resize', this.updateMobile);
   }
 
@@ -73,9 +74,10 @@ export class HeaderChannelComponent {
           overlayY: 'top',
         },
       },
-      { channelDetails$: this.channelDetails$ as Observable<ChannelInterface>,
-        overlay: "overlay-right"
-       }
+      {
+        channelDetails$: this.channelDetails$ as Observable<ChannelInterface>,
+        overlay: 'overlay-right',
+      }
     );
   }
 
@@ -90,11 +92,12 @@ export class HeaderChannelComponent {
           originY: 'bottom',
           overlayX: 'end',
           overlayY: 'top',
-        }
+        },
       },
-      { channelDetails$: this.channelDetails$ as Observable<ChannelInterface>,
-        overlay: "overlay-right"
-       }
+      {
+        channelDetails$: this.channelDetails$ as Observable<ChannelInterface>,
+        overlay: 'overlay-right',
+      }
     );
   }
 }
