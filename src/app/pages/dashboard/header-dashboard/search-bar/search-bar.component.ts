@@ -1,4 +1,10 @@
-import { Component, computed, inject } from '@angular/core';
+import {
+  Component,
+  computed,
+  ElementRef,
+  inject,
+  ViewChild,
+} from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime, startWith, map, Observable } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -46,6 +52,8 @@ export class SearchBarComponent {
     map((v) => v.trim())
   );
 
+  @ViewChild('searchbar', { static: true }) searchbar!: ElementRef<HTMLElement>;
+
   ngOnInit() {
     this.term$.subscribe((term) => {
       if (term.length > 0) {
@@ -57,7 +65,13 @@ export class SearchBarComponent {
           SearchResultsComponent,
           'cdk-overlay-transparent-backdrop',
           {
-            globalPosition: 'belowSearchbar'
+            origin: this.searchbar.nativeElement,
+            originPosition: {
+              originX: 'center',
+              originY: 'bottom',
+              overlayX: 'center',
+              overlayY: 'top',
+            }
           },
           { results$: this.groupedResults() }
         );

@@ -59,7 +59,7 @@ export class OverlayService {
 
   editPostActive: boolean = false;
 
-  constructor() { }
+  constructor() {}
 
   private overlayInputSubject = new BehaviorSubject<OverlayData | null>(null);
   overlayInput = this.overlayInputSubject.asObservable();
@@ -97,16 +97,15 @@ export class OverlayService {
         .global()
         .centerHorizontally()
         .bottom('0px');
-    } else if (position.globalPosition === 'belowSearchbar') {
-      positionStrategy = this.overlay
-        .position()
-        .global()
-        .top('160px') // Höhe deiner Suchleiste
-        .left('0')
-        .right('0')
-        .bottom('0');
-    } else
-    {
+      // } else if (position.globalPosition === 'belowSearchbar') {
+      //   positionStrategy = this.overlay
+      //     .position()
+      //     .global()
+      //     .top('160px') // Höhe deiner Suchleiste
+      //     .left('0')
+      //     .right('0')
+      //     .bottom('0');
+    } else {
       positionStrategy = this.overlay
         .position()
         .global()
@@ -119,17 +118,15 @@ export class OverlayService {
         positionStrategy,
         hasBackdrop: false,
       });
-    } 
-    else {
+    } else {
       if (position.globalPosition === 'belowSearchbar') {
-        this.overlayRef = this.overlay.create({
-          positionStrategy,
-          hasBackdrop: true,
-          backdropClass: backdropType,
-          panelClass: 'search-results-mobile',
-        });
-      } 
-      else {
+        // this.overlayRef = this.overlay.create({
+        //   positionStrategy,
+        //   hasBackdrop: true,
+        //   backdropClass: backdropType,
+        //   panelClass: 'search-results-mobile',
+        // });
+      } else {
         this.overlayRef = this.overlay.create({
           positionStrategy,
           hasBackdrop: true,
@@ -140,7 +137,6 @@ export class OverlayService {
 
     const portal = new ComponentPortal(component, null, this.injector);
     const componentRef = this.overlayRef?.attach(portal)!;
-
 
     this.overlayRef?.backdropClick().subscribe(() => this.close());
 
@@ -154,7 +150,9 @@ export class OverlayService {
     const afterClosed$ = new Subject<void>();
 
     this.overlayRef?.detachments().subscribe(() => {
-      this.overlayRefs = this.overlayRefs.filter(ref => ref !== this.overlayRef);
+      this.overlayRefs = this.overlayRefs.filter(
+        (ref) => ref !== this.overlayRef
+      );
       if (this.overlayRefs.length == 0) {
         document.body.style.overflow = '';
       }
@@ -172,5 +170,17 @@ export class OverlayService {
     this.overlayRefs.forEach((ref) => ref.dispose());
     this.overlayRefs = [];
     document.body.style.overflow = '';
+  }
+
+  closeOne(ref: OverlayRef): void {
+    const index = this.overlayRefs.indexOf(ref);
+    if (index !== -1) {
+      ref.dispose();
+      this.overlayRefs.splice(index, 1);
+    }
+
+    if (this.overlayRefs.length === 0) {
+      document.body.style.overflow = '';
+    }
   }
 }
