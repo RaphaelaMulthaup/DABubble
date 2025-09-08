@@ -10,6 +10,10 @@
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
     padding: 38px;
+
+    @include respond-to(xs) {
+        width: 100vw;
+    }
 }
 
 .user-img{

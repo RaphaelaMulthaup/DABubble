@@ -14,12 +14,14 @@ import {
   getDocs,
   QuerySnapshot,
   arrayUnion,
+  deleteDoc
 } from '@angular/fire/firestore';
 import { from, map, Observable, of, switchMap, tap } from 'rxjs';
 import { AuthService } from './auth.service';
 import { ChannelInterface } from '../shared/models/channel.interface';
 import { Router } from '@angular/router';
 import { OverlayService } from './overlay.service';
+import { MobileService } from './mobile.service';
 
 @Injectable({
   providedIn: 'root',
@@ -31,6 +33,7 @@ export class ChannelsService {
   private authService = inject(AuthService);
   private router = inject(Router);
   private overlayService = inject(OverlayService);
+  private mobileService = inject(MobileService);
 
   // // Do we really ever need all channels?
   // getAllChannels(): Observable<ChannelInterface[]> {
@@ -63,17 +66,6 @@ export class ChannelsService {
             channel['memberIds']?.includes(this.authService.getCurrentUserId())
         )
       )
-    ) as Observable<ChannelInterface[]>;
-  }
-
-  /**
-   * Retrieves all channels that are marked as deleted
-   * @returns Observable list of deleted channels
-   */
-  getAllDeletedChannels(): Observable<ChannelInterface[]> {
-    const channelCollection = collection(this.firestore, 'channels');
-    return collectionData(channelCollection, { idField: 'id' }).pipe(
-      map((channels) => channels.filter((channel) => channel['deleted']))
     ) as Observable<ChannelInterface[]>;
   }
 
@@ -116,8 +108,9 @@ export class ChannelsService {
    */
   deleteChannel(channelId: string): Observable<void> {
     const channelDocRef = doc(this.firestore, `channels/${channelId}`);
-    const promise = updateDoc(channelDocRef, { deleted: true });
-    this.router.navigate(['/dashboard']);
+    const promise = deleteDoc(channelDocRef);
+    this.router.navigate(["/dashboard"]);
+    this.mobileService.setMobileDashboardState('sidenav')
     this.overlayService.close();
     return from(promise);
   }
