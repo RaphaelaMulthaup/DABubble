@@ -22,18 +22,20 @@ export class HeaderChannelComponent {
   channelId!: string;
   channelDetails$!: Observable<ChannelInterface | undefined>;
   memberIds?: string[];
-
-  private overlayService = inject(OverlayService);
-  private chatActiveRouterService = inject(ChatActiveRouterService);
-  private route = inject(ActivatedRoute);
-  private channelService = inject(ChannelsService);
-
-  mobileService = inject(MobileService);
   isMobile = false;
+  private updateMobile: () => void;
 
-  private updateMobile = () => {
-    this.isMobile = this.mobileService.isMobile();
-  };
+  constructor(
+    private overlayService: OverlayService,
+    private chatActiveRouterService: ChatActiveRouterService,
+    private route: ActivatedRoute,
+    private channelService: ChannelsService,
+    private mobileService: MobileService
+  ) {
+    this.updateMobile = () => {
+      this.isMobile = this.mobileService.isMobile();
+    };
+  }
 
   ngOnInit() {
     this.channelDetails$ = this.chatActiveRouterService

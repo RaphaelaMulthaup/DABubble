@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, Signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime, startWith, map, Observable } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -21,21 +21,24 @@ import { ChannelListItemComponent } from '../../../../../shared/components/chann
   styleUrls: ['./header-searchbar.component.scss'],
 })
 export class HeaderSearchbarComponent {
-  private searchService = inject(SearchService);
-
   // Eingabefeld
   searchControl = new FormControl<string>('', { nonNullable: true });
-
   // Suchterm-Observable
-  private term$: Observable<string> = this.searchControl.valueChanges.pipe(
-    startWith(this.searchControl.value),
-    debounceTime(300),
-    map((v) => v.trim())
-  );
-
+  private term$: Observable<string>;
   // Ergebnisse aus dem Service
-  results = toSignal(
-    this.searchService.searchHeaderSearch(this.term$) as Observable<SearchResult[]>,
-    { initialValue: [] as SearchResult[] }
-  );
+  results: Signal<SearchResult[]>;
+
+  constructor(private searchService: SearchService) {
+    this.term$ = this.searchControl.valueChanges.pipe(
+      startWith(this.searchControl.value),
+      debounceTime(300),
+      map((v) => v.trim())
+    );
+    this.results = toSignal(
+      this.searchService.searchHeaderSearch(this.term$) as Observable<
+        SearchResult[]
+      >,
+      { initialValue: [] as SearchResult[] }
+    );
+  }
 }

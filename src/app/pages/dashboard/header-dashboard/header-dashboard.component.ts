@@ -24,16 +24,17 @@ import { OverlayService } from '../../../services/overlay.service';
   styleUrl: './header-dashboard.component.scss',
 })
 export class HeaderDashboardComponent {
-  public authService = inject(AuthService);
-  public overlayService = inject(OverlayService);
+  currentUser$?: Observable<UserInterface | null>;
+  mobileDashboardState: WritableSignal<MobileDashboardState>;
 
-  currentUser$?: Observable<UserInterface | null> =
-    this.authService.currentUser$;
-
-  public mobileService = inject(MobileService);
-
-  mobileDashboardState: WritableSignal<MobileDashboardState> =
-    this.mobileService.mobileDashboardState;
+  constructor(
+    private overlayService: OverlayService,
+    public authService: AuthService,
+    public mobileService: MobileService
+  ) {
+    this.mobileDashboardState = this.mobileService.mobileDashboardState;
+    this.currentUser$ = this.authService.currentUser$;
+  }
 
   showProfile() {
     this.overlayService.openComponent(

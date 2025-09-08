@@ -32,40 +32,33 @@ import { EditDisplayedPostComponent } from './edit-displayed-post/edit-displayed
   styleUrl: './displayed-post.component.scss', // SCSS styles for this component
 })
 export class DisplayedPostComponent {
-  private authService = inject(AuthService);
-  private userService = inject(UserService);
-  public overlayService = inject(OverlayService);
-  public postService = inject(PostService);
-  public mobileService = inject(MobileService);
-  private route = inject(ActivatedRoute);
-  private chatActiveRoute = inject(ChatActiveRouterService);
-
+  @Input() @Output() post!: PostInterface;
+  @Input() editingPost?: boolean;
   typ$!: Observable<string>;
   currentConversationType!: 'channel' | 'chat';
   currentConversationId!: string;
-
-  // Input message passed from the parent component
-  @Input() @Output() post!: PostInterface;
-
-  /** Observable für alle abhängigen Werte */
   senderName$!: Observable<string>;
   senderPhotoUrl$!: Observable<string | undefined>;
   senderIsCurrentUser$!: Observable<boolean>;
   createdAtTime$!: Observable<string>;
   reactions$!: Observable<ReactionInterface[]>;
-  // reactions: ReactionInterface[] = [];
   visibleReactions$!: Observable<ReactionInterface[]>;
-  // answers$?: Observable<PostInterface[]>;
-  // answers: PostInterface[] = [];
-
   allReactionsVisible: boolean = false;
   postClicked: boolean = false;
-  @Input() editingPost?: boolean;
-
   private destroy$ = new Subject<void>();
 
+  constructor(
+    private authService: AuthService,
+    private userService: UserService,
+    private route: ActivatedRoute,
+    private chatActiveRouterService: ChatActiveRouterService,
+    public overlayService: OverlayService,
+    public postService: PostService,
+    public mobileService: MobileService
+  ) {}
+
   ngOnChanges() {
-    this.chatActiveRoute
+    this.chatActiveRouterService
       .getParams$(this.route)
       .pipe(takeUntil(this.destroy$))
       .subscribe(({ conversationType, conversationId }) => {
@@ -87,12 +80,9 @@ export class DisplayedPostComponent {
     );
 
     if (!this.post) return;
-    // Prüfen, ob der Sender aktuell ist
     this.senderIsCurrentUser$ = of(
       this.post.senderId === this.authService.currentUser.uid
     );
-
-    // Userdaten laden
     const user$ = this.userService.getUserById(this.post.senderId);
     this.senderName$ = user$.pipe(map((u) => u?.name ?? ''));
     this.senderPhotoUrl$ = user$.pipe(map((u) => u?.photoUrl ?? ''));

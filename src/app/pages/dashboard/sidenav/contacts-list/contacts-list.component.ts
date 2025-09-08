@@ -34,19 +34,17 @@ export class ContactsListComponent implements OnInit {
   // Controls visibility of direct messages section
   directMessagesVisible = true;
   currentUser!: UserInterface;
-
-  public mobileService = inject(MobileService);
-
-  mobileDashboardState: WritableSignal<MobileDashboardState> =
-    this.mobileService.mobileDashboardState;
-
+  mobileDashboardState: WritableSignal<MobileDashboardState>;
   private destroy$ = new Subject<void>();
 
   constructor(
     private userService: UserService,
     private authService: AuthService,
-    private chatService: ChatService
-  ) {}
+    private chatService: ChatService,
+    private mobileService: MobileService
+  ) {
+    this.mobileDashboardState = this.mobileService.mobileDashboardState;
+  }
 
   /***
    * Lifecycle hook that runs once the component has been initialized.

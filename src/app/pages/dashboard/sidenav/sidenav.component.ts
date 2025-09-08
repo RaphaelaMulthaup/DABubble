@@ -2,7 +2,8 @@ import { Component, inject } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
 import { ChannelListComponent } from './channel-list/channel-list.component';
 import { ContactsListComponent } from './contacts-list/contacts-list.component';
-import { Subject, takeUntil } from 'rxjs';
+import { Observable, Subject, takeUntil } from 'rxjs';
+import { UserInterface } from '../../../shared/models/user.interface';
 
 @Component({
   selector: 'app-sidenav',
@@ -11,16 +12,17 @@ import { Subject, takeUntil } from 'rxjs';
   styleUrl: './sidenav.component.scss',
 })
 export class SidenavComponent {
-  /** AuthService instance for authentication-related operations */
-  private authService = inject(AuthService);
-
   /** Display name of the currently logged-in user */
   userDisplayName: string | null = null;
 
   /** Observable of the current user from AuthService */
-  user$ = this.authService.currentUser$;
+  user$: Observable<UserInterface | null>;
 
   private destroy$ = new Subject<void>();
+
+  constructor(private authService :AuthService){
+    this.user$ = this.authService.currentUser$
+  }
 
   /** Lifecycle hook that runs after component initialization */
   ngOnInit() {

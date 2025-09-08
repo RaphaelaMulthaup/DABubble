@@ -20,18 +20,19 @@ import { Subject, takeUntil } from 'rxjs';
   styleUrl: './edit-displayed-post.component.scss',
 })
 export class EditDisplayedPostComponent implements OnInit {
-  chatActiveRouterService = inject(ChatActiveRouterService);
-  route = inject(ActivatedRoute);
-  postService = inject(PostService);
-  overlayService = inject(OverlayService);
-
   @Input() post!: PostInterface;
   @Output() endEditingPost = new EventEmitter<void>();
-
   currentConversationType!: 'channel' | 'chat';
   currentConversationId!: string;
   messageId!: string;
   private destroy$ = new Subject<void>();
+
+  constructor(
+    private overlayService: OverlayService,
+    private postService: PostService,
+    private route: ActivatedRoute,
+    private chatActiveRouterService: ChatActiveRouterService
+  ) {}
 
   ngOnInit() {
     this.chatActiveRouterService
