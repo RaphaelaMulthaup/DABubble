@@ -59,3 +59,10 @@
 .showEdit{
     display: flex;
 }
+
+@media screen and (max-width: 525px) {
+
+    .profil-view-main{
+        width: 100vw;
+    }
+}
