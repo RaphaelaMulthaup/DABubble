@@ -1,1 +1,1 @@
-export type MobileDashboardState = 'sidenav' | 'message-window' | 'thread-window';
+export type MobileDashboardState = 'sidenav' | 'message-window' | 'thread-window' | 'new-message-view';

@@ -16,6 +16,9 @@
           <app-conversation-window [data$]="answers$"></app-conversation-window>
         }
       }
+      @case ('new-message-view') {
+        <app-conversation-window></app-conversation-window>
+      }
     }
 
   </div>
