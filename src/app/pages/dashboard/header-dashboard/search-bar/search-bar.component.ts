@@ -90,7 +90,7 @@ export class SearchBarComponent {
               originX: 'center',
               originY: 'bottom',
               overlayX: 'center',
-              overlayY: 'top',
+              overlayY: 'bottom',
             },
             originPositionFallback: {
               originX: 'center',

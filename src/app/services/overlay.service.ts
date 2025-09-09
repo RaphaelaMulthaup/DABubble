@@ -107,8 +107,6 @@ export class OverlayService {
         afterClosed$: Observable<void>;
       }
     | undefined {
-    // this.close(); // falls schon ein Overlay offen ist
-
     const destroy$ = new Subject<void>();
     let positionStrategy;
     if (position.origin) {
