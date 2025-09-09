@@ -48,18 +48,6 @@ export class ConfirmPasswordComponent {
   ) {}
 
   /**
-   * Get on init list of all emails and UIDs from firestore
-   */
-  ngOnInit(): void {
-    // this.userService.getAllUserEmails().subscribe((users: any) => {
-    //   this.emailList = users.map((user: { email: any; }) => user.email);
-    //   users.forEach((user: { uid: any; email: any; }) => {
-    //     console.log(`UID: ${user.uid}, EMAIL: ${user.email}`);
-    //   })
-    // })
-  }
-
-  /**
    * Compares email from input with emails from loaded mail list.
    * Throws error message if no matching mail
    */
