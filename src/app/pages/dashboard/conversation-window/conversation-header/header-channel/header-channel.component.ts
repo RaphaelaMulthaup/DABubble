@@ -79,6 +79,7 @@ export class HeaderChannelComponent {
       {
         channelDetails$: this.channelDetails$ as Observable<ChannelInterface>,
         overlay: 'overlay-right',
+        clickedFromHeader: true
       }
     );
   }

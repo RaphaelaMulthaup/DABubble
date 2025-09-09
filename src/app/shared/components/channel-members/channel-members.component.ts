@@ -22,7 +22,9 @@ import { MobileService } from '../../../services/mobile.service';
 export class ChannelMembersComponent implements OnDestroy, OnInit {
   @Input() channelDetails$?: Observable<ChannelInterface | undefined>;
   @Input() overlay: string = '';
+  @Input() onBottom: boolean = false;
   memberIds?: string[];
+  clickedFromHeader: boolean = false;
   clickedAddMember: boolean = false;
   isMobile = false;
   users$!: Observable<UserInterface[]>;
@@ -56,16 +58,17 @@ export class ChannelMembersComponent implements OnDestroy, OnInit {
     window.removeEventListener('resize', this.updateMobile);
   }
 
-  // onAddMemberClick() {
-  //   this.clickedAddMember = true;
+  choiseBetweenComponentAndHeader(event: MouseEvent){
+    if(this.clickedFromHeader){
+      this.clickedAddMember = true;
+    }else{
+      this.openAddMemberToChannelOverlay(event);
+    }
+  }
 
-  //   if (this.isMobile) {
-  //     this.openAddMemberToChannelOverlay();
-  //   }
-  // }
-
-  openAddMemberToChannelOverlay() {
-    this.overlayService.openComponent(
+  openAddMemberToChannelOverlay(event: MouseEvent) {
+   if(this.onBottom){
+     this.overlayService.openComponent(
       AddMemberToChannelComponent,
       'cdk-overlay-dark-backdrop',
       {
@@ -78,5 +81,30 @@ export class ChannelMembersComponent implements OnDestroy, OnInit {
         overlay: 'overlay',
       }
     );
+   }else{
+       this.overlayService.openComponent(
+      AddMemberToChannelComponent,
+      'cdk-overlay-dark-backdrop',
+      {
+        origin: event.currentTarget as HTMLElement,
+        originPosition: {
+          originX: 'start',
+          originY: 'bottom',
+          overlayX: 'end',
+          overlayY: 'top',
+        },
+      },
+      {
+        channelDetails$: this.channelDetails$ as Observable<
+          ChannelInterface | undefined
+        >,
+        overlay: 'overlay',
+      }
+    );
+   }
   }
 }
+
+
+
+
