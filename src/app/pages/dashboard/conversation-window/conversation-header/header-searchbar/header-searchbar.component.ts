@@ -1,4 +1,10 @@
-import { Component, inject, Signal } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  inject,
+  Signal,
+  ViewChild,
+} from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime, startWith, map, Observable } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -28,6 +34,8 @@ export class HeaderSearchbarComponent {
 
   // Ergebnisse aus dem Service
   results: Signal<SearchResult[]>;
+  @ViewChild('headerSearchbar', { static: true })
+  headerSearchbar!: ElementRef<HTMLElement>;
 
   constructor(
     private searchService: SearchService,
@@ -51,16 +59,36 @@ export class HeaderSearchbarComponent {
     if (this.results().length > 0) {
       this.openSearchResultsOverlay();
     } else {
-      this.overlayService.close(); // Overlay schließen, wenn keine Ergebnisse vorhanden sind
+      this.overlayService.closeAll(); // Overlay schließen, wenn keine Ergebnisse vorhanden sind
     }
   }
   // Methode, um das Overlay zu öffnen
   private openSearchResultsOverlay(): void {
+    this.overlayService.closeAll();
+    // const originElement = document.querySelector(
+    //   '.input-wrapper'
+    // ) as HTMLElement;
     this.overlayService.openComponent(
-      SearchResultsNewMessageComponent, // Deine Komponente für das Overlay
-      'cdk-overlay-dark-backdrop', // Backdrop-Klasse
-      { globalPosition: 'center' }, // Position des Overlays
-      { results: this.results() } // Daten an das Overlay übergeben
+      SearchResultsNewMessageComponent,
+      'cdk-overlay-transparent-backdrop',
+      {
+        origin: this.headerSearchbar.nativeElement,
+        originPosition: {
+          originX: 'center',
+          originY: 'bottom',
+          overlayX: 'center',
+          overlayY: 'bottom',
+        },
+        originPositionFallback: {
+          originX: 'center',
+          originY: 'bottom',
+          overlayX: 'center',
+          overlayY: 'top',
+        },
+      },
+      {
+        results: this.results(),
+      }
     );
   }
 }
