@@ -29,3 +29,8 @@ app-current-post-input {
   background-color: var(--color-white);
   box-shadow: 0px 0px 12px 6px #ffffff ;
 }
+
+.below-from-header-searchbar{
+  width: 100%;
+  height: calc(100vh - 205px);
+}

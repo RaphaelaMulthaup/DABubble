@@ -4,4 +4,7 @@
   <app-window-display [messages$]="data$"></app-window-display>
   <app-current-post-input></app-current-post-input>
   }
+  @if (mobileDashboardState() == 'new-message-view') {
+    <div class="below-from-header-searchbar"></div>
+  }
 </section>
