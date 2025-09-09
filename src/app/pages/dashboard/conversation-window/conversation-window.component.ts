@@ -25,7 +25,7 @@ import { MobileService } from '../../../services/mobile.service';
   styleUrl: './conversation-window.component.scss',
 })
 export class ConversationWindowComponent {
-  @Input() data$!: Observable<PostInterface[]>;
+  @Input() data$?: Observable<PostInterface[]>;
   @Output() changeMobileDashboardState =
     new EventEmitter<MobileDashboardState>();
   mobileService = inject(MobileService);

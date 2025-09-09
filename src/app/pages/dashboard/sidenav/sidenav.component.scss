@@ -17,3 +17,18 @@ app-channel-list {
 app-contacts-list {
   width: 100%;
 }
+
+.new-message {
+  width: 60px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background-image: url(../../../../assets/img/new-message.svg);
+  background-color: var(--color-purple-dark);
+  position: fixed;
+  bottom: 57px;
+  right: 16px;
+  box-shadow: 0px 6px 10px 0px #00000033;
+  &:active {
+    background-color: var(--color-purple-light);
+  }
+}

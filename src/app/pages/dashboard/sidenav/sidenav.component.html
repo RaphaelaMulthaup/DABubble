@@ -2,3 +2,6 @@
   <app-channel-list></app-channel-list>
   <app-contacts-list></app-contacts-list>
 </nav>
+@if (isMobile) {
+  <button class="new-message" (click)="openNewMessageView()"></button>
+}
