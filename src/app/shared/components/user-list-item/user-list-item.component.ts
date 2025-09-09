@@ -26,6 +26,7 @@ export class UserListItemComponent {
   @Input() inCurrentPostInput = false;
   @Input() doNothing: boolean = false;
   @Input() showProfile: boolean = false;
+  @Input() inHeaderChat: boolean = false;
 
   // Stores the ID of the currently logged-in user
   currentUserId: string | null = null;
@@ -47,16 +48,16 @@ export class UserListItemComponent {
    */
   async pickOutAndNavigateToChat() {
     if (!this.currentUserId) return; // Stop if user is not logged in
-    this.mobileService.setMobileDashboardState('message-window');
-    this.chatService.navigateToChat(this.currentUserId, this.user.uid);
+    // this.mobileService.setMobileDashboardState('message-window');
+    this.chatService.navigateToChat(this.currentUserId, this.user);
   }
 
   async choiceBetweenNavigateAndProfile() {
     if (!this.currentUserId) return; // Stop if user is not logged in
     if (this.doNothing) return;
-    if (this.showProfile) {
+    if (this.showProfile || this.inHeaderChat) {
       this.openProfileOverlay();
-    } else if (!this.showProfile) {
+    } else {
       this.pickOutAndNavigateToChat();
     }
   }

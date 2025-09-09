@@ -30,7 +30,7 @@
       <app-profile-view-main class="profile-view"></app-profile-view-main>
     </div>
   </div>
-  @if ((authService.currentUser$ | async)) { <app-search-bar></app-search-bar>
+  @if ((authService.currentUser$ | async) && mobileDashboardState() == 'sidenav') { <app-search-bar></app-search-bar>
   } } @else if (!isMobile){
   <div class="logo-box flex items-center">
     @if (mobileDashboardState() == 'sidenav') {
