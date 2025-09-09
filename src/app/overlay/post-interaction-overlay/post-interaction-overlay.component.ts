@@ -13,7 +13,7 @@ import { EmojiPickerComponent } from '../emoji-picker/emoji-picker.component';
 import { PostService } from '../../services/post.service';
 import { PostInterface } from '../../shared/models/post.interface';
 import { AuthService } from '../../services/auth.service';
-import { EditPostOverlayComponent } from '../edit-post/edit-post.component';
+import { EditPostBtnComponent } from '../edit-post-btn/edit-post-btn.component';
 import { MobileService } from '../../services/mobile.service';
 
 @Component({
@@ -89,7 +89,7 @@ export class PostInteractionOverlayComponent implements OnInit {
    */
   openEditPostOverlay(event: MouseEvent) {
     const overlay = this.overlayService.openComponent(
-      EditPostOverlayComponent,
+      EditPostBtnComponent,
       'cdk-overlay-transparent-backdrop',
       {
         origin: event.currentTarget as HTMLElement,

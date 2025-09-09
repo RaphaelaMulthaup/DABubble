@@ -5,10 +5,10 @@ import { OverlayService } from '../../services/overlay.service';
 @Component({
   selector: 'app-edit-post-overlay',
   imports: [],
-  templateUrl: './edit-post.component.html',
-  styleUrl: './edit-post.component.scss',
+  templateUrl: './edit-post-btn.component.html',
+  styleUrl: './edit-post-btn.component.scss',
 })
-export class EditPostOverlayComponent {
+export class EditPostBtnComponent {
   post!: PostInterface;
   @Output() editPostActive = new EventEmitter<boolean>;
 
