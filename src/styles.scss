@@ -243,6 +243,11 @@ h4 {
   border-width: 1px;
 }
 
+.emoji {
+  max-width: 32px !important;
+  max-height: 32px !important;
+}
+
 /* nunito-200 - latin */
 @font-face {
   font-display: swap;

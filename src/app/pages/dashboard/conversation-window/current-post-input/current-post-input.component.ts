@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../../../services/auth.service';
@@ -19,6 +19,7 @@ import { UserListItemComponent } from '../../../../shared/components/user-list-i
 import { ChannelListItemComponent } from '../../../../shared/components/channel-list-item/channel-list-item.component';
 import { OverlayService } from '../../../../services/overlay.service';
 import { EmojiPickerComponent } from '../../../../overlay/emoji-picker/emoji-picker.component';
+import { EMOJIS } from '../../../../shared/constants/emojis';
 
 @Component({
   selector: 'app-current-post-input',
@@ -44,7 +45,10 @@ export class CurrentPostInput {
     text: new FormControl('', []),
   });
   searchResults: SearchResult[] = [];
+  emojis = EMOJIS;
   private destroy$ = new Subject<void>();
+
+  @ViewChild('postId') postTextInput!: ElementRef;
 
   constructor(
     private authService: AuthService,
@@ -113,6 +117,16 @@ export class CurrentPostInput {
     this.destroy$.complete();
   }
 
+  // onInput(event: any) {
+  //   console.log(event.target.innerHTML);
+  // }
+
+  addEmoji() {
+    const editor = document.querySelector('.post-text-input') as HTMLElement;
+    const img = `<img src="${'assets/img/emojis/clown-face.svg'}" alt="emoji" class='emoji'>`;
+    document.execCommand('insertHTML', false, img);
+  }
+
   /**
    * This functions opens the emoji-picker overlay.
    * The overlay possibly emits an emoji and this emoji is added to the posts text.
@@ -157,25 +171,43 @@ export class CurrentPostInput {
    * - Resets the form afterwards.
    */
   onSubmit() {
-    const post = this.postForm.get('text')?.value;
+    // const postText = this.postForm.get('text')?.value;
     const currentUserId: string | null = this.authService.currentUser.uid;
+    const postText = this.postTextInput.nativeElement.innerHTML;
+
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(postText, 'text/html');
+
+    doc.querySelectorAll('img.emoji').forEach((img) => {
+      const src = img.getAttribute('src');
+      const emoji = this.emojis.find((e) => e.src === src);
+
+      if (emoji) {
+        const textNode = doc.createTextNode(emoji.token);
+        img.replaceWith(textNode);
+      }
+    });
+
+    const tokenString = doc.body.innerText;
+    console.log(tokenString);
 
     if (this.messageToReplyId) {
       this.postService.createAnswer(
         this.conversationId,
         this.messageToReplyId,
         currentUserId!,
-        post,
+        postText,
         this.conversationType
       );
     } else {
       this.postService.createMessage(
         this.conversationId,
         currentUserId!,
-        post,
+        postText,
         this.conversationType
       );
     }
-    this.postForm.reset();
+
+    // this.postForm.reset();
   }
 }

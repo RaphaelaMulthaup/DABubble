@@ -2,6 +2,6 @@
 [class.reaction-options-current-user]="senderIsCurrentUser" 
 class="reaction-options">
     @for (img of emojis; track $index) {
-    <img (click)="reactToPost($index)" class="reaction-img" [src]="emojis[$index]" [alt]="emojis[$index]">
+    <img (click)="reactToPost($index)" class="reaction-img" [src]="emojis[$index].src" [alt]="emojis[$index].token">
     }
 </div>

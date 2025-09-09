@@ -1,19 +1,21 @@
 <form class="current-post-input" [formGroup]="postForm" (ngSubmit)="onSubmit()">
   <div class="textarea-wrapper">
     <label for="postId"></label>
-    <textarea
-      id="postId"
+    <div
+      #postId
+      class="post-text-input"
       type="text"
       formControlName="text"
       name="text"
       placeholder="Text einfügen"
       required
-    ></textarea>
+      contenteditable="true"
+    ></div>
   </div>
   <div class="buttons">
     <div>
       <button
-        (click)="$event.preventDefault(); openEmojiPickerOverlay($event)"
+        (click)="$event.preventDefault(); addEmoji()"
         type="button"
         class="btn-tertiary add-emoji"
       ></button>
