@@ -70,10 +70,10 @@ export class EditProfileComponent implements OnInit {
   saveName() {
     if (this.userName.trim()) {
       this.authService.updateUserName(this.userName.trim()).then(() => {
-        this.overlayService.close();
+        this.overlayService.closeAll();
       });
     } else {
-      this.overlayService.close();
+      this.overlayService.closeAll();
     }
   }
 }

@@ -160,7 +160,7 @@ export class DisplayedPostComponent {
           this.post.id!,
           emoji
         );
-        this.overlayService.close();
+        this.overlayService.closeAll();
       });
   }
 

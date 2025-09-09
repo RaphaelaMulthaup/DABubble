@@ -17,6 +17,6 @@ export class EditPostOverlayComponent {
   confirmEdit() {
     this.editPostActive.emit(true)
     this.overlayService.editPostActive = true;
-    this.overlayService.close();
+    this.overlayService.closeAll();
   }
 }

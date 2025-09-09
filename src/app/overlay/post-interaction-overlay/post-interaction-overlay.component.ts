@@ -80,7 +80,7 @@ export class PostInteractionOverlayComponent implements OnInit {
           this.post.id!,
           emoji
         );
-        this.overlayService.close();
+        this.overlayService.closeAll();
       });
   }
 

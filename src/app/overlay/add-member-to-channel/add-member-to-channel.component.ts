@@ -86,7 +86,7 @@ export class AddMemberToChannelComponent {
     const membersId = this.ListWithMember.map((user) => user.uid);
     this.channelService.addMemberToChannel(channelId, membersId);
     this.overlayService.clearUsers();
-    this.overlayService.close();
+    this.overlayService.closeAll();
   }
 
   openAddMembersToChannel(event: MouseEvent) {

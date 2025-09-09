@@ -101,7 +101,7 @@
       @if(allReactionsVisible || $index <= 4) {
       <div
         (mouseenter)="openReactedUsersOverlay($event, reaction)"
-        (mouseleave)="overlayService.close()"
+        (mouseleave)="overlayService.closeAll()"
         (click)="toggleExistingReaction(reaction.emoji)"
         class="reaction flex place-items-center"
       >

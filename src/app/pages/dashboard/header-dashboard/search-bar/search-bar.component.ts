@@ -77,7 +77,7 @@ export class SearchBarComponent {
   ngOnInit() {
     this.term$.pipe(takeUntil(this.destroy$)).subscribe((term) => {
       if (term.length > 0) {
-        this.overlayService.close();
+        this.overlayService.closeAll();
         // const originElement = document.querySelector(
         //   '.input-wrapper'
         // ) as HTMLElement;
@@ -102,7 +102,7 @@ export class SearchBarComponent {
           { results$: this.groupedResults() }
         );
       } else {
-        this.overlayService.close(); // optional: Overlay schließen, wenn Eingabe leer
+        this.overlayService.closeAll(); // optional: Overlay schließen, wenn Eingabe leer
       }
     });
   }

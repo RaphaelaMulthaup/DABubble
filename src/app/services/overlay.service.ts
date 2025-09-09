@@ -150,7 +150,7 @@ export class OverlayService {
     this.overlayRef
       ?.backdropClick()
       .pipe(takeUntil(destroy$))
-      .subscribe(() => this.close());
+      .subscribe(() => this.closeAll());
 
     if (data) Object.assign(componentRef.instance, data);
 
@@ -183,7 +183,7 @@ export class OverlayService {
   /**
    * closes all overlays
    */
-  close(): void {
+  closeAll(): void {
     this.overlayRefs.forEach((ref) => ref.dispose());
     this.overlayRefs = [];
     document.body.style.overflow = '';

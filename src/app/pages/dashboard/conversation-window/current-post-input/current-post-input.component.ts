@@ -145,7 +145,7 @@ export class CurrentPostInput {
     //     this.post.id!,
     //     emoji
     //   );
-    //   this.overlayService.close();
+    //   this.overlayService.closeAll();
     // });
   }
 
