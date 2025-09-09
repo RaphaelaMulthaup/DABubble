@@ -4,13 +4,13 @@
   height: 70px;
   @include dFlex();
   position: relative;
+  flex: 1;
 }
 
 input {
   flex: 1;
   height: 100%;
   border-radius: 42px;
-  width: unset;
   padding: 0 80px 0 45px;
   line-height: 70px;
   font-size: 24px;
