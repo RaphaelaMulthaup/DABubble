@@ -1,4 +1,4 @@
-import { Component, Input, Signal, effect, inject } from '@angular/core';
+import { Component, Input, Output, Signal, effect, inject } from '@angular/core';
 import { HeaderOverlayComponent } from '../../shared/components/header-overlay/header-overlay.component';
 import { ChannelInterface } from '../../shared/models/channel.interface';
 import { CommonModule } from '@angular/common';
@@ -9,7 +9,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { UserListItemComponent } from '../../shared/components/user-list-item/user-list-item.component';
 import { UserInterface } from '../../shared/models/user.interface';
 import { ChannelsService } from '../../services/channels.service';
-import { Overlay } from '@angular/cdk/overlay';
+import { Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { OverlayService } from '../../services/overlay.service';
 import { UserListItemToChannelComponent } from '../../shared/components/user-list-item-to-channel/user-list-item-to-channel.component';
 // import { PortalHostDirective } from "../../../../node_modules/@angular/cdk/portal-directives.d";
@@ -22,7 +22,7 @@ import { UserListItemToChannelComponent } from '../../shared/components/user-lis
 })
 export class AddMemberToChannelComponent {
   @Input() channelDetails$?: Observable<ChannelInterface | undefined>;
-
+  @Output() overlayRef!: OverlayRef;
   ListWithMember: UserInterface[] = [];
   overlay: string = '';
 

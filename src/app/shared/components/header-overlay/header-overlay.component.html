@@ -1,7 +1,11 @@
 <header>
-    <h2>{{ overlayHeadline }}</h2>
-    <button 
-        class="btn-tertiary close" 
-        (click)="overlayService.closeAll()">
-    </button>
+  <h2>{{ overlayHeadline }}</h2>
+  <button
+    class="btn-tertiary close"
+    (click)="
+      overlayRef
+        ? overlayService.closeOne(overlayRef)
+        : overlayService.closeAll()
+    "
+  ></button>
 </header>

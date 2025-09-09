@@ -1,18 +1,40 @@
-<div class="edit-profile-main flex flex-col items-center justify-between"
-    *ngIf="(user$ | async) as user">
-        <app-header-overlay class="flex items-center justifiy-center w-full" [overlayHeadline]="'Dein Profil bearbeiten'"/>
-    <div class="img-area flex items-center justify-center w-full">
-        <img class="user-img" [src]="user.photoUrl" alt="user img" (click)="showAvatarSelection()">
+<div
+  class="edit-profile-main flex flex-col items-center justify-between"
+  *ngIf="user$ | async as user"
+>
+  <app-header-overlay
+    class="flex items-center justifiy-center w-full"
+    [overlayHeadline]="'Dein Profil bearbeiten'"
+    [overlayRef]="overlayRef"
+  />
+  <div class="img-area flex items-center justify-center w-full">
+    <img
+      class="user-img"
+      [src]="user.photoUrl"
+      alt="user img"
+      (click)="showAvatarSelection()"
+    />
+  </div>
+  <div class="name-section flex flex-col w-full">
+    <div class="name-header flex items-center">
+      <img class="edit-icon" [src]="" alt="" />
+      <h3 class="edit-h3">Vollständiger Name</h3>
     </div>
-    <div class="name-section flex flex-col w-full">
-        <div class="name-header flex items-center">
-            <img class="edit-icon" [src]="" alt="">
-            <h3 class="edit-h3">Vollständiger Name</h3>
-        </div>
-        <input #userNameInput class="input-primary" [(ngModel)]="userName" type="text" autofocus>
-    </div>
-    <div class="btn-area flex items-center justify-around w-full">
-        <button class="btn-secondary" (click)="overlayService.closeAll()">Abbrechen</button>
-        <button class="btn-primary" (click)="saveName()">Speichern</button>
-    </div>
+    <input
+      #userNameInput
+      class="input-primary"
+      [(ngModel)]="userName"
+      type="text"
+      autofocus
+    />
+  </div>
+  <div class="btn-area flex items-center justify-around w-full">
+    <button
+      class="btn-secondary"
+      (click)="overlayService.closeOne(this.overlayRef)"
+    >
+      Abbrechen
+    </button>
+    <button class="btn-primary" (click)="saveName()">Speichern</button>
+  </div>
 </div>
