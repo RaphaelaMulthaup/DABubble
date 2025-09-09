@@ -7,6 +7,8 @@ import { JsonPipe } from '@angular/common';
 import { SearchResult } from '../../../../../shared/types/search-result.type';
 import { UserListItemComponent } from '../../../../../shared/components/user-list-item/user-list-item.component';
 import { ChannelListItemComponent } from '../../../../../shared/components/channel-list-item/channel-list-item.component';
+import { OverlayService } from '../../../../../services/overlay.service';
+import { SearchResultsNewMessageComponent } from '../../../../../overlay/search-results-new-message/search-results-new-message.component';
 
 @Component({
   selector: 'app-header-searchbar',
@@ -23,23 +25,42 @@ import { ChannelListItemComponent } from '../../../../../shared/components/chann
 export class HeaderSearchbarComponent {
   // Eingabefeld
   searchControl = new FormControl<string>('', { nonNullable: true });
-  
+
   // Ergebnisse aus dem Service
   results: Signal<SearchResult[]>;
 
-  constructor(private searchService: SearchService) {
+  constructor(
+    private searchService: SearchService,
+    private overlayService: OverlayService
+  ) {
     // Suchterm-Observable mit debounce und trim
     const term$ = this.searchControl.valueChanges.pipe(
       startWith(this.searchControl.value),
       debounceTime(300),
       map((v) => v.trim())
     );
-    
+
     // Konvertiere das Observable zu einem Signal
-    this.results = toSignal(
-      this.searchService.searchHeaderSearch(term$),
-      { initialValue: [] }
+    this.results = toSignal(this.searchService.searchHeaderSearch(term$), {
+      initialValue: [],
+    });
+  }
+
+  ngDoCheck(): void {
+    // Beobachte den Signal-Wert und öffne das Overlay, wenn Ergebnisse vorhanden sind
+    if (this.results().length > 0) {
+      this.openSearchResultsOverlay();
+    } else {
+      this.overlayService.close(); // Overlay schließen, wenn keine Ergebnisse vorhanden sind
+    }
+  }
+  // Methode, um das Overlay zu öffnen
+  private openSearchResultsOverlay(): void {
+    this.overlayService.openComponent(
+      SearchResultsNewMessageComponent, // Deine Komponente für das Overlay
+      'cdk-overlay-dark-backdrop', // Backdrop-Klasse
+      { globalPosition: 'center' }, // Position des Overlays
+      { results: this.results() } // Daten an das Overlay übergeben
     );
   }
 }
-

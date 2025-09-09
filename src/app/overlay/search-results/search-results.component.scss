@@ -9,12 +9,3 @@
   background-color: white;
 }
 
-.results-list {
-  padding: 24px 61px;
-  @include dFlex($ai: flex-start, $g: 13px);
-  flex-direction: column;
-  li {
-    overflow: hidden;
-    width: 100%;
-  }
-}
