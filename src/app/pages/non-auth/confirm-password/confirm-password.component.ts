@@ -1,12 +1,6 @@
 import { Component, EventEmitter, inject, OnInit, Output } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
-import {
-  FormControl,
-  FormsModule,
-  ReactiveFormsModule,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule, FormGroup, Validators } from '@angular/forms';
 
 import { UserService } from '../../../services/user.service';
 import { AngularFireFunctions } from '@angular/fire/compat/functions';
@@ -20,23 +14,26 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-confirm-password',
-  imports: [FormsModule, ReactiveFormsModule, CommonModule],
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    CommonModule,
+  ],
   templateUrl: './confirm-password.component.html',
-  styleUrl: './confirm-password.component.scss',
+  styleUrl: './confirm-password.component.scss'
 })
-export class ConfirmPasswordComponent {
+export class ConfirmPasswordComponent implements OnInit {
   @Output() changeAuthState = new EventEmitter<AuthState>();
 
   showErrorMessage: boolean = false;
   // wavieFlagie: boolean = false;
   showToast: boolean = false;
 
-  // emailList: string[] = [];
-  emailExists: boolean = false;
+  emailList: string[] = [];
   userColl: any;
 
   confirmForm: FormGroup = new FormGroup({
-    email: new FormControl('', [Validators.required, Validators.email]),
+    email: new FormControl('', [Validators.required, Validators.email])
   });
   userList!: any[];
   functions: any;
@@ -107,17 +104,14 @@ export class ConfirmPasswordComponent {
   // }
 
   /**
-   * Sends linkt to reset password to found email
-   */
+  * Sends linkt to reset password to found email
+  */
   sendPasswortResset(email: string) {
-    this.authService
-      .sendPasswordRessetEmail(email)
-      .then(() => {
-        // this.waveFlag();
-        this.showToast = true;
-      })
-      .catch((error) => {
-        console.error('Fehler beim senden der Reset-Mail', error);
-      });
+    this.authService.sendPasswordRessetEmail(email).then(() => {
+      // this.waveFlag();
+      this.showToast = true;
+    }).catch((error) => {
+      console.error('Fehler beim senden der Reset-Mail', error);
+    })
   }
 }
