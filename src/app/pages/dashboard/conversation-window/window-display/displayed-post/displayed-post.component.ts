@@ -223,7 +223,7 @@ export class DisplayedPostComponent {
     );
     overlay?.afterClosed$.pipe(take(1)).subscribe(() => {
       this.postClicked = false;
-      this.editingPost = this.overlayService.editPostActive;
+      // this.editingPost = this.overlayService.postToBeEdited;
     });
   }
 

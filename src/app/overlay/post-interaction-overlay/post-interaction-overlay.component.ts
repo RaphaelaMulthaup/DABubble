@@ -87,7 +87,7 @@ export class PostInteractionOverlayComponent implements OnInit {
   /**
    * This functions opens the edit-post-overlay.
    */
-  openEditPostOverlay(event: MouseEvent) {
+  openEditPostBtnOverlay(event: MouseEvent) {
     const overlay = this.overlayService.openComponent(
       EditPostBtnComponent,
       'cdk-overlay-transparent-backdrop',

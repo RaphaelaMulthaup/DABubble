@@ -107,4 +107,8 @@ export class DashboardComponent {
   logout() {
     this.authService.logout();
   }
+
+  endEditingPost() {
+    this.overlayService.editingPostId.set(null);
+  }
 }

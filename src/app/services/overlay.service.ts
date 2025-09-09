@@ -58,7 +58,9 @@ export class OverlayService {
 
   private overlayRef!: OverlayRef;
 
-  editPostActive: boolean = false;
+  // postToBeEdited: boolean = false;
+
+  public editingPostId = signal<string | null>(null);
 
   private overlayInputSubject = new BehaviorSubject<OverlayData | null>(null);
   overlayInput = this.overlayInputSubject.asObservable();

@@ -21,7 +21,7 @@ import { Subject, takeUntil } from 'rxjs';
 })
 export class EditDisplayedPostComponent implements OnInit {
   @Input() post!: PostInterface;
-  @Output() endEditingPost = new EventEmitter<void>();
+  // @Output() endEditingPost = new EventEmitter<void>();
   currentConversationType!: 'channel' | 'chat';
   currentConversationId!: string;
   messageId!: string;
@@ -61,8 +61,9 @@ export class EditDisplayedPostComponent implements OnInit {
    * This way, the edit-displayed-post is replaced by a p-tag with the posts text.
    */
   endEdit() {
-    this.overlayService.editPostActive = false;
-    this.endEditingPost.emit();
+    // this.overlayService.editPostActive = false;
+    // this.endEditingPost.emit();
+    this.overlayService.editingPostId.set(null);
   }
 
   /**

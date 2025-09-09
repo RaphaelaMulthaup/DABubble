@@ -36,3 +36,7 @@
   <div class="w-[700px] bg-white h-full"></div>
   <div class="w-[300px] bg-white h-full"></div>
 </section> -->
+
+@if(overlayService.editingPostId() !== null) {
+  <div (click)="endEditingPost()" class="editing-post-backdrop"></div>
+}
