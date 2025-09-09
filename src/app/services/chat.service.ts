@@ -17,7 +17,8 @@ import { MobileService } from './mobile.service';
   providedIn: 'root',
 })
 export class ChatService {
-  constructor(private router: Router, private firestore: Firestore) {}
+  constructor(private router: Router, private firestore: Firestore,     private mobileService: MobileService
+) {}
 
   /**
    * Creates (or merges) a new chat document between two users in Firestore.

@@ -110,6 +110,7 @@ h1 {
   background-color: white;
   app-search-bar {
     margin: 32px 16px 0 16px;
+    display: block;
   }
 }
 
@@ -118,5 +119,4 @@ h1 {
   @include dFlex($jc: space-between);
   background-color: var(--color-purple-white);
   padding: 16px;
-  // margin-bottom: 32px;
 }

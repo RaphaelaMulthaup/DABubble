@@ -15,5 +15,6 @@ import { PostListItemComponent } from '../../shared/components/post-list-item/po
   styleUrl: './search-results.component.scss',
 })
 export class SearchResultsComponent {
-  @Input() results$: any;
+  @Input() results$: any[] = [];
+  @Input() searchTerm: string = '';
 }
