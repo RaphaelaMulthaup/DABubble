@@ -1,19 +1,38 @@
-<div class="new-avatar-selection flex flex-col items-center justify-between"
-    *ngIf="(user$ | async) as user">
-            <app-header-overlay class="flex items-center justifiy-center w-full" [overlayHeadline]="'Neuen Avatar wählen'"/>
-    <div class="img-selection-area">
-        <img class="selectedImg" [src]="selectedAvatar ? avatarOptions[selectedAvatar - 1] : user.photoUrl" alt="selected img">
+<div
+  class="new-avatar-selection flex flex-col items-center justify-between"
+  *ngIf="user$ | async as user"
+>
+  <app-header-overlay
+    class="flex items-center justifiy-center w-full"
+    [overlayHeadline]="'Neuen Avatar wählen'"
+    [overlayRef]="overlayRef"
+  />
+  <div class="img-selection-area">
+    <img
+      class="selectedImg"
+      [src]="selectedAvatar ? avatarOptions[selectedAvatar - 1] : user.photoUrl"
+      alt="selected img"
+    />
+  </div>
+  <div class="selection-area flex flex-col items-center w-full">
+    <h3 class="newAvatar-h3">Neuen Avatar wählen</h3>
+    <div class="avatar-list flex items-center place-content-between w-full">
+      @for (img of avatarOptions; track $index) {
+      <img
+        (click)="selectAvatar($index + 1)"
+        src="{{ img }}"
+        alt="avatar option"
+      />
+      }
     </div>
-    <div class="selection-area flex flex-col items-center w-full">
-        <h3 class="newAvatar-h3">Neuen Avatar wählen</h3>
-        <div class="avatar-list flex items-center place-content-between w-full">
-            @for (img of avatarOptions; track $index) {
-                <img (click)="selectAvatar($index + 1)" src="{{img}}" alt="avatar option">
-            }
-        </div>
-    </div>
-    <div class="btn-area flex items-center justify-between w-full">
-        <button class="btn-secondary" (click)="overlayService.close()">Abbrechen</button>
-        <button class="btn-primary" (click)="saveAvatar()">Speichern</button>
-    </div>
+  </div>
+  <div class="btn-area flex items-center justify-between w-full">
+    <button
+      class="btn-secondary"
+      (click)="overlayService.closeOne(this.overlayRef)"
+    >
+      Abbrechen
+    </button>
+    <button class="btn-primary" (click)="saveAvatar()">Speichern</button>
+  </div>
 </div>

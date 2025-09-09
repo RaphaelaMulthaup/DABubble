@@ -1,4 +1,11 @@
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Observable, of, take } from 'rxjs';
 import { OverlayService } from '../../services/overlay.service';
@@ -6,7 +13,7 @@ import { EmojiPickerComponent } from '../emoji-picker/emoji-picker.component';
 import { PostService } from '../../services/post.service';
 import { PostInterface } from '../../shared/models/post.interface';
 import { AuthService } from '../../services/auth.service';
-import { EditPostOverlayComponent } from '../edit-post/edit-post.component';
+import { EditPostBtnComponent } from '../edit-post-btn/edit-post-btn.component';
 import { MobileService } from '../../services/mobile.service';
 
 @Component({
@@ -15,23 +22,24 @@ import { MobileService } from '../../services/mobile.service';
   templateUrl: './post-interaction-overlay.component.html',
   styleUrl: './post-interaction-overlay.component.scss',
 })
-export class PostInteractionOverlayComponent {
+export class PostInteractionOverlayComponent implements OnInit {
   currentConversationType!: 'channel' | 'chat';
   currentConversationId!: string;
-  post!: PostInterface;
-  senderIsCurrentUser$!: Observable<boolean>;
+  @Input() post!: PostInterface;
+  senderIsCurrentUser!: boolean;
 
   constructor(
     private authService: AuthService,
     public overlayService: OverlayService,
     public postService: PostService,
     public mobileService: MobileService
-  ) {
-    this.senderIsCurrentUser$ = of(
-      this.post.senderId === this.authService.currentUser.uid
-    );
-  }
+  ) {}
 
+  ngOnInit() {
+    if (!this.post) return;
+    this.senderIsCurrentUser =
+      this.post.senderId === this.authService.currentUser.uid;
+  }
 
   /**
    * This functions opens the emoji-picker overlay and transmits the isMessageFromCurrentUser-variable.
@@ -56,7 +64,7 @@ export class PostInteractionOverlayComponent {
           overlayY: 'top',
         },
       },
-      { senderIsCurrentUser$: this.senderIsCurrentUser$ }
+      { senderIsCurrentUser: this.senderIsCurrentUser }
     );
 
     //das abonniert den event emitter vom emoji-picker component
@@ -72,16 +80,16 @@ export class PostInteractionOverlayComponent {
           this.post.id!,
           emoji
         );
-        this.overlayService.close();
+        this.overlayService.closeAll();
       });
   }
 
   /**
    * This functions opens the edit-post-overlay.
    */
-  openEditPostOverlay(event: MouseEvent) {
+  openEditPostBtnOverlay(event: MouseEvent) {
     const overlay = this.overlayService.openComponent(
-      EditPostOverlayComponent,
+      EditPostBtnComponent,
       'cdk-overlay-transparent-backdrop',
       {
         origin: event.currentTarget as HTMLElement,

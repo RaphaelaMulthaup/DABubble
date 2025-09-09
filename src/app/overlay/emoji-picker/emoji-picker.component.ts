@@ -65,7 +65,7 @@ export class EmojiPickerComponent {
     'assets/img/emojis/cross-mark.svg',
   ]
 
-  senderIsCurrentUser$!: Observable<boolean>;
+  senderIsCurrentUser!: boolean;
 
   @Output() selectedEmoji = new EventEmitter<string>();
 

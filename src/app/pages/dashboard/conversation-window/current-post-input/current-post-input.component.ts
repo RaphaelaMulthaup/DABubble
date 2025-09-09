@@ -155,7 +155,7 @@ export class CurrentPostInput implements OnInit, OnDestroy {
     //     this.post.id!,
     //     emoji
     //   );
-    //   this.overlayService.close();
+    //   this.overlayService.closeAll();
     // });
   }
 

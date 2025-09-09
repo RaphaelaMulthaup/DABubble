@@ -39,7 +39,7 @@ export class DisplayedPostComponent {
   currentConversationId!: string;
   senderName$!: Observable<string>;
   senderPhotoUrl$!: Observable<string | undefined>;
-  senderIsCurrentUser$!: Observable<boolean>;
+  senderIsCurrentUser!: boolean;
   createdAtTime$!: Observable<string>;
   reactions$!: Observable<ReactionInterface[]>;
   visibleReactions$!: Observable<ReactionInterface[]>;
@@ -80,9 +80,8 @@ export class DisplayedPostComponent {
     );
 
     if (!this.post) return;
-    this.senderIsCurrentUser$ = of(
-      this.post.senderId === this.authService.currentUser.uid
-    );
+    this.senderIsCurrentUser =
+      this.post.senderId === this.authService.currentUser.uid;
     const user$ = this.userService.getUserById(this.post.senderId);
     this.senderName$ = user$.pipe(map((u) => u?.name ?? ''));
     this.senderPhotoUrl$ = user$.pipe(map((u) => u?.photoUrl ?? ''));
@@ -145,7 +144,7 @@ export class DisplayedPostComponent {
           overlayY: 'top',
         },
       },
-      { senderIsCurrentUser$: this.senderIsCurrentUser$ }
+      { senderIsCurrentUser: this.senderIsCurrentUser }
     );
 
     //das abonniert den event emitter vom emoji-picker component
@@ -161,7 +160,7 @@ export class DisplayedPostComponent {
           this.post.id!,
           emoji
         );
-        this.overlayService.close();
+        this.overlayService.closeAll();
       });
   }
 
@@ -224,7 +223,7 @@ export class DisplayedPostComponent {
     );
     overlay?.afterClosed$.pipe(take(1)).subscribe(() => {
       this.postClicked = false;
-      this.editingPost = this.overlayService.editPostActive;
+      // this.editingPost = this.overlayService.postToBeEdited;
     });
   }
 

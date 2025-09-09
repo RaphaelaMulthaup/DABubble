@@ -5,6 +5,7 @@ import {
   effect,
   inject,
   OnInit,
+  Output,
 } from '@angular/core';
 import { HeaderOverlayComponent } from '../../shared/components/header-overlay/header-overlay.component';
 import { ChannelInterface } from '../../shared/models/channel.interface';
@@ -15,6 +16,7 @@ import { debounceTime, startWith, map, Observable, combineLatest } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { UserInterface } from '../../shared/models/user.interface';
 import { ChannelsService } from '../../services/channels.service';
+import { Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { OverlayService } from '../../services/overlay.service';
 import { UserListItemToChannelComponent } from '../../shared/components/user-list-item-to-channel/user-list-item-to-channel.component';
 
@@ -24,8 +26,9 @@ import { UserListItemToChannelComponent } from '../../shared/components/user-lis
   templateUrl: './add-member-to-channel.component.html',
   styleUrl: './add-member-to-channel.component.scss',
 })
-export class AddMemberToChannelComponent implements OnInit {
-@Input() channelDetails$?: Observable<ChannelInterface | undefined>;
+export class AddMemberToChannelComponent {
+  @Input() channelDetails$?: Observable<ChannelInterface | undefined>;
+  @Output() overlayRef!: OverlayRef;
   ListWithMember: UserInterface[] = [];
   overlay: string = '';
 
@@ -107,7 +110,7 @@ export class AddMemberToChannelComponent implements OnInit {
 
     // Liste im Service zurücksetzen nach dem Hinzufügen
     this.overlayService.clearUsers();
-    this.overlayService.close();
+    this.overlayService.closeAll();
   }
 
   openAddMembersToChannel(event: MouseEvent) {

@@ -9,6 +9,7 @@ import { OverlayService } from '../../../services/overlay.service';
 import { AddMemberToChannelComponent } from '../../../overlay/add-member-to-channel/add-member-to-channel.component';
 import { Subscription } from 'rxjs';
 import { MobileService } from '../../../services/mobile.service';
+import { OverlayRef } from '@angular/cdk/overlay';
 
 @Component({
   selector: 'app-channel-members',
@@ -65,7 +66,7 @@ export class ChannelMembersComponent implements OnDestroy, OnInit {
   // }
 
   openAddMemberToChannelOverlay() {
-    this.overlayService.openComponent(
+    const overlay = this.overlayService.openComponent(
       AddMemberToChannelComponent,
       'cdk-overlay-dark-backdrop',
       {
@@ -78,5 +79,7 @@ export class ChannelMembersComponent implements OnDestroy, OnInit {
         overlay: 'overlay',
       }
     );
+
+    overlay!.ref.instance.overlayRef = overlay?.overlayRef as OverlayRef;
   }
 }
