@@ -13,6 +13,7 @@ import { MobileDashboardState } from '../shared/types/mobile-dashboard-state.typ
 import { Router } from '@angular/router';
 import { MobileService } from './mobile.service';
 import { UserInterface } from '../shared/models/user.interface';
+import { OverlayService } from './overlay.service';
 
 @Injectable({
   providedIn: 'root',
@@ -20,7 +21,7 @@ import { UserInterface } from '../shared/models/user.interface';
 export class ChatService {
   private _otherUser$ = new BehaviorSubject<UserInterface | null>(null);
   otherUser$ = this._otherUser$.asObservable();
-  constructor(private router: Router, private firestore: Firestore,     private mobileService: MobileService
+  constructor(private router: Router, private firestore: Firestore, private overlayService: OverlayService,     private mobileService: MobileService
 ) {}
 
   /**
