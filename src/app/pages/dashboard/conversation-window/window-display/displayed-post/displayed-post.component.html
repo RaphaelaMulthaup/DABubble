@@ -1,6 +1,6 @@
 <div
   class="post-container w-full flex flex-col"
-  [ngClass]="{ 'post-current-user': senderIsCurrentUser$ | async }"
+  [ngClass]="{ 'post-current-user': senderIsCurrentUser }"
 >
   <div
     class="post flex w-full"
@@ -31,7 +31,7 @@
         <span class="post-time">{{ createdAtTime$ | async }} Uhr</span>
       </div>
 
-      @if((senderIsCurrentUser$ | async) && editingPost) {
+      @if((senderIsCurrentUser) && editingPost) {
       <app-edit-displayed-post [post]="post" (endEditingPost)="editingPost = false" class="w-full h-full" />
       } @else {
       <div (click)="openPostInteractionOverlay($event)" class="text">
@@ -101,7 +101,7 @@
       @if(allReactionsVisible || $index <= 4) {
       <div
         (mouseenter)="openReactedUsersOverlay($event, reaction)"
-        (mouseleave)="overlayService.close()"
+        (mouseleave)="overlayService.closeAll()"
         (click)="toggleExistingReaction(reaction.emoji)"
         class="reaction flex place-items-center"
       >

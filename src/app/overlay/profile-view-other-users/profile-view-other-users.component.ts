@@ -62,6 +62,6 @@ export class ProfileViewOtherUsersComponent {
     this.chatService.navigateToChat(currentUserId, otherUserId);
 
     // Hide the overlay
-    this.overlayService.close();
+    this.overlayService.closeAll();
   }
 }

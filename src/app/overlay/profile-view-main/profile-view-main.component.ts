@@ -6,6 +6,7 @@ import { AuthService } from '../../services/auth.service';
 import { AsyncPipe, CommonModule } from '@angular/common';
 import { EditProfileComponent } from './edit-profile/edit-profile.component';
 import { HeaderOverlayComponent } from '../../shared/components/header-overlay/header-overlay.component';
+import { OverlayRef } from '@angular/cdk/overlay';
 
 @Component({
   selector: 'app-profile-view-main',
@@ -29,10 +30,12 @@ export class ProfileViewMainComponent {
   }
 
   showEdit() {
-    this.overlayService.openComponent(
+    const overlay = this.overlayService.openComponent(
       EditProfileComponent,
       'cdk-overlay-dark-backdrop',
       { globalPosition: 'center' }
     );
+
+    overlay!.ref.instance.overlayRef = overlay?.overlayRef as OverlayRef;
   }
 }

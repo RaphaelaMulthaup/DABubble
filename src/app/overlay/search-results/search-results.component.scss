@@ -1,4 +1,8 @@
-@import '../../../styles.scss';
+@import "../../../styles.scss";
+
+.overlay-search-results-mobile {
+  overflow-y: scroll;
+}
 
 :host {
   display: block;
@@ -10,11 +14,13 @@
 }
 
 .results-list {
+  width: 100vw;
+  height: calc(100vh - 102px);
   padding: 24px 61px;
-  @include dFlex($ai: flex-start, $g: 13px);
+  @include dFlex($jc: flex-start, $ai: flex-start, $g: 13px);
   flex-direction: column;
+  overflow-x: hidden;
   li {
-    overflow: hidden;
     width: 100%;
   }
 }

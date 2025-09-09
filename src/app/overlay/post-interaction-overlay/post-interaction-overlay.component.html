@@ -1,6 +1,6 @@
 <div
   class="interaction-options flex place-content-center"
-  [ngClass]="{ 'post-current-user': senderIsCurrentUser$ | async }"
+  [ngClass]="{ 'post-current-user': senderIsCurrentUser }"
 >
   <button class="btn-tertiary">
     <img
@@ -22,10 +22,10 @@
   ></button>
 
   @if(mobileService.mobileDashboardState() !== 'thread-window') {
-  <button (click)="postService.openAnswers(post.id!, currentConversationType, currentConversationId); overlayService.close()" class="open-answers btn-tertiary"></button>
+  <button (click)="postService.openAnswers(post.id!, currentConversationType, currentConversationId); overlayService.closeAll()" class="open-answers btn-tertiary"></button>
   } 
   
-  @if (senderIsCurrentUser$|async) {
+  @if (senderIsCurrentUser) {
   <button
     (click)="openEditPostOverlay($event)"
     class="more-options btn-tertiary"

@@ -9,7 +9,9 @@
 }
 
 @mixin respond-to($breakpoint) {
-  @media (max-width: map-get($breakpoints, $breakpoint)) { @content };
+  @media (max-width: map-get($breakpoints, $breakpoint)) {
+    @content;
+  }
 }
 
 $breakpoints: (
@@ -17,14 +19,14 @@ $breakpoints: (
   sm: 768px,
   m: 992px,
   l: 1200px,
-  xl: 1400px
+  xl: 1400px,
 );
 
 :root {
   --color-purple-dark: #444df2;
   --color-purple-medium: #535af1;
   --color-purple-light: #797ef3;
-  --color-purple-light-lines: #ADB0D9;
+  --color-purple-light-lines: #adb0d9;
   --color-purple-white: #eceefe;
   --color-gray: #686868;
   --color-black: #000000;
@@ -208,22 +210,22 @@ h4 {
 }
 
 .overlay {
-  background-color: white;
+  background-color: var(--color-white);
   border-radius: 30px;
   box-shadow: 0px 6px 10px 0px #00000033;
   padding: 40px 20px;
 }
 
 .overlay-right {
-  background-color: white;
-  border-radius: 30px 0px 30px 30px;
+  background-color: var(--color-white);
+  border-radius: 30px 0 30px 30px;
   box-shadow: 0px 6px 10px 0px #00000033;
   padding: 40px 20px;
 }
 
 .overlay-left {
-  background-color: white;
-  border-radius: 0px 30px 30px 30px;
+  background-color: var(--color-white);
+  border-radius: 0 30px 30px 30px;
   box-shadow: 0px 6px 10px 0px #00000033;
   padding: 40px 20px;
 }
@@ -237,7 +239,7 @@ h4 {
 .separable {
   display: flex;
   width: 100%;
-  border: 1px solid #ADB0D9;
+  border: 1px solid #adb0d9;
   border-width: 1px;
 }
 

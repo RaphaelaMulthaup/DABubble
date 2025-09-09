@@ -1,5 +1,6 @@
 import { Component, inject, Input } from '@angular/core';
 import { OverlayService } from '../../../services/overlay.service';
+import { OverlayRef } from '@angular/cdk/overlay';
 
 @Component({
   selector: 'app-header-overlay',
@@ -11,4 +12,5 @@ export class HeaderOverlayComponent {
   constructor(public overlayService: OverlayService) {}
 
   @Input() overlayHeadline: string = '';
+  @Input() overlayRef!: OverlayRef;
 }

@@ -56,7 +56,7 @@ export class OverlayService {
 
   // overlayInputs: Record<string, any> = {};
 
-  private overlayRef?: OverlayRef;
+  private overlayRef!: OverlayRef;
 
   editPostActive: boolean = false;
 
@@ -103,12 +103,10 @@ export class OverlayService {
   ):
     | {
         ref: ComponentRef<T>;
-        overlayRef?: OverlayRef;
+        overlayRef: OverlayRef;
         afterClosed$: Observable<void>;
       }
     | undefined {
-    // this.close(); // falls schon ein Overlay offen ist
-
     const destroy$ = new Subject<void>();
     let positionStrategy;
     if (position.origin) {
@@ -146,20 +144,20 @@ export class OverlayService {
       });
     }
 
-    const portal = new ComponentPortal(component, null, this.injector);
-    const componentRef = this.overlayRef?.attach(portal)!;
-
-    this.overlayRef
-      ?.backdropClick()
-      .pipe(takeUntil(destroy$))
-      .subscribe(() => this.close());
-
-    if (data) Object.assign(componentRef.instance, data);
-
     this.overlayRefs.push(this.overlayRef!);
     if (this.overlayRefs.length > 0) {
       document.body.style.overflow = 'hidden';
     }
+
+    this.overlayRef
+      .backdropClick()
+      .pipe(takeUntil(destroy$))
+      .subscribe(() => this.closeAll());
+
+    const portal = new ComponentPortal(component, null, this.injector);
+    const componentRef = this.overlayRef?.attach(portal)!;
+
+    if (data) Object.assign(componentRef.instance, data);
 
     const afterClosed$ = new Subject<void>();
 
@@ -170,7 +168,7 @@ export class OverlayService {
         this.overlayRefs = this.overlayRefs.filter(
           (ref) => ref !== this.overlayRef
         );
-        if (this.overlayRefs.length == 0) {
+        if (this.overlayRefs.length === 0) {
           document.body.style.overflow = '';
         }
         afterClosed$.next();
@@ -185,7 +183,7 @@ export class OverlayService {
   /**
    * closes all overlays
    */
-  close(): void {
+  closeAll(): void {
     this.overlayRefs.forEach((ref) => ref.dispose());
     this.overlayRefs = [];
     document.body.style.overflow = '';
