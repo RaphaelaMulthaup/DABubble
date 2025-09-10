@@ -100,9 +100,9 @@ export class CurrentPostInput implements OnInit, OnDestroy {
         startWith(''),
         debounceTime(200),
         distinctUntilChanged(),
-        switchMap((text: string) => {
-          // Teile den Text in Tokens
-          const words = text.split(/\s+/);
+        switchMap((text: string | null) => {
+          const safeText = text || '';
+          const words = safeText.split(/\s+/);
           // Nimm das letzte Wort
           const lastWord = words[words.length - 1];
 
@@ -203,7 +203,7 @@ export class CurrentPostInput implements OnInit, OnDestroy {
         this.conversationType
       );
     }
-    this.postForm.reset();
+    this.postForm.get('text')!.setValue('');
     this.searchResults = []; // Suchergebnisse zurücksetzen
   }
 
@@ -241,9 +241,9 @@ export class CurrentPostInput implements OnInit, OnDestroy {
     const text = control.value || '';
     const words = text.split(/\s+/);
     if (typeOfResult === 'user') {
-      words[words.length - 1] = '@' + name;
+      words[words.length - 1] = name;
     } else if (typeOfResult === 'channel') {
-      words[words.length - 1] = '#' + name;
+      words[words.length - 1] = name;
     }
     control.setValue(words.join(' ') + ' ');
     this.currentPostInput.nativeElement.focus();
