@@ -1,5 +1,5 @@
 <div class="reacted-users flex flex-col items-center">
-  <img class="reaction-img" [src]="reaction.emoji" />
+  <img class="reaction-img" [src]="reaction.emoji.src" [alt]="reaction.emoji.token"/>
   <p>
     @if (userNames.length > 2) {
       @if (currentUserReacted) {

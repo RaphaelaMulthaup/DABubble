@@ -81,7 +81,7 @@ export class PostInteractionOverlayComponent implements OnInit {
             this.currentConversationId,
           'messages',
           this.post.id!,
-          emoji.src
+          emoji
         );
         this.overlayService.closeAll();
       });

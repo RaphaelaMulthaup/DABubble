@@ -105,20 +105,19 @@ export class PostService {
    * @param parentPath - Path to the parent document (e.g. "chats/{chatId}").
    * @param subcollectionName - Name of the subcollection (e.g. "messages").
    * @param postId - ID of the post being reacted to.
-   * @param emoji - the image-path for the chosen emoji.
+   * @param emojiToken - the token of the chosen emoji
    * @returns A Promise that resolves once the reaction update has been applied.
    */
   async toggleReaction(
     parentPath: string,
     subcollectionName: string,
     postId: string,
-    emoji: string
+    emoji: { token: string; src: string;}
   ) {
     let userId = this.authService.currentUser.uid;
-    let reactionId = this.getReactionId(emoji);
     const reactionRef = doc(
       this.firestore,
-      `${parentPath}/${subcollectionName}/${postId}/reactions/${reactionId}`
+      `${parentPath}/${subcollectionName}/${postId}/reactions/${emoji.token}`
     );
 
     const reactionSnap = await getDoc(reactionRef);
@@ -148,15 +147,15 @@ export class PostService {
     }
   }
 
-  /**
-   * This functions uses the emoji to convert it to a proper reaction-id.
-   *
-   * @param emoji - the image-path for the chosen emoji.
-   * @returns an adjusted string (the name of the emoji with '_' instead of '-')
-   */
-  getReactionId(emoji: string): string {
-    return emoji.substring(18, emoji.length - 4).replace(/-/g, '_');
-  }
+  // /**
+  //  * This functions uses the emoji to convert it to a proper reaction-id.
+  //  *
+  //  * @param emoji - the image-path for the chosen emoji.
+  //  * @returns an adjusted string (the name of the emoji with '_' instead of '-')
+  //  */
+  // getReactionId(emoji: string): string {
+  //   return emoji.substring(18, emoji.length - 4).replace(/-/g, '_');
+  // }
 
   /**
    * Fetches all reactions of a post in real time.

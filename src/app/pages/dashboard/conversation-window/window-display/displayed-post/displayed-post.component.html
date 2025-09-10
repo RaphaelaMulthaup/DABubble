@@ -110,7 +110,7 @@
         (click)="toggleExistingReaction(reaction.emoji)"
         class="reaction flex place-items-center"
       >
-        <img class="reaction-img" [src]="reaction.emoji" />
+        <img class="reaction-img" [src]="reaction.emoji.src" [alt]="reaction.emoji.token"/>
         <p>{{ reaction.users.length }}</p>
       </div>
       } }

@@ -162,7 +162,7 @@ export class DisplayedPostComponent {
             this.currentConversationId,
           'messages',
           this.post.id!,
-          emoji.src
+          emoji
         );
         this.overlayService.closeAll();
       });
@@ -241,12 +241,14 @@ export class DisplayedPostComponent {
    *
    *  @param emoji - the image-path for the chosen emoji.
    */
-  toggleExistingReaction(emoji: string) {
+  toggleExistingReaction(emoji: { token: string; src: string;}) {
+    console.log(emoji)
     this.postService.toggleReaction(
       '/' + this.currentConversationType + 's/' + this.currentConversationId,
       'messages',
       this.post.id!,
       emoji
     );
+    this.overlayService.closeAll();
   }
 }

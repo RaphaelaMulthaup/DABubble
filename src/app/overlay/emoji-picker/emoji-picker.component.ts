@@ -19,7 +19,7 @@ export class EmojiPickerComponent {
   /**
    * This function uses the chosen emoji and the userId to react to a post
    */
-  reactToPost(emoji: { token: string; src: string; }) {
+  reactToPost(emoji: { token: string; src: string;}) {
     this.selectedEmoji.emit(emoji);
     this.overlayService.closeAll();
   }
