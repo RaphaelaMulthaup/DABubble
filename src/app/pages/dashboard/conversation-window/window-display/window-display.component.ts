@@ -31,31 +31,24 @@ import { ChatService } from '../../../../services/chat.service';
 })
 export class WindowDisplayComponent {
   @Input() messages$!: import('rxjs').Observable<PostInterface[]>;
-  //an array with all posts in this conversation
+  // an array with all posts in this conversation
   postInfo: PostInterface[] = [];
-  currentChatId?: string; // <-- aktuell angezeigter Chat
+  currentChatId?: string; // <-- currently displayed chat
   @ViewChildren(DisplayedPostComponent, { read: ElementRef })
   postElements!: QueryList<ElementRef>;
 
-  // // Inject PostService to receive and manage displayed messages
-  // postService = inject(PostService);
-  // //hier is a stream of messages
-  // messages$!: Observable<PostInterface[]>;
-  // private route = inject(ActivatedRoute);
-  // private chatActiveRouterService = inject(ChatActiveRouterService);
-
-  //an array with all the days of the week, to show that one a post was created
+  // an array with all the days of the week to show when a post was created
   days = [
-    'Sonntag',
-    'Montag',
-    'Dienstag',
-    'Mittwoch',
-    'Donnerstag',
-    'Freitag',
-    'Samstag',
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
   ];
-  private pendingScrollTo?: string;
-  private destroy$ = new Subject<void>();
+  private pendingScrollTo?: string; // stores the post id to scroll to
+  private destroy$ = new Subject<void>(); // for cleaning up subscriptions
 
   constructor(
     private el: ElementRef,
@@ -70,31 +63,27 @@ export class WindowDisplayComponent {
    * Keeps 'messages' updated with the latest conversation in real-time
    */
   ngOnInit() {
-    // Deine bestehende messages$-Subscription
-
     this.route.params.pipe(takeUntil(this.destroy$)).subscribe((params) => {
-      const chatId = params['conversationId']; // oder wie dein Param heißt
+      const chatId = params['conversationId']; // get chat id from route params
       this.currentChatId = chatId;
     });
 
     this.messages$.pipe(takeUntil(this.destroy$)).subscribe((data) => {
-      // let reversedOrder = [...data].reverse();
+      // Update content when new messages are received
       this.onContentChange(
-        this.currentChatId, // neue ID
-        data // neue Nachrichten
+        this.currentChatId, // new chat ID
+        data // new messages
       );
-      // console.log(data);
     });
 
-    // Subscription auf service → immer feuern, auch bei "gleicher" URL
+    // Subscribe to selected post service to handle scroll requests
     this.postService.selected$
       .pipe(takeUntil(this.destroy$))
       .subscribe((postId) => {
         this.handleScrollRequest(postId);
       });
 
-    // Subscription auf queryParams (für Links / Bookmark)
-
+    // Subscribe to queryParams (for links/bookmarks)
     this.route.queryParams
       .pipe(takeUntil(this.destroy$))
       .subscribe((params) => {
@@ -104,42 +93,48 @@ export class WindowDisplayComponent {
   }
 
   ngAfterViewInit() {
-    // Wenn neue ViewChildren kommen (z. B. nach nachladen), versuche pending id
+    // If new ViewChildren come (e.g., after lazy loading), try the pending scroll ID
     this.postElements.changes.pipe(takeUntil(this.destroy$)).subscribe(() => {
       if (this.pendingScrollTo) {
         this.handleScrollRequest(this.pendingScrollTo);
       }
     });
 
-    // Falls beim ersten Rendern schon eine scrollTo im URL ist
+    // If there's already a scrollTo in the URL when the component renders, handle it
     const initial = this.route.snapshot.queryParams['scrollTo'];
     if (initial) this.handleScrollRequest(initial);
   }
 
   ngOnDestroy() {
+    // Cleanup on component destroy
     this.tryDeleteEmptyChat(this.currentChatId);
     this.destroy$.next();
     this.destroy$.complete();
   }
 
   private tryDeleteEmptyChat(chatId?: string): void {
+    // If the chat is empty, try to delete it from the chat service
     if (chatId && this.postInfo.length === 0) {
       this.chatService
         .deleteChat(chatId)
-        .then(() => console.log(`Leerer Chat ${chatId} gelöscht`))
-        .catch((err) => console.error('Fehler beim Löschen des Chats', err));
+        .then(() => console.log(`Empty chat ${chatId} deleted`))
+        .catch((err) => console.error('Error deleting chat', err));
     }
   }
+
   /**
-   * Aufruf, wenn neue Inhalte geladen werden (z. B. anderer Chat oder Channel)
+   * Called when new content is loaded (e.g., different chat or channel)
+   * @param newChatId The new chat ID
+   * @param newMessages The new set of messages
    */
   onContentChange(newChatId?: string, newMessages: PostInterface[] = []) {
     const previousChatId = this.currentChatId;
 
-    // neue Daten übernehmen
+    // Update data
     this.currentChatId = newChatId;
     this.postInfo = newMessages;
 
+    // If the chat has changed, try to delete the previous chat
     if (previousChatId && previousChatId !== newChatId) {
       this.tryDeleteEmptyChat(previousChatId);
     }
@@ -148,23 +143,25 @@ export class WindowDisplayComponent {
   private handleScrollRequest(postId: string) {
     if (!postId) return;
     this.pendingScrollTo = postId;
+
+    // Try to find the post element
     const maybe = this.postElements?.find(
       (e) => (e.nativeElement as HTMLElement).id === postId
     );
     if (!maybe) {
-      // noch nicht im DOM → später versuchen
+      // Not in the DOM yet, so try later
       return;
     }
     this.pendingScrollTo = undefined;
     const el = maybe.nativeElement as HTMLElement;
 
-    // 1) Highlight
+    // 1) Trigger highlight effect
     this.triggerHighlight(el);
 
-    // 2) Scrollen
+    // 2) Scroll to the post if needed
     this.scrollIfNeeded(el);
 
-    // 3) Scroll-Param aus URL entfernen
+    // 3) Remove scroll-parameter from the URL
     this.router.navigate([], {
       queryParams: { scrollTo: null },
       queryParamsHandling: 'merge',
@@ -173,7 +170,7 @@ export class WindowDisplayComponent {
   }
 
   private triggerHighlight(el: HTMLElement) {
-    // Entfernen & Reflow & hinzufügen, damit Animation neu abläuft
+    // Remove & reflow & add class to trigger animation
     el.classList.remove('highlight');
     void el.offsetWidth; // force reflow
     el.classList.add('highlight');
@@ -181,6 +178,7 @@ export class WindowDisplayComponent {
   }
 
   private getScrollParent(node: HTMLElement | null): HTMLElement {
+    // Determine the scroll parent for the element
     if (!node)
       return (document.scrollingElement ||
         document.documentElement) as HTMLElement;
@@ -206,6 +204,7 @@ export class WindowDisplayComponent {
     el: HTMLElement,
     container: HTMLElement
   ): boolean {
+    // Check if the element is fully visible in its scroll container
     const elRect = el.getBoundingClientRect();
     const containerRect = container.getBoundingClientRect();
     if (
@@ -226,15 +225,16 @@ export class WindowDisplayComponent {
   }
 
   private scrollIfNeeded(el: HTMLElement) {
+    // Determine if scrolling is needed
     const scrollParent = this.getScrollParent(el);
     const alreadyVisible = this.isFullyVisibleInContainer(el, scrollParent);
 
     if (alreadyVisible) {
-      // bereits sichtbar → Highlight wird sowieso gezeigt
+      // Already visible → Highlight will show anyway
       return;
     }
 
-    // scroll verzögern, damit DOM stabil ist
+    // Delay scroll to allow DOM stabilization
     setTimeout(() => {
       const elRect = el.getBoundingClientRect();
       const parentRect = scrollParent.getBoundingClientRect();
@@ -244,7 +244,7 @@ export class WindowDisplayComponent {
         scrollParent === document.documentElement ||
         scrollParent === document.body
       ) {
-        // scroll window
+        // Scroll the window
         const absoluteTarget =
           window.pageYOffset +
           elRect.top -
@@ -254,7 +254,7 @@ export class WindowDisplayComponent {
           behavior: 'smooth',
         });
       } else {
-        // scroll parent element
+        // Scroll the parent element
         const offset = elRect.top - parentRect.top;
         const target = Math.max(
           0,
@@ -268,12 +268,12 @@ export class WindowDisplayComponent {
           scrollParent.scrollTop = target;
         }
       }
-    }, 0); // 0ms reicht, um Angular Layout stabilisieren zu lassen
+    }, 0); // 0ms is enough to stabilize the Angular layout
   }
 
   /**
    * This function returns true when the creation-date of a post is not equal to the creation-date of the previous post.
-   * This way, the creation-date is only shown, when a message is the first one with that creation-date.
+   * This way, the creation-date is only shown when a message is the first one with that creation-date.
    *
    * @param index the index of the post
    */

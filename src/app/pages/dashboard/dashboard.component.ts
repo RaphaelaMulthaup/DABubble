@@ -23,73 +23,107 @@ import { ChatService } from '../../services/chat.service';
 import { MobileService } from '../../services/mobile.service';
 import { PostInterface } from '../../shared/models/post.interface';
 
+/**
+ * The DashboardComponent represents the main view of the dashboard. 
+ * It contains the sidebar, conversation window, and message threads.
+ * It also manages the state of the mobile dashboard, routing to the correct messages and answers.
+ */
 @Component({
-  selector: 'app-dashboard',
-  // Import child components used in the dashboard
+  selector: 'app-dashboard', // The component selector used in HTML
+  // Imports necessary child components used inside the dashboard
   imports: [
-    SidenavComponent,
-    ConversationWindowComponent,
-    CommonModule,
-    HeaderDashboardComponent,
+    SidenavComponent, // Sidebar component
+    ConversationWindowComponent, // Component to display the conversation
+    CommonModule, // Angular common module for essential directives and pipes
+    HeaderDashboardComponent, // Header component for the dashboard
   ],
   templateUrl: './dashboard.component.html', // HTML template for the dashboard
   styleUrl: './dashboard.component.scss', // Styles for the dashboard
 })
 export class DashboardComponent {
+  /**
+   * A signal representing the state of the mobile dashboard.
+   * This will allow updating and reflecting the dashboard's mobile state.
+   */
   mobileDashboardState!: WritableSignal<MobileDashboardState>;
+
+  /**
+   * Observable that holds the messages in the active conversation.
+   * The messages are fetched based on the `conversationType` and `conversationId`.
+   */
   messages$!: Observable<PostInterface[]>;
+
+  /**
+   * Observable that holds the answers for a particular message in the conversation.
+   * The answers are fetched based on the `conversationType`, `conversationId`, and `messageId`.
+   */
   answers$!: Observable<PostInterface[]>;
 
   constructor(
-    public overlayService: OverlayService,
-    private authService: AuthService,
-    private chatActiveRouterService: ChatActiveRouterService,
-    private route: ActivatedRoute,
-    private mobileService: MobileService
+    public overlayService: OverlayService, // Service to handle overlay state
+    private authService: AuthService, // Service for authentication management
+    private chatActiveRouterService: ChatActiveRouterService, // Service for managing active chats
+    private route: ActivatedRoute, // To access route parameters for conversation information
+    private mobileService: MobileService // Service to manage mobile dashboard state
   ) {}
 
+  /**
+   * Initializes the component by setting up observables for messages and answers
+   * based on route parameters such as `conversationType` and `conversationId`.
+   * It also initializes the `mobileDashboardState` to track the mobile dashboard's state.
+   */
   ngOnInit() {
+    // Initialize mobileDashboardState with the value from the MobileService
     this.mobileDashboardState = this.mobileService.mobileDashboardState;
-    
+
+    // Set up the observable for fetching messages from the active conversation
     this.messages$ = this.route.paramMap.pipe(
       map((params) => ({
         conversationType: params.get('conversationType'),
         conversationId: params.get('conversationId'),
       })),
+      // Ensure conversation type and ID are distinct before triggering the fetch
       distinctUntilChanged(
         (a, b) =>
           a.conversationType === b.conversationType &&
           a.conversationId === b.conversationId
       ),
+      // Ensure valid conversationType and conversationId
       filter(
         ({ conversationType, conversationId }) =>
           !!conversationType && !!conversationId
       ),
+      // Fetch messages for the active conversation from the service
       switchMap(({ conversationType, conversationId }) =>
         this.chatActiveRouterService.getMessages(
           conversationType!,
           conversationId!
         )
       ),
+      // Share the last value and maintain a reference count to avoid multiple fetches
       shareReplay({ bufferSize: 1, refCount: true })
     );
 
+    // Set up the observable for fetching answers to a particular message in the conversation
     this.answers$ = this.route.paramMap.pipe(
       map((params) => ({
         conversationType: params.get('conversationType'),
         conversationId: params.get('conversationId'),
         messageId: params.get('messageId'),
       })),
+      // Ensure conversation and message IDs are distinct before triggering the fetch
       distinctUntilChanged(
         (a, b) =>
           a.conversationType === b.conversationType &&
           a.conversationId === b.conversationId &&
           a.messageId === b.messageId
       ),
+      // Ensure valid conversationType, conversationId, and messageId
       filter(
         ({ conversationType, conversationId, messageId }) =>
           !!conversationType && !!conversationId && !!messageId
       ),
+      // Fetch answers to a particular message
       switchMap(({ conversationType, conversationId, messageId }) =>
         this.chatActiveRouterService.getAnswers(
           conversationType!,
@@ -97,17 +131,21 @@ export class DashboardComponent {
           messageId!
         )
       ),
+      // Share the last value and maintain a reference count to avoid multiple fetches
       shareReplay({ bufferSize: 1, refCount: true })
     );
   }
 
   /**
-   * Logs out the current user
+   * Logs out the current user by calling the `logout` method in the AuthService.
    */
   logout() {
     this.authService.logout();
   }
 
+  /**
+   * Ends editing the current post by resetting the `editingPostId` in the OverlayService.
+   */
   endEditingPost() {
     this.overlayService.editingPostId.set(null);
   }

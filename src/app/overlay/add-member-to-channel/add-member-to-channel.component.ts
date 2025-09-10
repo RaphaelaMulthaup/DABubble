@@ -23,46 +23,47 @@ import { UserListItemToChannelComponent } from '../../shared/components/user-lis
 @Component({
   selector: 'app-add-member-to-channel',
   imports: [HeaderOverlayComponent, CommonModule, ReactiveFormsModule],
-  templateUrl: './add-member-to-channel.component.html',
-  styleUrl: './add-member-to-channel.component.scss',
+  templateUrl: './add-member-to-channel.component.html', // Path to the HTML template
+  styleUrl: './add-member-to-channel.component.scss',  // Path to the styling file
 })
 export class AddMemberToChannelComponent {
-  @Input() channelDetails$?: Observable<ChannelInterface | undefined>;
-  @Output() overlayRef!: OverlayRef;
-  ListWithMember: UserInterface[] = [];
-  overlay: string = '';
+  @Input() channelDetails$?: Observable<ChannelInterface | undefined>; // Observable to hold channel details
+  @Output() overlayRef!: OverlayRef; // Overlay reference to manage the overlay's lifecycle
+  ListWithMember: UserInterface[] = []; // List of users to be added to the channel
+  overlay: string = ''; // String used to manage overlay state
 
-  // Eingabefeld
+  // Reactive form control for the search input
   searchControl = new FormControl<string>('', { nonNullable: true });
 
-  // Suchterm-Observable
+  // Observable stream for the search term (debounced for performance)
   private term$: Observable<string> = this.searchControl.valueChanges.pipe(
     startWith(this.searchControl.value),
     debounceTime(300),
-    map((v) => v.trim().toLowerCase())
+    map((v) => v.trim().toLowerCase()) // Normalize the search term for matching
   );
 
-  // Ergebnisse aus dem Service
+  // Signal for storing filtered users based on the search term
   results!: Signal<UserInterface[]>;
 
   constructor(
-    private searchService: SearchService,
-    private channelService: ChannelsService,
-    private overlayService: OverlayService
+    private searchService: SearchService,   // Service to manage search functionality
+    private channelService: ChannelsService, // Service to manage channels and members
+    private overlayService: OverlayService   // Service for managing overlays
   ) {
-    // Reagiert auf Reset-Signal vom OverlayService
+    // Reacting to reset signal to clear the search field
     effect(() => {
       if (this.overlayService.searchReset()) {
-        this.searchControl.reset();
-        this.overlayService.clearReset();
+        this.searchControl.reset(); // Reset the search control
+        this.overlayService.clearReset(); // Clear the reset signal
       }
     });
 
-    // Reagiert auf Änderungen der Benutzerliste im Service
+    // Reacting to changes in the user list (adding/removing members)
     effect(() => {
-      this.ListWithMember = this.overlayService.users();
+      this.ListWithMember = this.overlayService.users(); // Get updated list of users from service
     });
 
+    // Trigger the overlay for adding members when results are available
     effect(() => {
       const r = this.results();
       if (r.length > 0) {
@@ -70,55 +71,56 @@ export class AddMemberToChannelComponent {
       }
     });
 
-    // Direkte Filterung der Benutzerliste - effizientere Lösung
+    // Combining search term and users from the service to filter users based on the term
     this.results = toSignal(
       combineLatest([this.term$, this.searchService.users$]).pipe(
         map(([term, users]) => {
-          if (!term) return [];
-
+          if (!term) return []; // No search term, return empty array
           return users.filter(
             (user) =>
               user.name?.toLowerCase().includes(term) ||
-              user.email?.toLowerCase().includes(term)
+              user.email?.toLowerCase().includes(term) // Filter users by name or email
           );
         })
       ),
-      { initialValue: [] as UserInterface[] }
+      { initialValue: [] as UserInterface[] } // Initial value when no search is performed
     );
   }
 
   ngOnInit() {
-    
-    // Bei Initialisierung leeren wir die Liste im Service
+    // Clear the list of users in the service when the component is initialized
     this.overlayService.clearUsers();
   }
 
+  // Method to extract the first word of a user's name
   getFirstWord(name: string): string {
     return name.split(' ')[0];
   }
 
+  // Method to remove a user from the list and update the service
   removeFromList(index: number) {
-    // Benutzer aus der Liste entfernen und Service aktualisieren
     const updatedUsers = [...this.ListWithMember];
-    updatedUsers.splice(index, 1);
-    this.overlayService.setUsers(updatedUsers);
+    updatedUsers.splice(index, 1); // Remove user from the array
+    this.overlayService.setUsers(updatedUsers); // Update the users list in the service
   }
 
+  // Method to add members to the channel, calling the service method to update the channel
   addMembertoChannel(channelId: string) {
-    const membersId = this.ListWithMember.map((user) => user.uid);
-    this.channelService.addMemberToChannel(channelId, membersId);
+    const membersId = this.ListWithMember.map((user) => user.uid); // Collect member IDs
+    this.channelService.addMemberToChannel(channelId, membersId); // Add members to channel
 
-    // Liste im Service zurücksetzen nach dem Hinzufügen
+    // Reset the list of users in the service after adding members
     this.overlayService.clearUsers();
-    this.overlayService.closeAll();
+    this.overlayService.closeAll(); // Close all open overlays
   }
 
+  // Method to open the overlay for adding members to the channel
   openAddMembersToChannel(event: MouseEvent) {
     const overlay = this.overlayService.openComponent(
-      UserListItemToChannelComponent,
-      'cdk-overlay-dark-backdrop',
+      UserListItemToChannelComponent, // Component to display users
+      'cdk-overlay-dark-backdrop', // Styling for the overlay backdrop
       {
-        origin: event.currentTarget as HTMLElement,
+        origin: event.currentTarget as HTMLElement, // Positioning of the overlay relative to the event
         originPosition: {
           originX: 'start',
           originY: 'bottom',
@@ -133,11 +135,11 @@ export class AddMemberToChannelComponent {
         },
       },
       {
-        results: this.results,
+        results: this.results, // Pass filtered search results to the overlay component
       }
     );
 
-    if (!overlay) return;
-    Object.assign(overlay.ref.instance, { overlayRef: overlay.overlayRef });
+    if (!overlay) return; // If overlay is not created, return
+    Object.assign(overlay.ref.instance, { overlayRef: overlay.overlayRef }); // Attach the overlay reference
   }
 }

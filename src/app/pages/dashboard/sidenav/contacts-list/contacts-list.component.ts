@@ -29,13 +29,11 @@ import { MobileDashboardState } from '../../../../shared/types/mobile-dashboard-
 export class ContactsListComponent implements OnInit {
   // Holds the list of contacts as an observable
   contacts$: Observable<UserInterface[]> = of([]);
-  // // Stores the currently logged-in user's ID
-  // currentUserId: string | null = null;
   // Controls visibility of direct messages section
   directMessagesVisible = true;
-  currentUser!: UserInterface;
+  currentUser!: UserInterface; // Stores the currently logged-in user
   mobileDashboardState: WritableSignal<MobileDashboardState>;
-  private destroy$ = new Subject<void>();
+  private destroy$ = new Subject<void>(); // Subject used for cleanup during component destruction
 
   constructor(
     private userService: UserService,
@@ -43,7 +41,7 @@ export class ContactsListComponent implements OnInit {
     private chatService: ChatService,
     private mobileService: MobileService
   ) {
-    this.mobileDashboardState = this.mobileService.mobileDashboardState;
+    this.mobileDashboardState = this.mobileService.mobileDashboardState; // Injects mobile dashboard state service
   }
 
   /***
@@ -51,39 +49,44 @@ export class ContactsListComponent implements OnInit {
    * Subscribes to the authenticated user stream and loads the user's contacts.
    */
   ngOnInit(): void {
+    // Subscribe to the current user observable from AuthService
     this.authService.currentUser$
       .pipe(
-        takeUntil(this.destroy$),
-        filter((user): user is UserInterface => user !== null)
+        takeUntil(this.destroy$), // Unsubscribes when the component is destroyed
+        filter((user): user is UserInterface => user !== null) // Ensures user is not null
       )
-      .subscribe((user) => (this.currentUser = user));
+      .subscribe((user) => (this.currentUser = user)); // Sets currentUser when updated
 
+    // Load contacts based on the authenticated user's chats
     this.contacts$ = this.authService.currentUser$.pipe(
       switchMap((user) => {
         if (!user) {
-          return of([]);
+          return of([]); // If no user, return an empty array
         }
 
+        // Fetch chat data for the current user
         return this.chatService.getChatsForUser(user.uid).pipe(
           map((chats) =>
             chats.map((chat) =>
-              this.chatService.getOtherUserId(chat.id!, user.uid)
+              this.chatService.getOtherUserId(chat.id!, user.uid) // Get the ID of the other user in the chat
             )
           ),
           switchMap((contactIds) => {
-            if (contactIds.length === 0) return of([]);
+            if (contactIds.length === 0) return of([]); // If no contacts, return empty array
+            // Get user details for each contact ID
             return combineLatest(
               contactIds.map((id) => this.userService.getUserById(id))
             );
           }),
-          map((users) => users.filter((u) => u.uid !== this.currentUser.uid))
+          map((users) => users.filter((u) => u.uid !== this.currentUser.uid)) // Filter out the current user from contacts
         );
       }),
-      shareReplay({ bufferSize: 1, refCount: true })
+      shareReplay({ bufferSize: 1, refCount: true }) // Share the observable to avoid duplicate requests
     );
   }
 
   ngOnDestroy() {
+    // Cleanup logic: complete destroy subject to avoid memory leaks
     this.destroy$.next();
     this.destroy$.complete();
   }

@@ -7,22 +7,27 @@ import {
   Firestore,
   setDoc,
 } from '@angular/fire/firestore';
-import { ChatInterface } from '../shared/models/chat.interface';
+import { ChatInterface } from '../shared/models/chat.interface'; // Interface for chat data
 import { BehaviorSubject, map, Observable } from 'rxjs';
-import { Router } from '@angular/router';
-import { MobileService } from './mobile.service';
-import { UserInterface } from '../shared/models/user.interface';
+import { Router } from '@angular/router'; // Router to navigate within the app
+import { MobileService } from './mobile.service'; // Service for handling mobile dashboard state
+import { UserInterface } from '../shared/models/user.interface'; // Interface for user data
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root', // The service is provided in the root module
 })
 export class ChatService {
+  /** 
+   * Private BehaviorSubject to hold the current other user in the chat.
+   * It is exposed as an observable for other components to subscribe to.
+   */
   private _otherUser$ = new BehaviorSubject<UserInterface | null>(null);
-  otherUser$ = this._otherUser$.asObservable();
+  otherUser$ = this._otherUser$.asObservable(); // Public observable for other user
+
   constructor(
-    private router: Router,
-    private firestore: Firestore,
-    private mobileService: MobileService
+    private router: Router, // Inject Router to handle navigation
+    private firestore: Firestore, // Inject Firestore for database interaction
+    private mobileService: MobileService // Inject MobileService to manage mobile dashboard state
   ) {}
 
   /**
@@ -36,15 +41,15 @@ export class ChatService {
    * @returns A Promise that resolves once the chat document has been written.
    */
   async createChat(userId1: string, userId2: string) {
-    const chatId = await this.getChatId(userId1, userId2);
-    const chatRef = doc(this.firestore, 'chats', chatId);
+    const chatId = await this.getChatId(userId1, userId2); // Get the unique chat ID
+    const chatRef = doc(this.firestore, 'chats', chatId); // Reference to the Firestore chat document
 
     await setDoc(
       chatRef,
       {
-        chatId: chatId, // Store chatId inside the document as well
+        chatId: chatId, // Store the chat ID inside the document as well
       },
-      { merge: true }
+      { merge: true } // Merge data if the document already exists
     );
   }
 
@@ -58,7 +63,7 @@ export class ChatService {
    * @returns An observable emitting an array of chats with their document IDs included.
    */
   getChatsForUser(userId: string): Observable<ChatInterface[]> {
-    const chatsRef = collection(this.firestore, 'chats');
+    const chatsRef = collection(this.firestore, 'chats'); // Reference to the "chats" collection in Firestore
 
     return collectionSnapshots(chatsRef).pipe(
       map((snaps) =>
@@ -66,15 +71,13 @@ export class ChatService {
           // Keep only chats whose ID contains the userId
           .filter((snap) => snap.id.includes(userId))
           .map((snap) => {
-            const data = snap.data() as Omit<ChatInterface, 'id'>;
+            const data = snap.data() as Omit<ChatInterface, 'id'>; // Extract the data, excluding the 'id' field
             const id = snap.id; // Document ID consisting of both user IDs
-            return { id, ...data };
+            return { id, ...data }; // Return the full chat data with the ID
           })
       )
     );
   }
-
-  // currentMobileDashboardState = signal<MobileDashboardState>('sidenav');
 
   /**
    * Generates a unique chat ID for two users.
@@ -88,11 +91,9 @@ export class ChatService {
    * @returns A string representing the unique chat ID for the two users.
    */
   async getChatId(userId1: string, userId2: string) {
-    //muss in separate Funktion verschoben werden:
-    // this.currentMobileDashboardState.set('message-window');
-
+    // Sort the user IDs alphabetically to ensure the order doesn't affect the chat ID
     const sortedIds = [userId1, userId2].sort();
-    return `${sortedIds[0]}_${sortedIds[1]}`;
+    return `${sortedIds[0]}_${sortedIds[1]}`; // Join the sorted IDs with an underscore
   }
 
   /**
@@ -106,29 +107,44 @@ export class ChatService {
    * @returns The ID of the other user in the chat.
    */
   getOtherUserId(chatId: string, currentUserId: string): string {
-    const [userA, userB] = chatId.split('_');
-    return userA === currentUserId ? userB : userA;
+    const [userA, userB] = chatId.split('_'); // Split the chat ID into two user IDs
+    return userA === currentUserId ? userB : userA; // Return the other user's ID
   }
 
   /**
-   * Löscht einen Chat anhand der Chat-ID.
-   * @param chatId - Die ID des zu löschenden Chats
-   * @returns Ein Promise, das resolved, wenn der Chat gelöscht wurde
+   * Deletes a chat document by its chat ID.
+   *
+   * @param chatId - The ID of the chat to delete.
+   * @returns A Promise that resolves when the chat has been deleted.
    */
   deleteChat(chatId: string): Promise<void> {
-    const chatRef = doc(this.firestore, 'chats', chatId);
-    return deleteDoc(chatRef);
+    const chatRef = doc(this.firestore, 'chats', chatId); // Reference to the Firestore chat document
+    return deleteDoc(chatRef); // Delete the chat document from Firestore
   }
 
+  /**
+   * Navigates to a specific chat screen and sets the other user for the current session.
+   *
+   * This method first checks if the chat exists and creates a new one if necessary,
+   * then navigates to the chat and sets the mobile dashboard state.
+   *
+   * @param currentUserId - The ID of the current user.
+   * @param otherUser - The user object of the other participant in the chat.
+   */
   async navigateToChat(currentUserId: string, otherUser: UserInterface) {
-    const chatId = await this.getChatId(currentUserId, otherUser.uid);
-    await this.createChat(currentUserId, otherUser.uid);
-    this.setOtherUser(otherUser);
-    this.mobileService.setMobileDashboardState('message-window');
-    this.router.navigate(['/dashboard', 'chat', chatId]);
+    const chatId = await this.getChatId(currentUserId, otherUser.uid); // Get the unique chat ID
+    await this.createChat(currentUserId, otherUser.uid); // Create the chat if it doesn't exist
+    this.setOtherUser(otherUser); // Set the other user in the service
+    this.mobileService.setMobileDashboardState('message-window'); // Update the mobile dashboard state
+    this.router.navigate(['/dashboard', 'chat', chatId]); // Navigate to the chat screen
   }
 
+  /**
+   * Sets the other user for the current chat session.
+   *
+   * @param user - The user object of the other participant in the chat.
+   */
   setOtherUser(user: UserInterface) {
-    this._otherUser$.next(user);
+    this._otherUser$.next(user); // Update the BehaviorSubject with the new other user
   }
 }

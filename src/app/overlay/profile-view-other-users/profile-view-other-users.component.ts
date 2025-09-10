@@ -46,7 +46,7 @@ export class ProfileViewOtherUsersComponent {
 
   /**
    * Opens a chat with the user currently displayed in the overlay.
-   * - Retrieves the current user and the other user's ID
+   * - Retrieves the current user ID and the other user as uSerInterface
    * - Ensures the chat exists or creates it if necessary
    * - Navigates to the chat view
    * - Closes the overlay
