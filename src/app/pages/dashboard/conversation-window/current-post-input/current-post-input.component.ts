@@ -13,7 +13,7 @@ import {
   Subject,
   takeUntil,
   distinctUntilChanged,
-  of
+  of,
 } from 'rxjs';
 import { SearchResult } from '../../../../shared/types/search-result.type';
 import { SearchService } from '../../../../services/search.service';
@@ -69,14 +69,14 @@ export class CurrentPostInput implements OnInit, OnDestroy {
       .subscribe((t) => {
         this.conversationType = t;
       });
-      
+
     this.chatActiveRouterService
       .getConversationId$(this.route)
       .pipe(takeUntil(this.destroy$))
       .subscribe((id) => {
         this.conversationId = id;
       });
-      
+
     this.chatActiveRouterService
       .getMessageId$(this.route)
       .pipe(takeUntil(this.destroy$))
@@ -84,7 +84,6 @@ export class CurrentPostInput implements OnInit, OnDestroy {
         this.messageToReplyId = msgId;
       });
 
-    // Stream für Textarea Änderungen - OPTIMIERTE VERSION
     this.postForm
       .get('text')!
       .valueChanges.pipe(
@@ -92,24 +91,27 @@ export class CurrentPostInput implements OnInit, OnDestroy {
         debounceTime(200),
         distinctUntilChanged(),
         switchMap((text: string) => {
-          const trimmedText = text.trim();
-          
-          if (!trimmedText) {
+          // Teile den Text in Tokens
+          const words = text.split(/\s+/);
+          // Nimm das letzte Wort
+          const lastWord = words[words.length - 1];
+
+          if (!lastWord) {
             this.searchResults = [];
             return of([]);
           }
-          
-          if (trimmedText.startsWith('@') || trimmedText.startsWith('#')) {
-            // Erstelle ein Observable, das den aktuellen Textwert emittiert
-            const searchTerm$ = of(trimmedText);
-            
-            return this.searchService.search(searchTerm$, { 
-              includeAllChannels: true 
+
+          // Prüfe, ob das letzte Wort mit @ oder # beginnt
+          if (lastWord.startsWith('@') || lastWord.startsWith('#')) {
+            // Sofortige Suche starten
+            return this.searchService.search(of(lastWord), {
+              includeAllChannels: true,
             });
+          } else {
+            // Kein Suchergebnis anzeigen, wenn das letzte Wort nicht mit @/# beginnt
+            this.searchResults = [];
+            return of([]);
           }
-          
-          this.searchResults = [];
-          return of([]);
         }),
         takeUntil(this.destroy$)
       )
@@ -164,7 +166,7 @@ export class CurrentPostInput implements OnInit, OnDestroy {
   //  */
   // onSelectSearchResult(result: SearchResult) {
   //   const currentText = this.postForm.get('text')?.value || '';
-    
+
   //   let replacementText = '';
   //   switch (result.type) {
   //     case 'user':
@@ -176,11 +178,11 @@ export class CurrentPostInput implements OnInit, OnDestroy {
   //     default:
   //       replacementText = result.text || '';
   //   }
-    
-    // Ersetze den Suchbegriff durch das ausgewählte Ergebnis
+
+  // Ersetze den Suchbegriff durch das ausgewählte Ergebnis
   //   const newText = this.replaceLastOccurrence(currentText, replacementText);
   //   this.postForm.get('text')?.setValue(newText);
-    
+
   //   // Leere die Suchergebnisse
   //   this.searchResults = [];
   // }
@@ -224,4 +226,3 @@ export class CurrentPostInput implements OnInit, OnDestroy {
     this.searchResults = []; // Suchergebnisse zurücksetzen
   }
 }
-
