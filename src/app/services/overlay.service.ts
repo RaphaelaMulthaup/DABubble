@@ -202,4 +202,9 @@ export class OverlayService {
       document.body.style.overflow = '';
     }
   }
+
+  // In overlay.service.ts - füge diese Methode zur Klasse hinzu
+  setUsers(users: UserInterface[]): void {
+    this.users.set(users);
+  }
 }

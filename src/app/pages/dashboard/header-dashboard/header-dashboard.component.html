@@ -1,16 +1,51 @@
-<header class="flex place-content-between">
-  <div class="logo-box flex items-center">
-    @if (mobileDashboardState() == 'sidenav') {
+<header
+  [ngClass]="{
+    'header-mobile': isMobile,
+    'header-desktop flex place-content-between': !isMobile
+  }"
+>
+  @if (isMobile) {
+  <div class="header-mobile-upper-area">
+    <div class="logo-box flex items-center">
+      @if (mobileDashboardState() == 'sidenav') {
       <img class="logo-final" src="assets/img/logo.png" alt="Logo DABubble" />
-    } @else {
+      } @else {
       <div class="logo-channel flex items-center">
-        <button (click)="mobileService.setMobileDashboardState('sidenav')" class="arrow-btn arrow-back"></button>
+        <button
+          (click)="mobileService.setMobileDashboardState('sidenav')"
+          class="arrow-btn arrow-back"
+        ></button>
         <img src="assets/img/logo-solo.png" alt="Logo Channel" />
       </div>
+      }
+    </div>
+    <div class="current-user">
+      <h1>{{ (currentUser$ | async)?.name }}</h1>
+      <img
+        class="profil-img"
+        [src]="(currentUser$ | async)?.photoUrl"
+        alt="Profilbild"
+        (click)="showProfile()"
+      />
+      <app-profile-view-main class="profile-view"></app-profile-view-main>
+    </div>
+  </div>
+  @if ((authService.currentUser$ | async) && mobileDashboardState() == 'sidenav') { <app-search-bar></app-search-bar>
+  } } @else if (!isMobile){
+  <div class="logo-box flex items-center">
+    @if (mobileDashboardState() == 'sidenav') {
+    <img class="logo-final" src="assets/img/logo.png" alt="Logo DABubble" />
+    } @else {
+    <div class="logo-channel flex items-center">
+      <button
+        (click)="mobileService.setMobileDashboardState('sidenav')"
+        class="arrow-btn arrow-back"
+      ></button>
+      <img src="assets/img/logo-solo.png" alt="Logo Channel" />
+    </div>
     }
   </div>
 
-  <!-- this is only for desktop (in mobile: sidenav) -->
   @if ((authService.currentUser$ | async)) { <app-search-bar></app-search-bar>
   }
 
@@ -22,8 +57,9 @@
       alt="Profilbild"
       (click)="showProfile()"
     />
-    <!-- this is only for desktop -->
-    <!-- <button class="arrow-btn" (click)="showProfile()"></button> -->
+    <button class="arrow-btn" (click)="showProfile()"></button>
     <app-profile-view-main class="profile-view"></app-profile-view-main>
   </div>
+
+  }
 </header>

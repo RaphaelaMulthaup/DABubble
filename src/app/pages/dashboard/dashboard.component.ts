@@ -16,7 +16,7 @@ import {
 import { HeaderDashboardComponent } from './header-dashboard/header-dashboard.component';
 import { ChatActiveRouterService } from '../../services/chat-active-router.service';
 import { ActivatedRoute } from '@angular/router';
-import { Observable, throwError } from 'rxjs';
+import { Observable, throwError, EMPTY } from 'rxjs';
 import { HttpParams } from '@angular/common/http';
 import { MobileDashboardState } from '../../shared/types/mobile-dashboard-state.type';
 import { ChatService } from '../../services/chat.service';

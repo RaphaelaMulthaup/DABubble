@@ -43,6 +43,7 @@ export class PostListItemComponent {
           }
         );
       } else {
+        this.mobileService.setMobileDashboardState('message-window');
         this.router.navigate(['/dashboard', conversationType, conversationId], {
           queryParams: { scrollTo: postId },
         });

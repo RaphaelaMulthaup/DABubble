@@ -1,5 +1,5 @@
 import { Component, DOCUMENT, Inject, inject, Renderer2 } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterOutlet, Router, NavigationStart } from '@angular/router';
 import { AsyncPipe, CommonModule } from '@angular/common';
 import {
   collection,
@@ -28,10 +28,16 @@ export class AppComponent {
    */
   title = 'DABubble';
   constructor(
-    /**
-     * Firestore instance for database access.
-     * It is injected to interact with Firestore for database operations.
-     */
-    firestore: Firestore
+    private router: Router,
+    private overlayService: OverlayService,
   ) {}
+
+  ngOnInit(): void {
+    // Abonniere Router-Events, um bei jeder Navigation die closeAll-Methode aufzurufen
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationStart) {
+        this.overlayService.closeAll(); // closeAll wird vor der Navigation aufgerufen
+      }
+    });
+  }
 }

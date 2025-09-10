@@ -1,4 +1,4 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { Injectable } from '@angular/core';
 import {
   collection,
   collectionSnapshots,
@@ -8,15 +8,22 @@ import {
   setDoc,
 } from '@angular/fire/firestore';
 import { ChatInterface } from '../shared/models/chat.interface';
-import { map, Observable } from 'rxjs';
-import { MobileDashboardState } from '../shared/types/mobile-dashboard-state.type';
+import { BehaviorSubject, map, Observable } from 'rxjs';
 import { Router } from '@angular/router';
+import { MobileService } from './mobile.service';
+import { UserInterface } from '../shared/models/user.interface';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ChatService {
-  constructor(private router: Router, private firestore: Firestore) {}
+  private _otherUser$ = new BehaviorSubject<UserInterface | null>(null);
+  otherUser$ = this._otherUser$.asObservable();
+  constructor(
+    private router: Router,
+    private firestore: Firestore,
+    private mobileService: MobileService
+  ) {}
 
   /**
    * Creates (or merges) a new chat document between two users in Firestore.
@@ -113,9 +120,15 @@ export class ChatService {
     return deleteDoc(chatRef);
   }
 
-  async navigateToChat(currentUserId: string, otherUserId: string) {
-    const chatId = await this.getChatId(currentUserId, otherUserId);
-    await this.createChat(currentUserId, otherUserId);
+  async navigateToChat(currentUserId: string, otherUser: UserInterface) {
+    const chatId = await this.getChatId(currentUserId, otherUser.uid);
+    await this.createChat(currentUserId, otherUser.uid);
+    this.setOtherUser(otherUser);
+    this.mobileService.setMobileDashboardState('message-window');
     this.router.navigate(['/dashboard', 'chat', chatId]);
+  }
+
+  setOtherUser(user: UserInterface) {
+    this._otherUser$.next(user);
   }
 }

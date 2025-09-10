@@ -1,0 +1,17 @@
+<div class="overlay-search-results-mobile">
+  @if (results.length > 0) {
+  <ul class="results-list">
+    @for (item of results; track $index) {
+    <li>
+      @switch (item.type) { @case ('user') {
+      <app-user-list-item [user]="item"></app-user-list-item>
+      } @case ('channel') {
+      <app-channel-list-item [channel]="item"></app-channel-list-item>
+      } @default {
+      {{ item | json }}
+      } }
+    </li>
+    }
+  </ul>
+  }
+</div>

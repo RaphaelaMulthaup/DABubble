@@ -2,15 +2,23 @@
   <app-header-dashboard />
 
   <div class="w-full h-full">
-    @switch (mobileDashboardState()) { @case ('sidenav') {
-    <app-sidenav></app-sidenav>
-    } @case ('message-window') {
-    <div>
-      <app-conversation-window [data$]="messages$"></app-conversation-window>
-    </div>
-    } @case ('thread-window') {
-    <app-conversation-window [data$]="answers$"></app-conversation-window>
-    } }
+    @switch (mobileDashboardState()) {
+      @case ('sidenav') {
+        <app-sidenav></app-sidenav>
+      } 
+      @case ('message-window') {
+        <div>
+          <app-conversation-window [data$]="messages$"></app-conversation-window>
+        </div>
+      } 
+      @case ('thread-window') {
+          <app-conversation-window [data$]="answers$"></app-conversation-window>
+      }
+      @case ('new-message-view') {
+        <app-conversation-window></app-conversation-window>
+      }
+    }
+
   </div>
 </section>
 

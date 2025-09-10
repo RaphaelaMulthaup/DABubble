@@ -1,23 +1,32 @@
-
-<li class="list-item user-list-item" (click)="choiceBetweenNavigateAndProfile()"
-  [ngClass]="{ 'related-to-search-result-post': relatedToSearchResultPost }">
+<li
+  class="list-item user-list-item"
+  (mousedown)="removeFocusAndHandleClick()"
+  (click)="choiceBetweenNavigateAndProfile()"
+  [ngClass]="{
+    'related-to-search-result-post': relatedToSearchResultPost,
+    'in-header-chat': inHeaderChat
+  }"
+>
   <div class="profil-img-and-status">
     <img class="profil-img" src="{{ user.photoUrl }}" alt="Profilbild" />
     @if (!relatedToSearchResultPost) {
-    <img class="status" [src]="
+    <img
+      class="status"
+      [src]="
         user.active
           ? 'assets/img/online-with-white-circle.svg'
           : 'assets/img/offline-with-white-circle.svg'
-      " alt="Status" />
+      "
+      alt="Status"
+    />
     }
   </div>
   <div>
-    <span>
+    <span [ngClass]="{ 'in-header-chat': inHeaderChat }">
       {{ user.name }}
     </span>
     @if (currentUserId == user.uid) {
-    <span>(Du)</span>
+    <span [ngClass]="{ 'in-header-chat': inHeaderChat }">(Du)</span>
     }
   </div>
 </li>
-

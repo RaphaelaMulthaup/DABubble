@@ -2,46 +2,8 @@
   <input
     type="text"
     class="input-secondary"
-    placeholder="Devspace durchsuchen"
+    [placeholder]="isMobile ? 'Geh zu...' : 'Devspace durchsuchen'"
     [formControl]="searchControl"
   />
   <img class="search-icon" src="./../../../../assets/img/search.svg" alt="" />
 </div>
-
-<!-- @if (groupedResults().length > 0) {
-<ul class="results-list">
-  @for (item of groupedResults(); track $index) {
-  <li>
-    @switch (item.type) { @case ('user') {
-    <app-user-list-item [user]="item"></app-user-list-item>
-    } @case ('channel') {
-    <app-channel-list-item [channel]="item"></app-channel-list-item>
-    } @case ('chatGroup') {
-    <app-user-list-item
-      [user]="item.user"
-      [relatedToSearchResultPost]="true"
-    ></app-user-list-item>
-    <ul>
-      @for (post of item.posts; track post.id) {
-      <li>
-        <app-post-list-item [post]="post"></app-post-list-item>
-      </li>
-      }
-    </ul>
-    } @case ('channelGroup') {
-    <app-channel-list-item [channel]="item.channel" [relatedToSearchResultPost]="true"></app-channel-list-item>
-    <ul>
-      @for (post of item.posts; track post.id) {
-      <li>
-        <app-post-list-item [post]="post"></app-post-list-item>
-      </li>
-      }
-    </ul>
-    }
-    @default { {{ item | json }} } }
-  </li>
-  }
-</ul>
-} @else {
-<div>Keine Treffer</div>
-} -->
