@@ -119,16 +119,20 @@ export class CurrentPostInput {
 
   /**
    * This function adds the chosen emojis to the input field as an image.
+   * 
+   * @param emoji the emoji-object from the EMOJIS-array.
    */
-  addEmoji() {
+  addEmoji(emoji: { token: string; src: string;}) {
     const editor = document.querySelector('.post-text-input') as HTMLElement;
-    const img = `<img src="${'assets/img/emojis/clown-face.svg'}" alt=":clown-face:" class='emoji'>`;
+    const img = `<img src="${emoji.src}" alt="${emoji.token}" class='emoji'>`;
     document.execCommand('insertHTML', false, img);
   }
 
   /**
    * This functions opens the emoji-picker overlay.
    * The overlay possibly emits an emoji and this emoji is added to the posts text.
+   * 
+   * @param event the user-interaction with an object.
    */
   openEmojiPickerOverlay(event: MouseEvent) {
     const overlay = this.overlayService.openComponent(
@@ -151,15 +155,10 @@ export class CurrentPostInput {
       }
     );
 
-    // overlay!.ref.instance.selectedEmoji.subscribe((emoji: string) => {
-    //   this.postService.toggleReaction(
-    //     '/' + this.currentType + 's/' + this.currentConversationId,
-    //     'messages',
-    //     this.post.id!,
-    //     emoji
-    //   );
-    //   this.overlayService.closeAll();
-    // });
+    overlay!.ref.instance.selectedEmoji.subscribe((emoji: { token: string; src: string;}) => {
+      this.addEmoji(emoji);
+      this.overlayService.closeAll();
+    });
   }
 
   /**

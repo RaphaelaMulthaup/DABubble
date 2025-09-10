@@ -7,7 +7,7 @@
     autofocus="true"
   ></div>
   <div class="flex justify-between align-center">
-    <button (click)="$event.preventDefault(); addEmoji()" class="add-emoji btn-tertiary relative"></button>
+    <button (click)="$event.preventDefault(); openEmojiPickerOverlay($event)" class="add-emoji btn-tertiary relative"></button>
     <div class="btns-submit flex">
       <button (click)="endEdit()" class="btn-secondary">Abbrechen</button>
       <button (click)="submitEdit()" class="btn-primary">

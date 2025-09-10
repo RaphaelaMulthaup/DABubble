@@ -5,13 +5,12 @@
       class="post-text-input"
       placeholder="Text einfügen"
       contenteditable="true"
-      autofocus="true"
     ></div>
   </div>
   <div class="buttons">
     <div>
       <button
-        (click)="$event.preventDefault(); addEmoji()"
+        (click)="$event.preventDefault(); openEmojiPickerOverlay($event)"
         type="button"
         class="btn-tertiary add-emoji"
       ></button>

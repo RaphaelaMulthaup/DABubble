@@ -15,6 +15,7 @@ import { PostService } from '../../../../../../services/post.service';
 import { OverlayService } from '../../../../../../services/overlay.service';
 import { Subject, takeUntil } from 'rxjs';
 import { EMOJIS } from '../../../../../../shared/constants/emojis';
+import { EmojiPickerComponent } from '../../../../../../overlay/emoji-picker/emoji-picker.component';
 
 @Component({
   selector: 'app-edit-displayed-post',
@@ -24,7 +25,6 @@ import { EMOJIS } from '../../../../../../shared/constants/emojis';
 })
 export class EditDisplayedPostComponent implements OnInit {
   @Input() post!: PostInterface;
-  // @Output() endEditingPost = new EventEmitter<void>();
   currentConversationType!: 'channel' | 'chat';
   currentConversationId!: string;
   messageId!: string;
@@ -63,11 +63,48 @@ export class EditDisplayedPostComponent implements OnInit {
 
   /**
    * This function adds the chosen emojis to the input field as an image.
+   * 
+   * @param emoji the emoji-object from the EMOJIS-array.
    */
-  addEmoji() {
+  addEmoji(emoji: { token: string; src: string;}) {
     const editor = document.querySelector('.post-text-input') as HTMLElement;
-    const img = `<img src="${'assets/img/emojis/clown-face.svg'}" alt=":clown-face:" class='emoji'>`;
+    const img = `<img src="${emoji.src}" alt="${emoji.token}" class='emoji'>`;
     document.execCommand('insertHTML', false, img);
+  }
+
+  /**
+   * This functions opens the emoji-picker overlay.
+   * The overlay possibly emits an emoji and this emoji is added to the posts text.
+   * 
+   * @param event the user-interaction with an object.
+   */
+  openEmojiPickerOverlay(event: MouseEvent) {
+    const overlay = this.overlayService.openComponent(
+      EmojiPickerComponent,
+      'cdk-overlay-transparent-backdrop',
+      {
+        origin: event.currentTarget as HTMLElement,
+        originPosition: {
+          originX: 'end',
+          originY: 'bottom',
+          overlayX: 'start',
+          overlayY: 'bottom',
+        },
+        originPositionFallback: {
+          originX: 'end',
+          originY: 'bottom',
+          overlayX: 'start',
+          overlayY: 'top',
+        },
+      }
+    );
+
+    overlay!.ref.instance.selectedEmoji.subscribe(
+      (emoji: { token: string; src: string }) => {
+        this.addEmoji(emoji);
+        // this.overlayService.closeAll();
+      }
+    );
   }
 
   /**
@@ -75,8 +112,6 @@ export class EditDisplayedPostComponent implements OnInit {
    * This way, the edit-displayed-post is replaced by a p-tag with the posts text.
    */
   endEdit() {
-    // this.overlayService.editPostActive = false;
-    // this.endEditingPost.emit();
     this.overlayService.editingPostId.set(null);
   }
 
