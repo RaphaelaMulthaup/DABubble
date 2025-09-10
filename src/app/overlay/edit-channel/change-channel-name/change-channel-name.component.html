@@ -1,22 +1,23 @@
-<div  [class.container-boarder]="!isEditActive" class="container">
-    <div class="flex flex-col w-full gap-[20px]">
-        <div class="flex w-full justify-between">
-            <h4>Channel name</h4>
-            @if(isEditActive){
-                <button class="btn-tertiary close" (click)="saveName(nameInput!)">Save</button>
-            }@else {
-                <button class="btn-tertiary close" (click)="toggleEdit()">Edit</button>
-            }
-        </div>
-        <div>
-            @if(isEditActive){
-                <input type="text" class="input-secondary p-[20px]" [value]="channel?.name"  [(ngModel)]="nameInput">
-            }@else {
-                <div class="flex p-[20px]">
-                    <div class="tag"></div>
-                    <p>{{channel?.name}}</p>
-                </div>
-            }
-        </div>
+<div class="flex flex-col w-full gap-[20px]">
+    <div class="flex w-full items-center justify-between">
+        <h4>Channel name</h4>
+        @if(isEditActive){
+            <button class="btn" (click)="saveName(nameInput!)"><span class="save"></span></button>
+        }@else {
+            <button class="btn" (click)="toggleEdit()"><span class="edit"></span></button>
+        }
     </div>
-</div>
+    <div class="w-full">
+        @if(isEditActive){
+        <div class="relative w-full" >
+            <span class="tag absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none"></span>
+            <input type="text" class="input-secondary pl-16  p-[20px] w-full" [value]="channel?.name" [(ngModel)]="nameInput">
+        </div>
+        }@else {
+        <div class="flex gap-[15px]  w-full items-center">
+            <div class="tag"></div>
+            <p>{{channel?.name}}</p>
+        </div>
+        }
+    </div>
+    </div>

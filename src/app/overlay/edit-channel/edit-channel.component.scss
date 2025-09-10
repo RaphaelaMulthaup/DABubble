@@ -2,8 +2,6 @@
 .container {
   display: flex;
   flex-direction: column;
-  width: 100%;
-  gap: 30px;
   padding: 20px;
   border: 1px solid transparent;
   border-radius: 20px;
@@ -22,7 +20,6 @@
   background-color: white;
   border-radius: 0;        
   overflow-y: auto;         /* scroll beheiver if wee need */
-  
 }
 
 header{

@@ -1,26 +1,26 @@
-<div class="container">
-    <div class="flex flex-col w-full">
-        <div class="flex w-full justify-between">
+<div class="flex flex-col w-full gap-[20px]">
+   <div class="flex w-full flex-col gap-[20px]">
+        <div class="flex w-full items-center justify-between">
             <h4>Channel description</h4>
             @if(isEditActive){
-                <button class="btn-tertiary close" (click)="saveDescription(descriptionInput!)">Save</button>
+            <button class="btn" (click)="saveDescription(descriptionInput!)"><span class="save"></span></button>
             }@else {
-                <button class="btn-tertiary close" (click)="toggleEdit()">Edit</button>
+            <button class="btn" (click)="toggleEdit()"><span class="edit"></span></button>
             }
         </div>
-        <div>
+        <div class="w-full">
             @if(isEditActive){
-            <input type="text" [value]="channel?.description"  [(ngModel)]="descriptionInput">
+                <input type="text" class="input-secondary p-[20px] w-full" [value]="channel?.description" [(ngModel)]="descriptionInput">
             }@else {
-            <p>{{channel?.description}}</p>
+                <p class="w-full">{{channel?.description}}</p>
             }
         </div>
-        <span class="separable"></span>
-        <div class="flex flex-col">
-            <h4>Erstellt von</h4>
-            @if(user$ | async; as user){
-                {{user.name}}
-            }
-        </div>
+    </div>
+    <span class="separable w-full mt-[10px] mb-[10px]"></span>
+    <div class="flex flex-col w-full gap-[20px]">
+        <h4>Erstellt von</h4>
+        @if(user$ | async; as user){
+        <span class="createdBy">{{user.name}}</span>
+        }
     </div>
 </div>

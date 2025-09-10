@@ -1,27 +1,28 @@
-@if(channelDetails$ | async; as channel){
-<div class="mobile-overlay flex flex-col">
+<div class="overlay-left flex flex-col max-w-[872px]" [class.mobile-overlay]="isMobile" >
   <app-header-overlay [overlayHeadline]="channelName || ''" />
-  <div class="flex items-center flex-col w-full py-[16px] px-[20px] gap-[20px]">
-    <app-change-channel-name
-          class="container"
-      [class.container-boarder]="!editChannelName"
-      [channelId]="channelId"
-      [channel]="channel"
-      (editActiveChange)="editName($event)"
-    />
-    <app-change-channel-description
-      class="container"
-      [class.container-boarder]="!editChannelDescription"
-      [channelId]="channelId"
-      [channel]="channel"
-      [user$]="user$"
-      (editActiveChange)="editDescription($event)"
-    />
+  <div class="flex flex-col w-full py-[16px] px-[20px] gap-[20px] items-center">
+    @if(channelDetails$ | async; as channel){
+      <app-change-channel-name
+        class="container w-full"
+        [class.container-boarder]="!editChannelName"
+        [channelId]="channelId"
+        [channel]="channel"
+        (editActiveChange)="editName($event)"
+      />
+      <app-change-channel-description
+        class="container gap-[20px] w-full"
+        [class.container-boarder]="!editChannelDescription"
+        [channelId]="channelId"
+        [channel]="channel"
+        [user$]="user$"
+        (editActiveChange)="editDescription($event)"
+      />
+    }
     @if(isMobile){
-      <app-channel-members class="container items-start container-boarder" [channelDetails$]="channelDetails$" />
+      <app-channel-members class="w-full container items-start container-boarder" [channelDetails$]="channelDetails$" />
     }
   </div>
-  <div class="flex justify-end">
+  <div class="flex justify-end w-full">
     @if(currentUser == createdById){
     <button class="btn-primary" (click)="channelService.deleteChannel(channelId!)">
       Channel loschen
@@ -33,4 +34,3 @@
     }
   </div>
 </div>
-}
