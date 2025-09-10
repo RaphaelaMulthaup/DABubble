@@ -1,7 +1,10 @@
 <form class="current-post-input" [formGroup]="postForm" (ngSubmit)="onSubmit()">
   <div class="textarea-wrapper">
     <div
-      #postId
+      #textarea
+      type="text"
+      formControlName="text"
+      name="text"
       class="post-text-input"
       placeholder="Text einfügen"
       contenteditable="true"
@@ -14,7 +17,11 @@
         type="button"
         class="btn-tertiary add-emoji"
       ></button>
-      <button (click)="startUserSearch()" type="button" class="btn-tertiary add-user-or-channel"></button>
+      <button
+        (click)="startUserSearch()"
+        type="button"
+        class="btn-tertiary add-user-or-channel"
+      ></button>
     </div>
     <button type="submit" class="send" [disabled]="postForm.invalid"></button>
   </div>

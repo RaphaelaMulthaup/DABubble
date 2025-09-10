@@ -29,7 +29,7 @@ export class EditDisplayedPostComponent implements OnInit {
   currentConversationId!: string;
   messageId!: string;
   emojis = EMOJIS;
-  @ViewChild('textArea') postTextInput!: ElementRef;
+  @ViewChild('textarea') postTextInput!: ElementRef;
   private destroy$ = new Subject<void>();
 
   constructor(
@@ -54,6 +54,10 @@ export class EditDisplayedPostComponent implements OnInit {
       .subscribe((messageId) => {
         this.messageId = messageId;
       });
+
+    setTimeout(() => {
+      this.postService.focusAtEndEditable(this.postTextInput);
+    });
   }
 
   ngOnDestroy() {
@@ -63,10 +67,10 @@ export class EditDisplayedPostComponent implements OnInit {
 
   /**
    * This function adds the chosen emojis to the input field as an image.
-   * 
+   *
    * @param emoji the emoji-object from the EMOJIS-array.
    */
-  addEmoji(emoji: { token: string; src: string;}) {
+  addEmoji(emoji: { token: string; src: string }) {
     const editor = document.querySelector('.post-text-input') as HTMLElement;
     const img = `<img src="${emoji.src}" alt="${emoji.token}" class='emoji'>`;
     document.execCommand('insertHTML', false, img);
@@ -75,7 +79,7 @@ export class EditDisplayedPostComponent implements OnInit {
   /**
    * This functions opens the emoji-picker overlay.
    * The overlay possibly emits an emoji and this emoji is added to the posts text.
-   * 
+   *
    * @param event the user-interaction with an object.
    */
   openEmojiPickerOverlay(event: MouseEvent) {

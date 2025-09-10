@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { ElementRef, inject, Injectable } from '@angular/core';
 import {
   addDoc,
   arrayRemove,
@@ -112,7 +112,7 @@ export class PostService {
     parentPath: string,
     subcollectionName: string,
     postId: string,
-    emoji: { token: string; src: string;}
+    emoji: { token: string; src: string }
   ) {
     let userId = this.authService.currentUser.uid;
     const reactionRef = doc(
@@ -355,5 +355,17 @@ export class PostService {
       result = result.replaceAll(e.token, imgTag);
     });
     return result;
+  }
+
+  focusAtEndEditable(element: ElementRef) {
+    element.nativeElement.focus();
+    const range = document.createRange();
+    range.selectNodeContents(element.nativeElement);
+    range.collapse(false);
+    const selection = window.getSelection();
+    if (selection) {
+      selection.removeAllRanges();
+      selection.addRange(range);
+    }
   }
 }

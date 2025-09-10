@@ -57,10 +57,9 @@ export class CurrentPostInput implements OnInit, OnDestroy {
   searchResults: SearchResult[] = [];
   emojis = EMOJIS;
   private destroy$ = new Subject<void>();
-  @ViewChild('currentPostInput')
-  currentPostInput!: ElementRef<HTMLInputElement>;
-
-  @ViewChild('postId') postTextInput!: ElementRef;
+  // @ViewChild('currentPostInput');
+  // currentPostInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('textarea') postTextInput!: ElementRef;
 
   constructor(
     private authService: AuthService,
@@ -146,10 +145,10 @@ export class CurrentPostInput implements OnInit, OnDestroy {
 
   /**
    * This function adds the chosen emojis to the input field as an image.
-   * 
+   *
    * @param emoji the emoji-object from the EMOJIS-array.
    */
-  addEmoji(emoji: { token: string; src: string;}) {
+  addEmoji(emoji: { token: string; src: string }) {
     const editor = document.querySelector('.post-text-input') as HTMLElement;
     const img = `<img src="${emoji.src}" alt="${emoji.token}" class='emoji'>`;
     document.execCommand('insertHTML', false, img);
@@ -158,7 +157,7 @@ export class CurrentPostInput implements OnInit, OnDestroy {
   /**
    * This functions opens the emoji-picker overlay.
    * The overlay possibly emits an emoji and this emoji is added to the posts text.
-   * 
+   *
    * @param event the user-interaction with an object.
    */
   openEmojiPickerOverlay(event: MouseEvent) {
@@ -182,10 +181,12 @@ export class CurrentPostInput implements OnInit, OnDestroy {
       }
     );
 
-    overlay!.ref.instance.selectedEmoji.subscribe((emoji: { token: string; src: string;}) => {
-      this.addEmoji(emoji);
-      this.overlayService.closeAll();
-    });
+    overlay!.ref.instance.selectedEmoji.subscribe(
+      (emoji: { token: string; src: string }) => {
+        this.addEmoji(emoji);
+        this.overlayService.closeAll();
+      }
+    );
   }
 
   /**
@@ -226,7 +227,7 @@ export class CurrentPostInput implements OnInit, OnDestroy {
       SearchResultsCurrentPostInputComponent,
       'cdk-overlay-transparent-backdrop',
       {
-        origin: this.currentPostInput.nativeElement,
+        origin: this.postTextInput.nativeElement,
         originPosition: {
           originX: 'start',
           originY: 'top',
@@ -259,13 +260,16 @@ export class CurrentPostInput implements OnInit, OnDestroy {
     } else if (typeOfResult === 'channel') {
       words[words.length - 1] = name;
     }
-    control.setValue(words.join(' ') + ' ');
-    this.currentPostInput.nativeElement.focus();
+    //control.setValue(words.join(' ') + ' ');
+    this.postTextInput.nativeElement.innerHTML += words.join(' ') + ' ';
+    //this.postTextInput.nativeElement.focus();
+    this.postService.focusAtEndEditable(this.postTextInput);
   }
 
   startUserSearch() {
     const control = this.postForm.get('text')!;
     const text = control.value || '';
+    console.log(text);
     // Überprüfe das letzte Zeichen
     const lastChar = text.slice(-1);
 
@@ -273,6 +277,7 @@ export class CurrentPostInput implements OnInit, OnDestroy {
     const newText = lastChar !== ' ' ? text + ' @' : text + '@';
 
     control.setValue(newText);
-    this.currentPostInput.nativeElement.focus();
+    //this.postTextInput.nativeElement.focus();
+    this.postService.focusAtEndEditable(this.postTextInput);
   }
 }
