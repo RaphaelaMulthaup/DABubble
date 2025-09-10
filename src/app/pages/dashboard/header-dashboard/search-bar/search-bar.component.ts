@@ -186,8 +186,9 @@ export class SearchBarComponent implements OnInit, OnDestroy {
     return grouped;
   });
 
-  closeOverlayAndEmptyTextarea(){
+  closeOverlayAndEmptyInput(){
     console.log('IN DER FUNKTION ANGEKOMMEN');
+    this.searchControl.setValue('');
     this.overlayService.closeAll();
   }
 }
