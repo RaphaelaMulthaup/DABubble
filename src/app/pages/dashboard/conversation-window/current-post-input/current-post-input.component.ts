@@ -248,4 +248,17 @@ export class CurrentPostInput implements OnInit, OnDestroy {
     control.setValue(words.join(' ') + ' ');
     this.currentPostInput.nativeElement.focus();
   }
+
+  startUserSearch() {
+    const control = this.postForm.get('text')!;
+    const text = control.value || '';
+    // Überprüfe das letzte Zeichen
+    const lastChar = text.slice(-1);
+
+    // Wenn das letzte Zeichen kein Leerzeichen ist, fügen wir ein Leerzeichen hinzu
+    const newText = lastChar !== ' ' ? text + ' @' : text + '@';
+
+    control.setValue(newText);
+    this.currentPostInput.nativeElement.focus();
+  }
 }

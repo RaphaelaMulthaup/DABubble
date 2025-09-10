@@ -18,7 +18,7 @@
         type="button"
         class="btn-tertiary add-emoji"
       ></button>
-      <button type="button" class="btn-tertiary add-user-or-channel"></button>
+      <button (click)="startUserSearch()" type="button" class="btn-tertiary add-user-or-channel"></button>
     </div>
     <button type="submit" class="send" [disabled]="postForm.invalid"></button>
   </div>
