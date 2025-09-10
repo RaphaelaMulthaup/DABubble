@@ -1,4 +1,11 @@
-import { Component, ElementRef, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  inject,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../../../services/auth.service';
@@ -48,7 +55,8 @@ export class CurrentPostInput implements OnInit, OnDestroy {
   });
   searchResults: SearchResult[] = [];
   private destroy$ = new Subject<void>();
-  @ViewChild('currentPostInput') currentPostInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('currentPostInput')
+  currentPostInput!: ElementRef<HTMLInputElement>;
 
   constructor(
     private authService: AuthService,
@@ -117,24 +125,10 @@ export class CurrentPostInput implements OnInit, OnDestroy {
         }),
         takeUntil(this.destroy$)
       )
-      .subscribe((results: SearchResult[]) => {
+      .subscribe((results: any[]) => {
         this.searchResults = results;
         if (results.length > 0) {
-          this.overlayService.closeAll();
-          this.overlayService.openComponent(
-            SearchResultsCurrentPostInputComponent,
-            'cdk-overlay-transparent-backdrop',
-            {
-              origin: this.currentPostInput.nativeElement,
-              originPosition: {
-                originX: 'start',
-                originY: 'top',
-                overlayX: 'start',
-                overlayY: 'bottom',
-              },
-            },
-            { results } // Input an Overlay-Komponente übergeben
-          );
+          this.openSearchOverlay(results);
         } else {
           this.overlayService.closeAll();
         }
@@ -211,5 +205,47 @@ export class CurrentPostInput implements OnInit, OnDestroy {
     }
     this.postForm.reset();
     this.searchResults = []; // Suchergebnisse zurücksetzen
+  }
+
+  openSearchOverlay(results: any[]) {
+    const overlayRef = this.overlayService.openComponent(
+      SearchResultsCurrentPostInputComponent,
+      'cdk-overlay-transparent-backdrop',
+      {
+        origin: this.currentPostInput.nativeElement,
+        originPosition: {
+          originX: 'start',
+          originY: 'top',
+          overlayX: 'start',
+          overlayY: 'bottom',
+        },
+      },
+      { results }
+    );
+
+    if (overlayRef) {
+      overlayRef.ref.instance.userSelected?.subscribe((user: any) => {
+        this.insertName(user.name, 'user');
+        this.overlayService.closeAll();
+      });
+      overlayRef.ref.instance.channelSelected?.subscribe((channel: any) => {
+        this.insertName(channel.name, 'channel');
+        this.overlayService.closeAll();
+      });
+    }
+  }
+
+  // Setzt den Usernamen anstelle des letzten Tokens in das Inputfeld
+  insertName(name: string, typeOfResult: 'user' | 'channel') {
+    const control = this.postForm.get('text')!;
+    const text = control.value || '';
+    const words = text.split(/\s+/);
+    if (typeOfResult === 'user') {
+      words[words.length - 1] = '@' + name;
+    } else if (typeOfResult === 'channel') {
+      words[words.length - 1] = '#' + name;
+    }
+    control.setValue(words.join(' ') + ' ');
+    this.currentPostInput.nativeElement.focus();
   }
 }

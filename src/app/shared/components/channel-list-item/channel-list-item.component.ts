@@ -1,4 +1,4 @@
-import { Component, inject, Input } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { ChannelInterface } from '../../models/channel.interface';
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -24,14 +24,19 @@ export class ChannelListItemComponent {
   /** The channel whose information should be displayed. This is passed from the parent component. */
   @Input() channel!: ChannelInterface;
   @Input() relatedToSearchResultPost: boolean = false;
-  @Input() inCurrentPostInput = false;
+  @Input() inSearchResultsCurrentPostInput: boolean = false;
+  @Output() channelSelected = new EventEmitter<ChannelInterface>();
 
   removeFocusAndHandleClick() {
     // Fokus sofort entfernen, bevor der Klick verarbeitet wird
-    if (!this.inCurrentPostInput) {      
+    if (!this.inSearchResultsCurrentPostInput) {
       this.searchService.removeFocus();
       this.mobileService.setMobileDashboardState('message-window');
       this.router.navigate(['/dashboard', 'channel', this.channel.id]);
     }
+  }
+
+  emitChannel() {
+    this.channelSelected.emit(this.channel);
   }
 }
