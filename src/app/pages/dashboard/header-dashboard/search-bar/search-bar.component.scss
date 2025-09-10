@@ -11,12 +11,32 @@ input {
   flex: 1;
   height: 100%;
   border-radius: 42px;
-  padding: 0 80px 0 45px;
+  padding-left: 45px;
   line-height: 70px;
   font-size: 24px;
+}
+
+.inputWithSearchIcon {
+  padding-right: 80px;
+}
+
+.inputWithCloseIcon {
+  padding-right: 64px;
 }
 
 .search-icon {
   position: absolute;
   right: 45px;
+}
+
+.close {
+  cursor: pointer;
+  height: 40px;
+  aspect-ratio: 1;
+  background-image: url(../../../../../assets/img/close.svg);
+  position: absolute;
+  right: 24px;
+  &:hover {
+    background-image: url(../../../../../assets/img/close-hover.svg);
+  }
 }

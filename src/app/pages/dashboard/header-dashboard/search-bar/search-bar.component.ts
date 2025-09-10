@@ -29,6 +29,7 @@ import { ChannelInterface } from '../../../../shared/models/channel.interface';
 import { OverlayService } from '../../../../services/overlay.service';
 import { SearchResultsComponent } from '../../../../overlay/search-results/search-results.component';
 import { MobileService } from '../../../../services/mobile.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-search-bar',
@@ -39,7 +40,8 @@ import { MobileService } from '../../../../services/mobile.service';
     UserListItemComponent,
     ChannelListItemComponent,
     PostListItemComponent,
-  ],
+    CommonModule
+],
   templateUrl: './search-bar.component.html',
   styleUrls: ['./search-bar.component.scss'],
 })
@@ -66,6 +68,7 @@ export class SearchBarComponent implements OnInit, OnDestroy {
   results: Signal<SearchResult[]>;
   isMobile = false;
   private updateMobile: () => void;
+  searchResultsExisting: boolean = false;
 
   constructor(
     private overlayService: OverlayService,
@@ -94,9 +97,7 @@ export class SearchBarComponent implements OnInit, OnDestroy {
     this.term$.pipe(takeUntil(this.destroy$)).subscribe((term) => {
       if (term.length > 0) {
         this.overlayService.closeAll();
-        // const originElement = document.querySelector(
-        //   '.input-wrapper'
-        // ) as HTMLElement;
+        this.searchResultsExisting = true;
         this.overlayService.openComponent(
           SearchResultsComponent,
           'cdk-overlay-transparent-backdrop',
@@ -121,6 +122,7 @@ export class SearchBarComponent implements OnInit, OnDestroy {
           }
         );
       } else {
+        this.searchResultsExisting = false;
         this.overlayService.closeAll(); // optional: Overlay schließen, wenn Eingabe leer
       }
     });
@@ -183,5 +185,9 @@ export class SearchBarComponent implements OnInit, OnDestroy {
 
     return grouped;
   });
-}
 
+  closeOverlayAndEmptyTextarea(){
+    console.log('IN DER FUNKTION ANGEKOMMEN');
+    this.overlayService.closeAll();
+  }
+}
