@@ -20,4 +20,5 @@ export class ChannelListItemComponent {
   @Input() channel!: ChannelInterface;
   @Input() relatedToSearchResultPost: boolean = false;
   @Input() inCurrentPostInput = false;
+  @Input() isInChannelHeaderUsed = false;
 }

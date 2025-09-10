@@ -1,4 +1,4 @@
-import { Component, Input, inject } from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ChannelsService } from '../../../services/channels.service';
 import { FormsModule } from '@angular/forms';
@@ -17,7 +17,7 @@ export class ChangeChannelDescriptionComponent {
   @Input() user$?: Observable<UserInterface>;
 
   @Input() channel?: ChannelInterface;
-
+  @Output() editActiveChange = new EventEmitter<boolean>();
   isEditActive: boolean = false;
   descriptionInput?: string;
 
@@ -26,12 +26,17 @@ export class ChangeChannelDescriptionComponent {
   async saveDescription(newName: string) {
     this.channelService.changeChannelDescription(this.channelId!, newName);
     this.isEditActive = !this.isEditActive;
+        this.editActiveChange.emit(this.isEditActive);
+
   }
 
   toggleEdit() {
     this.isEditActive = !this.isEditActive;
+        this.editActiveChange.emit(this.isEditActive);
+
     if (this.isEditActive && this.channel) {
       this.descriptionInput = this.channel.description;
+      
     }
   }
 }

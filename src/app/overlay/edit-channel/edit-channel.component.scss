@@ -1,14 +1,18 @@
 @import './../../../styles.scss';
-.container{
-    display: flex;
-    flex-direction: column;
-    border: 1px solid #ADB0D9;
-    width: 100%;
-    opacity: 1;
-    border-radius: 20px;
-    border-width: 1px;
-    gap: 30px;
-    padding: 20px;
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 30px;
+  padding: 20px;
+  border: 1px solid transparent;
+  border-radius: 20px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.container-boarder {
+  border-color: #ADB0D9;
+  // box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
 }
 
 .mobile-overlay {

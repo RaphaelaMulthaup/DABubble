@@ -38,6 +38,8 @@ export class EditChannelComponent {
   createdById?: string;
   user$?: Observable<UserInterface>;
   isMobile = false;
+  editChannelName:boolean = false;
+  editChannelDescription:boolean = false;
 
   // CORECT: Inițializare corectă a observabilului
   channelDetails$!: Observable<ChannelInterface | undefined>;
@@ -78,4 +80,11 @@ export class EditChannelComponent {
     this.destroy$.next();
     this.destroy$.complete();
   }
+
+  editName(isActive: boolean) {
+    this.editChannelName = isActive;
+}
+  editDescription(isActive: boolean) {
+    this.editChannelDescription= isActive;
+}
 }
