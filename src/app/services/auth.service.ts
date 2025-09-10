@@ -236,18 +236,6 @@ export class AuthService {
   }
 
   /**
-   * Atempt to send link with selfmade url
-   */
-  // sendPasswordRessetEmail(email: string) {
-  //   const auth = getAuth();
-  //   const actionCodeSettings: ActionCodeSettings = {
-  //     url: 'https://nicolaus-feldtmann.de/',
-  //     handleCodeInApp: false,
-  //   };
-  //   return sendPasswordResetEmail(auth, email, actionCodeSettings);
-  // }
-
-  /**
    *
    * Sends link to firesore mail reset url
    *

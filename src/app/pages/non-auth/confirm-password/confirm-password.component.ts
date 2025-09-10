@@ -24,14 +24,13 @@ import { Router } from '@angular/router';
   templateUrl: './confirm-password.component.html',
   styleUrl: './confirm-password.component.scss',
 })
-export class ConfirmPasswordComponent {
+export class ConfirmPasswordComponent implements OnInit {
   @Output() changeAuthState = new EventEmitter<AuthState>();
 
   showErrorMessage: boolean = false;
-  // wavieFlagie: boolean = false;
   showToast: boolean = false;
 
-  // emailList: string[] = [];
+  emailList: string[] = [];
   emailExists: boolean = false;
   userColl: any;
 
@@ -48,23 +47,43 @@ export class ConfirmPasswordComponent {
   ) {}
 
   /**
+   * Get on init list of all emails and UIDs from firestore
+   */
+  ngOnInit(): void {
+    this.userService.getAllUserEmails().subscribe((users: any) => {
+      this.emailList = users.map((user: { email: any; }) => user.email);
+      users.forEach((user: { uid: any; email: any; }) => {
+        console.log(`UID: ${user.uid}, EMAIL: ${user.email}`);
+      })
+    })
+  }
+
+  /**
    * Compares email from input with emails from loaded mail list.
    * Throws error message if no matching mail
    */
   async onSubmit() {
+    console.log('onSub');
     let inputMail = this.confirmForm.get('email')?.value;
-
-    let exists = await this.userService.checkForExistingUser(inputMail);
-    if (exists) {
-      this.authService.sendPasswordRessetEmail(inputMail).then(() => {
-        this.showToast = true;
-        setTimeout(() => {
-          this.backToLogin();
-        }, 1500);
-      }).catch((error)  => {
-        console.error('Fehler beim senden der Reset-Mail.');
-        this.showErrorMessage = true;
-      });
+    this.emailExists = await this.userService.checkForExistingUser(inputMail);
+    if (this.emailExists) {
+      this.authService
+        .sendPasswordRessetEmail(inputMail)
+        .then(() => {
+          // this.waveFlag();
+          this.showToast = true;
+          setTimeout(() => {
+            console.log('Mail erfolgreich gesendet');
+            this.backToLogin();
+          }, 1500);
+        })
+        .catch((error) => {
+          console.error(
+            'Password-rest E-Mail konnte nicht gesendet werden',
+            error
+          );
+          this.showErrorMessage = true;
+        });
     } else {
       this.showErrorMessage = true;
     }

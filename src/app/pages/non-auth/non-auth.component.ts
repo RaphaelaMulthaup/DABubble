@@ -71,22 +71,23 @@ export class NonAuthComponent {
    * Fetches all users from Firestore and logs their names
    */
   ngOnInit() {
+    const usersRef = collection(this.firestore, 'users');
     this.showLogo();
 
-    // // URL-Parameter abfragen
-    // this.route.queryParams.subscribe((params) => {
-    //   const uid = params['uid'];
-    //   if (uid) {
-    //     // Es wurde ein uid-Parameter erkannt, also gehe in den 'reset-password' Modus
-    //     this.currentState = 'reset-password-confirm';
-    //   }
-    // });
+    // URL-Parameter abfragen
+    this.route.queryParams.subscribe((params) => {
+      const uid = params['uid'];
+      if (uid) {
+        // Es wurde ein uid-Parameter erkannt, also gehe in den 'reset-password' Modus
+        this.currentState = 'reset-password-confirm';
+      }
+    });
 
-    // collectionData(usersRef).pipe(
-    //   map((users: any[]) => users.map(user => user.name))
-    // ).subscribe(userNames => {
-    //   console.log('User names from Firestore:', userNames);
-    // });
+    collectionData(usersRef).pipe(
+      map((users: any[]) => users.map(user => user.name))
+    ).subscribe(userNames => {
+      console.log('User names from Firestore:', userNames);
+    });
   }
 
   /**
