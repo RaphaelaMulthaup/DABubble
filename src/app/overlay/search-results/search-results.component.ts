@@ -1,5 +1,4 @@
 import { Component, Input } from '@angular/core';
-import { SearchResult } from '../../shared/types/search-result.type';
 import { UserListItemComponent } from '../../shared/components/user-list-item/user-list-item.component';
 import { ChannelListItemComponent } from '../../shared/components/channel-list-item/channel-list-item.component';
 import { PostListItemComponent } from '../../shared/components/post-list-item/post-list-item.component';

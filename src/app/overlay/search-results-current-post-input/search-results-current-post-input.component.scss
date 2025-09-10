@@ -1,0 +1,30 @@
+@import "../../../styles.scss";
+
+.search-results-current-post-input {
+  max-height: 467px;
+  width: 350px;
+  background-color: var(--color-white);
+  box-shadow: 0px 2px 10px 0px #00000014;
+  border-radius: 30px 30px 30px 0;
+  padding: 20px 23px 24px 29px;
+  border: 1px solid var(--color-purple-light-lines);
+  -ms-overflow-style: none; // IE und Edge
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none; // Chrome, Safari, Opera
+  }
+}
+
+.results-list-current-post-input {
+  @include dFlex($ai: flex-start, $g: 15px);
+  flex-direction: column;
+  overflow-x: hidden;
+  width: 100%;
+  li {
+    width: 100%;
+  }
+}
+
+app-user-list-item, app-channel-list-item{
+    max-width: 100%;
+}

@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../../../services/auth.service';
@@ -21,6 +21,7 @@ import { UserListItemComponent } from '../../../../shared/components/user-list-i
 import { ChannelListItemComponent } from '../../../../shared/components/channel-list-item/channel-list-item.component';
 import { OverlayService } from '../../../../services/overlay.service';
 import { EmojiPickerComponent } from '../../../../overlay/emoji-picker/emoji-picker.component';
+import { SearchResultsCurrentPostInputComponent } from '../../../../overlay/search-results-current-post-input/search-results-current-post-input.component';
 
 @Component({
   selector: 'app-current-post-input',
@@ -47,6 +48,7 @@ export class CurrentPostInput implements OnInit, OnDestroy {
   });
   searchResults: SearchResult[] = [];
   private destroy$ = new Subject<void>();
+  @ViewChild('currentPostInput') currentPostInput!: ElementRef<HTMLInputElement>;
 
   constructor(
     private authService: AuthService,
@@ -117,6 +119,25 @@ export class CurrentPostInput implements OnInit, OnDestroy {
       )
       .subscribe((results: SearchResult[]) => {
         this.searchResults = results;
+        if (results.length > 0) {
+          this.overlayService.closeAll();
+          this.overlayService.openComponent(
+            SearchResultsCurrentPostInputComponent,
+            'cdk-overlay-transparent-backdrop',
+            {
+              origin: this.currentPostInput.nativeElement,
+              originPosition: {
+                originX: 'start',
+                originY: 'top',
+                overlayX: 'start',
+                overlayY: 'bottom',
+              },
+            },
+            { results } // Input an Overlay-Komponente übergeben
+          );
+        } else {
+          this.overlayService.closeAll();
+        }
       });
   }
 
@@ -160,40 +181,6 @@ export class CurrentPostInput implements OnInit, OnDestroy {
     //   this.overlayService.closeAll();
     // });
   }
-
-  // /**
-  //  * Handles selection of a search result item
-  //  */
-  // onSelectSearchResult(result: SearchResult) {
-  //   const currentText = this.postForm.get('text')?.value || '';
-
-  //   let replacementText = '';
-  //   switch (result.type) {
-  //     case 'user':
-  //       replacementText = `@${result.name}`;
-  //       break;
-  //     case 'channel':
-  //       replacementText = `#${result.name}`;
-  //       break;
-  //     default:
-  //       replacementText = result.text || '';
-  //   }
-
-  // Ersetze den Suchbegriff durch das ausgewählte Ergebnis
-  //   const newText = this.replaceLastOccurrence(currentText, replacementText);
-  //   this.postForm.get('text')?.setValue(newText);
-
-  //   // Leere die Suchergebnisse
-  //   this.searchResults = [];
-  // }
-
-  // /**
-  //  * Helper method to replace the last occurrence of a search pattern
-  //  */
-  // private replaceLastOccurrence(text: string, replacement: string): string {
-  //   // Einfache Implementierung - könnte je nach Anforderung verfeinert werden
-  //   return text.replace(/@\w*$|#\w*$/, replacement);
-  // }
 
   /**
    * Handles form submission:
