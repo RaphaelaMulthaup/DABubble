@@ -1,6 +1,14 @@
-import { inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Firestore, collection, collectionData } from '@angular/fire/firestore';
-import { BehaviorSubject, combineLatest, map, Observable, shareReplay, switchMap, filter } from 'rxjs';
+import {
+  combineLatest,
+  map,
+  Observable,
+  shareReplay,
+  switchMap,
+  filter,
+  Subject,
+} from 'rxjs';
 import { SearchResult } from '../shared/types/search-result.type';
 import { AuthService } from './auth.service';
 import { UserInterface } from '../shared/models/user.interface';
@@ -33,7 +41,7 @@ export class SearchService {
   private getUsers$(): Observable<UserInterface[]> {
     const usersCol = collection(this.firestore, 'users');
     return collectionData(usersCol, { idField: 'id' }).pipe(
-      map(data => data as UserInterface[]),
+      map((data) => data as UserInterface[]),
       shareReplay(1) // Teilt das Abonnement für mehrere Consumer
     );
   }
@@ -41,19 +49,19 @@ export class SearchService {
   private getAllChannels$(): Observable<ChannelInterface[]> {
     const channelsCol = collection(this.firestore, 'channels');
     return collectionData(channelsCol, { idField: 'id' }).pipe(
-      map(data => data as ChannelInterface[]),
+      map((data) => data as ChannelInterface[]),
       shareReplay(1)
     );
   }
 
   private getUserChannels$(): Observable<ChannelInterface[]> {
     return this.authService.currentUser$.pipe(
-      filter(user => !!user),
-      switchMap(user => {
+      filter((user) => !!user),
+      switchMap((user) => {
         const channelsCol = collection(this.firestore, 'channels');
         return collectionData(channelsCol, { idField: 'id' }).pipe(
           map((data: any[]) => {
-            return data.filter(channel => 
+            return data.filter((channel) =>
               channel.memberIds?.includes(user.uid)
             ) as ChannelInterface[];
           })
@@ -65,12 +73,12 @@ export class SearchService {
 
   private getChatPosts$(): Observable<PostInterface[]> {
     return this.authService.currentUser$.pipe(
-      filter(user => !!user),
-      switchMap(user => {
+      filter((user) => !!user),
+      switchMap((user) => {
         const chatsCol = collection(this.firestore, 'chats');
         return collectionData(chatsCol, { idField: 'id' }).pipe(
           switchMap((chats: any[]) => {
-            const userChats = chats.filter(chat => {
+            const userChats = chats.filter((chat) => {
               const [user1, user2] = chat.id.split('_');
               return user1 === user.uid || user2 === user.uid;
             });
@@ -79,36 +87,41 @@ export class SearchService {
               return [[]];
             }
 
-            const chatMessages$ = userChats.map(chat => {
-              const msgCol = collection(this.firestore, `chats/${chat.id}/messages`);
+            const chatMessages$ = userChats.map((chat) => {
+              const msgCol = collection(
+                this.firestore,
+                `chats/${chat.id}/messages`
+              );
               return collectionData(msgCol, { idField: 'id' }).pipe(
                 switchMap((msgs: any[]) => {
-                  const messages = msgs.map(m => ({
+                  const messages = msgs.map((m) => ({
                     ...(m as PostInterface),
-                    chatId: chat.id
+                    chatId: chat.id,
                   }));
 
                   if (msgs.length === 0) {
                     return [messages];
                   }
 
-                  const answers$ = msgs.map(msg => {
+                  const answers$ = msgs.map((msg) => {
                     const ansCol = collection(
                       this.firestore,
                       `chats/${chat.id}/messages/${msg.id}/answers`
                     );
                     return collectionData(ansCol, { idField: 'id' }).pipe(
-                      map((ans: any[]) => ans.map(a => ({
-                        ...(a as PostInterface),
-                        chatId: chat.id,
-                        answer: true,
-                        parentMessageId: msg.id
-                      })))
+                      map((ans: any[]) =>
+                        ans.map((a) => ({
+                          ...(a as PostInterface),
+                          chatId: chat.id,
+                          answer: true,
+                          parentMessageId: msg.id,
+                        }))
+                      )
                     );
                   });
 
                   return combineLatest(answers$).pipe(
-                    map(answerArrays => {
+                    map((answerArrays) => {
                       const allAnswers = answerArrays.flat();
                       return [...messages, ...allAnswers];
                     })
@@ -118,7 +131,7 @@ export class SearchService {
             });
 
             return combineLatest(chatMessages$).pipe(
-              map(arrays => arrays.flat())
+              map((arrays) => arrays.flat())
             );
           })
         );
@@ -129,45 +142,47 @@ export class SearchService {
 
   private getChannelPosts$(): Observable<PostInterface[]> {
     return this.userChannels$.pipe(
-      switchMap(channels => {
+      switchMap((channels) => {
         if (channels.length === 0) {
           return [[]];
         }
 
-        const channelMessages$ = channels.map(channel => {
+        const channelMessages$ = channels.map((channel) => {
           const msgCol = collection(
             this.firestore,
             `channels/${channel.id}/messages`
           );
           return collectionData(msgCol, { idField: 'id' }).pipe(
             switchMap((msgs: any[]) => {
-              const messages = msgs.map(m => ({
+              const messages = msgs.map((m) => ({
                 ...m,
                 channelId: channel.id,
-                channelName: channel.name
+                channelName: channel.name,
               }));
 
               if (msgs.length === 0) {
                 return [messages];
               }
 
-              const answers$ = msgs.map(msg => {
+              const answers$ = msgs.map((msg) => {
                 const ansCol = collection(
                   this.firestore,
                   `channels/${channel.id}/messages/${msg.id}/answers`
                 );
                 return collectionData(ansCol, { idField: 'id' }).pipe(
-                  map((ans: any[]) => ans.map(a => ({
-                    ...(a as PostInterface),
-                    channelId: channel.id,
-                    answer: true,
-                    parentMessageId: msg.id
-                  })))
+                  map((ans: any[]) =>
+                    ans.map((a) => ({
+                      ...(a as PostInterface),
+                      channelId: channel.id,
+                      answer: true,
+                      parentMessageId: msg.id,
+                    }))
+                  )
                 );
               });
 
               return combineLatest(answers$).pipe(
-                map(answerArrays => {
+                map((answerArrays) => {
                   const allAnswers = answerArrays.flat();
                   return [...messages, ...allAnswers];
                 })
@@ -177,7 +192,7 @@ export class SearchService {
         });
 
         return combineLatest(channelMessages$).pipe(
-          map(arrays => arrays.flat())
+          map((arrays) => arrays.flat())
         );
       }),
       shareReplay(1)
@@ -188,7 +203,9 @@ export class SearchService {
     term$: Observable<string>,
     opts?: { includeAllChannels?: boolean }
   ): Observable<SearchResult[]> {
-    const channels$ = opts?.includeAllChannels ? this.allChannels$ : this.userChannels$;
+    const channels$ = opts?.includeAllChannels
+      ? this.allChannels$
+      : this.userChannels$;
 
     return combineLatest([
       term$,
@@ -288,5 +305,14 @@ export class SearchService {
       })
     );
   }
-}
 
+  private focusRemovedSource = new Subject<void>(); // Subject für das Fokus-Event
+
+  // Observable, um das Event zu abonnieren
+  focusRemoved$ = this.focusRemovedSource.asObservable();
+
+  // Methode, um das Fokus-Entfernen-Event zu senden
+  removeFocus() {
+    this.focusRemovedSource.next();
+  }
+}

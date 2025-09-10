@@ -1,4 +1,4 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { Injectable } from '@angular/core';
 import {
   collection,
   collectionSnapshots,
@@ -9,11 +9,9 @@ import {
 } from '@angular/fire/firestore';
 import { ChatInterface } from '../shared/models/chat.interface';
 import { BehaviorSubject, map, Observable } from 'rxjs';
-import { MobileDashboardState } from '../shared/types/mobile-dashboard-state.type';
 import { Router } from '@angular/router';
 import { MobileService } from './mobile.service';
 import { UserInterface } from '../shared/models/user.interface';
-import { OverlayService } from './overlay.service';
 
 @Injectable({
   providedIn: 'root',
@@ -21,8 +19,11 @@ import { OverlayService } from './overlay.service';
 export class ChatService {
   private _otherUser$ = new BehaviorSubject<UserInterface | null>(null);
   otherUser$ = this._otherUser$.asObservable();
-  constructor(private router: Router, private firestore: Firestore, private overlayService: OverlayService,     private mobileService: MobileService
-) {}
+  constructor(
+    private router: Router,
+    private firestore: Firestore,
+    private mobileService: MobileService
+  ) {}
 
   /**
    * Creates (or merges) a new chat document between two users in Firestore.

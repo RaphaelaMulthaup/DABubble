@@ -1,8 +1,9 @@
 import { Component, inject, Input } from '@angular/core';
 import { ChannelInterface } from '../../models/channel.interface';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MobileService } from '../../../services/mobile.service';
+import { SearchService } from '../../../services/search.service';
 
 @Component({
   selector: 'app-channel-list-item',
@@ -14,10 +15,23 @@ import { MobileService } from '../../../services/mobile.service';
   ],
 })
 export class ChannelListItemComponent {
-  constructor(public mobileService: MobileService) {}
+  constructor(
+    public mobileService: MobileService,
+    private searchService: SearchService,
+    private router: Router
+  ) {}
 
   /** The channel whose information should be displayed. This is passed from the parent component. */
   @Input() channel!: ChannelInterface;
   @Input() relatedToSearchResultPost: boolean = false;
   @Input() inCurrentPostInput = false;
+
+  removeFocusAndHandleClick() {
+    // Fokus sofort entfernen, bevor der Klick verarbeitet wird
+    if (!this.inCurrentPostInput) {      
+      this.searchService.removeFocus();
+      this.mobileService.setMobileDashboardState('message-window');
+      this.router.navigate(['/dashboard', 'channel', this.channel.id]);
+    }
+  }
 }

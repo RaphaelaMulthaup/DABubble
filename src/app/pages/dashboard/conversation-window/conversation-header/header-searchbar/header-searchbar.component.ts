@@ -6,7 +6,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { debounceTime, startWith, map, Observable } from 'rxjs';
+import { debounceTime, startWith, map, Observable, Subscription } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { SearchService } from '../../../../../services/search.service';
 import { JsonPipe } from '@angular/common';
@@ -36,7 +36,7 @@ export class HeaderSearchbarComponent {
   results: Signal<SearchResult[]>;
   @ViewChild('headerSearchbar', { static: true })
   headerSearchbar!: ElementRef<HTMLElement>;
-
+  private focusSubscription: Subscription;
   constructor(
     private searchService: SearchService,
     private overlayService: OverlayService
@@ -52,6 +52,9 @@ export class HeaderSearchbarComponent {
     this.results = toSignal(this.searchService.searchHeaderSearch(term$), {
       initialValue: [],
     });
+    this.focusSubscription = this.searchService.focusRemoved$.subscribe(() => {
+      this.removeFocus(); // Führe die Methode zum Entfernen des Fokus aus
+    });
   }
 
   ngDoCheck(): void {
@@ -60,6 +63,12 @@ export class HeaderSearchbarComponent {
       this.openSearchResultsOverlay();
     } else {
       this.overlayService.closeAll(); // Overlay schließen, wenn keine Ergebnisse vorhanden sind
+    }
+  }
+   ngOnDestroy(): void {
+    // Verhindere Memory-Leaks, indem das Subscription abgemeldet wird
+    if (this.focusSubscription) {
+      this.focusSubscription.unsubscribe();
     }
   }
   // Methode, um das Overlay zu öffnen
@@ -90,5 +99,10 @@ export class HeaderSearchbarComponent {
         results: this.results(),
       }
     );
+  }
+
+  removeFocus() {
+    // Fokus vom Eingabefeld entfernen
+    this.headerSearchbar.nativeElement.querySelector('input')?.blur();
   }
 }
