@@ -40,9 +40,7 @@
           class="w-full h-full"
         />
         } @else {
-        <div (click)="openPostInteractionOverlay($event)" class="text">
-          <p>{{ post.text }}</p>
-        </div>
+        <div (click)="openPostInteractionOverlay($event)" class="text" [innerHTML]="transformText(post.text)"></div>
         }
       </div>
 

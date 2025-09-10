@@ -244,8 +244,11 @@ h4 {
 }
 
 .emoji {
-  max-width: 32px !important;
-  max-height: 32px !important;
+  width: 28px !important;
+  height: 28px !important;
+  display: inline-block;
+  vertical-align: middle; 
+  line-height: 1;
 }
 
 /* nunito-200 - latin */

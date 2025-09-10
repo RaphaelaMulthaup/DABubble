@@ -24,6 +24,7 @@ import { ReactedUsersComponent } from '../../../../../overlay/reacted-users/reac
 import { PostInteractionOverlayComponent } from '../../../../../overlay/post-interaction-overlay/post-interaction-overlay.component';
 import { MobileService } from '../../../../../services/mobile.service';
 import { EditDisplayedPostComponent } from './edit-displayed-post/edit-displayed-post.component';
+import { EMOJIS } from '../../../../../shared/constants/emojis';
 
 @Component({
   selector: 'app-displayed-post', // Component to display a single message in the conversation
@@ -34,6 +35,7 @@ import { EditDisplayedPostComponent } from './edit-displayed-post/edit-displayed
 export class DisplayedPostComponent {
   @Input() @Output() post!: PostInterface;
   @Input() editingPost?: boolean;
+  emojis = EMOJIS;
   typ$!: Observable<string>;
   currentConversationType!: 'channel' | 'chat';
   currentConversationId!: string;
@@ -106,6 +108,16 @@ export class DisplayedPostComponent {
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  transformText(text: string): string {
+    if (!text) return '';
+    let result = text.replaceAll('\n', '<br>');
+    this.emojis.forEach(e => {
+      const imgTag = `<img src="${e.src}" alt="${e.token}" class="emoji">`;
+      result = result.replaceAll(e.token, imgTag);
+    });
+    return result;
   }
 
   /**

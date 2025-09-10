@@ -123,7 +123,7 @@ export class CurrentPostInput {
 
   addEmoji() {
     const editor = document.querySelector('.post-text-input') as HTMLElement;
-    const img = `<img src="${'assets/img/emojis/clown-face.svg'}" alt="emoji" class='emoji'>`;
+    const img = `<img src="${'assets/img/emojis/clown-face.svg'}" alt=":clown-face:" class='emoji'>`;
     document.execCommand('insertHTML', false, img);
   }
 
@@ -171,12 +171,13 @@ export class CurrentPostInput {
    * - Resets the form afterwards.
    */
   onSubmit() {
-    // const postText = this.postForm.get('text')?.value;
     const currentUserId: string | null = this.authService.currentUser.uid;
-    const postText = this.postTextInput.nativeElement.innerHTML;
-
+    const postInput = this.postTextInput.nativeElement.innerHTML;
+    const postHtml = postInput
+      .replaceAll('<div>', '\n')
+      .replaceAll('</div>', '');
     const parser = new DOMParser();
-    const doc = parser.parseFromString(postText, 'text/html');
+    const doc = parser.parseFromString(postHtml, 'text/html');
 
     doc.querySelectorAll('img.emoji').forEach((img) => {
       const src = img.getAttribute('src');
@@ -187,9 +188,7 @@ export class CurrentPostInput {
         img.replaceWith(textNode);
       }
     });
-
-    const tokenString = doc.body.innerText;
-    console.log(tokenString);
+    const postText = doc.body.innerText;
 
     if (this.messageToReplyId) {
       this.postService.createAnswer(
@@ -207,7 +206,6 @@ export class CurrentPostInput {
         this.conversationType
       );
     }
-
-    // this.postForm.reset();
+    this.postTextInput.nativeElement.innerHTML = '';
   }
 }

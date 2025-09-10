@@ -12,6 +12,7 @@ import { ActivatedRoute } from '@angular/router';
 import { PostService } from '../../../../../../services/post.service';
 import { OverlayService } from '../../../../../../services/overlay.service';
 import { Subject, takeUntil } from 'rxjs';
+import { EMOJIS } from '../../../../../../shared/constants/emojis';
 
 @Component({
   selector: 'app-edit-displayed-post',
@@ -25,6 +26,7 @@ export class EditDisplayedPostComponent implements OnInit {
   currentConversationType!: 'channel' | 'chat';
   currentConversationId!: string;
   messageId!: string;
+  emojis = EMOJIS;
   private destroy$ = new Subject<void>();
 
   constructor(
@@ -54,6 +56,16 @@ export class EditDisplayedPostComponent implements OnInit {
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  transformText(text: string): string {
+    if (!text) return '';
+    let result = text.replaceAll('\n', '<br>');
+    this.emojis.forEach((e) => {
+      const imgTag = `<img src="${e.src}" alt="${e.token}" class="emoji">`;
+      result = result.replaceAll(e.token, imgTag);
+    });
+    return result;
   }
 
   /**
