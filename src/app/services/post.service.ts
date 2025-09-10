@@ -25,11 +25,14 @@ import { ChatInterface } from '../shared/models/chat.interface';
 import { AuthService } from './auth.service';
 import { MobileService } from './mobile.service';
 import { Router } from '@angular/router';
+import { EMOJIS } from '../shared/constants/emojis';
 
 @Injectable({
   providedIn: 'root', // Service is available globally in the application
 })
 export class PostService {
+  emojis = EMOJIS;
+
   constructor(
     private firestore: Firestore,
     private authService: AuthService,
@@ -311,5 +314,47 @@ export class PostService {
       'answers',
       postId,
     ]);
+  }
+
+  /**
+   * This function transforms the posts input value in text for saving it in firebase.
+   * Thereby, linebreaks and emojis are preserved.
+   *
+   * @param postInput the content of the input-field (as html)
+   */
+  htmlToText(postInput: string): string {
+    const postHtml = postInput
+      .replaceAll('<div>', '\n')
+      .replaceAll('</div>', '');
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(postHtml, 'text/html');
+
+    doc.querySelectorAll('img.emoji').forEach((img) => {
+      const src = img.getAttribute('src');
+      const emoji = this.emojis.find((e) => e.src === src);
+
+      if (emoji) {
+        const textNode = doc.createTextNode(emoji.token);
+        img.replaceWith(textNode);
+      }
+    });
+    const postText = doc.body.innerText;
+    return postText;
+  }
+
+  /**
+   * This function transforms the text saved in firebase to html.
+   * Thereby, linebreaks and emojis are correctly shown.
+   *
+   * @param text the posts text as saved in firebase.
+   */
+  textToHtml(text: string): string {
+    if (!text) return '';
+    let result = text.replaceAll('\n', '<br>');
+    this.emojis.forEach((e) => {
+      const imgTag = `<img src="${e.src}" alt="${e.token}" class="emoji">`;
+      result = result.replaceAll(e.token, imgTag);
+    });
+    return result;
   }
 }

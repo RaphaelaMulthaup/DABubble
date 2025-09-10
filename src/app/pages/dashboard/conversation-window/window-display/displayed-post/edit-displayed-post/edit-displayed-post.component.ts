@@ -1,10 +1,12 @@
 import {
   Component,
+  ElementRef,
   EventEmitter,
   inject,
   Input,
   OnInit,
   Output,
+  ViewChild,
 } from '@angular/core';
 import { PostInterface } from '../../../../../../shared/models/post.interface';
 import { ChatActiveRouterService } from '../../../../../../services/chat-active-router.service';
@@ -27,13 +29,14 @@ export class EditDisplayedPostComponent implements OnInit {
   currentConversationId!: string;
   messageId!: string;
   emojis = EMOJIS;
+  @ViewChild('textArea') postTextInput!: ElementRef;
   private destroy$ = new Subject<void>();
 
   constructor(
     private overlayService: OverlayService,
-    private postService: PostService,
     private route: ActivatedRoute,
-    private chatActiveRouterService: ChatActiveRouterService
+    private chatActiveRouterService: ChatActiveRouterService,
+    public postService: PostService
   ) {}
 
   ngOnInit() {
@@ -58,14 +61,13 @@ export class EditDisplayedPostComponent implements OnInit {
     this.destroy$.complete();
   }
 
-  transformText(text: string): string {
-    if (!text) return '';
-    let result = text.replaceAll('\n', '<br>');
-    this.emojis.forEach((e) => {
-      const imgTag = `<img src="${e.src}" alt="${e.token}" class="emoji">`;
-      result = result.replaceAll(e.token, imgTag);
-    });
-    return result;
+  /**
+   * This function adds the chosen emojis to the input field as an image.
+   */
+  addEmoji() {
+    const editor = document.querySelector('.post-text-input') as HTMLElement;
+    const img = `<img src="${'assets/img/emojis/clown-face.svg'}" alt=":clown-face:" class='emoji'>`;
+    document.execCommand('insertHTML', false, img);
   }
 
   /**
@@ -81,12 +83,13 @@ export class EditDisplayedPostComponent implements OnInit {
   /**
    * This function updates the post with the edited text.
    * After that, endEdit() is called to close the edit-mode.
-   *
-   *  @param text - the image-path for the chosen emoji.
    */
-  async submitEdit(text: string) {
+  async submitEdit() {
+    const postText = this.postService.htmlToText(
+      this.postTextInput.nativeElement.innerHTML
+    );
     await this.postService.updatePost(
-      { text: text },
+      { text: postText },
       this.currentConversationType,
       this.currentConversationId,
       this.messageId == null ? this.post.id! : this.messageId,

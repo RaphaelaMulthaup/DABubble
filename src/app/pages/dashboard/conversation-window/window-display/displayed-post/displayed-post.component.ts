@@ -110,16 +110,6 @@ export class DisplayedPostComponent {
     this.destroy$.complete();
   }
 
-  transformText(text: string): string {
-    if (!text) return '';
-    let result = text.replaceAll('\n', '<br>');
-    this.emojis.forEach(e => {
-      const imgTag = `<img src="${e.src}" alt="${e.token}" class="emoji">`;
-      result = result.replaceAll(e.token, imgTag);
-    });
-    return result;
-  }
-
   /**
    * This method displays the profile view of another user.
    * It triggers the overlay service to open the ProfileViewOtherUsersComponent.

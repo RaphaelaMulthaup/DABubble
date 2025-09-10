@@ -117,10 +117,9 @@ export class CurrentPostInput {
     this.destroy$.complete();
   }
 
-  // onInput(event: any) {
-  //   console.log(event.target.innerHTML);
-  // }
-
+  /**
+   * This function adds the chosen emojis to the input field as an image.
+   */
   addEmoji() {
     const editor = document.querySelector('.post-text-input') as HTMLElement;
     const img = `<img src="${'assets/img/emojis/clown-face.svg'}" alt=":clown-face:" class='emoji'>`;
@@ -172,23 +171,9 @@ export class CurrentPostInput {
    */
   onSubmit() {
     const currentUserId: string | null = this.authService.currentUser.uid;
-    const postInput = this.postTextInput.nativeElement.innerHTML;
-    const postHtml = postInput
-      .replaceAll('<div>', '\n')
-      .replaceAll('</div>', '');
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(postHtml, 'text/html');
-
-    doc.querySelectorAll('img.emoji').forEach((img) => {
-      const src = img.getAttribute('src');
-      const emoji = this.emojis.find((e) => e.src === src);
-
-      if (emoji) {
-        const textNode = doc.createTextNode(emoji.token);
-        img.replaceWith(textNode);
-      }
-    });
-    const postText = doc.body.innerText;
+    const postText = this.postService.htmlToText(
+      this.postTextInput.nativeElement.innerHTML
+    );
 
     if (this.messageToReplyId) {
       this.postService.createAnswer(
