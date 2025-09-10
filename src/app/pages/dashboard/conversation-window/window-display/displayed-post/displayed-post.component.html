@@ -40,9 +40,7 @@
           class="w-full h-full"
         />
         } @else {
-        <div (click)="openPostInteractionOverlay($event)" class="text">
-          <p>{{ post.text }}</p>
-        </div>
+        <div (click)="openPostInteractionOverlay($event)" class="text" [innerHTML]="postService.textToHtml(post.text)"></div>
         }
       </div>
 
@@ -112,7 +110,7 @@
         (click)="toggleExistingReaction(reaction.emoji)"
         class="reaction flex place-items-center"
       >
-        <img class="reaction-img" [src]="reaction.emoji" />
+        <img class="reaction-img" [src]="reaction.emoji.src" [alt]="reaction.emoji.token"/>
         <p>{{ reaction.users.length }}</p>
       </div>
       } }

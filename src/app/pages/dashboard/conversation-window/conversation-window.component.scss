@@ -11,8 +11,9 @@
 
 app-conversation-header {
   background-color: var(--color-white);
-  // position: absolute;
-  // top: 0;
+  position: absolute;
+  top: 0;
+  z-index: 2;
 }
 
 app-window-display {

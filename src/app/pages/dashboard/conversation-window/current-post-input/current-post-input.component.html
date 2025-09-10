@@ -1,15 +1,11 @@
 <form class="current-post-input" [formGroup]="postForm" (ngSubmit)="onSubmit()">
   <div class="textarea-wrapper">
-    <label for="postId"></label>
-    <textarea
-      #currentPostInput
-      id="postId"
-      type="text"
-      formControlName="text"
-      name="text"
+    <div
+      #postId
+      class="post-text-input"
       placeholder="Text einfügen"
-      required
-    ></textarea>
+      contenteditable="true"
+    ></div>
   </div>
   <div class="buttons">
     <div>

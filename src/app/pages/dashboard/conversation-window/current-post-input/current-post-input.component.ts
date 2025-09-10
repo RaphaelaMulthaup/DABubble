@@ -28,6 +28,7 @@ import { UserListItemComponent } from '../../../../shared/components/user-list-i
 import { ChannelListItemComponent } from '../../../../shared/components/channel-list-item/channel-list-item.component';
 import { OverlayService } from '../../../../services/overlay.service';
 import { EmojiPickerComponent } from '../../../../overlay/emoji-picker/emoji-picker.component';
+import { EMOJIS } from '../../../../shared/constants/emojis';
 import { SearchResultsCurrentPostInputComponent } from '../../../../overlay/search-results-current-post-input/search-results-current-post-input.component';
 
 @Component({
@@ -54,9 +55,12 @@ export class CurrentPostInput implements OnInit, OnDestroy {
     text: new FormControl('', []),
   });
   searchResults: SearchResult[] = [];
+  emojis = EMOJIS;
   private destroy$ = new Subject<void>();
   @ViewChild('currentPostInput')
   currentPostInput!: ElementRef<HTMLInputElement>;
+
+  @ViewChild('postId') postTextInput!: ElementRef;
 
   constructor(
     private authService: AuthService,
@@ -141,8 +145,21 @@ export class CurrentPostInput implements OnInit, OnDestroy {
   }
 
   /**
+   * This function adds the chosen emojis to the input field as an image.
+   * 
+   * @param emoji the emoji-object from the EMOJIS-array.
+   */
+  addEmoji(emoji: { token: string; src: string;}) {
+    const editor = document.querySelector('.post-text-input') as HTMLElement;
+    const img = `<img src="${emoji.src}" alt="${emoji.token}" class='emoji'>`;
+    document.execCommand('insertHTML', false, img);
+  }
+
+  /**
    * This functions opens the emoji-picker overlay.
    * The overlay possibly emits an emoji and this emoji is added to the posts text.
+   * 
+   * @param event the user-interaction with an object.
    */
   openEmojiPickerOverlay(event: MouseEvent) {
     const overlay = this.overlayService.openComponent(
@@ -165,15 +182,10 @@ export class CurrentPostInput implements OnInit, OnDestroy {
       }
     );
 
-    // overlay!.ref.instance.selectedEmoji.subscribe((emoji: string) => {
-    //   this.postService.toggleReaction(
-    //     '/' + this.currentType + 's/' + this.currentConversationId,
-    //     'messages',
-    //     this.post.id!,
-    //     emoji
-    //   );
-    //   this.overlayService.closeAll();
-    // });
+    overlay!.ref.instance.selectedEmoji.subscribe((emoji: { token: string; src: string;}) => {
+      this.addEmoji(emoji);
+      this.overlayService.closeAll();
+    });
   }
 
   /**
@@ -184,26 +196,28 @@ export class CurrentPostInput implements OnInit, OnDestroy {
    * - Resets the form afterwards.
    */
   onSubmit() {
-    const post = this.postForm.get('text')?.value;
     const currentUserId: string | null = this.authService.currentUser.uid;
+    const postText = this.postService.htmlToText(
+      this.postTextInput.nativeElement.innerHTML
+    );
 
     if (this.messageToReplyId) {
       this.postService.createAnswer(
         this.conversationId,
         this.messageToReplyId,
         currentUserId!,
-        post,
+        postText,
         this.conversationType
       );
     } else {
       this.postService.createMessage(
         this.conversationId,
         currentUserId!,
-        post,
+        postText,
         this.conversationType
       );
     }
-    this.postForm.get('text')!.setValue('');
+    this.postTextInput.nativeElement.innerHTML = '';
     this.searchResults = []; // Suchergebnisse zurücksetzen
   }
 
