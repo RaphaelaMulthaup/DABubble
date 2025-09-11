@@ -21,7 +21,7 @@ import { ChannelInterface } from '../shared/models/channel.interface';
 import { Observable, of, Subject, takeUntil } from 'rxjs';
 import { UserInterface } from '../shared/models/user.interface';
 
-// here you kann add more interface to send data when the overlay is open.
+// Interface to allow sending data when the overlay is opened.
 export interface OverlayData {
   channel?: Observable<ChannelInterface | undefined>;
 }
@@ -34,61 +34,59 @@ export interface OverlayData {
   providedIn: 'root',
 })
 export class OverlayService {
-  // /**
-  //  * A private BehaviorSubject that holds the state (visible or hidden) of the overlay.
-  //  * Initialized with 'false', meaning the overlay is hidden by default.
-  //  */
-  // private overlaySubject = new BehaviorSubject<boolean>(false);
-
-  // /**
-  //  * Observable that other components can subscribe to in order to react to changes in overlay visibility.
-  //  */
-  // overlayDisplayed = this.overlaySubject.asObservable();
-
-  /**
-   * The component to be displayed in the overlay, can be set dynamically.
-   * Initially null, meaning no component is displayed.
-   */
+  // The component to be displayed in the overlay, can be set dynamically.
+  // Initially null, meaning no component is displayed.
   overlayComponent: Type<any> | null = null;
 
-  // // /** The headline for the overlay. */
-  // // headline: string = '';
-
-  // overlayInputs: Record<string, any> = {};
+  // Object to store inputs for the overlay component (currently not used in this code).
+  overlayInputs: Record<string, any> = {};
 
   private overlayRef!: OverlayRef;
 
-  // postToBeEdited: boolean = false;
-
+  // Reactive signal to store the ID of the post currently being edited.
   public editingPostId = signal<string | null>(null);
 
+  // Subject to handle overlay input data.
   private overlayInputSubject = new BehaviorSubject<OverlayData | null>(null);
   overlayInput = this.overlayInputSubject.asObservable();
 
+  // Store references to all open overlays.
   overlayRefs: OverlayRef[] = [];
 
-  // test to send data from a overlay to another one
+  // Test signals for sending user data between overlays.
   users = signal<UserInterface[]>([]);
   searchReset = signal(false);
 
   constructor(private overlay: Overlay, private injector: Injector) {}
 
+  // Method to add a user to the users signal (used for tracking users).
   addUser(user: UserInterface) {
     this.users.update((list) => [...list, user]);
   }
 
+  // Method to clear the user list (used to reset the users signal).
   clearUsers() {
     this.users.set([]);
   }
 
+  // Method to trigger a reset for search functionality.
   triggerReset() {
     this.searchReset.set(true);
   }
 
+  // Method to clear the reset signal.
   clearReset() {
     this.searchReset.set(false);
   }
 
+  /**
+   * Opens a component as an overlay.
+   * @param component The component to be displayed in the overlay.
+   * @param backdropType The type of backdrop (dark or transparent).
+   * @param position The position strategy for the overlay (connected or global).
+   * @param data Optional data to pass to the component.
+   * @returns An object containing the component reference, overlay reference, and observable for closure.
+   */
   openComponent<T extends Object>(
     component: Type<T>,
     backdropType:
@@ -96,10 +94,10 @@ export class OverlayService {
       | 'cdk-overlay-transparent-backdrop'
       | null,
     position: {
-      origin?: HTMLElement; //the element, the overlay is connected to (leave empty for global overlays)
-      originPosition?: ConnectedPosition; //the position of the overlay relative to the connected element (leave empty for global overlays)
-      originPositionFallback?: ConnectedPosition; //the position of the overlay, if the originPosition is not possible due to space(leave empty for global overlays)
-      globalPosition?: 'center' | 'bottom'; //If the overlay is not connected to an element: the parameter whether it is centered or at the bottom of the page (leave empty for overlays connected to an element)
+      origin?: HTMLElement; // The element to which the overlay is connected (leave empty for global overlays).
+      originPosition?: ConnectedPosition; // The position of the overlay relative to the connected element.
+      originPositionFallback?: ConnectedPosition; // Fallback position if originPosition is not possible.
+      globalPosition?: 'center' | 'bottom'; // Position if the overlay is not connected to an element (center or bottom).
     },
     data?: Partial<T>
   ):
@@ -111,6 +109,8 @@ export class OverlayService {
     | undefined {
     const destroy$ = new Subject<void>();
     let positionStrategy;
+
+    // Determine position strategy based on whether the overlay is connected to an element or is global.
     if (position.origin) {
       positionStrategy = this.overlay
         .position()
@@ -133,6 +133,7 @@ export class OverlayService {
         .centerVertically();
     }
 
+    // Create the overlay with or without a backdrop depending on the backdropType.
     if (backdropType === null) {
       this.overlayRef = this.overlay.create({
         positionStrategy,
@@ -146,23 +147,28 @@ export class OverlayService {
       });
     }
 
+    // Store the reference of the open overlay.
     this.overlayRefs.push(this.overlayRef!);
     if (this.overlayRefs.length > 0) {
       document.body.style.overflow = 'hidden';
     }
 
+    // Close the overlay when the backdrop is clicked.
     this.overlayRef
       .backdropClick()
       .pipe(takeUntil(destroy$))
       .subscribe(() => this.closeAll());
 
+    // Create a portal for the component to be rendered in the overlay.
     const portal = new ComponentPortal(component, null, this.injector);
     const componentRef = this.overlayRef?.attach(portal)!;
 
+    // Pass any data to the component if provided.
     if (data) Object.assign(componentRef.instance, data);
 
     const afterClosed$ = new Subject<void>();
 
+    // Clean up the overlay after it is closed.
     this.overlayRef
       ?.detachments()
       .pipe(takeUntil(destroy$))
@@ -183,7 +189,7 @@ export class OverlayService {
   }
 
   /**
-   * closes all overlays
+   * Closes all open overlays.
    */
   closeAll(): void {
     this.overlayRefs.forEach((ref) => ref.dispose());
@@ -191,6 +197,10 @@ export class OverlayService {
     document.body.style.overflow = '';
   }
 
+  /**
+   * Closes a specific overlay by its reference.
+   * @param ref The reference to the overlay to be closed.
+   */
   closeOne(ref: OverlayRef): void {
     const index = this.overlayRefs.indexOf(ref);
     if (index !== -1) {
@@ -203,7 +213,7 @@ export class OverlayService {
     }
   }
 
-  // In overlay.service.ts - füge diese Methode zur Klasse hinzu
+  // Sets the users in the service (used for updating the users signal).
   setUsers(users: UserInterface[]): void {
     this.users.set(users);
   }

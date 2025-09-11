@@ -14,24 +14,50 @@ import { PostInterface } from '../../../shared/models/post.interface';
 import { MobileDashboardState } from '../../../shared/types/mobile-dashboard-state.type';
 import { MobileService } from '../../../services/mobile.service';
 
+/**
+ * Component representing a conversation window. 
+ * This component is responsible for displaying the conversation header, messages, and post input field.
+ * It also manages the state of the mobile dashboard, communicating with the `MobileService`.
+ */
 @Component({
-  selector: 'app-conversation-window',
+  selector: 'app-conversation-window', // The component selector for use in HTML
   imports: [
-    ConversationHeaderComponent,
-    WindowDisplayComponent,
-    CurrentPostInput,
+    ConversationHeaderComponent, // Child component to display conversation header
+    WindowDisplayComponent, // Child component to display messages
+    CurrentPostInput, // Child component to handle user input for new posts
   ],
-  templateUrl: './conversation-window.component.html',
-  styleUrl: './conversation-window.component.scss',
+  templateUrl: './conversation-window.component.html', // Path to the component's HTML template
+  styleUrl: './conversation-window.component.scss', // Path to the component's stylesheet
 })
 export class ConversationWindowComponent {
+  /**
+   * Observable representing the list of posts in the conversation.
+   * This is an input property, which means the parent component can pass an Observable of `PostInterface[]` into this component.
+   */
   @Input() data$?: Observable<PostInterface[]>;
-  @Output() changeMobileDashboardState =
-    new EventEmitter<MobileDashboardState>();
+
+  /**
+   * EventEmitter that emits the change in mobile dashboard state.
+   * The parent component can listen to this event to track changes in the state.
+   */
+  @Output() changeMobileDashboardState = new EventEmitter<MobileDashboardState>();
+
+  /**
+   * Instance of `MobileService`, injected to access mobile dashboard state.
+   */
   mobileService = inject(MobileService);
+
+  /**
+   * WritableSignal representing the mobile dashboard state.
+   * The state can be modified and communicated to other parts of the app.
+   */
   mobileDashboardState!: WritableSignal<MobileDashboardState>;
 
+  /**
+   * On component initialization, the `mobileDashboardState` is set to the state from the `MobileService`.
+   */
   ngOnInit() {
+    // Initialize mobileDashboardState with the value from MobileService
     this.mobileDashboardState = this.mobileService.mobileDashboardState;
   }
 }

@@ -40,11 +40,11 @@ export class PostService {
     private router: Router
   ) {}
 
-  // // Holds the current list of messages for the displayed conversation
+  // Holds the current list of messages for the displayed conversation
   // private _messagesDisplayedConversation = new BehaviorSubject<
   //   PostInterface[]
   // >([]);
-  // // Public observable for components to subscribe to
+  // Public observable for components to subscribe to
   // messagesDisplayedConversation$ =
   //   this._messagesDisplayedConversation.asObservable();
 
@@ -62,38 +62,24 @@ export class PostService {
     subcollectionName: string,
     post: Omit<PostInterface, 'createdAt' | 'id'>
   ) {
-    // Referenz auf die Collection
+    // Reference to the subcollection
     const postsRef = collection(
       this.firestore,
       `${parentPath}/${subcollectionName}`
     );
 
-    // Erstelle ein neues DocumentRef mit automatisch generierter ID
-    const newDocRef = doc(postsRef); // ohne ID -> Firestore generiert eine
+    // Create a new document reference with an auto-generated ID
+    const newDocRef = doc(postsRef); // Firestore generates the ID automatically
 
-    // Dokument schreiben inkl. der ID
+    // Write the document including the ID and server timestamp
     await setDoc(newDocRef, {
       ...post,
-      id: newDocRef.id, // ID direkt im Dokument speichern
+      id: newDocRef.id, // Save the document ID in the document
       createdAt: serverTimestamp(),
     });
 
-    return newDocRef.id; // optional: zurückgeben
+    return newDocRef.id; // Return the ID of the created document (optional)
   }
-  // async sendPost(
-  //   parentPath: string,
-  //   subcollectionName: string,
-  //   post: Omit<PostInterface, 'createdAt'>
-  // ) {
-  //   const postsRef = collection(
-  //     this.firestore,
-  //     `${parentPath}/${subcollectionName}`
-  //   );
-  //   await addDoc(postsRef, {
-  //     ...post,
-  //     createdAt: serverTimestamp(), // Firestore server timestamp
-  //   });
-  // }
 
   /**
    * Toggles a reaction for a given post.
@@ -105,7 +91,7 @@ export class PostService {
    * @param parentPath - Path to the parent document (e.g. "chats/{chatId}").
    * @param subcollectionName - Name of the subcollection (e.g. "messages").
    * @param postId - ID of the post being reacted to.
-   * @param emojiToken - the token of the chosen emoji
+   * @param emojiToken - The token of the chosen emoji.
    * @returns A Promise that resolves once the reaction update has been applied.
    */
   async toggleReaction(
@@ -130,7 +116,6 @@ export class PostService {
         // User already reacted → remove their reaction
         await updateDoc(reactionRef, {
           users: arrayRemove(userId),
-          //maybe add to delete doc in firestore, if there are no users with this reactin left?
         });
       } else {
         // User has not reacted → add their reaction
@@ -139,7 +124,7 @@ export class PostService {
         });
       }
     } else {
-      // First reaction with this emoji → create document
+      // First reaction with this emoji → create a new reaction document
       await setDoc(reactionRef, {
         emoji,
         users: [userId],
@@ -147,18 +132,8 @@ export class PostService {
     }
   }
 
-  // /**
-  //  * This functions uses the emoji to convert it to a proper reaction-id.
-  //  *
-  //  * @param emoji - the image-path for the chosen emoji.
-  //  * @returns an adjusted string (the name of the emoji with '_' instead of '-')
-  //  */
-  // getReactionId(emoji: string): string {
-  //   return emoji.substring(18, emoji.length - 4).replace(/-/g, '_');
-  // }
-
   /**
-   * Fetches all reactions of a post in real time.
+   * Fetches all reactions of a post in real-time.
    *
    * @param parentPath - Path to the parent document (e.g. "chats/{chatId}").
    * @param subcollectionName - Name of the subcollection (e.g. "messages").
@@ -239,13 +214,13 @@ export class PostService {
   }
 
   /**
-   * This function updates the data of a post in firebase with the given information.
+   * Updates the data of a post in Firestore with the given information.
    *
-   * @param data - the data that should be updated
-   * @param conversationType - Type of conversation ('channel' or 'chat')
-   * @param conversationId - ID of the conversation
-   * @param messageId - ID of the post
-   * @param postId - ID of the post
+   * @param data - The data that should be updated.
+   * @param conversationType - Type of conversation ('channel' or 'chat').
+   * @param conversationId - ID of the conversation.
+   * @param messageId - ID of the post.
+   * @param answerId - Optional ID of the answer if updating a reply.
    */
   async updatePost(
     data: any = {},
@@ -270,10 +245,11 @@ export class PostService {
   }
 
   /**
-   * This function compares the date, a post was created with today.
-   * It returns true or false, depending on those are the same or not.
+   * Compares the date a post was created with today's date.
+   * Returns true if the post was created today, false otherwise.
    *
-   * @param index the index of the post
+   * @param postDate - The creation date of the post.
+   * @returns A boolean indicating whether the post was created today.
    */
   isPostCreatedToday(postDate: any): boolean {
     if (postDate === null) {
@@ -288,17 +264,22 @@ export class PostService {
   private _select$ = new Subject<string>();
   selected$ = this._select$.asObservable();
 
+  /**
+   * Selects a post to be highlighted or interacted with.
+   *
+   * @param postId - The ID of the post to select.
+   */
   select(postId: string) {
     if (!postId) return;
     this._select$.next(postId);
   }
 
   /**
-   * This function navigates to the thread-window with the answers to the selected post
+   * This function navigates to the thread-window with the answers to the selected post.
    *
-   * @param postId the id of the post
-   * @param conversationType conversation-type (channel or chat)
-   * @param conversationId the id of the conversation
+   * @param postId The ID of the post.
+   * @param conversationType The type of the conversation ('channel' or 'chat').
+   * @param conversationId The ID of the conversation.
    */
   openAnswers(
     postId: string,
@@ -316,10 +297,11 @@ export class PostService {
   }
 
   /**
-   * This function transforms the posts input value in text for saving it in firebase.
-   * Thereby, linebreaks and emojis are preserved.
+   * This function transforms the post input value in HTML to text for saving it in Firebase.
+   * Line breaks and emojis are preserved during the transformation.
    *
-   * @param postInput the content of the input-field (as html)
+   * @param postInput The content of the input field (as HTML).
+   * @returns The text representation of the post (suitable for saving in Firebase).
    */
   htmlToText(postInput: string): string {
     const postHtml = postInput
@@ -342,10 +324,11 @@ export class PostService {
   }
 
   /**
-   * This function transforms the text saved in firebase to html.
-   * Thereby, linebreaks and emojis are correctly shown.
+   * This function transforms the text saved in Firebase back into HTML.
+   * Line breaks and emojis are correctly represented.
    *
-   * @param text the posts text as saved in firebase.
+   * @param text The post's text as saved in Firebase.
+   * @returns The HTML representation of the text (with line breaks and emojis).
    */
   textToHtml(text: string): string {
     if (!text) return '';

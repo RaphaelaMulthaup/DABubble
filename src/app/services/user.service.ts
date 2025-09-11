@@ -31,9 +31,9 @@ export class UserService {
   // }
 
   /**
-   * Fetch a single user by UID
-   * @param uid - User ID
-   * Returns an Observable of UserInterface
+   * Fetch a single user by UID.
+   * @param uid - User ID.
+   * Returns an Observable of UserInterface.
    */
   getUserById(uid: string): Observable<UserInterface> {
     const userDocRef = doc(this.firestore, `users/${uid}`); // Reference to the specific user document
@@ -41,9 +41,9 @@ export class UserService {
   }
 
   /**
-   * Update or overwrite a user (not currently used)
-   * @param userId - User ID
-   * @param data - Partial data to update
+   * Update or overwrite a user (not currently used).
+   * @param userId - User ID.
+   * @param data - Partial data to update.
    */
   async updateUser(userId: string, data: Partial<UserInterface>) {
     const userRef = doc(this.firestore, `users/${userId}`);
@@ -51,20 +51,21 @@ export class UserService {
   }
 
   /**
-   * This function checks for alle the user-emails in Firestore whether they are the same as the given inputEmail.
-   * It returns true/or false
+   * Check if a user with the given email already exists in Firestore.
+   * @param inputEmail - The email address to check.
+   * Returns true if the email already exists, otherwise false.
    */
   async checkForExistingUser(inputEmail: string): Promise<boolean> {
     const usersCollection = collection(this.firestore, 'users'); // Reference to 'users' collection
     const emailQuery = query(usersCollection, where('email', '==', inputEmail));
     const querySnapshot = await getDocs(emailQuery);
-    return !querySnapshot.empty; //true when the inputEmail already exists in firestore
+    return !querySnapshot.empty; // Returns true when the inputEmail already exists in Firestore
   }
 
   /**
-   *
-   * Get all email-addresses from collection. Creates objects containing "email".
-   * Creates an Observable, thats subscribeable in "confirm-password.ts".
+   * Get all email addresses from the 'users' collection.
+   * Creates an Observable of objects containing the 'uid' and 'email' fields.
+   * This can be subscribed to in components like "confirm-password.ts".
    */
   getAllUserEmails(): Observable<{ uid: string; email: string }[]> {
     const userColl = collection(this.firestore, 'users');
@@ -78,9 +79,14 @@ export class UserService {
     );
   }
 
+  /**
+   * Fetches users based on an array of member IDs.
+   * @param memberIds - List of user IDs.
+   * Returns an Observable of UserInterface for the members.
+   */
   getMembersFromChannel(memberIds: string[]): Observable<UserInterface[]> {
     const userColl = collection(this.firestore, 'users');
-    const q = query(userColl, where('uid', 'in', memberIds));
+    const q = query(userColl, where('uid', 'in', memberIds)); // Query for users whose UID is in memberIds
     return collectionData(q, { idField: 'id' }) as Observable<UserInterface[]>;
   }
 }

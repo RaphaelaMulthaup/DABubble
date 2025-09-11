@@ -23,51 +23,69 @@ import { Subject, takeUntil } from 'rxjs';
   styleUrl: './conversation-header.component.scss',
 })
 export class ConversationHeaderComponent {
-  mobileDashboardState: WritableSignal<MobileDashboardState>;
-  conversationType!: string;
-  conversationId!: string;
-  messageToReplyId: string | null = null;
-  private destroy$ = new Subject<void>();
+  mobileDashboardState: WritableSignal<MobileDashboardState>; // Holds the state for mobile dashboard
+  conversationType!: string; // Holds the type of conversation (e.g., chat, channel)
+  conversationId!: string; // Holds the ID of the current conversation
+  messageToReplyId: string | null = null; // Holds the ID of the message to reply to (if any)
+  private destroy$ = new Subject<void>(); // Subject to handle unsubscribe logic on component destruction
 
   constructor(
-    private mobileService: MobileService,
-    private route: ActivatedRoute,
-    private router: Router,
-    private chatActiveRouterService: ChatActiveRouterService
+    private mobileService: MobileService, // Service for managing mobile state
+    private route: ActivatedRoute, // Angular route service to access route parameters
+    private router: Router, // Angular router service to navigate between routes
+    private chatActiveRouterService: ChatActiveRouterService // Custom service for handling active chat/router state
   ) {
-    this.mobileDashboardState = this.mobileService.mobileDashboardState;
+    this.mobileDashboardState = this.mobileService.mobileDashboardState; // Inject the mobile state from the service
   }
 
+  /**
+   * ngOnInit lifecycle hook
+   * Subscribes to the route parameters (conversation type, conversation ID, message ID) and updates the component state.
+   */
   ngOnInit() {
+    // Subscribe to the conversation type from the route and update the component's state
     this.chatActiveRouterService
       .getConversationType$(this.route)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.destroy$)) // Unsubscribe on component destroy
       .subscribe((t) => {
-        this.conversationType = t;
+        this.conversationType = t; // Update the conversation type state
         //console.log(`aici trebuie tip  |  ${this.type} `);
       });
+
+    // Subscribe to the conversation ID from the route and update the component's state
     this.chatActiveRouterService
       .getConversationId$(this.route)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.destroy$)) // Unsubscribe on component destroy
       .subscribe((id) => {
-        this.conversationId = id;
+        this.conversationId = id; // Update the conversation ID state
         //console.log(`aici channelid    | ${this.conversationId}`);
       });
+
+    // Subscribe to the message ID from the route and update the component's state
     this.chatActiveRouterService
       .getMessageId$(this.route)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.destroy$)) // Unsubscribe on component destroy
       .subscribe((msgId) => {
-        this.messageToReplyId = msgId;
+        this.messageToReplyId = msgId; // Update the message reply ID state
         //console.log(` aici messageid    |  ${this.messageToReplyId}`);
       });
   }
 
+  /**
+   * ngOnDestroy lifecycle hook
+   * Cleans up the subscriptions to prevent memory leaks.
+   */
   ngOnDestroy() {
-    this.destroy$.next();
-    this.destroy$.complete();
+    this.destroy$.next(); // Notify all subscriptions to complete
+    this.destroy$.complete(); // Complete the subject to clean up resources
   }
 
+  /**
+   * Redirects the user to a specific conversation based on the conversation type and ID
+   * @param conversationType - Type of the conversation (e.g., 'chat', 'channel')
+   * @param id - ID of the conversation to redirect to
+   */
   redirectTo(conversationType: string, id: string) {
-    this.router.navigate(['/dashboard', conversationType, id]);
+    this.router.navigate(['/dashboard', conversationType, id]); // Navigate to the specified conversation
   }
 }

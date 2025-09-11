@@ -29,6 +29,7 @@ import { ChannelInterface } from '../../../../shared/models/channel.interface';
 import { OverlayService } from '../../../../services/overlay.service';
 import { SearchResultsComponent } from '../../../../overlay/search-results/search-results.component';
 import { MobileService } from '../../../../services/mobile.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-search-bar',
@@ -39,6 +40,7 @@ import { MobileService } from '../../../../services/mobile.service';
     UserListItemComponent,
     ChannelListItemComponent,
     PostListItemComponent,
+    CommonModule
   ],
   templateUrl: './search-bar.component.html',
   styleUrls: ['./search-bar.component.scss'],
@@ -64,8 +66,13 @@ export class SearchBarComponent implements OnInit, OnDestroy {
    * Provides an initial empty array until results are received.
    */
   results: Signal<SearchResult[]>;
+
+  // Flag indicating if the app is in mobile view
   isMobile = false;
   private updateMobile: () => void;
+
+  // Flag to track if search results are present
+  searchResultsExisting: boolean = false;
 
   constructor(
     private overlayService: OverlayService,
@@ -76,32 +83,34 @@ export class SearchBarComponent implements OnInit, OnDestroy {
       this.isMobile = this.mobileService.isMobile();
     };
 
+    // Set up observable for search term changes
     this.term$ = this.searchControl.valueChanges.pipe(
-      startWith(this.searchControl.value),
-      debounceTime(300),
-      map((v) => v.trim())
+      startWith(this.searchControl.value), // Starts with the initial value of the input
+      debounceTime(300), // Waits for 300ms after typing stops
+      map((v) => v.trim()) // Removes extra spaces from the input
     );
 
+    // Converts the observable search results to a signal for use in the template
     this.results = toSignal(this.searchService.search(this.term$), {
       initialValue: [],
     });
   }
 
   ngOnInit() {
+    // Check if the device is mobile on component init
     this.isMobile = this.mobileService.isMobile();
-    window.addEventListener('resize', this.updateMobile);
+    window.addEventListener('resize', this.updateMobile); // Listen for window resize to update mobile status
 
+    // Subscribe to the search term observable
     this.term$.pipe(takeUntil(this.destroy$)).subscribe((term) => {
       if (term.length > 0) {
-        this.overlayService.closeAll();
-        // const originElement = document.querySelector(
-        //   '.input-wrapper'
-        // ) as HTMLElement;
+        this.overlayService.closeAll(); // Close any open overlays when searching
+        this.searchResultsExisting = true; // Set flag indicating search results are present
         this.overlayService.openComponent(
           SearchResultsComponent,
           null,
           {
-            origin: this.searchbar.nativeElement,
+            origin: this.searchbar.nativeElement, // Position the overlay relative to the search bar
             originPosition: {
               originX: 'center',
               originY: 'bottom',
@@ -116,35 +125,40 @@ export class SearchBarComponent implements OnInit, OnDestroy {
             },
           },
           {
-            results$: this.groupedResults(),
-            searchTerm: term,
+            results$: this.groupedResults(), // Pass grouped results to the overlay component
+            searchTerm: term, // Pass the search term to the overlay
           }
         );
       } else {
-        this.overlayService.closeAll(); // optional: Overlay schließen, wenn Eingabe leer
+        this.searchResultsExisting = false;
+        this.overlayService.closeAll(); // Optionally close the overlay when search input is empty
       }
     });
   }
 
   ngOnDestroy() {
+    // Clean up subscriptions when the component is destroyed
     this.destroy$.next();
     this.destroy$.complete();
   }
 
+  /***
+   * Groups the search results into different categories based on their type (e.g., chat messages, channel messages).
+   * - chat messages are grouped by user
+   * - channel messages are grouped by channel
+   */
   groupedResults = computed(() => {
-    const res = this.results();
+    const res = this.results(); // Get the current search results
 
     const grouped: any[] = [];
 
-    // Sammel-Map für chatMessages nach User
+    // Map to collect chat messages by user
     const chatMap = new Map<string, { user: UserInterface; posts: any[] }>();
 
-    // Sammel-Map für channelMessages nach Channel
-    const channelMap = new Map<
-      string,
-      { channel: ChannelInterface; posts: any[] }
-    >();
+    // Map to collect channel messages by channel
+    const channelMap = new Map<string, { channel: ChannelInterface; posts: any[] }>();
 
+    // Group messages by type (chatMessage or channelMessage)
     for (const item of res) {
       if (item.type === 'chatMessage') {
         if (!item.user) continue;
@@ -159,11 +173,11 @@ export class SearchBarComponent implements OnInit, OnDestroy {
         }
         channelMap.get(channelId)!.posts.push(item);
       } else {
-        grouped.push(item);
+        grouped.push(item); // For other types of items, just add them to the grouped array
       }
     }
 
-    // alle Chat-Gruppen anhängen
+    // Append all chat groups to the grouped results
     for (const [, value] of chatMap) {
       grouped.push({
         type: 'chatGroup',
@@ -172,7 +186,7 @@ export class SearchBarComponent implements OnInit, OnDestroy {
       });
     }
 
-    // alle Channel-Gruppen anhängen
+    // Append all channel groups to the grouped results
     for (const [, value] of channelMap) {
       grouped.push({
         type: 'channelGroup',
@@ -181,7 +195,16 @@ export class SearchBarComponent implements OnInit, OnDestroy {
       });
     }
 
-    return grouped;
+    return grouped; // Return the grouped results
   });
-}
 
+  /***
+   * Clears the search input and closes the overlay.
+   * This function is used to reset the search and close the search results overlay.
+   */
+  closeOverlayAndEmptyInput() {
+    console.log('IN THE FUNCTION');
+    this.searchControl.setValue(''); // Reset the search input
+    this.overlayService.closeAll(); // Close any open overlays
+  }
+}

@@ -57,8 +57,6 @@ export class CurrentPostInput implements OnInit, OnDestroy {
   searchResults: SearchResult[] = [];
   emojis = EMOJIS;
   private destroy$ = new Subject<void>();
-  // @ViewChild('currentPostInput');
-  // currentPostInput!: ElementRef<HTMLInputElement>;
   @ViewChild('textarea') postTextInput!: ElementRef;
 
   constructor(
@@ -144,8 +142,8 @@ export class CurrentPostInput implements OnInit, OnDestroy {
   }
 
   /**
-   * This function adds the chosen emojis to the input field as an image.
-   *
+   * This function adds the chosen emoji to the input field as an image.
+   * 
    * @param emoji the emoji-object from the EMOJIS-array.
    */
   addEmoji(emoji: { token: string; src: string }) {
@@ -155,7 +153,7 @@ export class CurrentPostInput implements OnInit, OnDestroy {
   }
 
   /**
-   * This functions opens the emoji-picker overlay.
+   * This function opens the emoji-picker overlay.
    * The overlay possibly emits an emoji and this emoji is added to the posts text.
    *
    * @param event the user-interaction with an object.
@@ -219,9 +217,14 @@ export class CurrentPostInput implements OnInit, OnDestroy {
       );
     }
     this.postTextInput.nativeElement.innerHTML = '';
-    this.searchResults = []; // Suchergebnisse zurücksetzen
+    this.searchResults = []; // Reset search results
   }
 
+  /**
+   * Opens the search overlay with user/channel results.
+   * 
+   * @param results the search results that should be displayed.
+   */
   openSearchOverlay(results: any[]) {
     const overlayRef = this.overlayService.openComponent(
       SearchResultsCurrentPostInputComponent,
@@ -250,7 +253,12 @@ export class CurrentPostInput implements OnInit, OnDestroy {
     }
   }
 
-  // Setzt den Usernamen anstelle des letzten Tokens in das Inputfeld
+  /**
+   * Replaces the last word with a selected user or channel name in the input field.
+   * 
+   * @param name the name to be inserted.
+   * @param typeOfResult indicates whether it's a 'user' or 'channel'.
+   */
   insertName(name: string, typeOfResult: 'user' | 'channel') {
     const control = this.postForm.get('text')!;
     const text = control.value || '';
@@ -266,6 +274,9 @@ export class CurrentPostInput implements OnInit, OnDestroy {
     this.postService.focusAtEndEditable(this.postTextInput);
   }
 
+  /**
+   * Starts user search by adding '@' to the end of the input text if it's not already there.
+   */
   startUserSearch() {
     const control = this.postForm.get('text')!;
     const text = control.value || '';
@@ -273,9 +284,8 @@ export class CurrentPostInput implements OnInit, OnDestroy {
     // Überprüfe das letzte Zeichen
     const lastChar = text.slice(-1);
 
-    // Wenn das letzte Zeichen kein Leerzeichen ist, fügen wir ein Leerzeichen hinzu
-    const newText = lastChar !== ' ' ? text + ' @' : text + '@';
-
+    // If the last character isn't a space, add a space before the '@'
+    const newText = lastChar === ' ' ? text + '@' : text + ' @';
     control.setValue(newText);
     //this.postTextInput.nativeElement.focus();
     this.postService.focusAtEndEditable(this.postTextInput);

@@ -2,8 +2,17 @@
   <input
     type="text"
     class="input-secondary"
+    [ngClass]="
+      searchResultsExisting ? 'inputWithCloseIcon' : 'inputWithSearchIcon'
+    "
     [placeholder]="isMobile ? 'Geh zu...' : 'Devspace durchsuchen'"
     [formControl]="searchControl"
   />
-  <img class="search-icon" src="./../../../../assets/img/search.svg" alt="" />
+  @if ( searchResultsExisting ) {
+  <div class="close" (click)="closeOverlayAndEmptyInput()"></div>
+  } @else {<img
+    class="search-icon"
+    src="./../../../../assets/img/search.svg"
+    alt=""
+  />}
 </div>
