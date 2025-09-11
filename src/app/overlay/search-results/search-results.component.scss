@@ -1,4 +1,5 @@
-@import '../../../styles.scss';
+@import "../../../styles.scss";
+
 
 :host {
   display: block;
@@ -10,11 +11,5 @@
 }
 
 .results-list {
-  padding: 24px 61px;
-  @include dFlex($ai: flex-start, $g: 13px);
-  flex-direction: column;
-  li {
-    overflow: hidden;
-    width: 100%;
-  }
+  height: calc(100vh - 200px);
 }

@@ -24,6 +24,7 @@ import { ReactedUsersComponent } from '../../../../../overlay/reacted-users/reac
 import { PostInteractionOverlayComponent } from '../../../../../overlay/post-interaction-overlay/post-interaction-overlay.component';
 import { MobileService } from '../../../../../services/mobile.service';
 import { EditDisplayedPostComponent } from './edit-displayed-post/edit-displayed-post.component';
+import { EMOJIS } from '../../../../../shared/constants/emojis';
 
 @Component({
   selector: 'app-displayed-post', // Component to display a single message in the conversation
@@ -34,12 +35,13 @@ import { EditDisplayedPostComponent } from './edit-displayed-post/edit-displayed
 export class DisplayedPostComponent {
   @Input() @Output() post!: PostInterface;
   @Input() editingPost?: boolean;
+  emojis = EMOJIS;
   typ$!: Observable<string>;
   currentConversationType!: 'channel' | 'chat';
   currentConversationId!: string;
   senderName$!: Observable<string>;
   senderPhotoUrl$!: Observable<string | undefined>;
-  senderIsCurrentUser$!: Observable<boolean>;
+  senderIsCurrentUser!: boolean;
   createdAtTime$!: Observable<string>;
   reactions$!: Observable<ReactionInterface[]>;
   visibleReactions$!: Observable<ReactionInterface[]>;
@@ -80,9 +82,8 @@ export class DisplayedPostComponent {
     );
 
     if (!this.post) return;
-    this.senderIsCurrentUser$ = of(
-      this.post.senderId === this.authService.currentUser.uid
-    );
+    this.senderIsCurrentUser =
+      this.post.senderId === this.authService.currentUser.uid;
     const user$ = this.userService.getUserById(this.post.senderId);
     this.senderName$ = user$.pipe(map((u) => u?.name ?? ''));
     this.senderPhotoUrl$ = user$.pipe(map((u) => u?.photoUrl ?? ''));
@@ -125,6 +126,8 @@ export class DisplayedPostComponent {
   /**
    * This functions opens the emoji-picker overlay and transmits the isMessageFromCurrentUser-variable.
    * The overlay possibly emits an emoji and this emoji is used to react to the post.
+   *
+   * @param event the user-interaction with an object.
    */
   openEmojiPickerOverlay(event: MouseEvent) {
     const overlay = this.overlayService.openComponent(
@@ -145,13 +148,13 @@ export class DisplayedPostComponent {
           overlayY: 'top',
         },
       },
-      { senderIsCurrentUser$: this.senderIsCurrentUser$ }
+      { senderIsCurrentUser: this.senderIsCurrentUser }
     );
 
     //das abonniert den event emitter vom emoji-picker component
     overlay!.ref.instance.selectedEmoji
       .pipe(take(1))
-      .subscribe((emoji: string) => {
+      .subscribe((emoji: { token: string; src: string }) => {
         this.postService.toggleReaction(
           '/' +
             this.currentConversationType +
@@ -161,12 +164,15 @@ export class DisplayedPostComponent {
           this.post.id!,
           emoji
         );
-        this.overlayService.close();
+        this.overlayService.closeAll();
       });
   }
 
   /**
    * This functions opens the reacted-users-overlay.
+   * 
+   * @param event the user-interaction with an object.
+   * @param reaction the reaction, that is hovered over.
    */
   openReactedUsersOverlay(event: MouseEvent, reaction: ReactionInterface) {
     this.overlayService.openComponent(
@@ -194,6 +200,8 @@ export class DisplayedPostComponent {
   /**
    * This functions opens the post-interaction-overlay.
    * Fist it sets postClicked to true. It subscribes the overlays afterClosed$ Observable and sets postClicked to false, as the overlay closes.
+   * 
+   * @param event the user-interaction with an object.
    */
   openPostInteractionOverlay(event: MouseEvent) {
     this.postClicked = true;
@@ -224,7 +232,7 @@ export class DisplayedPostComponent {
     );
     overlay?.afterClosed$.pipe(take(1)).subscribe(() => {
       this.postClicked = false;
-      this.editingPost = this.overlayService.editPostActive;
+      // this.editingPost = this.overlayService.postToBeEdited;
     });
   }
 
@@ -233,12 +241,14 @@ export class DisplayedPostComponent {
    *
    *  @param emoji - the image-path for the chosen emoji.
    */
-  toggleExistingReaction(emoji: string) {
+  toggleExistingReaction(emoji: { token: string; src: string;}) {
+    console.log(emoji)
     this.postService.toggleReaction(
       '/' + this.currentConversationType + 's/' + this.currentConversationId,
       'messages',
       this.post.id!,
       emoji
     );
+    this.overlayService.closeAll();
   }
 }

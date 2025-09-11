@@ -1,10 +1,18 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  Output,
+  WritableSignal,
+} from '@angular/core';
 import { ConversationHeaderComponent } from './conversation-header/conversation-header.component';
 import { WindowDisplayComponent } from './window-display/window-display.component';
 import { CurrentPostInput } from './current-post-input/current-post-input.component';
 import { Observable } from 'rxjs';
 import { PostInterface } from '../../../shared/models/post.interface';
 import { MobileDashboardState } from '../../../shared/types/mobile-dashboard-state.type';
+import { MobileService } from '../../../services/mobile.service';
 
 @Component({
   selector: 'app-conversation-window',
@@ -17,7 +25,13 @@ import { MobileDashboardState } from '../../../shared/types/mobile-dashboard-sta
   styleUrl: './conversation-window.component.scss',
 })
 export class ConversationWindowComponent {
-  @Input() data$!: Observable<PostInterface[]>;
+  @Input() data$?: Observable<PostInterface[]>;
   @Output() changeMobileDashboardState =
     new EventEmitter<MobileDashboardState>();
+  mobileService = inject(MobileService);
+  mobileDashboardState!: WritableSignal<MobileDashboardState>;
+
+  ngOnInit() {
+    this.mobileDashboardState = this.mobileService.mobileDashboardState;
+  }
 }

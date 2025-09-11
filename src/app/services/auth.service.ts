@@ -7,10 +7,7 @@ import {
   User,
 } from '@angular/fire/auth';
 import {
-  signInWithEmailAndPassword,
-  updatePassword,
-  sendEmailVerification,
-  ActionCodeSettings,
+  signInWithEmailAndPassword
 } from 'firebase/auth';
 
 import {

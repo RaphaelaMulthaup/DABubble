@@ -57,11 +57,10 @@ export class ProfileViewOtherUsersComponent {
 
     // Convert user observable to a single value
     const user = await firstValueFrom(this.user$);
-    const otherUserId = user.uid;
 
-    this.chatService.navigateToChat(currentUserId, otherUserId);
+    this.chatService.navigateToChat(currentUserId, user);
 
     // Hide the overlay
-    this.overlayService.close();
+    this.overlayService.closeAll();
   }
 }

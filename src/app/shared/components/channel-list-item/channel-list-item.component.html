@@ -1,12 +1,13 @@
 <li
   class="list-item channel-list-item"
+  (mousedown)="removeFocusAndHandleClick()"
   (click)="
-    !inCurrentPostInput
+    !inSearchResultsCurrentPostInput
       ? mobileService.setMobileDashboardState('message-window')
-      : null
+      : emitChannel()
   "
   [routerLink]="
-    !inCurrentPostInput ? ['/dashboard', 'channel', channel.id] : null
+    !inSearchResultsCurrentPostInput ? ['/dashboard', 'channel', channel.id] : null
   "
   [ngClass]="{ 'related-to-search-result-post': relatedToSearchResultPost }"
 >

@@ -1,0 +1,12 @@
+@import "../../../../../../styles.scss";
+
+section {
+  @include dFlex($ai: flex-start, $g: 20px);
+  flex-direction: column;
+  padding: 20px 16px 7px 16px;
+  input {
+    height: 51px;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}

@@ -1,5 +1,8 @@
 export interface ReactionInterface {
-  emoji: string;
+  emoji: { 
+    token: string; 
+    src: string 
+  };
   users: string[];
   id?: string;
 }

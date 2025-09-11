@@ -1,4 +1,11 @@
-import { Component, inject } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  inject,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../../../services/auth.service';
@@ -12,6 +19,8 @@ import {
   switchMap,
   Subject,
   takeUntil,
+  distinctUntilChanged,
+  of,
 } from 'rxjs';
 import { SearchResult } from '../../../../shared/types/search-result.type';
 import { SearchService } from '../../../../services/search.service';
@@ -19,6 +28,8 @@ import { UserListItemComponent } from '../../../../shared/components/user-list-i
 import { ChannelListItemComponent } from '../../../../shared/components/channel-list-item/channel-list-item.component';
 import { OverlayService } from '../../../../services/overlay.service';
 import { EmojiPickerComponent } from '../../../../overlay/emoji-picker/emoji-picker.component';
+import { EMOJIS } from '../../../../shared/constants/emojis';
+import { SearchResultsCurrentPostInputComponent } from '../../../../overlay/search-results-current-post-input/search-results-current-post-input.component';
 
 @Component({
   selector: 'app-current-post-input',
@@ -31,7 +42,7 @@ import { EmojiPickerComponent } from '../../../../overlay/emoji-picker/emoji-pic
   templateUrl: './current-post-input.component.html',
   styleUrl: './current-post-input.component.scss',
 })
-export class CurrentPostInput {
+export class CurrentPostInput implements OnInit, OnDestroy {
   conversationType!: any;
   conversationId!: string;
   /** If replying, holds the ID of the message being replied to; otherwise null. */
@@ -44,7 +55,12 @@ export class CurrentPostInput {
     text: new FormControl('', []),
   });
   searchResults: SearchResult[] = [];
+  emojis = EMOJIS;
   private destroy$ = new Subject<void>();
+  @ViewChild('currentPostInput')
+  currentPostInput!: ElementRef<HTMLInputElement>;
+
+  @ViewChild('postId') postTextInput!: ElementRef;
 
   constructor(
     private authService: AuthService,
@@ -66,45 +82,60 @@ export class CurrentPostInput {
       .pipe(takeUntil(this.destroy$))
       .subscribe((t) => {
         this.conversationType = t;
-        //console.log(`aici trebuie tip  |  ${this.type} `);
       });
+
     this.chatActiveRouterService
       .getConversationId$(this.route)
       .pipe(takeUntil(this.destroy$))
       .subscribe((id) => {
         this.conversationId = id;
-        //console.log(`aici channelid    | ${this.conversationId}`);
       });
+
     this.chatActiveRouterService
       .getMessageId$(this.route)
       .pipe(takeUntil(this.destroy$))
       .subscribe((msgId) => {
         this.messageToReplyId = msgId;
-        //console.log(` aici messageid    |  ${this.messageToReplyId}`);
       });
 
-    // Stream für Textarea Änderungen
     this.postForm
       .get('text')!
       .valueChanges.pipe(
-        startWith(this.postForm.get('text')!.value),
+        startWith(''),
         debounceTime(200),
-        filter((text) => !!text), // nur wenn etwas eingegeben wurde
-        switchMap((text) => {
-          text = text.trim();
-          if (text.startsWith('@') || text.startsWith('#')) {
-            // ⬇️ HIER die Option setzen
-            return this.searchService.search(
-              this.postForm.get('text')!.valueChanges.pipe(startWith(text)),
-              { includeAllChannels: true }
-            );
+        distinctUntilChanged(),
+        switchMap((text: string | null) => {
+          const safeText = text || '';
+          const words = safeText.split(/\s+/);
+          // Nimm das letzte Wort
+          const lastWord = words[words.length - 1];
+
+          if (!lastWord) {
+            this.searchResults = [];
+            return of([]);
           }
-          return [[]]; // leeres Array sonst
-        })
+
+          // Prüfe, ob das letzte Wort mit @ oder # beginnt
+          if (lastWord.startsWith('@') || lastWord.startsWith('#')) {
+            // Sofortige Suche starten
+            return this.searchService.search(of(lastWord), {
+              includeAllChannels: true,
+            });
+          } else {
+            // Kein Suchergebnis anzeigen, wenn das letzte Wort nicht mit @/# beginnt
+            this.searchResults = [];
+            return of([]);
+          }
+        }),
+        takeUntil(this.destroy$)
       )
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((results: SearchResult[]) => {
+      .subscribe((results: any[]) => {
         this.searchResults = results;
+        if (results.length > 0) {
+          this.openSearchOverlay(results);
+        } else {
+          this.overlayService.closeAll();
+        }
       });
   }
 
@@ -114,8 +145,21 @@ export class CurrentPostInput {
   }
 
   /**
+   * This function adds the chosen emojis to the input field as an image.
+   * 
+   * @param emoji the emoji-object from the EMOJIS-array.
+   */
+  addEmoji(emoji: { token: string; src: string;}) {
+    const editor = document.querySelector('.post-text-input') as HTMLElement;
+    const img = `<img src="${emoji.src}" alt="${emoji.token}" class='emoji'>`;
+    document.execCommand('insertHTML', false, img);
+  }
+
+  /**
    * This functions opens the emoji-picker overlay.
    * The overlay possibly emits an emoji and this emoji is added to the posts text.
+   * 
+   * @param event the user-interaction with an object.
    */
   openEmojiPickerOverlay(event: MouseEvent) {
     const overlay = this.overlayService.openComponent(
@@ -138,15 +182,10 @@ export class CurrentPostInput {
       }
     );
 
-    // overlay!.ref.instance.selectedEmoji.subscribe((emoji: string) => {
-    //   this.postService.toggleReaction(
-    //     '/' + this.currentType + 's/' + this.currentConversationId,
-    //     'messages',
-    //     this.post.id!,
-    //     emoji
-    //   );
-    //   this.overlayService.close();
-    // });
+    overlay!.ref.instance.selectedEmoji.subscribe((emoji: { token: string; src: string;}) => {
+      this.addEmoji(emoji);
+      this.overlayService.closeAll();
+    });
   }
 
   /**
@@ -157,25 +196,83 @@ export class CurrentPostInput {
    * - Resets the form afterwards.
    */
   onSubmit() {
-    const post = this.postForm.get('text')?.value;
     const currentUserId: string | null = this.authService.currentUser.uid;
+    const postText = this.postService.htmlToText(
+      this.postTextInput.nativeElement.innerHTML
+    );
 
     if (this.messageToReplyId) {
       this.postService.createAnswer(
         this.conversationId,
         this.messageToReplyId,
         currentUserId!,
-        post,
+        postText,
         this.conversationType
       );
     } else {
       this.postService.createMessage(
         this.conversationId,
         currentUserId!,
-        post,
+        postText,
         this.conversationType
       );
     }
-    this.postForm.reset();
+    this.postTextInput.nativeElement.innerHTML = '';
+    this.searchResults = []; // Suchergebnisse zurücksetzen
+  }
+
+  openSearchOverlay(results: any[]) {
+    const overlayRef = this.overlayService.openComponent(
+      SearchResultsCurrentPostInputComponent,
+      'cdk-overlay-transparent-backdrop',
+      {
+        origin: this.currentPostInput.nativeElement,
+        originPosition: {
+          originX: 'start',
+          originY: 'top',
+          overlayX: 'start',
+          overlayY: 'bottom',
+        },
+      },
+      { results }
+    );
+
+    if (overlayRef) {
+      overlayRef.ref.instance.userSelected?.subscribe((user: any) => {
+        this.insertName(user.name, 'user');
+        this.overlayService.closeAll();
+      });
+      overlayRef.ref.instance.channelSelected?.subscribe((channel: any) => {
+        this.insertName(channel.name, 'channel');
+        this.overlayService.closeAll();
+      });
+    }
+  }
+
+  // Setzt den Usernamen anstelle des letzten Tokens in das Inputfeld
+  insertName(name: string, typeOfResult: 'user' | 'channel') {
+    const control = this.postForm.get('text')!;
+    const text = control.value || '';
+    const words = text.split(/\s+/);
+    if (typeOfResult === 'user') {
+      words[words.length - 1] = name;
+    } else if (typeOfResult === 'channel') {
+      words[words.length - 1] = name;
+    }
+    control.setValue(words.join(' ') + ' ');
+    this.currentPostInput.nativeElement.focus();
+  }
+
+  startUserSearch() {
+    const control = this.postForm.get('text')!;
+    const text = control.value || '';
+    // Überprüfe das letzte Zeichen
+    const lastChar = text.slice(-1);
+
+    // Wenn das letzte Zeichen kein Leerzeichen ist, fügen wir ein Leerzeichen hinzu
+    const newText = lastChar !== ' ' ? text + ' @' : text + '@';
+
+    control.setValue(newText);
+    this.currentPostInput.nativeElement.focus();
   }
 }

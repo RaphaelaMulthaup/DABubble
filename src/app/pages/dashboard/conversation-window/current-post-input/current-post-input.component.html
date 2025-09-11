@@ -1,14 +1,11 @@
 <form class="current-post-input" [formGroup]="postForm" (ngSubmit)="onSubmit()">
   <div class="textarea-wrapper">
-    <label for="postId"></label>
-    <textarea
-      id="postId"
-      type="text"
-      formControlName="text"
-      name="text"
+    <div
+      #postId
+      class="post-text-input"
       placeholder="Text einfügen"
-      required
-    ></textarea>
+      contenteditable="true"
+    ></div>
   </div>
   <div class="buttons">
     <div>
@@ -17,29 +14,8 @@
         type="button"
         class="btn-tertiary add-emoji"
       ></button>
-      <button type="button" class="btn-tertiary add-user-or-channel"></button>
+      <button (click)="startUserSearch()" type="button" class="btn-tertiary add-user-or-channel"></button>
     </div>
     <button type="submit" class="send" [disabled]="postForm.invalid"></button>
   </div>
-  @if (searchResults.length > 0) {
-  <ul class="results-list">
-    @for (item of searchResults; track $index) { @switch (item.type) { @case
-    ('user') {
-    <app-user-list-item
-      [user]="item"
-      [inCurrentPostInput]="true"
-    ></app-user-list-item
-    >} @case ('channel') {
-    <app-channel-list-item
-      [channel]="item"
-      [inCurrentPostInput]="true"
-    ></app-channel-list-item>
-    } @default {
-    {{
-      item | json
-    }}
-    } } }
-  </ul>
-
-  }
 </form>

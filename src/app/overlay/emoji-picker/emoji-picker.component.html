@@ -1,7 +1,7 @@
 <div #overlayTemplate (click)="$event.stopPropagation()" 
-[class.reaction-options-current-user]="(senderIsCurrentUser$ | async)" 
+[class.reaction-options-current-user]="senderIsCurrentUser" 
 class="reaction-options">
-    @for (img of emojis; track $index) {
-    <img (click)="reactToPost($index)" class="reaction-img" [src]="emojis[$index]" [alt]="emojis[$index]">
+    @for (emoji of emojis; track $index) {
+    <img (click)="reactToPost(emoji);" class="reaction-img" [src]="emojis[$index].src" [alt]="emojis[$index].token">
     }
 </div>

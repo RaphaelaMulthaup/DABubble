@@ -1,5 +1,7 @@
 @import "./../../../../styles.scss";
-
+:host{
+  max-width: 100%
+}
 .channel-list-item {
   gap: 10px !important;
   border-radius: 20px;

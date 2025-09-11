@@ -1,24 +1,9 @@
-<input
-  type="text"
-  class="input-secondary"
-  placeholder="An: #channel, @jemand oder E-Mail-Adreese"
-  [formControl]="searchControl"
-/>
-
-@if (results().length > 0) {
-<ul class="results-list">
-  @for (item of results(); track $index) {
-  <li>
-    @switch (item.type) { @case ('user') {
-    <app-user-list-item [user]="item"></app-user-list-item>
-    } @case ('channel') {
-    <app-channel-list-item [channel]="item"></app-channel-list-item>
-    } @default {
-    {{ item | json }}
-    } }
-  </li>
-  }
-</ul>
-} @else {
-<div>Keine Treffer</div>
-}
+<section #headerSearchbar>
+  <h3>Neue Nachricht</h3>
+  <input
+    type="text"
+    class="input-secondary"
+    placeholder="An: #channel, @jemand oder E-Mail-Adresse"
+    [formControl]="searchControl"
+  />
+</section>

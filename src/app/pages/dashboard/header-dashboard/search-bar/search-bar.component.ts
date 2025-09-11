@@ -5,6 +5,8 @@ import {
   inject,
   Signal,
   ViewChild,
+  OnInit,
+  OnDestroy,
 } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import {
@@ -26,6 +28,7 @@ import { UserInterface } from '../../../../shared/models/user.interface';
 import { ChannelInterface } from '../../../../shared/models/channel.interface';
 import { OverlayService } from '../../../../services/overlay.service';
 import { SearchResultsComponent } from '../../../../overlay/search-results/search-results.component';
+import { MobileService } from '../../../../services/mobile.service';
 
 @Component({
   selector: 'app-search-bar',
@@ -40,9 +43,10 @@ import { SearchResultsComponent } from '../../../../overlay/search-results/searc
   templateUrl: './search-bar.component.html',
   styleUrls: ['./search-bar.component.scss'],
 })
-export class SearchBarComponent {
+export class SearchBarComponent implements OnInit, OnDestroy {
   // Reactive form control for capturing the search input value
   searchControl = new FormControl<string>('', { nonNullable: true });
+
   /***
    * Observable that emits the search term as the user types.
    * - startWith initializes with the current control value
@@ -50,34 +54,46 @@ export class SearchBarComponent {
    * - map trims whitespace from the input
    */
   private term$: Observable<string>;
+
   @ViewChild('searchbar', { static: true }) searchbar!: ElementRef<HTMLElement>;
   private destroy$ = new Subject<void>();
+
   /***
    * Converts the search results Observable into a signal for template binding.
    * Explicitly typed as SearchResult[] to ensure strong typing.
    * Provides an initial empty array until results are received.
    */
   results: Signal<SearchResult[]>;
+  isMobile = false;
+  private updateMobile: () => void;
 
   constructor(
     private overlayService: OverlayService,
-    private searchService: SearchService
+    private searchService: SearchService,
+    public mobileService: MobileService
   ) {
+    this.updateMobile = () => {
+      this.isMobile = this.mobileService.isMobile();
+    };
+
     this.term$ = this.searchControl.valueChanges.pipe(
       startWith(this.searchControl.value),
       debounceTime(300),
       map((v) => v.trim())
     );
-    this.results = toSignal(
-      this.searchService.search(this.term$) as Observable<SearchResult[]>,
-      { initialValue: [] as SearchResult[] }
-    );
+
+    this.results = toSignal(this.searchService.search(this.term$), {
+      initialValue: [],
+    });
   }
 
   ngOnInit() {
+    this.isMobile = this.mobileService.isMobile();
+    window.addEventListener('resize', this.updateMobile);
+
     this.term$.pipe(takeUntil(this.destroy$)).subscribe((term) => {
       if (term.length > 0) {
-        this.overlayService.close();
+        this.overlayService.closeAll();
         // const originElement = document.querySelector(
         //   '.input-wrapper'
         // ) as HTMLElement;
@@ -90,7 +106,7 @@ export class SearchBarComponent {
               originX: 'center',
               originY: 'bottom',
               overlayX: 'center',
-              overlayY: 'top',
+              overlayY: 'bottom',
             },
             originPositionFallback: {
               originX: 'center',
@@ -99,10 +115,13 @@ export class SearchBarComponent {
               overlayY: 'top',
             },
           },
-          { results$: this.groupedResults() }
+          {
+            results$: this.groupedResults(),
+            searchTerm: term,
+          }
         );
       } else {
-        this.overlayService.close(); // optional: Overlay schließen, wenn Eingabe leer
+        this.overlayService.closeAll(); // optional: Overlay schließen, wenn Eingabe leer
       }
     });
   }
@@ -165,3 +184,4 @@ export class SearchBarComponent {
     return grouped;
   });
 }
+

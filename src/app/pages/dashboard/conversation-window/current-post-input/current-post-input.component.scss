@@ -25,7 +25,9 @@
 
 .textarea-wrapper {
   width: 100%;
-  textarea {
+
+  textarea,
+  .post-text-input {
     width: 100%;
     font-size: 18px;
     resize: none;

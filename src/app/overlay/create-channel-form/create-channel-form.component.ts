@@ -78,7 +78,7 @@ export class CreateChannelFormComponent {
       next: () => {
         this.errorMessage = null;
         this.createChannel.reset();
-        this.overlayService.close();
+        this.overlayService.closeAll();
       },
       error: (err) => {
         if (err.message === 'name vergeben') {

@@ -1,11 +1,11 @@
 <div
   class="post-container w-full flex flex-col"
-  [ngClass]="{ 'post-current-user': senderIsCurrentUser$ | async }"
+  [ngClass]="{ 'post-current-user': senderIsCurrentUser }"
 >
   <div
     class="post flex w-full"
     [ngClass]="{ clicked: postClicked }"
-    [ngClass]="{ editing: editingPost }"
+    [ngClass]="{ editing: overlayService.editingPostId() === post.id}"
   >
     <div class="profile-img">
       @if(senderPhotoUrl$ | async; as photoUrl) {
@@ -31,14 +31,19 @@
         <span class="post-time">{{ createdAtTime$ | async }} Uhr</span>
       </div>
 
-      @if((senderIsCurrentUser$ | async) && editingPost) {
-      <app-edit-displayed-post [post]="post" (endEditingPost)="editingPost = false" class="w-full h-full" />
-      } @else {
-      <div (click)="openPostInteractionOverlay($event)" class="text">
-        <p>{{ post.text }}</p>
+      <div class="post-text">
+        @if(senderIsCurrentUser && overlayService.editingPostId() === post.id) {
+        <app-edit-displayed-post
+          [post]="post"
+          (endEditingPost)="editingPost = false"
+          (click)="$event.preventDefault()"
+          class="w-full h-full"
+        />
+        } @else {
+        <div (click)="openPostInteractionOverlay($event)" class="text" [innerHTML]="postService.textToHtml(post.text)"></div>
+        }
       </div>
-      } 
-      
+
       @if (post.ansCounter){
       <!-- flex-row for desktop -->
       <div class="answers flex flex-col-reverse items-start">
@@ -101,11 +106,11 @@
       @if(allReactionsVisible || $index <= 4) {
       <div
         (mouseenter)="openReactedUsersOverlay($event, reaction)"
-        (mouseleave)="overlayService.close()"
+        (mouseleave)="overlayService.closeAll()"
         (click)="toggleExistingReaction(reaction.emoji)"
         class="reaction flex place-items-center"
       >
-        <img class="reaction-img" [src]="reaction.emoji" />
+        <img class="reaction-img" [src]="reaction.emoji.src" [alt]="reaction.emoji.token"/>
         <p>{{ reaction.users.length }}</p>
       </div>
       } }
