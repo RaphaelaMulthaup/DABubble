@@ -18,14 +18,14 @@ span{
   padding-bottom: 3px;
 }
 
-.btn-tertiary {
+.btn {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  // background-color: var(--color-purple-white);
+  background-color: var(--color-purple-white);
   padding-top: 3px;
   padding-bottom: 3px;
   .add-person {

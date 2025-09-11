@@ -21,8 +21,8 @@ export class ChannelListItemComponent {
     private router: Router // Injecting Router for navigation
   ) {}
 
-  /** 
-   * The channel whose information should be displayed. 
+  /**
+   * The channel whose information should be displayed.
    * This is passed from the parent component.
    */
   @Input() channel!: ChannelInterface;
@@ -31,23 +31,25 @@ export class ChannelListItemComponent {
   @Input() relatedToSearchResultPost: boolean = false;
 
   /** Flag indicating if the channel is in search results in the current post input */
-  @Input() inSearchResultsCurrentPostInput: boolean = false;
+  @Input() isInSearchResultsCurrentPostInput: boolean = false;
 
-  /** 
+  /**
    * EventEmitter to notify the parent component when a channel is selected.
    */
   @Output() channelSelected = new EventEmitter<ChannelInterface>();
 
+  @Input() isInChannelHeader = false;
+
   /**
    * Removes focus from the current element and handles the click event.
    * It performs specific actions based on whether the component is part of a search result.
-   * 
-   * - If not in search results, it removes focus, updates the mobile dashboard state, 
+   *
+   * - If not in search results, it removes focus, updates the mobile dashboard state,
    *   and navigates to the channel's page.
    */
   removeFocusAndHandleClick() {
     // Immediately remove focus before the click is processed
-    if (!this.inSearchResultsCurrentPostInput) {
+    if (!this.isInSearchResultsCurrentPostInput) {
       this.searchService.removeFocus(); // Remove focus from the search input
       this.mobileService.setMobileDashboardState('message-window'); // Update mobile dashboard state
       this.router.navigate(['/dashboard', 'channel', this.channel.id]); // Navigate to the channel's page

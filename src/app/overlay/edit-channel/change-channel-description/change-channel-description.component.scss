@@ -1,2 +1,57 @@
+.btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--color-purple-white);
+    padding-top: 3px;
+    padding-bottom: 3px;
 
+    .save {
+        width: 24px;
+        height: 24px;
+        background-image: url("../../../../assets/img/check-circle-black.svg");
+        transition: background-image 0.2 ease;
+    }
 
+    .edit {
+        width: 24px;
+        height: 24px;
+        background-image: url("../../../../assets/img/edit.svg");
+        transition: background-image 0.2 ease;
+    }
+
+    &:hover {
+        .save {
+            background-image: url("../../../../assets/img/check-circle-blue.svg");
+        }
+
+        .edit {
+            background-image: url("../../../../assets/img/edit-blue.svg");
+        }
+    }
+}
+
+.createdBy{
+    color: var(--color-purple-medium);
+    font-weight: 400;
+    font-size: 24px;
+    line-height: 100%;
+    letter-spacing: 0%;
+}
+
+.transition-container {
+    transition: all 0.3s ease-in-out;
+}
+
+.fade-in {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.fade-out {
+    opacity: 0;
+    transform: translateY(-10px);
+}

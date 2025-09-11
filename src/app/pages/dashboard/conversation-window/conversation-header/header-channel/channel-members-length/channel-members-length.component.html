@@ -1,7 +1,7 @@
 @if(channelWithUsers$ | async; as data) {
 @if(data.channel && data.users) {
     @if(isMobile){
-        <button class="btn-tertiary">
+        <button class="btn">
             <div class="add-person"></div>
         </button>
     }@else {

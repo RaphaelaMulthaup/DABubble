@@ -7,15 +7,13 @@
         }
       </div>
       <div class="flex sticky bottom-0 pt-[20px] w-full bg-white">
-        <button class="list-item user-list-item btn" (click)="openAddMemberToChannelOverlay()">
+        <button class="list-item user-list-item btn" (click)="choiseBetweenComponentAndHeader($event)">
           <div class="add-person"></div>
           <span> Mitglieder hinzufugen</span>
         </button>
       </div>
     </div>
   }@else {
-    @if(!isMobile){
       <app-add-member-to-channel [channelDetails$]="channelDetails$" />
-    }
   }
 </div>

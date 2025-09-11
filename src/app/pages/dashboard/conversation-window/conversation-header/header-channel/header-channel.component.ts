@@ -11,10 +11,11 @@ import { ChannelMembersLengthComponent } from './channel-members-length/channel-
 import { ChannelMembersComponent } from '../../../../../shared/components/channel-members/channel-members.component';
 import { AddMemberToChannelComponent } from '../../../../../overlay/add-member-to-channel/add-member-to-channel.component';
 import { MobileService } from '../../../../../services/mobile.service';
+import { ChannelListItemComponent } from "../../../../../shared/components/channel-list-item/channel-list-item.component";
 
 @Component({
   selector: 'app-header-channel',
-  imports: [CommonModule, ChannelMembersLengthComponent],
+  imports: [CommonModule, ChannelMembersLengthComponent, ChannelListItemComponent],
   templateUrl: './header-channel.component.html',
   styleUrl: './header-channel.component.scss',
 })
@@ -79,6 +80,7 @@ export class HeaderChannelComponent {
       {
         channelDetails$: this.channelDetails$ as Observable<ChannelInterface>,
         overlay: 'overlay-right',
+        clickedFromHeader: true
       }
     );
   }

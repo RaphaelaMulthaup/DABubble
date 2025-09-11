@@ -23,7 +23,9 @@ import { OverlayRef } from '@angular/cdk/overlay';
 export class ChannelMembersComponent implements OnDestroy, OnInit {
   @Input() channelDetails$?: Observable<ChannelInterface | undefined>;
   @Input() overlay: string = '';
+  @Input() onBottom: boolean = false;
   memberIds?: string[];
+  clickedFromHeader: boolean = false;
   clickedAddMember: boolean = false;
   isMobile = false;
   users$!: Observable<UserInterface[]>;
@@ -57,29 +59,51 @@ export class ChannelMembersComponent implements OnDestroy, OnInit {
     window.removeEventListener('resize', this.updateMobile);
   }
 
-  // onAddMemberClick() {
-  //   this.clickedAddMember = true;
+  choiseBetweenComponentAndHeader(event: MouseEvent) {
+    if (this.clickedFromHeader) {
+      this.clickedAddMember = true;
+    } else {
+      this.openAddMemberToChannelOverlay(event);
+    }
+  }
 
-  //   if (this.isMobile) {
-  //     this.openAddMemberToChannelOverlay();
-  //   }
-  // }
-
-  openAddMemberToChannelOverlay() {
-    const overlay = this.overlayService.openComponent(
-      AddMemberToChannelComponent,
-      'cdk-overlay-dark-backdrop',
-      {
-        globalPosition: 'bottom',
-      },
-      {
-        channelDetails$: this.channelDetails$ as Observable<
-          ChannelInterface | undefined
-        >,
-        overlay: 'overlay',
-      }
-    );
-
+  openAddMemberToChannelOverlay(event: MouseEvent) {
+    let overlay;
+    if (this.onBottom) {
+      overlay = this.overlayService.openComponent(
+        AddMemberToChannelComponent,
+        'cdk-overlay-dark-backdrop',
+        {
+          globalPosition: 'bottom',
+        },
+        {
+          channelDetails$: this.channelDetails$ as Observable<
+            ChannelInterface | undefined
+          >,
+          overlay: 'overlay',
+        }
+      );
+    } else {
+      overlay = this.overlayService.openComponent(
+        AddMemberToChannelComponent,
+        'cdk-overlay-dark-backdrop',
+        {
+          origin: event.currentTarget as HTMLElement,
+          originPosition: {
+            originX: 'start',
+            originY: 'bottom',
+            overlayX: 'end',
+            overlayY: 'top',
+          },
+        },
+        {
+          channelDetails$: this.channelDetails$ as Observable<
+            ChannelInterface | undefined
+          >,
+          overlay: 'overlay',
+        }
+      );
+    }
     overlay!.ref.instance.overlayRef = overlay?.overlayRef as OverlayRef;
   }
 }

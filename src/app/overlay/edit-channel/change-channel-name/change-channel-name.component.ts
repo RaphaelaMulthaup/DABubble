@@ -1,4 +1,4 @@
-import { Component, Input, inject } from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ChannelsService } from '../../../services/channels.service';
@@ -14,6 +14,7 @@ import { ChannelInterface } from '../../../shared/models/channel.interface';
 export class ChangeChannelNameComponent {
   @Input() channelId?: string;
   @Input() channel?: ChannelInterface;
+  @Output() editActiveChange = new EventEmitter<boolean>();
 
   isEditActive: boolean = false;
   nameInput?: string;
@@ -23,10 +24,12 @@ export class ChangeChannelNameComponent {
   async saveName(newName: string) {
     this.channelService.changeChannelName(this.channelId!, newName);
     this.isEditActive = !this.isEditActive;
+    this.editActiveChange.emit(this.isEditActive);
   }
 
   toggleEdit() {
     this.isEditActive = !this.isEditActive;
+    this.editActiveChange.emit(this.isEditActive);
     if (this.isEditActive && this.channel) {
       this.nameInput = this.channel.name;
     }

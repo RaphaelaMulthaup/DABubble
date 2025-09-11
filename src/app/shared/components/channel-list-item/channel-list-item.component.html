@@ -12,7 +12,11 @@
   [ngClass]="{ 'related-to-search-result-post': relatedToSearchResultPost }"
 >
   <div class="tag"></div>
-  <span>
-    {{ channel.name }}
-  </span>
+
+  @if(isInChannelHeaderUsed){
+    <h2>{{ channel.name }}</h2>
+    <span class="arrow"></span>
+  }@else {
+  <span>{{ channel.name }}</span>
+  }
 </li>

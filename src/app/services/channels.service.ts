@@ -136,6 +136,7 @@ export class ChannelsService {
     const channelDocRef = doc(this.firestore, `channels/${channelId}`);
     await updateDoc(channelDocRef, { memberIds: arrayRemove(currentUserId) });
     this.overlayService.closeAll();
+        this.mobileService.setMobileDashboardState('sidenav');
     this.router.navigate(['/dashboard']);
   }
 
