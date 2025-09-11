@@ -84,6 +84,10 @@ export class UserService {
     return collectionData(q, { idField: 'id' }) as Observable<UserInterface[]>;
   }
 
+  /**
+   * Check if Mail-Adress from inputfield is existing in Firebase. If that's the case, 
+   * returns UID.
+   */
   async checkMailAndUid(inputEmail: string): Promise<string | null> {
     let userColl = collection(this.firestore, 'users');
     let mailQuery = query(userColl, where('email', '==', inputEmail));
