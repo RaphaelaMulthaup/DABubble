@@ -99,7 +99,7 @@ export class SearchBarComponent implements OnInit, OnDestroy {
         // ) as HTMLElement;
         this.overlayService.openComponent(
           SearchResultsComponent,
-          'cdk-overlay-transparent-backdrop',
+          null,
           {
             origin: this.searchbar.nativeElement,
             originPosition: {

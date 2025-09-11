@@ -260,7 +260,7 @@ export class CurrentPostInput implements OnInit, OnDestroy {
     } else if (typeOfResult === 'channel') {
       words[words.length - 1] = name;
     }
-    //control.setValue(words.join(' ') + ' ');
+    // control.setValue(words.join(' ') + ' ');
     this.postTextInput.nativeElement.innerHTML += words.join(' ') + ' ';
     //this.postTextInput.nativeElement.focus();
     this.postService.focusAtEndEditable(this.postTextInput);
