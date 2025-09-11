@@ -19,6 +19,6 @@
 
   <app-displayed-post [post]="message" [id]="message.id"></app-displayed-post>
   } } @else {
-  <span>Noch keine Messages vorhanden</span>
+  <app-empty-chat-view></app-empty-chat-view>
   } }
 </section>

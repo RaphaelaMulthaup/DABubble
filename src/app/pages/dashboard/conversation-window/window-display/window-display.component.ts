@@ -22,10 +22,11 @@ import {
 import { ChatActiveRouterService } from '../../../../services/chat-active-router.service';
 import { tap } from 'rxjs';
 import { ChatService } from '../../../../services/chat.service';
+import { EmptyChatViewComponent } from './empty-chat-view/empty-chat-view.component';
 
 @Component({
   selector: 'app-window-display', // Component selector used in parent templates
-  imports: [DisplayedPostComponent, CommonModule], // Imports child component to display individual messages
+  imports: [DisplayedPostComponent, CommonModule, EmptyChatViewComponent], // Imports child component to display individual messages
   templateUrl: './window-display.component.html', // External HTML template
   styleUrl: './window-display.component.scss', // SCSS styles for this component
 })
