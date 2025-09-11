@@ -8,7 +8,17 @@ import {
 import { PostInterface } from '../../../../../shared/models/post.interface';
 import { AuthService } from '../../../../../services/auth.service';
 import { UserService } from '../../../../../services/user.service';
-import { map, of, Subject, take, takeUntil } from 'rxjs';
+import {
+  distinctUntilChanged,
+  filter,
+  map,
+  of,
+  shareReplay,
+  Subject,
+  switchMap,
+  take,
+  takeUntil,
+} from 'rxjs';
 import { Timestamp } from '@angular/fire/firestore';
 import { CommonModule } from '@angular/common';
 import { OverlayService } from '../../../../../services/overlay.service';
@@ -68,17 +78,25 @@ export class DisplayedPostComponent {
         this.currentConversationId = conversationId;
       });
 
-    this.reactions$ = this.postService.getReactions(
-      '/' + this.currentConversationType + 's/' + this.currentConversationId,
-      'messages',
-      this.post.id!
+    this.reactions$ = of(this.post).pipe(
+      filter((post) => post.hasReactions === true),
+      switchMap((post) =>
+        this.postService.getReactions(
+          `/${this.currentConversationType}s/${this.currentConversationId}`,
+          'messages',
+          post.id!
+        )
+      ),
+      shareReplay({ bufferSize: 1, refCount: true })
     );
+
     this.visibleReactions$ = this.reactions$.pipe(
       map((list) =>
         list
           .filter((r) => r.users.length > 0)
           .sort((a, b) => b.users.length - a.users.length)
-      )
+      ),
+      distinctUntilChanged((a, b) => a === b)
     );
 
     if (!this.post) return;
@@ -170,7 +188,7 @@ export class DisplayedPostComponent {
 
   /**
    * This functions opens the reacted-users-overlay.
-   * 
+   *
    * @param event the user-interaction with an object.
    * @param reaction the reaction, that is hovered over.
    */
@@ -200,7 +218,7 @@ export class DisplayedPostComponent {
   /**
    * This functions opens the post-interaction-overlay.
    * Fist it sets postClicked to true. It subscribes the overlays afterClosed$ Observable and sets postClicked to false, as the overlay closes.
-   * 
+   *
    * @param event the user-interaction with an object.
    */
   openPostInteractionOverlay(event: MouseEvent) {
@@ -241,8 +259,8 @@ export class DisplayedPostComponent {
    *
    *  @param emoji - the image-path for the chosen emoji.
    */
-  toggleExistingReaction(emoji: { token: string; src: string;}) {
-    console.log(emoji)
+  toggleExistingReaction(emoji: { token: string; src: string }) {
+    console.log(emoji);
     this.postService.toggleReaction(
       '/' + this.currentConversationType + 's/' + this.currentConversationId,
       'messages',

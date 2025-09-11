@@ -11,6 +11,7 @@ import {
   Firestore,
   getCountFromServer,
   getDoc,
+  getDocs,
   increment,
   orderBy,
   query,
@@ -18,7 +19,15 @@ import {
   setDoc,
   updateDoc,
 } from '@angular/fire/firestore';
-import { BehaviorSubject, Observable, of, shareReplay, Subject } from 'rxjs';
+import {
+  BehaviorSubject,
+  filter,
+  Observable,
+  of,
+  shareReplay,
+  Subject,
+  switchMap,
+} from 'rxjs';
 import { PostInterface } from '../shared/models/post.interface';
 import { ReactionInterface } from '../shared/models/reaction.interface';
 import { ChatInterface } from '../shared/models/chat.interface';
@@ -77,6 +86,7 @@ export class PostService {
       ...post,
       id: newDocRef.id, // Save the document ID in the document
       createdAt: serverTimestamp(),
+      hasReactions: false,
     });
 
     return newDocRef.id; // Return the ID of the created document (optional)
@@ -102,13 +112,13 @@ export class PostService {
     emoji: { token: string; src: string }
   ) {
     let userId = this.authService.currentUser.uid;
+    const postPath = `${parentPath}/${subcollectionName}/${postId}`;
+    const postRef = doc(this.firestore, postPath);
     const reactionRef = doc(
       this.firestore,
-      `${parentPath}/${subcollectionName}/${postId}/reactions/${emoji.token}`
+      `${postPath}/reactions/${emoji.token}`
     );
-
     const reactionSnap = await getDoc(reactionRef);
-
     if (reactionSnap.exists()) {
       const data = reactionSnap.data();
       const users: string[] = data['users'] || [];
@@ -118,11 +128,14 @@ export class PostService {
         await updateDoc(reactionRef, {
           users: arrayRemove(userId),
         });
+        const postHasReactions = await this.checkForPostReactions(postPath);
+        await updateDoc(postRef, { hasReactions: postHasReactions });
       } else {
         // User has not reacted → add their reaction
         await updateDoc(reactionRef, {
           users: arrayUnion(userId),
         });
+        await updateDoc(postRef, { hasReactions: true });
       }
     } else {
       // First reaction with this emoji → create a new reaction document
@@ -130,7 +143,25 @@ export class PostService {
         emoji,
         users: [userId],
       });
+      await updateDoc(postRef, { hasReactions: true });
     }
+  }
+
+  /**
+   * This function checks for each reaction of a post, if its user-array contains any users.
+   * If an array contains users, the function returns true.
+   * If no reactions-array contains users, the function returns false.
+   *
+   * @param postPath - the path to the post in firebase.
+   */
+  async checkForPostReactions(postPath: string): Promise<boolean> {
+    const reactionsColRef = collection(this.firestore, `${postPath}/reactions`);
+    const reactionsSnap = await getDocs(reactionsColRef);
+
+    return reactionsSnap.docs.some((docSnap) => {
+      const users: string[] = docSnap.data()?.['users'] || [];
+      return users.length > 0;
+    });
   }
 
   /**
@@ -349,6 +380,11 @@ export class PostService {
     return result;
   }
 
+  /**
+   * This function sets the cursor to the end of an editable div.
+   *
+   * @param element - the editable to focus on.
+   */
   focusAtEndEditable(element: ElementRef) {
     element.nativeElement.focus();
     const range = document.createRange();

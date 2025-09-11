@@ -11,5 +11,6 @@ export interface PostInterface {
   chatId?:string;
   channelName?: string;
   answer?: boolean;
+  hasReactions?: boolean;
   parentMessageId?: string;
 }
