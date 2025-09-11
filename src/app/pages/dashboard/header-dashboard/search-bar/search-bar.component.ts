@@ -40,7 +40,7 @@ import { CommonModule } from '@angular/common';
     UserListItemComponent,
     ChannelListItemComponent,
     PostListItemComponent,
-    CommonModule
+    CommonModule,
   ],
   templateUrl: './search-bar.component.html',
   styleUrls: ['./search-bar.component.scss'],
@@ -108,7 +108,7 @@ export class SearchBarComponent implements OnInit, OnDestroy {
         this.searchResultsExisting = true; // Set flag indicating search results are present
         this.overlayService.openComponent(
           SearchResultsComponent,
-          null,
+          'cdk-overlay-transparent-backdrop',
           {
             origin: this.searchbar.nativeElement, // Position the overlay relative to the search bar
             originPosition: {
@@ -156,7 +156,10 @@ export class SearchBarComponent implements OnInit, OnDestroy {
     const chatMap = new Map<string, { user: UserInterface; posts: any[] }>();
 
     // Map to collect channel messages by channel
-    const channelMap = new Map<string, { channel: ChannelInterface; posts: any[] }>();
+    const channelMap = new Map<
+      string,
+      { channel: ChannelInterface; posts: any[] }
+    >();
 
     // Group messages by type (chatMessage or channelMessage)
     for (const item of res) {

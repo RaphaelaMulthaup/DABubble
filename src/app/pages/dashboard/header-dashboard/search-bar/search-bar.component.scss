@@ -30,6 +30,7 @@ input {
 }
 
 .close {
+  z-index: 1001;
   cursor: pointer;
   height: 40px;
   aspect-ratio: 1;
