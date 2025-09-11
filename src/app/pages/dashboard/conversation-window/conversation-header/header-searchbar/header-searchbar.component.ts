@@ -6,7 +6,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { debounceTime, startWith, map, Observable, Subscription } from 'rxjs';
+import { debounceTime, startWith, map, Observable, Subscription, takeUntil, Subject } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { SearchService } from '../../../../../services/search.service'; // Service for search functionality
 import { JsonPipe } from '@angular/common'; // Pipe for converting objects to JSON
@@ -29,43 +29,45 @@ import { SearchResultsNewMessageComponent } from '../../../../../overlay/search-
   styleUrls: ['./header-searchbar.component.scss'], // Styles for this component
 })
 export class HeaderSearchbarComponent {
-  /** 
-   * Form control for the search input field. 
+  /**
+   * Form control for the search input field.
    * It is initialized with an empty string and has the nonNullable option set to true.
    */
   searchControl = new FormControl<string>('', { nonNullable: true });
+  private destroy$ = new Subject<void>();
 
-  /** 
+  /**
    * Signal that holds the search results fetched from the search service.
    * It is a reactive representation of the search results.
    */
   results: Signal<SearchResult[]>;
 
-  /** 
-   * ViewChild for accessing the HTML element of the search bar. 
+  /**
+   * ViewChild for accessing the HTML element of the search bar.
    * This is used to manage focus and position of the overlay.
    */
   @ViewChild('headerSearchbar', { static: true })
   headerSearchbar!: ElementRef<HTMLElement>;
 
-  /** 
+  /**
    * Subscription to manage focus removal from the search input.
    */
   private focusSubscription: Subscription;
+  term$: Observable<string>;
 
   constructor(
     private searchService: SearchService, // Inject SearchService for handling search logic
     private overlayService: OverlayService // Inject OverlayService to manage overlays
   ) {
     // Set up the observable for the search term input with debounce and trim
-    const term$ = this.searchControl.valueChanges.pipe(
+    this.term$ = this.searchControl.valueChanges.pipe(
       startWith(this.searchControl.value), // Start with the current value
       debounceTime(300), // Wait 300ms after user stops typing
       map((v) => v.trim()) // Remove any leading/trailing spaces from the input
     );
 
     // Convert the observable of search results into a signal (reactive state)
-    this.results = toSignal(this.searchService.searchHeaderSearch(term$), {
+    this.results = toSignal(this.searchService.searchHeaderSearch(this.term$), {
       initialValue: [], // Initial value for the results is an empty array
     });
 
@@ -75,20 +77,51 @@ export class HeaderSearchbarComponent {
       this.removeFocus(); // Call the method to remove focus from the search input
     });
   }
-
-  /** 
-   * This lifecycle hook checks the results every time Angular runs change detection. 
+  ngOnInit() {
+    // Subscribe to the search term observable
+    this.term$.pipe(takeUntil(this.destroy$)).subscribe((term) => {
+      if (term.length > 0) {
+        this.overlayService.closeAll(); // Close any open overlays when searching
+        this.overlayService.openComponent(
+          SearchResultsNewMessageComponent,
+          'cdk-overlay-transparent-backdrop',
+          {
+            origin: this.headerSearchbar.nativeElement, // Position the overlay relative to the search bar
+            originPosition: {
+              originX: 'center',
+              originY: 'bottom',
+              overlayX: 'center',
+              overlayY: 'bottom',
+            },
+            originPositionFallback: {
+              originX: 'center',
+              originY: 'bottom',
+              overlayX: 'center',
+              overlayY: 'top',
+            },
+          },
+          {
+            results: this.results(), // Pass the search term to the overlay
+          }
+        );
+      } else {
+        this.overlayService.closeAll(); // Optionally close the overlay when search input is empty
+      }
+    });
+  }
+  /**
+   * This lifecycle hook checks the results every time Angular runs change detection.
    * If results are found, it opens the search results overlay, otherwise it closes it.
    */
-  ngDoCheck(): void {
-    if (this.results().length > 0) {
-      this.openSearchResultsOverlay(); // Open the overlay if there are results
-    } else {
-      this.overlayService.closeAll(); // Close the overlay if no results
-    }
-  }
+  // ngDoCheck(): void {
+  //   if (this.results().length > 0) {
+  //     this.openSearchResultsOverlay(); // Open the overlay if there are results
+  //   } else {
+  //     this.overlayService.closeAll(); // Close the overlay if no results
+  //   }
+  // }
 
-  /** 
+  /**
    * Lifecycle hook to clean up subscriptions when the component is destroyed.
    * This helps prevent memory leaks.
    */
@@ -96,41 +129,43 @@ export class HeaderSearchbarComponent {
     if (this.focusSubscription) {
       this.focusSubscription.unsubscribe(); // Unsubscribe from the focusRemoved observable
     }
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
-  /** 
+  /**
    * Opens the search results overlay to display the search results in a new message component.
    * The overlay is positioned relative to the search bar.
    */
-  private openSearchResultsOverlay(): void {
-    this.overlayService.closeAll(); // Close all existing overlays
+  // private openSearchResultsOverlay(): void {
+  //   this.overlayService.closeAll(); // Close all existing overlays
 
-    // Open a new overlay with the SearchResultsNewMessageComponent
-    this.overlayService.openComponent(
-      SearchResultsNewMessageComponent, // Component to display search results
-      'cdk-overlay-transparent-backdrop', // Backdrop class for the overlay
-      {
-        origin: this.headerSearchbar.nativeElement, // Set the origin element to the search bar
-        originPosition: {
-          originX: 'center',
-          originY: 'bottom',
-          overlayX: 'center',
-          overlayY: 'bottom',
-        },
-        originPositionFallback: {
-          originX: 'center',
-          originY: 'bottom',
-          overlayX: 'center',
-          overlayY: 'top',
-        },
-      },
-      {
-        results: this.results(), // Pass the search results as input to the overlay component
-      }
-    );
-  }
+  //   // Open a new overlay with the SearchResultsNewMessageComponent
+  //   this.overlayService.openComponent(
+  //     SearchResultsNewMessageComponent, // Component to display search results
+  //     'cdk-overlay-transparent-backdrop', // Backdrop class for the overlay
+  //     {
+  //       origin: this.headerSearchbar.nativeElement, // Set the origin element to the search bar
+  //       originPosition: {
+  //         originX: 'center',
+  //         originY: 'bottom',
+  //         overlayX: 'center',
+  //         overlayY: 'bottom',
+  //       },
+  //       originPositionFallback: {
+  //         originX: 'center',
+  //         originY: 'bottom',
+  //         overlayX: 'center',
+  //         overlayY: 'top',
+  //       },
+  //     },
+  //     {
+  //       results: this.results(), // Pass the search results as input to the overlay component
+  //     }
+  //   );
+  // }
 
-  /** 
+  /**
    * Removes focus from the search input field by calling blur on the input element.
    */
   removeFocus() {
