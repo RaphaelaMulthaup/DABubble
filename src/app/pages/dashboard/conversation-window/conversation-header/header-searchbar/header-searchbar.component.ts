@@ -49,10 +49,6 @@ export class HeaderSearchbarComponent {
   @ViewChild('headerSearchbar', { static: true })
   headerSearchbar!: ElementRef<HTMLElement>;
 
-  /**
-   * Subscription to manage focus removal from the search input.
-   */
-  private focusSubscription: Subscription;
   term$: Observable<string>;
 
   constructor(
@@ -70,13 +66,8 @@ export class HeaderSearchbarComponent {
     this.results = toSignal(this.searchService.searchHeaderSearch(this.term$), {
       initialValue: [], // Initial value for the results is an empty array
     });
-
-    // Subscribe to the focusRemoved observable from the search service
-    // This will call removeFocus() when focus is removed
-    this.focusSubscription = this.searchService.focusRemoved$.subscribe(() => {
-      this.removeFocus(); // Call the method to remove focus from the search input
-    });
   }
+
   ngOnInit() {
     // Subscribe to the search term observable
     this.term$.pipe(takeUntil(this.destroy$)).subscribe((term) => {
@@ -109,66 +100,13 @@ export class HeaderSearchbarComponent {
       }
     });
   }
-  /**
-   * This lifecycle hook checks the results every time Angular runs change detection.
-   * If results are found, it opens the search results overlay, otherwise it closes it.
-   */
-  // ngDoCheck(): void {
-  //   if (this.results().length > 0) {
-  //     this.openSearchResultsOverlay(); // Open the overlay if there are results
-  //   } else {
-  //     this.overlayService.closeAll(); // Close the overlay if no results
-  //   }
-  // }
 
   /**
    * Lifecycle hook to clean up subscriptions when the component is destroyed.
    * This helps prevent memory leaks.
    */
   ngOnDestroy(): void {
-    if (this.focusSubscription) {
-      this.focusSubscription.unsubscribe(); // Unsubscribe from the focusRemoved observable
-    }
     this.destroy$.next();
     this.destroy$.complete();
-  }
-
-  /**
-   * Opens the search results overlay to display the search results in a new message component.
-   * The overlay is positioned relative to the search bar.
-   */
-  // private openSearchResultsOverlay(): void {
-  //   this.overlayService.closeAll(); // Close all existing overlays
-
-  //   // Open a new overlay with the SearchResultsNewMessageComponent
-  //   this.overlayService.openComponent(
-  //     SearchResultsNewMessageComponent, // Component to display search results
-  //     'cdk-overlay-transparent-backdrop', // Backdrop class for the overlay
-  //     {
-  //       origin: this.headerSearchbar.nativeElement, // Set the origin element to the search bar
-  //       originPosition: {
-  //         originX: 'center',
-  //         originY: 'bottom',
-  //         overlayX: 'center',
-  //         overlayY: 'bottom',
-  //       },
-  //       originPositionFallback: {
-  //         originX: 'center',
-  //         originY: 'bottom',
-  //         overlayX: 'center',
-  //         overlayY: 'top',
-  //       },
-  //     },
-  //     {
-  //       results: this.results(), // Pass the search results as input to the overlay component
-  //     }
-  //   );
-  // }
-
-  /**
-   * Removes focus from the search input field by calling blur on the input element.
-   */
-  removeFocus() {
-    this.headerSearchbar.nativeElement.querySelector('input')?.blur(); // Remove focus from the input element
   }
 }

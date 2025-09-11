@@ -7,7 +7,6 @@ import { CommonModule } from '@angular/common'; // Importing CommonModule for ba
 import { MobileService } from '../../../services/mobile.service'; // Importing MobileService for handling mobile-specific state
 import { ProfileViewOtherUsersComponent } from '../../../overlay/profile-view-other-users/profile-view-other-users.component'; // Importing the profile view component for users
 import { of } from 'rxjs'; // Importing `of` to create observables from static values
-import { SearchService } from '../../../services/search.service'; // Importing SearchService for search-related operations
 
 @Component({
   selector: 'app-user-list-item', // Component selector used in parent templates
@@ -51,7 +50,6 @@ export class UserListItemComponent {
     private chatService: ChatService, // Injecting ChatService to handle chat-related functions
     private overlayService: OverlayService, // Injecting OverlayService to manage overlays like the profile view
     public mobileService: MobileService, // Injecting MobileService for handling mobile-specific state
-    private searchService: SearchService // Injecting SearchService for search-related operations
   ) {
     // Initialize currentUserId with the logged-in user's ID from AuthService
     this.currentUserId = this.authService.currentUser.uid;
@@ -67,18 +65,6 @@ export class UserListItemComponent {
     if (!this.currentUserId) return; // If the user is not logged in, do nothing
     // Navigates to the chat between the current user and the selected user
     this.chatService.navigateToChat(this.currentUserId, this.user);
-  }
-
-  /**
-   * Removes focus and handles the click event. 
-   * Depending on the context, it will either trigger navigation or profile display.
-   */
-  removeFocusAndHandleClick() {
-    if (!this.isInSearchResultsCurrentPostInput) {
-      // Immediately remove focus before processing the click event
-      this.searchService.removeFocus(); // Remove focus from the search input
-      this.choiceBetweenNavigateAndProfile(); // Make the choice between navigating or showing the profile
-    }
   }
 
   /** 

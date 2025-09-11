@@ -26,17 +26,6 @@ export class SearchService {
   public readonly chatPosts$: Observable<PostInterface[]>; // Observable for posts in the user's chats
   public readonly channelPosts$: Observable<PostInterface[]>; // Observable for posts in the user's channels
 
-  /**
-   * Subject to notify when focus is removed.
-   * Used to handle focus-related events in the application.
-   */
-  private focusRemovedSource = new Subject<void>(); // Subject for the focus removal event
-
-  /**
-   * Observable to subscribe to the focus removal event.
-   */
-  focusRemoved$ = this.focusRemovedSource.asObservable();
-
   constructor(
     private firestore: Firestore, // Firestore service to interact with the database
     private authService: AuthService, // AuthService to manage authentication
@@ -377,12 +366,5 @@ export class SearchService {
           .map((u) => ({ type: 'user' as const, ...u }));
       })
     );
-  }
-
-  /**
-   * Sends a focus removal event to notify subscribers.
-   */
-  removeFocus() {
-    this.focusRemovedSource.next(); // Notify all subscribers that the focus has been removed
   }
 }
