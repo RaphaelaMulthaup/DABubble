@@ -18,7 +18,7 @@ import {
   setDoc,
   updateDoc,
 } from '@angular/fire/firestore';
-import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, of, shareReplay, Subject } from 'rxjs';
 import { PostInterface } from '../shared/models/post.interface';
 import { ReactionInterface } from '../shared/models/reaction.interface';
 import { ChatInterface } from '../shared/models/chat.interface';
@@ -32,6 +32,7 @@ import { EMOJIS } from '../shared/constants/emojis';
 })
 export class PostService {
   emojis = EMOJIS;
+  private reactionsCache = new Map<string, Observable<ReactionInterface[]>>();
 
   constructor(
     private firestore: Firestore,
@@ -145,13 +146,21 @@ export class PostService {
     subcollectionName: string,
     postId: string
   ): Observable<ReactionInterface[]> {
-    const reactionsRef = collection(
-      this.firestore,
-      `${parentPath}/${subcollectionName}/${postId}/reactions`
-    );
-    return collectionData(reactionsRef, { idField: 'id' }) as Observable<
-      ReactionInterface[]
-    >;
+    const cacheKey = `${parentPath}/${subcollectionName}/${postId}`;
+    if (!this.reactionsCache.has(cacheKey)) {
+      const reactionsRef = collection(
+        this.firestore,
+        `${parentPath}/${subcollectionName}/${postId}/reactions`
+      );
+      const reactions$ = collectionData(reactionsRef, { idField: 'id' }).pipe(
+        shareReplay({ bufferSize: 1, refCount: true })
+      );
+      this.reactionsCache.set(
+        cacheKey,
+        reactions$ as Observable<ReactionInterface[]>
+      );
+    }
+    return this.reactionsCache.get(cacheKey)!;
   }
 
   /**

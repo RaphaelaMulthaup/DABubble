@@ -10,13 +10,15 @@ import {
   getDocs,
 } from '@angular/fire/firestore';
 import { UserInterface } from '../shared/models/user.interface';
-import { map, Observable } from 'rxjs';
+import { map, Observable, shareReplay } from 'rxjs';
 import { docData } from '@angular/fire/firestore';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
+  private userCache = new Map<string, Observable<UserInterface>>();
+
   constructor(private firestore: Firestore) {}
 
   // /**
@@ -36,8 +38,12 @@ export class UserService {
    * Returns an Observable of UserInterface.
    */
   getUserById(uid: string): Observable<UserInterface> {
-    const userDocRef = doc(this.firestore, `users/${uid}`); // Reference to the specific user document
-    return docData(userDocRef) as Observable<UserInterface>;
+    if (!this.userCache.has(uid)) {
+      const userDocRef = doc(this.firestore, `users/${uid}`);
+      const user$ = docData(userDocRef).pipe(shareReplay(1));
+      this.userCache.set(uid, user$ as Observable<UserInterface>);
+    }
+    return this.userCache.get(uid)!;
   }
 
   /**
@@ -91,7 +97,7 @@ export class UserService {
   }
 
   /**
-   * Check if Mail-Adress from inputfield is existing in Firebase. If that's the case, 
+   * Check if Mail-Adress from inputfield is existing in Firebase. If that's the case,
    * returns UID.
    */
   async checkMailAndUid(inputEmail: string): Promise<string | null> {
@@ -99,7 +105,7 @@ export class UserService {
     let mailQuery = query(userColl, where('email', '==', inputEmail));
     let querySnapshot = await getDocs(mailQuery);
 
-    if(!querySnapshot.empty) {
+    if (!querySnapshot.empty) {
       let userDoc = querySnapshot.docs[0];
       let data = userDoc.data();
       return userDoc.id;
@@ -107,5 +113,3 @@ export class UserService {
     return null;
   }
 }
-
-

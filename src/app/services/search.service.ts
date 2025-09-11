@@ -8,6 +8,7 @@ import {
   switchMap,
   filter,
   Subject,
+  distinctUntilChanged,
 } from 'rxjs';
 import { SearchResult } from '../shared/types/search-result.type';
 import { AuthService } from './auth.service';
@@ -25,7 +26,7 @@ export class SearchService {
   public readonly chatPosts$: Observable<PostInterface[]>; // Observable for posts in the user's chats
   public readonly channelPosts$: Observable<PostInterface[]>; // Observable for posts in the user's channels
 
-    /**
+  /**
    * Subject to notify when focus is removed.
    * Used to handle focus-related events in the application.
    */
@@ -58,6 +59,7 @@ export class SearchService {
     return collectionData(usersCol, { idField: 'id' }).pipe(
       // Fetch data and include 'id' as an additional field
       map((data) => data as UserInterface[]), // Map the data to the expected type (UserInterface[])
+      distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
       shareReplay(1) // Share the subscription for multiple consumers, replaying the last emitted value
     );
   }
@@ -70,6 +72,7 @@ export class SearchService {
     const channelsCol = collection(this.firestore, 'channels'); // Reference to "channels" collection
     return collectionData(channelsCol, { idField: 'id' }).pipe(
       map((data) => data as ChannelInterface[]), // Map the data to the expected type (ChannelInterface[])
+      distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
       shareReplay(1) // Share the subscription for multiple consumers
     );
   }
@@ -93,6 +96,7 @@ export class SearchService {
           })
         );
       }),
+      distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
       shareReplay(1) // Share the subscription for multiple consumers
     );
   }
@@ -171,6 +175,7 @@ export class SearchService {
           })
         );
       }),
+      distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
       shareReplay(1) // Share the subscription for multiple consumers
     );
   }
@@ -238,6 +243,7 @@ export class SearchService {
           map((arrays) => arrays.flat()) // Flatten the array of arrays into a single array
         );
       }),
+      distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
       shareReplay(1) // Share the subscription for multiple consumers
     );
   }

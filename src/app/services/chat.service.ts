@@ -8,7 +8,13 @@ import {
   setDoc,
 } from '@angular/fire/firestore';
 import { ChatInterface } from '../shared/models/chat.interface'; // Interface for chat data
-import { BehaviorSubject, map, Observable } from 'rxjs';
+import {
+  BehaviorSubject,
+  distinctUntilChanged,
+  map,
+  Observable,
+  shareReplay,
+} from 'rxjs';
 import { Router } from '@angular/router'; // Router to navigate within the app
 import { MobileService } from './mobile.service'; // Service for handling mobile dashboard state
 import { UserInterface } from '../shared/models/user.interface'; // Interface for user data
@@ -17,11 +23,12 @@ import { UserInterface } from '../shared/models/user.interface'; // Interface fo
   providedIn: 'root', // The service is provided in the root module
 })
 export class ChatService {
-  /** 
+  /**
    * Private BehaviorSubject to hold the current other user in the chat.
    * It is exposed as an observable for other components to subscribe to.
    */
   private _otherUser$ = new BehaviorSubject<UserInterface | null>(null);
+  private chatsCache = new Map<string, Observable<ChatInterface[]>>();
   otherUser$ = this._otherUser$.asObservable(); // Public observable for other user
 
   constructor(
@@ -63,20 +70,29 @@ export class ChatService {
    * @returns An observable emitting an array of chats with their document IDs included.
    */
   getChatsForUser(userId: string): Observable<ChatInterface[]> {
-    const chatsRef = collection(this.firestore, 'chats'); // Reference to the "chats" collection in Firestore
+    if (!this.chatsCache.has(userId)) {
+      const chatsRef = collection(this.firestore, 'chats'); // Reference to the "chats" collection in Firestore
 
-    return collectionSnapshots(chatsRef).pipe(
-      map((snaps) =>
-        snaps
-          // Keep only chats whose ID contains the userId
-          .filter((snap) => snap.id.includes(userId))
-          .map((snap) => {
-            const data = snap.data() as Omit<ChatInterface, 'id'>; // Extract the data, excluding the 'id' field
-            const id = snap.id; // Document ID consisting of both user IDs
-            return { id, ...data }; // Return the full chat data with the ID
-          })
-      )
-    );
+      const chats$ = collectionSnapshots(chatsRef).pipe(
+        map((snaps) =>
+          snaps
+            // Keep only chats whose ID contains the userId
+            .filter((snap) => snap.id.includes(userId))
+            .map((snap) => {
+              const data = snap.data() as Omit<ChatInterface, 'id'>; // Extract the data, excluding the 'id' field
+              const id = snap.id; // Document ID consisting of both user IDs
+              return { id, ...data }; // Return the full chat data with the ID
+            })
+        ),
+        distinctUntilChanged(
+          (a, b) =>
+            a.length === b.length && a.every((chat, i) => chat.id === b[i].id)
+        ),
+        shareReplay({ bufferSize: 1, refCount: true })
+      );
+      this.chatsCache.set(userId, chats$);
+    }
+    return this.chatsCache.get(userId)!;
   }
 
   /**
