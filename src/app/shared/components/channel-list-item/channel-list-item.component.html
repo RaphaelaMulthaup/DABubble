@@ -2,18 +2,18 @@
   class="list-item channel-list-item"
   (mousedown)="removeFocusAndHandleClick()"
   (click)="
-    !inSearchResultsCurrentPostInput
+    !isInSearchResultsCurrentPostInput
       ? mobileService.setMobileDashboardState('message-window')
       : emitChannel()
   "
   [routerLink]="
-    !inSearchResultsCurrentPostInput ? ['/dashboard', 'channel', channel.id] : null
+    !isInSearchResultsCurrentPostInput ? ['/dashboard', 'channel', channel.id] : null
   "
   [ngClass]="{ 'related-to-search-result-post': relatedToSearchResultPost }"
 >
   <div class="tag"></div>
 
-  @if(isInChannelHeaderUsed){
+  @if(isInChannelHeader){
     <h2>{{ channel.name }}</h2>
     <span class="arrow"></span>
   }@else {

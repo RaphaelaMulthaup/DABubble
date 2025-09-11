@@ -29,7 +29,7 @@ export class UserListItemComponent {
   @Input() relatedToSearchResultPost: boolean = false;
 
   /** Flag to indicate if this component is part of search results in the current post input */
-  @Input() inSearchResultsCurrentPostInput: boolean = false;
+  @Input() isInSearchResultsCurrentPostInput: boolean = false;
 
   /** Flag to indicate whether this component should perform no action */
   @Input() doNothing: boolean = false;
@@ -74,7 +74,7 @@ export class UserListItemComponent {
    * Depending on the context, it will either trigger navigation or profile display.
    */
   removeFocusAndHandleClick() {
-    if (!this.inSearchResultsCurrentPostInput) {
+    if (!this.isInSearchResultsCurrentPostInput) {
       // Immediately remove focus before processing the click event
       this.searchService.removeFocus(); // Remove focus from the search input
       this.choiceBetweenNavigateAndProfile(); // Make the choice between navigating or showing the profile
@@ -87,7 +87,7 @@ export class UserListItemComponent {
    */
   async choiceBetweenNavigateAndProfile() {
     if (!this.currentUserId || this.doNothing) return; // If no user is logged in or if the 'doNothing' flag is true, do nothing
-    if (this.inSearchResultsCurrentPostInput) {
+    if (this.isInSearchResultsCurrentPostInput) {
       // If this item is part of the search results, emit the selected user
       this.userSelected.emit(this.user);
     } else if (this.showProfile || this.inHeaderChat) {

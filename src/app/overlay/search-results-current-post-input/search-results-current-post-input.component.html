@@ -5,13 +5,13 @@
     {
     <app-user-list-item
       [user]="item"
-      [inSearchResultsCurrentPostInput]="true"
+      [isInSearchResultsCurrentPostInput]="true"
       (userSelected)="onUserSelected($event)"
     ></app-user-list-item
     >} @case ('channel') {
     <app-channel-list-item
       [channel]="item"
-      [inSearchResultsCurrentPostInput]="true"
+      [isInSearchResultsCurrentPostInput]="true"
       (channelSelected)="onChannelSelected($event)"
     ></app-channel-list-item>
     } @default {
