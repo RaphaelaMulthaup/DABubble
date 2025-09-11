@@ -89,4 +89,23 @@ export class UserService {
     const q = query(userColl, where('uid', 'in', memberIds)); // Query for users whose UID is in memberIds
     return collectionData(q, { idField: 'id' }) as Observable<UserInterface[]>;
   }
+
+  /**
+   * Check if Mail-Adress from inputfield is existing in Firebase. If that's the case, 
+   * returns UID.
+   */
+  async checkMailAndUid(inputEmail: string): Promise<string | null> {
+    let userColl = collection(this.firestore, 'users');
+    let mailQuery = query(userColl, where('email', '==', inputEmail));
+    let querySnapshot = await getDocs(mailQuery);
+
+    if(!querySnapshot.empty) {
+      let userDoc = querySnapshot.docs[0];
+      let data = userDoc.data();
+      return userDoc.id;
+    }
+    return null;
+  }
 }
+
+

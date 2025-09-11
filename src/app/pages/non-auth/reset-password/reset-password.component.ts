@@ -27,6 +27,7 @@ import {
 } from '@angular/fire/auth';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-reset-password',
@@ -47,7 +48,8 @@ export class ResetPasswordComponent implements OnInit {
     private route: ActivatedRoute,
     private authService: AuthService,
     private router: Router,
-    private firestore: Firestore
+    private firestore: Firestore,
+    private subscription: Subscription = new Subscription
   ) {
     const navigation = this.router.getCurrentNavigation();
     this.uid = navigation?.extras.state?.['uid'];
@@ -64,13 +66,24 @@ export class ResetPasswordComponent implements OnInit {
     });
   }
 
+  /**
+   * Compares mail-adresses from both inputfields on every change
+   */
   ngOnInit(): void {
     this.registerForm
       .get('password')
       ?.valueChanges.subscribe(() => this.checkPasswords());
+
     this.registerForm
       .get('passwordConfirm')
       ?.valueChanges.subscribe(() => this.checkPasswords());
+  }
+
+  /**
+   * Finished subscription
+   */
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
   }
 
   /**
