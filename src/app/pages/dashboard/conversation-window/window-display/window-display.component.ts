@@ -40,13 +40,13 @@ export class WindowDisplayComponent {
 
   // an array with all the days of the week to show when a post was created
   days = [
-    'Sunday',
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday',
+    'Sonntag',
+    'Montag',
+    'Dienstag',
+    'Mittwoch',
+    'Donnerstag',
+    'Freitag',
+    'Samstag',
   ];
   private pendingScrollTo?: string; // stores the post id to scroll to
   private destroy$ = new Subject<void>(); // for cleaning up subscriptions
