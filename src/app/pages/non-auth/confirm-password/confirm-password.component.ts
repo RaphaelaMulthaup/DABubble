@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
 import {
   FormControl,
@@ -26,6 +26,7 @@ import { Router } from '@angular/router';
 })
 export class ConfirmPasswordComponent implements OnInit {
   @Output() changeAuthState = new EventEmitter<AuthState>();
+  @Input() oobCode!: string;
 
   showErrorMessage: boolean = false;
   showToast: boolean = false;
@@ -50,12 +51,11 @@ export class ConfirmPasswordComponent implements OnInit {
    * Get on init list of all emails and UIDs from firestore
    */
   ngOnInit(): void {
-    this.userService.getAllUserEmails().subscribe((users: any) => {
-      this.emailList = users.map((user: { email: any; }) => user.email);
-      users.forEach((user: { uid: any; email: any; }) => {
-        console.log(`UID: ${user.uid}, EMAIL: ${user.email}`);
-      })
-    })
+ 
+  }
+
+  veriyResetCode() {
+    throw new Error('Method not implemented.');
   }
 
   /**
@@ -63,27 +63,20 @@ export class ConfirmPasswordComponent implements OnInit {
    * Throws error message if no matching mail
    */
   async onSubmit() {
-    console.log('onSub');
-    let inputMail = this.confirmForm.get('email')?.value;
-    this.emailExists = await this.userService.checkForExistingUser(inputMail);
-    if (this.emailExists) {
-      this.authService
-        .sendPasswordRessetEmail(inputMail)
-        .then(() => {
-          // this.waveFlag();
-          this.showToast = true;
-          setTimeout(() => {
-            console.log('Mail erfolgreich gesendet');
-            this.backToLogin();
-          }, 1500);
-        })
-        .catch((error) => {
-          console.error(
-            'Password-rest E-Mail konnte nicht gesendet werden',
-            error
-          );
-          this.showErrorMessage = true;
-        });
+    const inputEmail = this.confirmForm.get('email')?.value;
+    const uid = await this.userService.checkMailAndUid(inputEmail);
+
+    if (uid) {
+      this.authService.sendPasswordRessetEmail(inputEmail).then(() => {
+        this.showToast = true;
+        setTimeout(() => {
+          this.backToLogin();
+        }, 1500);
+      }).catch((error) => {
+        console.error('Reset-Mail konnte nicht versendet werden', error);
+        this.showErrorMessage = true;
+      });
+      console.log(`Benutzer UID: ${uid}`);
     } else {
       this.showErrorMessage = true;
     }
