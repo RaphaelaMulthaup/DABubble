@@ -23,7 +23,8 @@ import { SearchResult } from '../../../shared/types/search-result.type'; // Type
 import { UserListItemComponent } from '../../../shared/components/user-list-item/user-list-item.component'; // Component to display user results
 import { ChannelListItemComponent } from '../../../shared/components/channel-list-item/channel-list-item.component'; // Component to display channel results
 import { OverlayService } from '../../../services/overlay.service'; // Service to manage overlays
-import { SearchResultsNewMessageComponent } from '../../../overlay/search-results-new-message/search-results-new-message.component'; // Component for displaying new search results in overlay
+import { SearchResultsNewMessageComponent } from '../../../overlay/search-results-new-message/search-results-new-message.component';
+import { CommonModule } from '@angular/common'; // Component for displaying new search results in overlay
 
 @Component({
   selector: 'app-header-searchbar', // The component selector
@@ -32,7 +33,8 @@ import { SearchResultsNewMessageComponent } from '../../../overlay/search-result
     ReactiveFormsModule, // Import ReactiveFormsModule for handling form controls
     JsonPipe, // Import JsonPipe to convert objects to JSON strings if needed
     UserListItemComponent, // Import user list component
-    ChannelListItemComponent, // Import channel list component
+    ChannelListItemComponent,
+    CommonModule,
   ],
   templateUrl: './header-searchbar.component.html', // The template for this component
   styleUrls: ['./header-searchbar.component.scss'], // Styles for this component
@@ -62,7 +64,7 @@ export class HeaderSearchbarComponent {
   term$: Observable<string>;
 
   constructor(
-    private searchService: SearchService, // Inject SearchService for handling search logic
+    public searchService: SearchService, // Inject SearchService for handling search logic
     private overlayService: OverlayService // Inject OverlayService to manage overlays
   ) {
     // Set up the observable for the search term input with debounce and trim
@@ -87,15 +89,17 @@ export class HeaderSearchbarComponent {
     this.term$.pipe(takeUntil(this.destroy$)).subscribe((term) => {
       if (term.length > 0) {
         this.overlayService.closeAll();
-        this.openOverlay(term); // Close any open overlays when searching
+        this.searchService.overlaySearchResultsNewMessageOpen = true;
+        this.openOverlay(); // Close any open overlays when searching
       } else {
+        this.searchService.overlaySearchResultsNewMessageOpen = false;
         this.overlayService.closeAll(); // Optionally close the overlay when search input is empty
       }
     });
     this.headerSearchbar.nativeElement.addEventListener('focus', () => {
       const term = this.searchControl.value.trim();
       if (term.length > 0) {
-        this.openOverlay(term);
+        this.openOverlay();
       }
     });
   }
@@ -108,12 +112,12 @@ export class HeaderSearchbarComponent {
     this.destroy$.next();
     this.destroy$.complete();
   }
-  
+
   /**
    * Opens a search results overlay positioned relative to the header search bar,
    * passes the current results as input, and clears the search field when the backdrop is clicked.
    */
-  private openOverlay(term: string) {
+  private openOverlay() {
     const overlay = this.overlayService.openComponent(
       SearchResultsNewMessageComponent,
       'cdk-overlay-transparent-backdrop',

@@ -5,6 +5,7 @@
   @include dFlex();
   position: relative;
   flex: 1;
+  border-radius: 42px;
 }
 
 input {
@@ -14,7 +15,6 @@ input {
   padding-left: 45px;
   line-height: 70px;
   font-size: 24px;
-  z-index: 1001;
 }
 
 .inputWithSearchIcon {
@@ -28,11 +28,9 @@ input {
 .search-icon {
   position: absolute;
   right: 45px;
-  z-index: 1001;
 }
 
 .close {
-  z-index: 1001;
   cursor: pointer;
   height: 40px;
   aspect-ratio: 1;

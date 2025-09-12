@@ -1,4 +1,8 @@
-<div #searchbar class="input-wrapper">
+<div
+  #searchbar
+  class="input-wrapper"
+  [ngClass]="{ 'z-index-1001': searchService.overlaySearchResultsOpen }"
+>
   <input
     type="text"
     class="input-secondary"
@@ -12,7 +16,7 @@
   <div class="close" (click)="closeOverlayAndEmptyInput()"></div>
   } @else {<img
     class="search-icon"
-        src="./assets/img/search.svg"
+    src="./assets/img/search.svg"
     alt="search icon"
   />}
 </div>

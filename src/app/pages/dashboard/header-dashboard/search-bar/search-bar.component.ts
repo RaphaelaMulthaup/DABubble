@@ -77,7 +77,7 @@ export class SearchBarComponent implements OnInit, OnDestroy {
 
   constructor(
     private overlayService: OverlayService,
-    private searchService: SearchService,
+    public searchService: SearchService,
     public mobileService: MobileService
   ) {
     this.updateMobile = () => {
@@ -107,9 +107,11 @@ export class SearchBarComponent implements OnInit, OnDestroy {
       if (term.length > 0) {
         this.overlayService.closeAll(); // Close any open overlays when searching
         this.searchResultsExisting = true; // Set flag indicating search results are present
+        this.searchService.overlaySearchResultsOpen = true;
         this.openOverlay(term);
       } else {
         this.searchResultsExisting = false;
+        this.searchService.overlaySearchResultsOpen = false;
         this.overlayService.closeAll(); // Optionally close the overlay when search input is empty
       }
     });
@@ -163,6 +165,7 @@ export class SearchBarComponent implements OnInit, OnDestroy {
       .subscribe(() => {
         this.searchControl.setValue(''); // Feld leeren
         this.searchResultsExisting = false;
+        this.searchService.overlaySearchResultsOpen = false;
       });
   }
 

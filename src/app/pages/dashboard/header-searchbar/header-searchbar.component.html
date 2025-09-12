@@ -5,5 +5,8 @@
     class="input-secondary"
     placeholder="An: #channel, @jemand oder E-Mail-Adresse"
     [formControl]="searchControl"
+    [ngClass]="{
+      'z-index-1001': searchService.overlaySearchResultsNewMessageOpen
+    }"
   />
 </section>

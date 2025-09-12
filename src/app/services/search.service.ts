@@ -25,6 +25,10 @@ export class SearchService {
   public readonly userChannels$: Observable<ChannelInterface[]>; // Observable for channels the current user is a member of
   public readonly chatPosts$: Observable<PostInterface[]>; // Observable for posts in the user's chats
   public readonly channelPosts$: Observable<PostInterface[]>; // Observable for posts in the user's channels
+  // Indicates whether the search results overlay is currently open.
+  overlaySearchResultsOpen: boolean = false;
+  // Indicates whether the new message overlay is currently open.
+  overlaySearchResultsNewMessageOpen: boolean = false;
 
   constructor(
     private firestore: Firestore, // Firestore service to interact with the database
@@ -38,6 +42,7 @@ export class SearchService {
     this.chatPosts$ = this.getChatPosts$(); // Fetch chat posts for the user
     this.channelPosts$ = this.getChannelPosts$(); // Fetch channel posts for the user
   }
+
 
   /**
    * Fetches the list of all users from Firestore.
