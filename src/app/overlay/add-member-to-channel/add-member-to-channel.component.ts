@@ -75,10 +75,9 @@ export class AddMemberToChannelComponent {
       if (r.length > 0) {
         this.openAddMembersToChannel();
       }else if (this.resultsOverlayRef) {
-    this.overlayService.closeOne(this.resultsOverlayRef);
-    this.resultsOverlayRef = undefined;
-  }
-
+        this.overlayService.closeOne(this.resultsOverlayRef);
+        this.resultsOverlayRef = undefined;
+      }
     });
 
     // Combining search term and users from the service to filter users based on the term
@@ -138,7 +137,7 @@ export class AddMemberToChannelComponent {
           originY: 'bottom',
           overlayX: 'start',
           overlayY: 'top',
-        }
+        },
       },
       {
         results: this.results, // Pass filtered search results to the overlay component
@@ -148,5 +147,10 @@ export class AddMemberToChannelComponent {
     Object.assign(overlay.ref.instance, { overlayRef: overlay.overlayRef }); // Attach the overlay reference
 
       this.resultsOverlayRef = overlay.overlayRef;
+
+      this.resultsOverlayRef.backdropClick().subscribe(() => {
+      this.overlayService.closeOne(this.resultsOverlayRef!);
+      this.resultsOverlayRef = undefined;
+    });
   }
 }

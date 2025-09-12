@@ -36,6 +36,7 @@ export class UserListItemToChannelComponent {
       this.overlayService.addUser(user); // actualizezi signal-ul
       this.overlayService.triggerReset();
       this.overlayRef.dispose();
+      this.overlayService.closeOne(this.overlayRef);
     }
   }
 }
