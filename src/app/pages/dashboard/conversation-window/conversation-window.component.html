@@ -1,10 +1,7 @@
 <section class="conversation-window flex flex-col">
   <app-conversation-header></app-conversation-header>
-  @if (mobileDashboardState() !== 'new-message-view' && data$) {
+  @if (data$) {
   <app-window-display [messages$]="data$"></app-window-display>
   <app-current-post-input></app-current-post-input>
-  }
-  @if (mobileDashboardState() == 'new-message-view') {
-    <div class="below-from-header-searchbar"></div>
   }
 </section>

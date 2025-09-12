@@ -22,9 +22,10 @@ import { MobileDashboardState } from '../../shared/types/mobile-dashboard-state.
 import { ChatService } from '../../services/chat.service';
 import { MobileService } from '../../services/mobile.service';
 import { PostInterface } from '../../shared/models/post.interface';
+import { HeaderSearchbarComponent } from './header-searchbar/header-searchbar.component';
 
 /**
- * The DashboardComponent represents the main view of the dashboard. 
+ * The DashboardComponent represents the main view of the dashboard.
  * It contains the sidebar, conversation window, and message threads.
  * It also manages the state of the mobile dashboard, routing to the correct messages and answers.
  */
@@ -35,7 +36,8 @@ import { PostInterface } from '../../shared/models/post.interface';
     SidenavComponent, // Sidebar component
     ConversationWindowComponent, // Component to display the conversation
     CommonModule, // Angular common module for essential directives and pipes
-    HeaderDashboardComponent, // Header component for the dashboard
+    HeaderDashboardComponent,
+    HeaderSearchbarComponent,
   ],
   templateUrl: './dashboard.component.html', // HTML template for the dashboard
   styleUrl: './dashboard.component.scss', // Styles for the dashboard
@@ -46,7 +48,10 @@ export class DashboardComponent {
    * This will allow updating and reflecting the dashboard's mobile state.
    */
   mobileDashboardState!: WritableSignal<MobileDashboardState>;
-
+  // A flag indicating whether the application is in mobile view.
+  isMobile = false;
+  // Function to update the `isMobile` flag based on window size.
+  private updateMobile: () => void;
   /**
    * Observable that holds the messages in the active conversation.
    * The messages are fetched based on the `conversationType` and `conversationId`.
@@ -65,7 +70,13 @@ export class DashboardComponent {
     private chatActiveRouterService: ChatActiveRouterService, // Service for managing active chats
     private route: ActivatedRoute, // To access route parameters for conversation information
     private mobileService: MobileService // Service to manage mobile dashboard state
-  ) {}
+  ) {
+    // Initializing the function to update mobile view state based on window size
+    this.updateMobile = () => {
+      this.isMobile = this.mobileService.isMobile();
+    };
+    this.isMobile = this.mobileService.isMobile();
+  }
 
   /**
    * Initializes the component by setting up observables for messages and answers
@@ -75,6 +86,7 @@ export class DashboardComponent {
   ngOnInit() {
     // Initialize mobileDashboardState with the value from the MobileService
     this.mobileDashboardState = this.mobileService.mobileDashboardState;
+    window.addEventListener('resize', this.updateMobile);
 
     // Set up the observable for fetching messages from the active conversation
     this.messages$ = this.route.paramMap.pipe(

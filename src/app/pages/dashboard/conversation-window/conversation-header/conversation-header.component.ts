@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ChatActiveRouterService } from '../../../../services/chat-active-router.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HeaderChannelComponent } from './header-channel/header-channel.component';
-import { HeaderSearchbarComponent } from './header-searchbar/header-searchbar.component';
+import { HeaderSearchbarComponent } from '../../header-searchbar/header-searchbar.component';
 import { HeaderChatComponent } from './header-chat/header-chat.component';
 import { MobileService } from '../../../../services/mobile.service';
 import { MobileDashboardState } from '../../../../shared/types/mobile-dashboard-state.type';

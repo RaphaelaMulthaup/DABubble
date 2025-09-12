@@ -16,13 +16,13 @@ import {
   Subject,
 } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { SearchService } from '../../../../../services/search.service'; // Service for search functionality
+import { SearchService } from '../../../services/search.service'; // Service for search functionality
 import { JsonPipe } from '@angular/common'; // Pipe for converting objects to JSON
-import { SearchResult } from '../../../../../shared/types/search-result.type'; // Type definition for search results
-import { UserListItemComponent } from '../../../../../shared/components/user-list-item/user-list-item.component'; // Component to display user results
-import { ChannelListItemComponent } from '../../../../../shared/components/channel-list-item/channel-list-item.component'; // Component to display channel results
-import { OverlayService } from '../../../../../services/overlay.service'; // Service to manage overlays
-import { SearchResultsNewMessageComponent } from '../../../../../overlay/search-results-new-message/search-results-new-message.component'; // Component for displaying new search results in overlay
+import { SearchResult } from '../../../shared/types/search-result.type'; // Type definition for search results
+import { UserListItemComponent } from '../../../shared/components/user-list-item/user-list-item.component'; // Component to display user results
+import { ChannelListItemComponent } from '../../../shared/components/channel-list-item/channel-list-item.component'; // Component to display channel results
+import { OverlayService } from '../../../services/overlay.service'; // Service to manage overlays
+import { SearchResultsNewMessageComponent } from '../../../overlay/search-results-new-message/search-results-new-message.component'; // Component for displaying new search results in overlay
 
 @Component({
   selector: 'app-header-searchbar', // The component selector
@@ -92,11 +92,11 @@ export class HeaderSearchbarComponent {
       }
     });
     this.headerSearchbar.nativeElement.addEventListener('focus', () => {
-    const term = this.searchControl.value.trim();
-    if (term.length > 0) {
-      this.openOverlay(term);
-    }
-  });
+      const term = this.searchControl.value.trim();
+      if (term.length > 0) {
+        this.openOverlay(term);
+      }
+    });
   }
 
   /**
@@ -131,5 +131,6 @@ export class HeaderSearchbarComponent {
         results: this.results(), // Pass the search term to the overlay
       }
     );
+    this.headerSearchbar.nativeElement.querySelector('input')?.focus();
   }
 }
