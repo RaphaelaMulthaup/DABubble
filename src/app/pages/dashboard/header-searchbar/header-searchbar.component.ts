@@ -14,6 +14,7 @@ import {
   Subscription,
   takeUntil,
   Subject,
+  take,
 } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { SearchService } from '../../../services/search.service'; // Service for search functionality
@@ -107,9 +108,13 @@ export class HeaderSearchbarComponent {
     this.destroy$.next();
     this.destroy$.complete();
   }
-
+  
+  /**
+   * Opens a search results overlay positioned relative to the header search bar,
+   * passes the current results as input, and clears the search field when the backdrop is clicked.
+   */
   private openOverlay(term: string) {
-    this.overlayService.openComponent(
+    const overlay = this.overlayService.openComponent(
       SearchResultsNewMessageComponent,
       'cdk-overlay-transparent-backdrop',
       {
@@ -131,6 +136,13 @@ export class HeaderSearchbarComponent {
         results: this.results(), // Pass the search term to the overlay
       }
     );
-    this.headerSearchbar.nativeElement.querySelector('input')?.focus();
+    if (!overlay) return;
+
+    overlay.backdropClick$
+      .pipe(take(1), takeUntil(this.destroy$)) // take(1) = nur einmal pro Overlay, takeUntil = cleanup beim Component Destroy
+      .subscribe(() => {
+        this.searchControl.setValue(''); // Feld leeren
+      });
+    // this.headerSearchbar.nativeElement.querySelector('input')?.focus();
   }
 }
