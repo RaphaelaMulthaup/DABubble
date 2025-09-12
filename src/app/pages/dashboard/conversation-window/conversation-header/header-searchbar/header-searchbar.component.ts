@@ -6,7 +6,15 @@ import {
   ViewChild,
 } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { debounceTime, startWith, map, Observable, Subscription, takeUntil, Subject } from 'rxjs';
+import {
+  debounceTime,
+  startWith,
+  map,
+  Observable,
+  Subscription,
+  takeUntil,
+  Subject,
+} from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { SearchService } from '../../../../../services/search.service'; // Service for search functionality
 import { JsonPipe } from '@angular/common'; // Pipe for converting objects to JSON
@@ -34,6 +42,7 @@ export class HeaderSearchbarComponent {
    * It is initialized with an empty string and has the nonNullable option set to true.
    */
   searchControl = new FormControl<string>('', { nonNullable: true });
+  // Subject used to signal component/service destruction for unsubscribing from observables
   private destroy$ = new Subject<void>();
 
   /**
@@ -44,11 +53,11 @@ export class HeaderSearchbarComponent {
 
   /**
    * ViewChild for accessing the HTML element of the search bar.
-   * This is used to manage focus and position of the overlay.
+   * This is used to manage position of the overlay.
    */
   @ViewChild('headerSearchbar', { static: true })
   headerSearchbar!: ElementRef<HTMLElement>;
-
+  // Observable that emits the current search term as a string
   term$: Observable<string>;
 
   constructor(
@@ -67,7 +76,11 @@ export class HeaderSearchbarComponent {
       initialValue: [], // Initial value for the results is an empty array
     });
   }
-
+  /**
+   * Lifecycle hook that runs after component initialization.
+   * Subscribes to the search term observable and dynamically opens or closes
+   * the search results overlay depending on whether the user has entered text.
+   */
   ngOnInit() {
     // Subscribe to the search term observable
     this.term$.pipe(takeUntil(this.destroy$)).subscribe((term) => {
