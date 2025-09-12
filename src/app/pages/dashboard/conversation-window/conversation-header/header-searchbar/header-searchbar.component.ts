@@ -85,33 +85,18 @@ export class HeaderSearchbarComponent {
     // Subscribe to the search term observable
     this.term$.pipe(takeUntil(this.destroy$)).subscribe((term) => {
       if (term.length > 0) {
-        this.overlayService.closeAll(); // Close any open overlays when searching
-        this.overlayService.openComponent(
-          SearchResultsNewMessageComponent,
-          'cdk-overlay-transparent-backdrop',
-          {
-            origin: this.headerSearchbar.nativeElement, // Position the overlay relative to the search bar
-            originPosition: {
-              originX: 'center',
-              originY: 'bottom',
-              overlayX: 'center',
-              overlayY: 'bottom',
-            },
-            originPositionFallback: {
-              originX: 'center',
-              originY: 'bottom',
-              overlayX: 'center',
-              overlayY: 'top',
-            },
-          },
-          {
-            results: this.results(), // Pass the search term to the overlay
-          }
-        );
+        this.overlayService.closeAll();
+        this.openOverlay(term); // Close any open overlays when searching
       } else {
         this.overlayService.closeAll(); // Optionally close the overlay when search input is empty
       }
     });
+    this.headerSearchbar.nativeElement.addEventListener('focus', () => {
+    const term = this.searchControl.value.trim();
+    if (term.length > 0) {
+      this.openOverlay(term);
+    }
+  });
   }
 
   /**
@@ -121,5 +106,30 @@ export class HeaderSearchbarComponent {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  private openOverlay(term: string) {
+    this.overlayService.openComponent(
+      SearchResultsNewMessageComponent,
+      'cdk-overlay-transparent-backdrop',
+      {
+        origin: this.headerSearchbar.nativeElement, // Position the overlay relative to the search bar
+        originPosition: {
+          originX: 'center',
+          originY: 'bottom',
+          overlayX: 'center',
+          overlayY: 'bottom',
+        },
+        originPositionFallback: {
+          originX: 'center',
+          originY: 'bottom',
+          overlayX: 'center',
+          overlayY: 'top',
+        },
+      },
+      {
+        results: this.results(), // Pass the search term to the overlay
+      }
+    );
   }
 }

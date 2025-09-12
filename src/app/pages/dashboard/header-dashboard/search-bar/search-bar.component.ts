@@ -106,32 +106,16 @@ export class SearchBarComponent implements OnInit, OnDestroy {
       if (term.length > 0) {
         this.overlayService.closeAll(); // Close any open overlays when searching
         this.searchResultsExisting = true; // Set flag indicating search results are present
-        this.overlayService.openComponent(
-          SearchResultsComponent,
-          'cdk-overlay-transparent-backdrop',
-          {
-            origin: this.searchbar.nativeElement, // Position the overlay relative to the search bar
-            originPosition: {
-              originX: 'center',
-              originY: 'bottom',
-              overlayX: 'center',
-              overlayY: 'bottom',
-            },
-            originPositionFallback: {
-              originX: 'center',
-              originY: 'bottom',
-              overlayX: 'center',
-              overlayY: 'top',
-            },
-          },
-          {
-            results$: this.groupedResults(), // Pass grouped results to the overlay component
-            searchTerm: term, // Pass the search term to the overlay
-          }
-        );
+        this.openOverlay(term);
       } else {
         this.searchResultsExisting = false;
         this.overlayService.closeAll(); // Optionally close the overlay when search input is empty
+      }
+    });
+    this.searchbar.nativeElement.addEventListener('focus', () => {
+      const term = this.searchControl.value.trim();
+      if (term.length > 0 && this.searchResultsExisting) {
+        this.openOverlay(term);
       }
     });
   }
@@ -140,6 +124,32 @@ export class SearchBarComponent implements OnInit, OnDestroy {
     // Clean up subscriptions when the component is destroyed
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  private openOverlay(term: string) {
+    this.overlayService.openComponent(
+      SearchResultsComponent,
+      'cdk-overlay-transparent-backdrop',
+      {
+        origin: this.searchbar.nativeElement, // Position the overlay relative to the search bar
+        originPosition: {
+          originX: 'center',
+          originY: 'bottom',
+          overlayX: 'center',
+          overlayY: 'bottom',
+        },
+        originPositionFallback: {
+          originX: 'center',
+          originY: 'bottom',
+          overlayX: 'center',
+          overlayY: 'top',
+        },
+      },
+      {
+        results$: this.groupedResults(), // Pass grouped results to the overlay component
+        searchTerm: term, // Pass the search term to the overlay
+      }
+    );
   }
 
   /***

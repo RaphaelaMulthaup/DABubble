@@ -14,6 +14,7 @@ input {
   padding-left: 45px;
   line-height: 70px;
   font-size: 24px;
+  z-index: 1001;
 }
 
 .inputWithSearchIcon {
@@ -27,6 +28,7 @@ input {
 .search-icon {
   position: absolute;
   right: 45px;
+  z-index: 1001;
 }
 
 .close {
