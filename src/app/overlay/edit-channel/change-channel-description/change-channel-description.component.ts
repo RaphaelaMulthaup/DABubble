@@ -5,10 +5,11 @@ import { FormsModule } from '@angular/forms';
 import { ChannelInterface } from '../../../shared/models/channel.interface';
 import { Observable } from 'rxjs';
 import { UserInterface } from '../../../shared/models/user.interface';
+import { UserListItemComponent } from '../../../shared/components/user-list-item/user-list-item.component';
 
 @Component({
   selector: 'app-change-channel-description',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, UserListItemComponent],
   templateUrl: './change-channel-description.component.html',
   styleUrl: './change-channel-description.component.scss',
 })

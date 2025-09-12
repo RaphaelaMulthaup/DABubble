@@ -20,7 +20,7 @@
     <div class="flex flex-col w-full gap-[20px]">
         <h4>Erstellt von</h4>
         @if(user$ | async; as user){
-        <span class="createdBy">{{user.name}}</span>
+        <app-user-list-item [user]="user" [showProfile]="true"/>
         }
     </div>
 </div>
