@@ -26,13 +26,14 @@ import { UserListItemToChannelComponent } from '../../shared/components/user-lis
   selector: 'app-add-member-to-channel',
   imports: [HeaderOverlayComponent, CommonModule, ReactiveFormsModule],
   templateUrl: './add-member-to-channel.component.html', // Path to the HTML template
-  styleUrl: './add-member-to-channel.component.scss',  // Path to the styling file
+  styleUrls: ['./add-member-to-channel.component.scss'],  // Path to the styling file
 })
 export class AddMemberToChannelComponent {
   @Input() channelDetails$?: Observable<ChannelInterface | undefined>; // Observable to hold channel details
   @Output() overlayRef!: OverlayRef; // Overlay reference to manage the overlay's lifecycle
   ListWithMember: UserInterface[] = []; // List of users to be added to the channel
   overlay: string = ''; // String used to manage overlay state
+  private resultsOverlayRef?: OverlayRef; // Here save the overlay ref to close if results are null
 
       @ViewChild('addMemberSearchBar', { static: false })
   addMemberSearchBar!: ElementRef<HTMLElement>;
@@ -73,8 +74,11 @@ export class AddMemberToChannelComponent {
       const r = this.results();
       if (r.length > 0) {
         this.openAddMembersToChannel();
-      }
-      console.log(r);
+      }else if (this.resultsOverlayRef) {
+    this.overlayService.closeOne(this.resultsOverlayRef);
+    this.resultsOverlayRef = undefined;
+  }
+
     });
 
     // Combining search term and users from the service to filter users based on the term
@@ -124,10 +128,9 @@ export class AddMemberToChannelComponent {
 
   // Method to open the overlay for adding members to the channel
   openAddMembersToChannel() {
-    console.log('Opening overlay...');
     const overlay = this.overlayService.openComponent(
       UserListItemToChannelComponent, // Component to display users
-      'cdk-overlay-dark-backdrop', // Styling for the overlay backdrop
+      null, // Styling for the overlay backdrop
       {
         origin: this.addMemberSearchBar.nativeElement, // Positioning of the overlay relative to the event
         originPosition: {
@@ -141,8 +144,9 @@ export class AddMemberToChannelComponent {
         results: this.results, // Pass filtered search results to the overlay component
       }
     );
-
     if (!overlay) return; // If overlay is not created, return
     Object.assign(overlay.ref.instance, { overlayRef: overlay.overlayRef }); // Attach the overlay reference
+
+      this.resultsOverlayRef = overlay.overlayRef;
   }
 }
