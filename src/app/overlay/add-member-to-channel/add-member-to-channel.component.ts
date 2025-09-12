@@ -6,6 +6,8 @@ import {
   inject,
   OnInit,
   Output,
+  ViewChild,
+  ElementRef,
 } from '@angular/core';
 import { HeaderOverlayComponent } from '../../shared/components/header-overlay/header-overlay.component';
 import { ChannelInterface } from '../../shared/models/channel.interface';
@@ -31,6 +33,9 @@ export class AddMemberToChannelComponent {
   @Output() overlayRef!: OverlayRef; // Overlay reference to manage the overlay's lifecycle
   ListWithMember: UserInterface[] = []; // List of users to be added to the channel
   overlay: string = ''; // String used to manage overlay state
+
+      @ViewChild('addMemberSearchBar', { static: false })
+  addMemberSearchBar!: ElementRef<HTMLElement>;
 
   // Reactive form control for the search input
   searchControl = new FormControl<string>('', { nonNullable: true });
@@ -67,8 +72,9 @@ export class AddMemberToChannelComponent {
     effect(() => {
       const r = this.results();
       if (r.length > 0) {
-        this.openAddMembersToChannel(new MouseEvent('click'));
+        this.openAddMembersToChannel();
       }
+      console.log(r);
     });
 
     // Combining search term and users from the service to filter users based on the term
@@ -91,6 +97,8 @@ export class AddMemberToChannelComponent {
     // Clear the list of users in the service when the component is initialized
     this.overlayService.clearUsers();
   }
+
+
 
   // Method to extract the first word of a user's name
   getFirstWord(name: string): string {
@@ -115,24 +123,19 @@ export class AddMemberToChannelComponent {
   }
 
   // Method to open the overlay for adding members to the channel
-  openAddMembersToChannel(event: MouseEvent) {
+  openAddMembersToChannel() {
+    console.log('Opening overlay...');
     const overlay = this.overlayService.openComponent(
       UserListItemToChannelComponent, // Component to display users
       'cdk-overlay-dark-backdrop', // Styling for the overlay backdrop
       {
-        origin: event.currentTarget as HTMLElement, // Positioning of the overlay relative to the event
+        origin: this.addMemberSearchBar.nativeElement, // Positioning of the overlay relative to the event
         originPosition: {
           originX: 'start',
           originY: 'bottom',
           overlayX: 'start',
           overlayY: 'top',
-        },
-        originPositionFallback: {
-          originX: 'start',
-          originY: 'bottom',
-          overlayX: 'start',
-          overlayY: 'top',
-        },
+        }
       },
       {
         results: this.results, // Pass filtered search results to the overlay component
