@@ -1,5 +1,4 @@
-import { Component, effect, inject, Input, Signal } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Component, effect,  Input, Signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UserInterface } from '../../models/user.interface';
 import { OverlayService } from '../../../services/overlay.service';

@@ -1,10 +1,17 @@
 
-<div [ngClass]="overlay"  class="flex">
-  <div class="mytest">
-      <app-header-overlay [overlayHeadline]="'Leute hinzufugen'" [overlayRef]="overlayRef" />
+<div [ngClass]="onBottom ? 'overlay-bottom' : overlay "  [ngStyle]="overlay ? { 'padding': '0'} : {}" class="flex">
+  @if(channelDetails$ | async; as channelDetails){
+  <div class="mytest" [ngStyle]="overlay ? { 'max-width':'541px'} : {} ">
+
+      <div>
+          <app-header-overlay [overlayHeadline]="'Leute hinzufugen'" [overlayRef]="overlayRef" />
+          <div class="flex gap-[15px]">
+              <span class="tag"> </span>
+              <span class="flex w-full">{{ channelDetails.name }}</span>
+          </div>
+      </div>
       <div class="flex w-full flex-col">
-        @if(channelDetails$ | async; as channelDetails){
-        <span class="flex w-full">{{ channelDetails.name }}</span>
+
         <div class="cont" >
           @for(user of ListWithMember; track $index){
           <li class="container">
@@ -19,7 +26,8 @@
         <button class="btn-primary" (click)="addMembertoChannel(channelDetails.id!)" [disabled]="ListWithMember.length === 0">
           Hinzufügen
         </button>
-        }
+
       </div>
   </div>
+          }
 </div>

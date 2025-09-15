@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import { Component, EventEmitter, Input, Output} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ChannelsService } from '../../../services/channels.service';
 import { FormsModule } from '@angular/forms';
@@ -26,7 +26,7 @@ export class ChangeChannelDescriptionComponent {
   constructor(private channelService: ChannelsService) {}
 
   async saveDescription(newName: string) {
-    this.channelService.changeChannelDescription(this.channelId!, newName);
+    await this.channelService.changeChannelDescription(this.channelId!, newName);
     this.isEditActive = !this.isEditActive;
         this.editActiveChange.emit(this.isEditActive);
 
@@ -38,7 +38,7 @@ export class ChangeChannelDescriptionComponent {
 
     if (this.isEditActive && this.channel) {
       this.descriptionInput = this.channel.description;
-      
+
     }
   }
 }
