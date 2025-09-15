@@ -1,36 +1,29 @@
-<div class="overlay-left flex flex-col max-w-[872px]" [class.mobile-overlay]="isMobile" >
-  <app-header-overlay [overlayHeadline]="channelName || ''" />
-  <div class="flex flex-col w-full py-[16px] px-[20px] gap-[20px] items-center">
-    @if(channelDetails$ | async; as channel){
-      <app-change-channel-name
-        class="container w-full"
-        [class.container-boarder]="!editChannelName"
-        [channelId]="channelId"
-        [channel]="channel"
-        (editActiveChange)="editName($event)"
-      />
-      <app-change-channel-description
-        class="container gap-[20px] w-full"
-        [class.container-boarder]="!editChannelDescription"
-        [channelId]="channelId"
-        [channel]="channel"
-        [user$]="user$"
-        (editActiveChange)="editDescription($event)"
-      />
-    }
-    @if(isMobile){
-      <app-channel-members class="w-full container items-start container-boarder" [channelDetails$]="channelDetails$" />
-    }
+<div class="flex  max-w-[832px]" [ngClass]="isMobile ? 'mobile-overlay' : 'overlay-left'" >
+    <div class="flex vwitdh flex-col">
+        <app-header-overlay [overlayHeadline]="channelName || ''" />
+        <div class="flex flex-col w-full py-[16px] px-[20px] gap-[20px] items-center">
+            @if(channelDetails$ | async; as channel){
+            <app-change-channel-name class="container w-full" [class.container-boarder]="!editChannelName" [channelId]="channelId"
+              [channel]="channel" (editActiveChange)="editName($event)" />
+            <app-change-channel-description class="container gap-[20px] w-full"
+              [class.container-boarder]="!editChannelDescription" [channelId]="channelId" [channel]="channel" [user$]="user$"
+              (editActiveChange)="editDescription($event)" />
+            }
+            @if(isMobile){
+            <app-channel-members class="w-full container items-start container-boarder" [channelDetails$]="channelDetails$" />
+              }
+        </div>
+      <div class="flex justify-end w-full">
+        @if(currentUser == createdById){
+        <button class="btn-primary" (click)="channelService.deleteChannel(channelId!)">
+          Channel loschen
+        </button>
+        }@else {
+        <button class="btn-primary" (click)="channelService.leaveChannel(channelId!, currentUser!)">
+          Channel verlassen
+        </button>
+        }
+      </div>
   </div>
-  <div class="flex justify-end w-full">
-    @if(currentUser == createdById){
-    <button class="btn-primary" (click)="channelService.deleteChannel(channelId!)">
-      Channel loschen
-    </button>
-    }@else {
-    <button class="btn-primary" (click)="channelService.leaveChannel(channelId!, currentUser!)">
-      Channel verlassen
-    </button>
-    }
-  </div>
+    
 </div>
