@@ -18,6 +18,7 @@ import { ResetPasswordComponent } from './reset-password/reset-password.componen
 import { FormControl, FormGroup } from '@angular/forms';
 import { CreateAccountBtnComponent } from '../../shared/components/create-account-btn/create-account-btn.component';
 import { HeaderOutsideDashboardComponent } from '../../shared/components/header-outside-dashboard/header-outside-dashboard.component';
+import { doc } from '@firebase/firestore';
 
 @Component({
   selector: 'app-non-auth',
@@ -72,7 +73,7 @@ export class NonAuthComponent {
    */
   ngOnInit() {
     const usersRef = collection(this.firestore, 'users');
-    this.showLogo();
+    this.handleIntroState();
 
     // URL-Parameter abfragen
     this.route.queryParams.subscribe((params) => {
@@ -110,5 +111,27 @@ export class NonAuthComponent {
 
   procedToReset() {
     this.currentState = 'reset-password-confirm';
+  }
+
+  /**
+   * shows intro animation only if currentState is "login"
+   */
+  handleIntroState() {
+    if (this.currentState = 'login') {
+      this.showLogo();
+    } else {
+      this.noIntro();
+    }
+  }
+
+  /**
+   * Make sure page is displayed correct if currentState is not "login"
+   */
+  noIntro() {
+    let intro = document.querySelector('.intro');
+    let showLogo = document.querySelector('.logo');
+
+    intro?.classList.add('hide');
+    showLogo?.classList.add('.show-logo');
   }
 }
