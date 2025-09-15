@@ -330,9 +330,9 @@ export class CurrentPostInput implements OnInit, OnDestroy {
       overlayRef.ref.instance.channelSelected?.subscribe((channel: any) => {
         this.insertName(channel.name, 'channel');
       });
-      this.searchResults = [];
-      this.searchChar = null;
-      this.searchText = null;
+      // this.searchResults = [];
+      // this.searchChar = null;
+      // this.searchText = null;
     }
   }
 
