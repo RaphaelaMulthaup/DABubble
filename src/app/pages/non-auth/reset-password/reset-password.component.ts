@@ -34,7 +34,6 @@ export class ResetPasswordComponent implements OnInit{
     private route: ActivatedRoute,
     private authService : AuthService,
     private router: Router,
-    private cdr: ChangeDetectorRef
   ) {
       const navigation = this.router.getCurrentNavigation();
       this.uid = navigation?.extras.state?.['uid'];
@@ -73,14 +72,14 @@ export class ResetPasswordComponent implements OnInit{
  /**
   * Fetch Email and UserId
   */
-  async fetchUserEmail() {
-    const usersRef = doc(this.firestore, 'users', this.uid);
-    const userSnap = await getDoc(usersRef);
-      if (userSnap.exists()) {
-        const userData = userSnap.data();
-        this.email = userData['email'];
-      }
-  }
+  // async fetchUserEmail() {
+  //   const usersRef = doc(this.firestore, 'users', this.uid);
+  //   const userSnap = await getDoc(usersRef);
+  //     if (userSnap.exists()) {
+  //       const userData = userSnap.data();
+  //       this.email = userData['email'];
+  //     }
+  // }
 
   onSubmit() {
     this.checkPasswords();
