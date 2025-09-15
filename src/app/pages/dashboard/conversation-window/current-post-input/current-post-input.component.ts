@@ -278,7 +278,8 @@ export class CurrentPostInput implements OnInit, OnDestroy {
       this.postTextInput.nativeElement.innerHTML
     );
 
-    if (postText.trim() == '') return this.postService.focusAtEndEditable(this.postTextInput);
+    if (postText.trim() == '')
+      return this.postService.focusAtEndEditable(this.postTextInput);
 
     if (this.messageToReplyId) {
       this.postService.createAnswer(
@@ -329,6 +330,9 @@ export class CurrentPostInput implements OnInit, OnDestroy {
       overlayRef.ref.instance.channelSelected?.subscribe((channel: any) => {
         this.insertName(channel.name, 'channel');
       });
+      this.searchResults = [];
+      this.searchChar = null;
+      this.searchText = null;
     }
   }
 
@@ -345,9 +349,6 @@ export class CurrentPostInput implements OnInit, OnDestroy {
     if (this.searchText) this.deleteBeforeCursor(this.searchText.length);
     this.postTextInput.nativeElement.innerHTML += text;
     this.postService.focusAtEndEditable(this.postTextInput);
-    this.searchResults = [];
-    this.searchChar = null;
-    this.searchText = null;
   }
 
   /**
