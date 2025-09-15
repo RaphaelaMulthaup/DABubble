@@ -20,32 +20,41 @@ import {
   switchMap,
   takeUntil,
 } from 'rxjs';
-import { ChatActiveRouterService } from '../../../../services/chat-active-router.service';
+import { ConversationActiveRouterService } from '../../../../services/conversation-active-router.service';
 import { tap } from 'rxjs';
 import { ChatService } from '../../../../services/chat.service';
 import { EmptyChatViewComponent } from './empty-chat-view/empty-chat-view.component';
 import { MobileDashboardState } from '../../../../shared/types/mobile-dashboard-state.type';
 import { MobileService } from '../../../../services/mobile.service';
+import { EmptyChannelViewComponent } from './empty-channel-view/empty-channel-view.component';
 
 @Component({
   selector: 'app-window-display', // Component selector used in parent templates
-  imports: [DisplayedPostComponent, CommonModule, EmptyChatViewComponent], // Imports child component to display individual messages
+  imports: [
+    DisplayedPostComponent,
+    CommonModule,
+    EmptyChatViewComponent,
+    EmptyChannelViewComponent,
+  ], // Child components needed in the template
   templateUrl: './window-display.component.html', // External HTML template
-  styleUrl: './window-display.component.scss', // SCSS styles for this component
+  styleUrl: './window-display.component.scss', // External SCSS styles
 })
 export class WindowDisplayComponent {
   @Input() messages$!: import('rxjs').Observable<PostInterface[]>;
   // an array with all posts in this conversation
-  postInfo: PostInterface[] = [];
   currentConversationType?: 'channel' | 'chat';
-  currentConversationId?: string; // <-- currently displayed conversation
   postAnsweredId?: string | null;
   postAnswered?: PostInterface;
-  @ViewChildren(DisplayedPostComponent, { read: ElementRef })
-  postElements!: QueryList<ElementRef>;
   mobileDashboardState: WritableSignal<MobileDashboardState>;
+  // Observable stream of all posts in the current conversation
 
-  // an array with all the days of the week to show when a post was created
+  postInfo: PostInterface[] = []; // Cached list of posts
+  currentConversationId?: string; // Current conversation ID
+  @ViewChildren(DisplayedPostComponent, { read: ElementRef })
+  postElements!: QueryList<ElementRef>; // References to all rendered posts
+  channelTyp$?: Observable<string>; // Observable for channel type (chat or channel)
+
+  // Localized days of the week for displaying timestamps
   days = [
     'Sonntag',
     'Montag',
@@ -55,8 +64,9 @@ export class WindowDisplayComponent {
     'Freitag',
     'Samstag',
   ];
-  private pendingScrollTo?: string; // stores the post id to scroll to
-  private destroy$ = new Subject<void>(); // for cleaning up subscriptions
+
+  private pendingScrollTo?: string; // Stores a post ID to scroll to once available
+  private destroy$ = new Subject<void>(); // Used to clean up subscriptions
 
   constructor(
     private el: ElementRef,
@@ -64,16 +74,22 @@ export class WindowDisplayComponent {
     private router: Router,
     public postService: PostService,
     private chatService: ChatService,
-    public mobileService: MobileService
+    public mobileService: MobileService,
+    private conversationActiveRouterService: ConversationActiveRouterService
   ) {
     this.mobileDashboardState = this.mobileService.mobileDashboardState;
   }
 
   /**
-   * Subscribe to the BehaviorSubject from PostService
-   * Keeps 'messages' updated with the latest conversation in real-time
+   * Lifecycle hook: initializes subscriptions to route params,
+   * messages, and scroll requests.
    */
   ngOnInit() {
+    this.channelTyp$ = this.conversationActiveRouterService.getConversationType$(
+      this.route
+    );
+
+    // Subscribe to conversation ID from route params
     this.route.params.pipe(takeUntil(this.destroy$)).subscribe((params) => {
       this.currentConversationId = params['conversationId']; // get chat id from route params
       this.currentConversationType = params['conversationType'];
@@ -104,36 +120,53 @@ export class WindowDisplayComponent {
       );
     });
 
-    // Subscribe to selected post service to handle scroll requests
+    // Subscribe to scroll requests from PostService
     this.postService.selected$
       .pipe(takeUntil(this.destroy$))
       .subscribe((postId) => {
         this.handleScrollRequest(postId);
       });
+
+    // Handle scroll-to from query parameters
+    this.route.queryParams
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((params) => {
+        const id = params['scrollTo'];
+        if (id) this.handleScrollRequest(id);
+      });
   }
 
+  /**
+   * Lifecycle hook: runs after view init.
+   * Used to scroll to posts once DOM elements are available.
+   */
   ngAfterViewInit() {
-    // If new ViewChildren come (e.g., after lazy loading), try the pending scroll ID
+    // Retry pending scroll requests when ViewChildren change
     this.postElements.changes.pipe(takeUntil(this.destroy$)).subscribe(() => {
       if (this.pendingScrollTo) {
         this.handleScrollRequest(this.pendingScrollTo);
       }
     });
 
-    // If there's already a scrollTo in the URL when the component renders, handle it
+    // Handle initial scrollTo param (on first load)
     const initial = this.route.snapshot.queryParams['scrollTo'];
     if (initial) this.handleScrollRequest(initial);
   }
 
+  /**
+   * Lifecycle hook: cleanup when component is destroyed.
+   */
   ngOnDestroy() {
-    // Cleanup on component destroy
     this.tryDeleteEmptyChat(this.currentConversationId);
     this.destroy$.next();
     this.destroy$.complete();
   }
 
+  /**
+   * Try to delete the chat if it has no messages.
+   * @param chatId - ID of the chat to delete
+   */
   private tryDeleteEmptyChat(chatId?: string): void {
-    // If the chat is empty, try to delete it from the chat service
     if (chatId && this.postInfo.length === 0) {
       this.chatService
         .deleteChat(chatId)
@@ -143,45 +176,42 @@ export class WindowDisplayComponent {
   }
 
   /**
-   * Called when new content is loaded (e.g., different chat or channel)
-   * @param newChatId The new chat ID
-   * @param newMessages The new set of messages
+   * Called whenever a new conversation or messages arrive.
+   * Updates internal state and deletes old empty chats if needed.
+   * @param newChatId - ID of the new conversation
+   * @param newMessages - Array of new posts
    */
   onContentChange(newChatId?: string, newMessages: PostInterface[] = []) {
     const previousChatId = this.currentConversationId;
 
-    // Update data
     this.currentConversationId = newChatId;
     this.postInfo = newMessages;
 
-    // If the chat has changed, try to delete the previous chat
     if (previousChatId && previousChatId !== newChatId) {
       this.tryDeleteEmptyChat(previousChatId);
     }
   }
 
+  /**
+   * Handles a scroll request to a specific post ID.
+   * Highlights the post, scrolls to it, and clears the URL param.
+   * @param postId - ID of the post to scroll to
+   */
   private handleScrollRequest(postId: string) {
     if (!postId) return;
     this.pendingScrollTo = postId;
 
-    // Try to find the post element
     const maybe = this.postElements?.find(
       (e) => (e.nativeElement as HTMLElement).id === postId
     );
-    if (!maybe) {
-      // Not in the DOM yet, so try later
-      return;
-    }
+    if (!maybe) return; // Not yet in DOM
+
     this.pendingScrollTo = undefined;
     const el = maybe.nativeElement as HTMLElement;
 
-    // 1) Trigger highlight effect
     this.triggerHighlight(el);
-
-    // 2) Scroll to the post if needed
     this.scrollIfNeeded(el);
 
-    // 3) Remove scroll-parameter from the URL
     this.router.navigate([], {
       queryParams: { scrollTo: null },
       queryParamsHandling: 'merge',
@@ -189,19 +219,26 @@ export class WindowDisplayComponent {
     });
   }
 
+  /**
+   * Triggers a highlight animation on a given post element.
+   */
   private triggerHighlight(el: HTMLElement) {
-    // Remove & reflow & add class to trigger animation
     el.classList.remove('highlight');
     void el.offsetWidth; // force reflow
     el.classList.add('highlight');
     window.setTimeout(() => el.classList.remove('highlight'), 2000);
   }
 
+  /**
+   * Finds the scrollable parent element for a given node.
+   * @param node - The child element
+   * @returns The nearest scrollable parent
+   */
   private getScrollParent(node: HTMLElement | null): HTMLElement {
-    // Determine the scroll parent for the element
     if (!node)
       return (document.scrollingElement ||
         document.documentElement) as HTMLElement;
+
     let parent = node.parentElement;
     while (parent) {
       const style = getComputedStyle(parent);
@@ -220,11 +257,15 @@ export class WindowDisplayComponent {
       document.documentElement) as HTMLElement;
   }
 
+  /**
+   * Checks if an element is fully visible in a scroll container.
+   * @param el - The element to check
+   * @param container - The scroll container
+   */
   private isFullyVisibleInContainer(
     el: HTMLElement,
     container: HTMLElement
   ): boolean {
-    // Check if the element is fully visible in its scroll container
     const elRect = el.getBoundingClientRect();
     const containerRect = container.getBoundingClientRect();
     if (
@@ -244,17 +285,17 @@ export class WindowDisplayComponent {
     }
   }
 
+  /**
+   * Scrolls an element into view if it's not already visible.
+   * Smooth scrolls and centers the element in the container.
+   * @param el - Element to scroll to
+   */
   private scrollIfNeeded(el: HTMLElement) {
-    // Determine if scrolling is needed
     const scrollParent = this.getScrollParent(el);
     const alreadyVisible = this.isFullyVisibleInContainer(el, scrollParent);
 
-    if (alreadyVisible) {
-      // Already visible → Highlight will show anyway
-      return;
-    }
+    if (alreadyVisible) return;
 
-    // Delay scroll to allow DOM stabilization
     setTimeout(() => {
       const elRect = el.getBoundingClientRect();
       const parentRect = scrollParent.getBoundingClientRect();
@@ -264,7 +305,6 @@ export class WindowDisplayComponent {
         scrollParent === document.documentElement ||
         scrollParent === document.body
       ) {
-        // Scroll the window
         const absoluteTarget =
           window.pageYOffset +
           elRect.top -
@@ -274,7 +314,6 @@ export class WindowDisplayComponent {
           behavior: 'smooth',
         });
       } else {
-        // Scroll the parent element
         const offset = elRect.top - parentRect.top;
         const target = Math.max(
           0,
@@ -288,14 +327,13 @@ export class WindowDisplayComponent {
           scrollParent.scrollTop = target;
         }
       }
-    }, 0); // 0ms is enough to stabilize the Angular layout
+    }, 0);
   }
 
   /**
-   * This function returns true when the creation-date of a post is not equal to the creation-date of the previous post.
-   * This way, the creation-date is only shown when a message is the first one with that creation-date.
-   *
-   * @param index the index of the post
+   * Returns true if the current post has a different creation date
+   * than the previous one. Ensures dates are only displayed once per day.
+   * @param index - Index of the current post
    */
   shouldShowDate(index: number): boolean {
     if (index > 0) {

@@ -25,7 +25,7 @@ import { OverlayService } from '../../../../../services/overlay.service';
 import { FormsModule } from '@angular/forms';
 import { ProfileViewOtherUsersComponent } from '../../../../../overlay/profile-view-other-users/profile-view-other-users.component';
 import { ActivatedRoute } from '@angular/router';
-import { ChatActiveRouterService } from '../../../../../services/chat-active-router.service';
+import { ConversationActiveRouterService } from '../../../../../services/conversation-active-router.service';
 import { Observable } from 'rxjs';
 import { ReactionInterface } from '../../../../../shared/models/reaction.interface';
 import { PostService } from '../../../../../services/post.service';
@@ -64,14 +64,14 @@ export class DisplayedPostComponent {
     private authService: AuthService,
     private userService: UserService,
     private route: ActivatedRoute,
-    private chatActiveRouterService: ChatActiveRouterService,
+    private conversationActiveRouterService: ConversationActiveRouterService,
     public overlayService: OverlayService,
     public postService: PostService,
     public mobileService: MobileService
   ) {}
 
   ngOnChanges() {
-    this.chatActiveRouterService
+    this.conversationActiveRouterService
       .getParams$(this.route)
       .pipe(takeUntil(this.destroy$))
       .subscribe(({ conversationType, conversationId }) => {

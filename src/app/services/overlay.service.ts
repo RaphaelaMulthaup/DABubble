@@ -25,6 +25,13 @@ import { UserInterface } from '../shared/models/user.interface';
 export interface OverlayData {
   channel?: Observable<ChannelInterface | undefined>;
 }
+// Represents the result of opening an component in an overlay, including its reference, overlay, and observables for closing and backdrop clicks.
+export interface OpenComponentResult<T> {
+  ref: ComponentRef<T>;
+  overlayRef: OverlayRef;
+  afterClosed$: Observable<void>;
+  backdropClick$: Observable<void>;
+}
 
 /**
  * OverlayService is responsible for controlling the visibility and content of an overlay.
@@ -79,15 +86,21 @@ export class OverlayService {
     this.searchReset.set(false);
   }
 
-  /**
-   * Opens a component as an overlay.
-   * @param component The component to be displayed in the overlay.
-   * @param backdropType The type of backdrop (dark or transparent).
-   * @param position The position strategy for the overlay (connected or global).
-   * @param data Optional data to pass to the component.
-   * @returns An object containing the component reference, overlay reference, and observable for closure.
-   */
-  openComponent<T extends Object>(
+/**
+   * Opens a component inside an overlay with configurable backdrop and positioning options.
+   * 
+   * @template T - The component type to be opened.
+   * @param component - The component class to render inside the overlay.
+   * @param backdropType - Defines the backdrop style (`dark`, `transparent`) or disables it (`null`).
+   * @param position - Configuration for overlay placement:
+   *   - `origin`: The HTML element the overlay is connected to (optional).
+   *   - `originPosition`: Preferred position relative to the origin (optional).
+   *   - `originPositionFallback`: Fallback position if the preferred one is not possible (optional).
+   *   - `globalPosition`: Global positioning when not connected to an element (`center` or `bottom`).
+   * @param data - Optional partial data object to assign to the component instance.
+   * @returns An `OpenComponentResult` containing the component reference, overlay reference,
+   *          and observables for closure and backdrop clicks, or `undefined` if opening failed.
+   */  openComponent<T extends Object>(
     component: Type<T>,
     backdropType:
       | 'cdk-overlay-dark-backdrop'
@@ -100,14 +113,10 @@ export class OverlayService {
       globalPosition?: 'center' | 'bottom'; // Position if the overlay is not connected to an element (center or bottom).
     },
     data?: Partial<T>
-  ):
-    | {
-        ref: ComponentRef<T>;
-        overlayRef: OverlayRef;
-        afterClosed$: Observable<void>;
-      }
-    | undefined {
+  ): OpenComponentResult<T> | undefined {
     const destroy$ = new Subject<void>();
+    const   backdropClickSubject = new Subject<void>();
+
     let positionStrategy;
 
     // Determine position strategy based on whether the overlay is connected to an element or is global.
@@ -157,7 +166,10 @@ export class OverlayService {
     this.overlayRef
       .backdropClick()
       .pipe(takeUntil(destroy$))
-      .subscribe(() => this.closeAll());
+      .subscribe(() => {
+        backdropClickSubject.next();
+        this.closeAll();
+      });
 
     // Create a portal for the component to be rendered in the overlay.
     const portal = new ComponentPortal(component, null, this.injector);
@@ -181,11 +193,17 @@ export class OverlayService {
         }
         afterClosed$.next();
         afterClosed$.complete();
+        backdropClickSubject.complete();
         destroy$.next();
         destroy$.complete();
       });
 
-    return { ref: componentRef, overlayRef: this.overlayRef, afterClosed$ };
+    return {
+      ref: componentRef,
+      overlayRef: this.overlayRef,
+      afterClosed$,
+      backdropClick$: backdropClickSubject.asObservable(),
+    };
   }
 
   /**

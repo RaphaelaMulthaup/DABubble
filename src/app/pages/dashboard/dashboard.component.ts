@@ -14,7 +14,7 @@ import {
   tap,
 } from 'rxjs/operators';
 import { HeaderDashboardComponent } from './header-dashboard/header-dashboard.component';
-import { ChatActiveRouterService } from '../../services/chat-active-router.service';
+import { ConversationActiveRouterService } from '../../services/conversation-active-router.service';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, throwError, EMPTY } from 'rxjs';
 import { HttpParams } from '@angular/common/http';
@@ -24,6 +24,7 @@ import { MobileService } from '../../services/mobile.service';
 import { PostInterface } from '../../shared/models/post.interface';
 import { ScreenService } from '../../services/screen.service';
 import { ScreenSize } from '../../shared/types/screen-size.type';
+import { HeaderSearchbarComponent } from './header-searchbar/header-searchbar.component';
 
 /**
  * The DashboardComponent represents the main view of the dashboard.
@@ -37,7 +38,8 @@ import { ScreenSize } from '../../shared/types/screen-size.type';
     SidenavComponent, // Sidebar component
     ConversationWindowComponent, // Component to display the conversation
     CommonModule, // Angular common module for essential directives and pipes
-    HeaderDashboardComponent, // Header component for the dashboard
+    HeaderDashboardComponent,
+    HeaderSearchbarComponent,
   ],
   templateUrl: './dashboard.component.html', // HTML template for the dashboard
   styleUrl: './dashboard.component.scss', // Styles for the dashboard
@@ -48,7 +50,10 @@ export class DashboardComponent {
    * This will allow updating and reflecting the dashboard's mobile state.
    */
   mobileDashboardState!: WritableSignal<MobileDashboardState>;
-
+  // A flag indicating whether the application is in mobile view.
+  isMobile = false;
+  // Function to update the `isMobile` flag based on window size.
+  private updateMobile: () => void;
   /**
    * Observable that holds the messages in the active conversation.
    * The messages are fetched based on the `conversationType` and `conversationId`.
@@ -66,12 +71,17 @@ export class DashboardComponent {
     public overlayService: OverlayService, // Service to handle overlay state
     public screenService: ScreenService,
     private authService: AuthService, // Service for authentication management
-    private chatActiveRouterService: ChatActiveRouterService, // Service for managing active chats
+    private conversationActiveRouterService: ConversationActiveRouterService, // Service for managing active chats
     private route: ActivatedRoute, // To access route parameters for conversation information
     private mobileService: MobileService // Service to manage mobile dashboard state
   ) {
     this.mobileDashboardState = this.mobileService.mobileDashboardState;
     this.screenSize$ = this.screenService.screenSize$;
+    // Initializing the function to update mobile view state based on window size
+    this.updateMobile = () => {
+      this.isMobile = this.mobileService.isMobile();
+    };
+    this.isMobile = this.mobileService.isMobile();
   }
 
   /**
@@ -101,7 +111,7 @@ export class DashboardComponent {
         ),
         // Fetch messages for the active conversation from the service
         switchMap(({ conversationType, conversationId }) =>
-          this.chatActiveRouterService.getMessages(
+          this.conversationActiveRouterService.getMessages(
             conversationType!,
             conversationId!
           )
@@ -131,7 +141,7 @@ export class DashboardComponent {
         ),
         // Fetch answers to a particular message
         switchMap(({ conversationType, conversationId, messageId }) =>
-          this.chatActiveRouterService.getAnswers(
+          this.conversationActiveRouterService.getAnswers(
             conversationType!,
             conversationId!,
             messageId!

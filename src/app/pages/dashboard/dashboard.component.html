@@ -1,5 +1,11 @@
-<section class="dashboard w-full">
+<section class="dashboard w-full"
+[ngClass]="{'new-message-view-mobile': (mobileDashboardState() === 'new-message-view') && isMobile}"
+>
   <app-header-dashboard />
+  @if (mobileDashboardState() === 'new-message-view') {
+  <app-header-searchbar></app-header-searchbar>
+ <div class="below-from-header-searchbar"></div>
+}
 
   @if((screenSize$|async) === 'web'){
   <div class="dashboard-web flex h-full">

@@ -1,9 +1,8 @@
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { ChannelInterface } from '../../models/channel.interface'; // Importing the ChannelInterface for type safety
-import { Router, RouterLink } from '@angular/router'; // Importing Angular's Router and RouterLink for navigation
+import { RouterLink } from '@angular/router'; // Importing Angular's Router and RouterLink for navigation
 import { CommonModule } from '@angular/common'; // Importing Angular's CommonModule for basic Angular functionality
 import { MobileService } from '../../../services/mobile.service'; // Importing the MobileService to handle mobile-specific logic
-import { SearchService } from '../../../services/search.service'; // Importing the SearchService to handle search operations
 
 @Component({
   selector: 'app-channel-list-item', // Component selector for this item
@@ -17,8 +16,6 @@ import { SearchService } from '../../../services/search.service'; // Importing t
 export class ChannelListItemComponent {
   constructor(
     public mobileService: MobileService, // Injecting MobileService for handling mobile-specific state
-    private searchService: SearchService, // Injecting SearchService for search-related operations
-    private router: Router // Injecting Router for navigation
   ) {}
 
   /**
@@ -39,22 +36,6 @@ export class ChannelListItemComponent {
   @Output() channelSelected = new EventEmitter<ChannelInterface>();
 
   @Input() isInChannelHeader = false;
-
-  /**
-   * Removes focus from the current element and handles the click event.
-   * It performs specific actions based on whether the component is part of a search result.
-   *
-   * - If not in search results, it removes focus, updates the mobile dashboard state,
-   *   and navigates to the channel's page.
-   */
-  removeFocusAndHandleClick() {
-    // Immediately remove focus before the click is processed
-    if (!this.isInSearchResultsCurrentPostInput) {
-      this.searchService.removeFocus(); // Remove focus from the search input
-      this.mobileService.setMobileDashboardState('message-window'); // Update mobile dashboard state
-      this.router.navigate(['/dashboard', 'channel', this.channel.id]); // Navigate to the channel's page
-    }
-  }
 
   /**
    * Emits the selected channel via the channelSelected EventEmitter.

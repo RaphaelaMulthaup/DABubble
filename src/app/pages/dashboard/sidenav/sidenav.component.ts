@@ -6,6 +6,8 @@ import { Observable, Subject, takeUntil } from 'rxjs';
 import { UserInterface } from '../../../shared/models/user.interface';
 import { MobileService } from '../../../services/mobile.service';
 import { MobileDashboardState } from '../../../shared/types/mobile-dashboard-state.type';
+import { CommonModule } from '@angular/common';
+import { SearchService } from '../../../services/search.service';
 
 /**
  * The SidenavComponent is responsible for rendering the sidebar of the application,
@@ -15,7 +17,7 @@ import { MobileDashboardState } from '../../../shared/types/mobile-dashboard-sta
 @Component({
   selector: 'app-sidenav', // The component selector used in HTML
   // Imports necessary child components used in the sidebar
-  imports: [ContactsListComponent, ChannelListComponent],
+  imports: [ContactsListComponent, ChannelListComponent, CommonModule],
   templateUrl: './sidenav.component.html', // HTML template for the sidebar
   styleUrl: './sidenav.component.scss', // Styles for the sidebar
 })
@@ -57,7 +59,8 @@ export class SidenavComponent {
 
   constructor(
     private authService: AuthService, // AuthService to manage user authentication
-    public mobileService: MobileService // MobileService to manage mobile-specific functionality
+    public mobileService: MobileService, // MobileService to manage mobile-specific functionality
+    public searchService: SearchService // SearchService to manage searching
   ) {
     // Injecting the mobileDashboardState from the mobile service to track mobile state
     this.mobileDashboardState = this.mobileService.mobileDashboardState;

@@ -1,5 +1,3 @@
-
-
 .conversation-window {
   max-height: calc(100vh - 115px);
   background-color: var(--color-white);
@@ -20,6 +18,7 @@ app-window-display {
   overflow-y: auto;
   margin-top: 68px;
   margin-bottom: 170px;
+  height: calc(100vh - 82px);
 }
 
 app-current-post-input {
@@ -28,10 +27,10 @@ app-current-post-input {
   right: 16px;
   left: 16px;
   background-color: var(--color-white);
-  box-shadow: 0px 0px 12px 6px #ffffff ;
+  box-shadow: 0px 0px 12px 6px #ffffff;
 }
 
-.below-from-header-searchbar{
+.below-from-header-searchbar {
   width: 100%;
   height: calc(100vh - 205px);
 }

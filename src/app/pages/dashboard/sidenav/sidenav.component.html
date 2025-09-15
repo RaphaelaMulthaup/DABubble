@@ -3,5 +3,9 @@
   <app-contacts-list></app-contacts-list>
 </nav>
 @if (isMobile) {
-  <button class="new-message" (click)="openNewMessageView()"></button>
+<button
+  class="new-message"
+  (click)="openNewMessageView()"
+  [ngClass]="{ 'z-index-1001': searchService.overlaySearchResultsOpen }"
+></button>
 }
