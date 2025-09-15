@@ -1,17 +1,14 @@
 <button
   (click)="directMessagesVisible = !directMessagesVisible"
-  [class.brightness-0]="!directMessagesVisible"
   class="btn-dropdown flex place-items-center"
 >
   <img
+    [class.arrow-rotate]="!directMessagesVisible"
     class="arrow-dropdown"
     src="./assets/img/arrow-drop-down.svg"
     alt="arrow-drop-down"
   />
-  <img
-    src="./assets/img/account-circle.svg"
-    alt="account-circle"
-  />
+  <img src="./assets/img/account-circle.svg" alt="account-circle" />
   <span>Direktnachrichten</span>
 </button>
 
@@ -19,8 +16,7 @@
 <ul class="contacts-list">
   @if (currentUser) {
   <app-user-list-item [user]="currentUser"></app-user-list-item>
-  }
-  @for (user of contacts$ | async; track $index) {
+  } @for (user of contacts$ | async; track $index) {
   <app-user-list-item [user]="user"></app-user-list-item>
   }
 </ul>
