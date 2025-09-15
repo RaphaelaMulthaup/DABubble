@@ -1,12 +1,15 @@
 <section class="dashboard w-full">
   <app-header-dashboard />
 
+  @if((screenSize$|async) === 'web'){
+  <div class="dashboard-web flex h-full">
+    <app-sidenav></app-sidenav>
+    <app-conversation-window [data$]="messages$"></app-conversation-window>
+    <app-conversation-window [data$]="answers$"></app-conversation-window>
+  </div>
+  } @else {
   <div class="w-full h-full">
-    @if((screenSize$|async) === 'web'){ 
-      <!-- Web-Ansicht -->
-    } @else { 
-      @switch
-    (mobileDashboardState()) { @case ('sidenav') {
+    @switch (mobileDashboardState()) { @case ('sidenav') {
     <app-sidenav></app-sidenav>
     } @case ('message-window') {
     <div>
@@ -16,8 +19,9 @@
     <app-conversation-window [data$]="answers$"></app-conversation-window>
     } @case ('new-message-view') {
     <app-conversation-window></app-conversation-window>
-    } } }
+    } }
   </div>
+  }
 </section>
 
 <!-- <section class="dashboard flex w-full justify-around h-[calc(100vh-120px)] gap-[24px]">

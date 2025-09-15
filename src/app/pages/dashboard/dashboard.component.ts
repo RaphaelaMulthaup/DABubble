@@ -71,7 +71,7 @@ export class DashboardComponent {
     private mobileService: MobileService // Service to manage mobile dashboard state
   ) {
     this.mobileDashboardState = this.mobileService.mobileDashboardState;
-  
+    this.screenSize$ = this.screenService.screenSize$;
   }
 
   /**
@@ -141,7 +141,6 @@ export class DashboardComponent {
         shareReplay({ bufferSize: 1, refCount: true })
       );
     // }
-    this.screenSize$ = this.screenService.screenSize$;
   }
 
   /**
