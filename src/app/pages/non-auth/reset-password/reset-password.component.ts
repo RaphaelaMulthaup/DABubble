@@ -28,7 +28,7 @@ export class ResetPasswordComponent implements OnInit{
   uid!: string;
   oobCode!: string; 
   email: any;
-showToast: any;
+  showToast: any;
 
   constructor(
     private route: ActivatedRoute,
@@ -57,7 +57,7 @@ showToast: any;
     verifyPasswordResetCode(auth, this.oobCode).then((email) => {
       this.email = email;
     }).catch((error) => {
-      console.error('Ungültiger oder angelöaufenenr Aktionscode', error);
+      console.error('Ungültiger oder abgelaufener Aktionscode', error);
       this.showErrorMessage = true;
     })
   }
