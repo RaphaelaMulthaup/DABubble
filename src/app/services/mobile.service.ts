@@ -22,8 +22,7 @@ export class MobileService {
   }
 }
 
-
-// Vorschlag für isMobile 
+// Vorschlag für isMobile
 // isMobile = signal(window.innerWidth < 768);
 
 //   constructor() {

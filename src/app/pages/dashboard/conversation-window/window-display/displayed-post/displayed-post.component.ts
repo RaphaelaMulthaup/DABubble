@@ -57,6 +57,7 @@ export class DisplayedPostComponent {
   visibleReactions$!: Observable<ReactionInterface[]>;
   allReactionsVisible: boolean = false;
   postClicked: boolean = false;
+  hideAnswersInThread: boolean = false;
   private destroy$ = new Subject<void>();
 
   constructor(
@@ -76,6 +77,15 @@ export class DisplayedPostComponent {
       .subscribe(({ conversationType, conversationId }) => {
         this.currentConversationType = conversationType as 'channel' | 'chat';
         this.currentConversationId = conversationId;
+      });
+
+    this.chatActiveRouterService
+      .getMessageId$(this.route)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((messageId) => {
+        messageId
+          ? (this.hideAnswersInThread = true)
+          : (this.hideAnswersInThread = false);
       });
 
     this.reactions$ = of(this.post).pipe(

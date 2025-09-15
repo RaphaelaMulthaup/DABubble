@@ -5,6 +5,7 @@ import {
   Input,
   QueryList,
   ViewChildren,
+  WritableSignal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PostService } from '../../../../services/post.service';
@@ -23,6 +24,8 @@ import { ChatActiveRouterService } from '../../../../services/chat-active-router
 import { tap } from 'rxjs';
 import { ChatService } from '../../../../services/chat.service';
 import { EmptyChatViewComponent } from './empty-chat-view/empty-chat-view.component';
+import { MobileDashboardState } from '../../../../shared/types/mobile-dashboard-state.type';
+import { MobileService } from '../../../../services/mobile.service';
 
 @Component({
   selector: 'app-window-display', // Component selector used in parent templates
@@ -34,9 +37,13 @@ export class WindowDisplayComponent {
   @Input() messages$!: import('rxjs').Observable<PostInterface[]>;
   // an array with all posts in this conversation
   postInfo: PostInterface[] = [];
-  currentChatId?: string; // <-- currently displayed chat
+  currentConversationType?: 'channel' | 'chat';
+  currentConversationId?: string; // <-- currently displayed conversation
+  postAnsweredId?: string | null;
+  postAnswered?: PostInterface;
   @ViewChildren(DisplayedPostComponent, { read: ElementRef })
   postElements!: QueryList<ElementRef>;
+  mobileDashboardState: WritableSignal<MobileDashboardState>;
 
   // an array with all the days of the week to show when a post was created
   days = [
@@ -56,8 +63,11 @@ export class WindowDisplayComponent {
     private route: ActivatedRoute,
     private router: Router,
     public postService: PostService,
-    private chatService: ChatService
-  ) {}
+    private chatService: ChatService,
+    public mobileService: MobileService
+  ) {
+    this.mobileDashboardState = this.mobileService.mobileDashboardState;
+  }
 
   /**
    * Subscribe to the BehaviorSubject from PostService
@@ -65,14 +75,31 @@ export class WindowDisplayComponent {
    */
   ngOnInit() {
     this.route.params.pipe(takeUntil(this.destroy$)).subscribe((params) => {
-      const chatId = params['conversationId']; // get chat id from route params
-      this.currentChatId = chatId;
+      this.currentConversationId = params['conversationId']; // get chat id from route params
+      this.currentConversationType = params['conversationType'];
+      const id = params['scrollTo'];
+      if (id) this.handleScrollRequest(id);
+
+      params['messageId']
+        ? (this.postAnsweredId = params['messageId'])
+        : (this.postAnsweredId = null);
     });
+
+    if (this.postAnsweredId) {
+      this.postService
+        .getPostById(
+          this.currentConversationType!,
+          this.currentConversationId!,
+          this.postAnsweredId!
+        )
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((post) => (this.postAnswered = post));
+    }
 
     this.messages$.pipe(takeUntil(this.destroy$)).subscribe((data) => {
       // Update content when new messages are received
       this.onContentChange(
-        this.currentChatId, // new chat ID
+        this.currentConversationId, // new chat ID
         data // new messages
       );
     });
@@ -82,14 +109,6 @@ export class WindowDisplayComponent {
       .pipe(takeUntil(this.destroy$))
       .subscribe((postId) => {
         this.handleScrollRequest(postId);
-      });
-
-    // Subscribe to queryParams (for links/bookmarks)
-    this.route.queryParams
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((params) => {
-        const id = params['scrollTo'];
-        if (id) this.handleScrollRequest(id);
       });
   }
 
@@ -108,7 +127,7 @@ export class WindowDisplayComponent {
 
   ngOnDestroy() {
     // Cleanup on component destroy
-    this.tryDeleteEmptyChat(this.currentChatId);
+    this.tryDeleteEmptyChat(this.currentConversationId);
     this.destroy$.next();
     this.destroy$.complete();
   }
@@ -129,10 +148,10 @@ export class WindowDisplayComponent {
    * @param newMessages The new set of messages
    */
   onContentChange(newChatId?: string, newMessages: PostInterface[] = []) {
-    const previousChatId = this.currentChatId;
+    const previousChatId = this.currentConversationId;
 
     // Update data
-    this.currentChatId = newChatId;
+    this.currentConversationId = newChatId;
     this.postInfo = newMessages;
 
     // If the chat has changed, try to delete the previous chat

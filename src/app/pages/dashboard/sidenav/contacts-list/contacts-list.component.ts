@@ -39,7 +39,7 @@ export class ContactsListComponent implements OnInit {
     private userService: UserService,
     private authService: AuthService,
     private chatService: ChatService,
-    private mobileService: MobileService
+    public mobileService: MobileService
   ) {
     this.mobileDashboardState = this.mobileService.mobileDashboardState; // Injects mobile dashboard state service
   }

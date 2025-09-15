@@ -44,7 +44,7 @@
         }
       </div>
 
-      @if (post.ansCounter){
+      @if (post.ansCounter && !hideAnswersInThread){
       <!-- flex-row for desktop -->
       <div class="answers flex flex-col-reverse items-start">
         <button

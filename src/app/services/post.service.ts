@@ -41,7 +41,8 @@ import { EMOJIS } from '../shared/constants/emojis';
 })
 export class PostService {
   emojis = EMOJIS;
-  private reactionsCache = new Map<string, Observable<ReactionInterface[]>>();
+  private reactionCache = new Map<string, Observable<ReactionInterface[]>>();
+  private postCache = new Map<string, Observable<PostInterface>>();
 
   constructor(
     private firestore: Firestore,
@@ -178,7 +179,7 @@ export class PostService {
     postId: string
   ): Observable<ReactionInterface[]> {
     const cacheKey = `${parentPath}/${subcollectionName}/${postId}`;
-    if (!this.reactionsCache.has(cacheKey)) {
+    if (!this.reactionCache.has(cacheKey)) {
       const reactionsRef = collection(
         this.firestore,
         `${parentPath}/${subcollectionName}/${postId}/reactions`
@@ -186,12 +187,12 @@ export class PostService {
       const reactions$ = collectionData(reactionsRef, { idField: 'id' }).pipe(
         shareReplay({ bufferSize: 1, refCount: true })
       );
-      this.reactionsCache.set(
+      this.reactionCache.set(
         cacheKey,
         reactions$ as Observable<ReactionInterface[]>
       );
     }
-    return this.reactionsCache.get(cacheKey)!;
+    return this.reactionCache.get(cacheKey)!;
   }
 
   /**
@@ -397,4 +398,36 @@ export class PostService {
       selection.addRange(range);
     }
   }
+
+  /**
+   * Fetch a single user by UID.
+   * @param uid - User ID.
+   * Returns an Observable of UserInterface.
+   */
+  getPostById(
+    conversationType: 'channel' | 'chat',
+    conversationId: string,
+    messageId: string
+  ): Observable<PostInterface> {
+    if (!this.postCache.has(messageId)) {
+      const ref = doc(
+        this.firestore,
+        `${conversationType}s/${conversationId}/messages/${messageId}`
+      );
+      const post$ = docData(ref).pipe(
+        shareReplay({ bufferSize: 1, refCount: true })
+      );
+      this.postCache.set(messageId, post$ as Observable<PostInterface>);
+    }
+    return this.postCache.get(messageId)!;
+  }
+
+  // getUserById(uid: string): Observable<UserInterface> {
+  //   if (!this.userCache.has(uid)) {
+  //     const userDocRef = doc(this.firestore, `users/${uid}`);
+  //     const user$ = docData(userDocRef).pipe(shareReplay(1));
+  //     this.userCache.set(uid, user$ as Observable<UserInterface>);
+  //   }
+  //   return this.userCache.get(uid)!;
+  // }
 }
