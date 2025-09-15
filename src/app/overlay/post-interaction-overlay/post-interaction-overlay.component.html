@@ -2,14 +2,14 @@
   class="interaction-options flex place-content-center"
   [ngClass]="{ 'post-current-user': senderIsCurrentUser }"
 >
-  <button class="btn-tertiary">
+  <button (click)="reactToPostWithPreselection(':thumbs-up:')" class="btn-tertiary">
     <img
       class="reaction-img"
       src="../../../assets/img/emojis/thumbs-up.svg"
       alt="check-mark"
     />
   </button>
-  <button class="btn-tertiary">
+  <button (click)="reactToPostWithPreselection(':thumbs-down:')" class="btn-tertiary">
     <img
       class="reaction-img"
       src="../../../assets/img/emojis/thumbs-down.svg"
