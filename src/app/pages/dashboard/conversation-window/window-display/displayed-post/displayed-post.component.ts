@@ -79,7 +79,7 @@ export class DisplayedPostComponent {
         this.currentConversationId = conversationId;
       });
 
-    this.chatActiveRouterService
+    this.conversationActiveRouterService
       .getMessageId$(this.route)
       .pipe(takeUntil(this.destroy$))
       .subscribe((messageId) => {
