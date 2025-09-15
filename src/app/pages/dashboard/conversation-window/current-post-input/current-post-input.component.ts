@@ -10,7 +10,7 @@ import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../../../services/auth.service';
 import { ActivatedRoute } from '@angular/router';
-import { ChatActiveRouterService } from '../../../../services/chat-active-router.service';
+import { ConversationActiveRouterService } from '../../../../services/conversation-active-router.service';
 import { PostService } from '../../../../services/post.service';
 import {
   startWith,
@@ -65,30 +65,30 @@ export class CurrentPostInput implements OnInit, OnDestroy {
     public postService: PostService,
     public searchService: SearchService,
     private route: ActivatedRoute,
-    private chatActiveRouterService: ChatActiveRouterService
+    private conversationActiveRouterService: ConversationActiveRouterService
   ) {}
 
   /**
    * Angular lifecycle hook that runs after the component is initialized.
-   * Subscribes to the route parameters (type, conversationId, messageId) via ChatActiveRouterService
+   * Subscribes to the route parameters (type, conversationId, messageId) via ConversationActiveRouterService
    * and updates local state accordingly.
    */
   ngOnInit() {
-    this.chatActiveRouterService
+    this.conversationActiveRouterService
       .getConversationType$(this.route)
       .pipe(takeUntil(this.destroy$))
       .subscribe((t) => {
         this.conversationType = t;
       });
 
-    this.chatActiveRouterService
+    this.conversationActiveRouterService
       .getConversationId$(this.route)
       .pipe(takeUntil(this.destroy$))
       .subscribe((id) => {
         this.conversationId = id;
       });
 
-    this.chatActiveRouterService
+    this.conversationActiveRouterService
       .getMessageId$(this.route)
       .pipe(takeUntil(this.destroy$))
       .subscribe((msgId) => {

@@ -15,7 +15,7 @@ import { PostInterface } from '../shared/models/post.interface';
 @Injectable({
   providedIn: 'root',
 })
-export class ChatActiveRouterService {
+export class ConversationActiveRouterService {
   constructor(private firestore: Firestore) {}
 
   // expui un observable pentru id

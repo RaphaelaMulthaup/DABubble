@@ -14,7 +14,7 @@ import {
   tap,
 } from 'rxjs/operators';
 import { HeaderDashboardComponent } from './header-dashboard/header-dashboard.component';
-import { ChatActiveRouterService } from '../../services/chat-active-router.service';
+import { ConversationActiveRouterService } from '../../services/conversation-active-router.service';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, throwError, EMPTY } from 'rxjs';
 import { HttpParams } from '@angular/common/http';
@@ -67,7 +67,7 @@ export class DashboardComponent {
   constructor(
     public overlayService: OverlayService, // Service to handle overlay state
     private authService: AuthService, // Service for authentication management
-    private chatActiveRouterService: ChatActiveRouterService, // Service for managing active chats
+    private conversationActiveRouterService: ConversationActiveRouterService, // Service for managing active chats
     private route: ActivatedRoute, // To access route parameters for conversation information
     private mobileService: MobileService // Service to manage mobile dashboard state
   ) {
@@ -107,7 +107,7 @@ export class DashboardComponent {
       ),
       // Fetch messages for the active conversation from the service
       switchMap(({ conversationType, conversationId }) =>
-        this.chatActiveRouterService.getMessages(
+        this.conversationActiveRouterService.getMessages(
           conversationType!,
           conversationId!
         )
@@ -137,7 +137,7 @@ export class DashboardComponent {
       ),
       // Fetch answers to a particular message
       switchMap(({ conversationType, conversationId, messageId }) =>
-        this.chatActiveRouterService.getAnswers(
+        this.conversationActiveRouterService.getAnswers(
           conversationType!,
           conversationId!,
           messageId!

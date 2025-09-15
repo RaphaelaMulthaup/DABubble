@@ -19,7 +19,7 @@ import {
   switchMap,
   takeUntil,
 } from 'rxjs';
-import { ChatActiveRouterService } from '../../../../services/chat-active-router.service';
+import { ConversationActiveRouterService } from '../../../../services/conversation-active-router.service';
 import { tap } from 'rxjs';
 import { ChatService } from '../../../../services/chat.service';
 import { EmptyChatViewComponent } from './empty-chat-view/empty-chat-view.component';
@@ -66,7 +66,7 @@ export class WindowDisplayComponent {
     private router: Router,
     public postService: PostService,
     private chatService: ChatService,
-    private chatActiveRouterService: ChatActiveRouterService
+    private conversationActiveRouterService: ConversationActiveRouterService
   ) {}
 
   /**
@@ -74,7 +74,7 @@ export class WindowDisplayComponent {
    * messages, and scroll requests.
    */
   ngOnInit() {
-    this.channelTyp$ = this.chatActiveRouterService.getConversationType$(
+    this.channelTyp$ = this.conversationActiveRouterService.getConversationType$(
       this.route
     );
 

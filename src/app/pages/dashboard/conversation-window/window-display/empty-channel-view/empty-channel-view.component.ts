@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ChannelInterface } from '../../../../../shared/models/channel.interface';
 import { filter, Observable, take } from 'rxjs';
-import { ChatActiveRouterService } from '../../../../../services/chat-active-router.service';
+import { ConversationActiveRouterService } from '../../../../../services/conversation-active-router.service';
 import { ActivatedRoute } from '@angular/router';
 import { ChannelsService } from '../../../../../services/channels.service';
 import { CommonModule } from '@angular/common';
@@ -20,19 +20,19 @@ export class EmptyChannelViewComponent {
   channelId!: string;
 
   constructor(
-    private chatActiveRouterService: ChatActiveRouterService, // Service for reading chat/channel routing info
+    private conversationActiveRouterService: ConversationActiveRouterService, // Service for reading chat/channel routing info
     private route: ActivatedRoute, // Gives access to the current route (params, query, etc.)
     private channelService: ChannelsService // Provides methods to fetch channel data
   ) {}
 
   /**
    * Lifecycle hook: initializes the component.
-   * - Reads the channelId once from the route via ChatActiveRouterService
+   * - Reads the channelId once from the route via ConversationActiveRouterService
    * - Fetches the current channel from ChannelsService
    * - Ensures that `channel$` only emits when a valid channel exists
    */
   ngOnInit() {
-    this.chatActiveRouterService
+    this.conversationActiveRouterService
       .getConversationId$(this.route)
       .pipe(take(1)) // take only the first emitted value
       .subscribe((channelId: string) => {

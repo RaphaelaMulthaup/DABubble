@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { OverlayService } from '../../../../../services/overlay.service';
 import { EditChannelComponent } from '../../../../../overlay/edit-channel/edit-channel.component';
-import { ChatActiveRouterService } from '../../../../../services/chat-active-router.service';
+import { ConversationActiveRouterService } from '../../../../../services/conversation-active-router.service';
 import { ActivatedRoute } from '@angular/router';
 import { ChannelInterface } from '../../../../../shared/models/channel.interface';
 import { Observable, switchMap } from 'rxjs';
@@ -28,7 +28,7 @@ export class HeaderChannelComponent {
 
   constructor(
     private overlayService: OverlayService,
-    private chatActiveRouterService: ChatActiveRouterService,
+    private conversationActiveRouterService: ConversationActiveRouterService,
     private route: ActivatedRoute,
     private channelService: ChannelsService,
     private mobileService: MobileService
@@ -39,7 +39,7 @@ export class HeaderChannelComponent {
   }
 
   ngOnInit() {
-    this.channelDetails$ = this.chatActiveRouterService
+    this.channelDetails$ = this.conversationActiveRouterService
       .getConversationId$(this.route)
       .pipe(
         switchMap((id) => {

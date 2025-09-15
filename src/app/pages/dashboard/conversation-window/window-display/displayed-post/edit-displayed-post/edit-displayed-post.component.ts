@@ -9,7 +9,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { PostInterface } from '../../../../../../shared/models/post.interface';
-import { ChatActiveRouterService } from '../../../../../../services/chat-active-router.service';
+import { ConversationActiveRouterService } from '../../../../../../services/conversation-active-router.service';
 import { ActivatedRoute } from '@angular/router';
 import { PostService } from '../../../../../../services/post.service';
 import { OverlayService } from '../../../../../../services/overlay.service';
@@ -35,12 +35,12 @@ export class EditDisplayedPostComponent implements OnInit {
   constructor(
     private overlayService: OverlayService,
     private route: ActivatedRoute,
-    private chatActiveRouterService: ChatActiveRouterService,
+    private conversationActiveRouterService: ConversationActiveRouterService,
     public postService: PostService
   ) {}
 
   ngOnInit() {
-    this.chatActiveRouterService
+    this.conversationActiveRouterService
       .getParams$(this.route)
       .pipe(takeUntil(this.destroy$))
       .subscribe(({ conversationType, conversationId }) => {
@@ -48,7 +48,7 @@ export class EditDisplayedPostComponent implements OnInit {
         this.currentConversationId = conversationId;
       });
 
-    this.chatActiveRouterService
+    this.conversationActiveRouterService
       .getMessageId$(this.route)
       .pipe(takeUntil(this.destroy$))
       .subscribe((messageId) => {

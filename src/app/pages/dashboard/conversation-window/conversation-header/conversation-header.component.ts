@@ -1,6 +1,6 @@
 import { Component, inject, WritableSignal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ChatActiveRouterService } from '../../../../services/chat-active-router.service';
+import { ConversationActiveRouterService } from '../../../../services/conversation-active-router.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HeaderChannelComponent } from './header-channel/header-channel.component';
 import { HeaderSearchbarComponent } from '../../header-searchbar/header-searchbar.component';
@@ -33,7 +33,7 @@ export class ConversationHeaderComponent {
     private mobileService: MobileService, // Service for managing mobile state
     private route: ActivatedRoute, // Angular route service to access route parameters
     private router: Router, // Angular router service to navigate between routes
-    private chatActiveRouterService: ChatActiveRouterService // Custom service for handling active chat/router state
+    private conversationActiveRouterService: ConversationActiveRouterService // Custom service for handling active chat/router state
   ) {
     this.mobileDashboardState = this.mobileService.mobileDashboardState; // Inject the mobile state from the service
   }
@@ -44,7 +44,7 @@ export class ConversationHeaderComponent {
    */
   ngOnInit() {
     // Subscribe to the conversation type from the route and update the component's state
-    this.chatActiveRouterService
+    this.conversationActiveRouterService
       .getConversationType$(this.route)
       .pipe(takeUntil(this.destroy$)) // Unsubscribe on component destroy
       .subscribe((t) => {
@@ -53,7 +53,7 @@ export class ConversationHeaderComponent {
       });
 
     // Subscribe to the conversation ID from the route and update the component's state
-    this.chatActiveRouterService
+    this.conversationActiveRouterService
       .getConversationId$(this.route)
       .pipe(takeUntil(this.destroy$)) // Unsubscribe on component destroy
       .subscribe((id) => {
@@ -62,7 +62,7 @@ export class ConversationHeaderComponent {
       });
 
     // Subscribe to the message ID from the route and update the component's state
-    this.chatActiveRouterService
+    this.conversationActiveRouterService
       .getMessageId$(this.route)
       .pipe(takeUntil(this.destroy$)) // Unsubscribe on component destroy
       .subscribe((msgId) => {
