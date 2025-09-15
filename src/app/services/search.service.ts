@@ -9,6 +9,7 @@ import {
   filter,
   Subject,
   distinctUntilChanged,
+  BehaviorSubject,
 } from 'rxjs';
 import { SearchResult } from '../shared/types/search-result.type';
 import { AuthService } from './auth.service';
@@ -25,6 +26,7 @@ export class SearchService {
   public readonly userChannels$: Observable<ChannelInterface[]>; // Observable for channels the current user is a member of
   public readonly chatPosts$: Observable<PostInterface[]>; // Observable for posts in the user's chats
   public readonly channelPosts$: Observable<PostInterface[]>; // Observable for posts in the user's channels
+  public readonly results$ = new BehaviorSubject<SearchResult[]>([]);
   // Indicates whether the search results overlay is currently open.
   overlaySearchResultsOpen: boolean = false;
   // Indicates whether the new message overlay is currently open.
@@ -42,7 +44,19 @@ export class SearchService {
     this.chatPosts$ = this.getChatPosts$(); // Fetch chat posts for the user
     this.channelPosts$ = this.getChannelPosts$(); // Fetch channel posts for the user
   }
-
+  
+  /**
+ * Subscribes to the provided search term Observable and updates the results$ BehaviorSubject.
+ * This method triggers a new search whenever the search term changes and pushes the
+ * resulting array of SearchResult objects into the results$ stream for components to consume.
+ *
+ * @param term$ An Observable that emits the current search term entered by the user.
+ */
+  updateResults(term$: Observable<string>) {
+    this.search(term$).subscribe((results) => {
+      this.results$.next(results);
+    });
+  }
 
   /**
    * Fetches the list of all users from Firestore.

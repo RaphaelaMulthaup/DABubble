@@ -11,6 +11,7 @@
     "
     [placeholder]="isMobile ? 'Geh zu...' : 'Devspace durchsuchen'"
     [formControl]="searchControl"
+    (focus)="onFocus()"
   />
   @if ( searchResultsExisting ) {
   <div class="close" (click)="closeOverlayAndEmptyInput()"></div>
