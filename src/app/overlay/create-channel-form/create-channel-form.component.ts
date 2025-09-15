@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Output } from '@angular/core';
+import { Component, EventEmitter, inject, OnInit, Output } from '@angular/core';
 import { ChannelsService } from '../../services/channels.service';
 import {
   FormControl,
@@ -88,5 +88,15 @@ export class CreateChannelFormComponent {
         }
       },
     });
+  }
+
+  onNameInput(): void {
+    const nameControl = this.createChannel.get('name');
+    const value = nameControl?.value.trim();
+
+    if (this.showErrorMessage && value && value !== '') {
+      this.showErrorMessage = false;
+      this.errorMessage = null;
+    }
   }
 }

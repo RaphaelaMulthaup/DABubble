@@ -10,9 +10,11 @@
         </label>
         <div class="input-wrapper">
           <span class="prefix">#</span>
-          <input id="nameId" type="text" class="input-secondary input-gap" placeholder="z.B Kooperationsprojekte"
-            formControlName="name" name="name" required>
+          <div class="inputAndErrorMessage flex flex-col w-full">
+            <input id="nameId" type="text" class="input-secondary input-gap" placeholder="z.B Kooperationsprojekte"
+              formControlName="name" name="name" required (input)="onNameInput()">
             <p *ngIf="showErrorMessage" class="error-massage">Channel-Name bereits vergeben.</p>
+          </div>  
         </div>
       </div>
       <div class="flex flex-col gap-[20px]">
