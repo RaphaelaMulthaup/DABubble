@@ -1,12 +1,13 @@
 import { Component, effect, inject, Input, Signal } from '@angular/core';
 import { Observable } from 'rxjs';
+import { CommonModule } from '@angular/common';
 import { UserInterface } from '../../models/user.interface';
 import { OverlayService } from '../../../services/overlay.service';
 import { OverlayRef } from '@angular/cdk/overlay';
 
 @Component({
   selector: 'app-user-list-item-to-channel',
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './user-list-item-to-channel.component.html',
 
   styleUrls: [
@@ -17,6 +18,7 @@ import { OverlayRef } from '@angular/cdk/overlay';
 export class UserListItemToChannelComponent {
   @Input() results!: Signal<UserInterface[]>;
   @Input() overlayRef!: OverlayRef;
+  @Input() onBottom:boolean = false;
 
   overlay: string = '';
   users: UserInterface[] = [];

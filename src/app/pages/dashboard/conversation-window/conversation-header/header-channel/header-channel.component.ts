@@ -67,7 +67,7 @@ export class HeaderChannelComponent {
   openChannelMembers(event: MouseEvent) {
     this.overlayService.openComponent(
       ChannelMembersComponent,
-      'cdk-overlay-dark-backdrop',
+      'cdk-overlay-transparent-backdrop',
       {
         origin: event.currentTarget as HTMLElement,
         originPosition: {
@@ -88,7 +88,7 @@ export class HeaderChannelComponent {
   openAddMembersToChannel(event: MouseEvent) {
     this.overlayService.openComponent(
       AddMemberToChannelComponent,
-      'cdk-overlay-dark-backdrop',
+      'cdk-overlay-transparent-backdrop',
       {
         origin: event.currentTarget as HTMLElement,
         originPosition: {

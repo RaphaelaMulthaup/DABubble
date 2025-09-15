@@ -30,6 +30,7 @@ import { UserListItemToChannelComponent } from '../../shared/components/user-lis
 })
 export class AddMemberToChannelComponent {
   @Input() channelDetails$?: Observable<ChannelInterface | undefined>; // Observable to hold channel details
+  @Input() onBottom:boolean = false;
   @Output() overlayRef!: OverlayRef; // Overlay reference to manage the overlay's lifecycle
   ListWithMember: UserInterface[] = []; // List of users to be added to the channel
   overlay: string = ''; // String used to manage overlay state
@@ -138,16 +139,21 @@ export class AddMemberToChannelComponent {
           overlayX: 'start',
           overlayY: 'top',
         },
+        originPositionFallback: {
+          originX: 'start',
+          originY: 'top',
+          overlayX: 'start',
+          overlayY: 'bottom',
+        },
       },
       {
         results: this.results, // Pass filtered search results to the overlay component
+        onBottom: this.onBottom
       }
     );
     if (!overlay) return; // If overlay is not created, return
     Object.assign(overlay.ref.instance, { overlayRef: overlay.overlayRef }); // Attach the overlay reference
-
       this.resultsOverlayRef = overlay.overlayRef;
-
       this.resultsOverlayRef.backdropClick().subscribe(() => {
       this.overlayService.closeOne(this.resultsOverlayRef!);
       this.resultsOverlayRef = undefined;

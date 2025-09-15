@@ -12,20 +12,19 @@
               [isMobile]="isMobile" />
             }
             @if(isMobile){
-            <app-channel-members class="w-full container items-start container-boarder" [channelDetails$]="channelDetails$" />
+            <app-channel-members class="w-full container items-start container-boarder" [channelDetails$]="channelDetails$" [onBottom]="true"/>
+            }
+            <div class="flex justify-end w-full">
+              @if(currentUser == createdById){
+              <button class="btn-primary" (click)="channelService.deleteChannel(channelId!)">
+                Channel loschen
+              </button>
+              }@else {
+              <button class="btn-primary" (click)="channelService.leaveChannel(channelId!, currentUser!)">
+                Channel verlassen
+              </button>
               }
+            </div>
         </div>
-      <div class="flex justify-end w-full">
-        @if(currentUser == createdById){
-        <button class="btn-primary" (click)="channelService.deleteChannel(channelId!)">
-          Channel loschen
-        </button>
-        }@else {
-        <button class="btn-primary" (click)="channelService.leaveChannel(channelId!, currentUser!)">
-          Channel verlassen
-        </button>
-        }
-      </div>
-  </div>
-    
+    </div>
 </div>
