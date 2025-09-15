@@ -12,12 +12,14 @@ import { ChannelInterface } from '../../../shared/models/channel.interface';
   styleUrl: './change-channel-name.component.scss',
 })
 export class ChangeChannelNameComponent {
+  @Input() isMobile!:boolean;
   @Input() channelId?: string;
   @Input() channel?: ChannelInterface;
   @Output() editActiveChange = new EventEmitter<boolean>();
 
   isEditActive: boolean = false;
   nameInput?: string;
+
 
   constructor(private channelService: ChannelsService) {}
 
