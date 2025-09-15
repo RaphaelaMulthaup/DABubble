@@ -1,0 +1,30 @@
+@import "../../../../../../styles.scss";
+
+section {
+  @include dFlex($ai: flex-start, $g: 13px);
+  flex-direction: column;
+  padding: 0 16px;
+}
+
+.infos {
+  @include dFlex($g: 10px);
+  img {
+    width: 32px;
+    aspect-ratio: 1;
+  }
+}
+
+.description {
+  display: inline;
+  font-size: 20px;
+  img {
+    display: inline;
+    vertical-align: middle;
+    width: 20px;
+    aspect-ratio: 1;
+    margin-bottom: 3px;
+  }
+  span{
+    color: var(--color-purple-medium);
+  }
+}

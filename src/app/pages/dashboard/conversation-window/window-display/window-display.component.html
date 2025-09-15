@@ -1,4 +1,9 @@
-<section class="messages-container" [ngClass]="{'messages-container-empty-view': (messages$ | async)?.length === 0}">
+<section
+  class="messages-container"
+  [ngClass]="{
+    'messages-container-empty-view': (messages$ | async)?.length === 0
+  }"
+>
   @if ((messages$ | async); as messages) { @if (messages.length > 0) { @for
   (message of messages; track message.id) { @if (shouldShowDate($index)) {
   <div class="seperator-container flex flex-row place-items-center">
@@ -18,7 +23,12 @@
   }
 
   <app-displayed-post [post]="message" [id]="message.id"></app-displayed-post>
-  } } @else { @if (currentChatId) {
-  <app-empty-chat-view [currentChatId]="currentChatId"></app-empty-chat-view>
-  } } }
+  } } @else { @switch (channelTyp$ | async) { @case ('chat') { @if
+  (currentConversationId) {
+  <app-empty-chat-view
+    [currentChatId]="currentConversationId"
+  ></app-empty-chat-view>
+  } } @case ('channel') {
+  <app-empty-channel-view></app-empty-channel-view>
+  } } } }
 </section>
