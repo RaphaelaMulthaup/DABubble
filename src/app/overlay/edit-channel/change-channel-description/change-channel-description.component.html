@@ -10,9 +10,12 @@
         </div>
         <div class="w-full">
             @if(isEditActive){
-                <input type="text" class="input-secondary p-[20px] w-full" [value]="channel?.description" [(ngModel)]="descriptionInput">
+            <textarea class="input-secondary p-[20px] w-full resize-none" 
+            [(ngModel)]="descriptionInput" 
+            [value]="channel?.description"
+                rows="4"></textarea>
             }@else {
-                <p class="w-full">{{channel?.description}}</p>
+                <p class="w-full whitespace-pre-line min-h-[6rem]">{{channel?.description}}</p>
             }
         </div>
     </div>
