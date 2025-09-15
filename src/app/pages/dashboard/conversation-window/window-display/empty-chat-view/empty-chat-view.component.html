@@ -1,16 +1,16 @@
 <section>
   <div class="infos">
-    <img src="" alt="">
-    <span></span>
+    <img src="{{(user$ | async)?.photoUrl}}" alt="">
+    <h2>{{(user$ | async)?.name}}</h2>
   </div>
   <div class="description">
-    <!-- @if (ownChat) {
-        <span></span>
-        <span></span>
+    @if (ownChat) {
+        <span class="font-bold">Dieser Raum ist nur für dich da.</span>
+        <span> Mache dir Notizen, liste deine To-dos auf oder bewahre Links und Dateien griffbereit auf. Du kannst hier auch gerne Dinge mit dir selbst besprechen.</span>
     } @else {
-        <span></span>
-        <span></span>
-        <span></span>
-    } -->
+        <span>Diese Unterhaltung findet nur zwischen </span>
+        <span class="link-to-chat" (click)="openProfileOverlay()">@{{(user$ | async)?.name}}</span>
+        <span> und dir statt.</span>
+    }
   </div>
 </section>

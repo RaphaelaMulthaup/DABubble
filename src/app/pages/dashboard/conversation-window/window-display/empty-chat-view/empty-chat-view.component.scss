@@ -1,0 +1,26 @@
+@import '../../../../../../styles.scss';
+
+section {
+    padding: 0 16px;
+    @include dFlex($g: 24px, $ai: flex-start);
+    flex-direction: column;
+}
+
+.infos{
+    @include dFlex($g: 10px, $ai: flex-end);
+    img{
+        border-radius: 50%;
+        height: 88px;
+        aspect-ratio: 1;
+    }
+}
+
+.description {
+    font-size: 20px;
+    color: var(--color-gray);
+}
+
+.link-to-chat{
+    color: var(--color-purple-medium);
+    cursor: pointer;
+}
