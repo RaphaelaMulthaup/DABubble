@@ -372,7 +372,8 @@ export class PostService {
    */
   textToHtml(text: string): string {
     if (!text) return '';
-    let result = text.replaceAll('\n', '<br>');
+    let result = text.replaceAll('\n', '</div><div>');
+
     this.emojis.forEach((e) => {
       const imgTag = `<img src="${e.src}" alt="${e.token}" class="emoji">`;
       result = result.replaceAll(e.token, imgTag);

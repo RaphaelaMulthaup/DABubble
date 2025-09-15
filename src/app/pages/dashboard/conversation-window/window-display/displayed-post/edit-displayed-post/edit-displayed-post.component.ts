@@ -71,7 +71,10 @@ export class EditDisplayedPostComponent implements OnInit {
    * @param emoji the emoji-object from the EMOJIS-array.
    */
   addEmoji(emoji: { token: string; src: string }) {
-    const editor = document.querySelector('.post-text-input') as HTMLElement;
+    this.postService.focusAtEndEditable(this.postTextInput);
+    const selection = window.getSelection();
+    if (!selection || !selection.rangeCount) return;
+    const range = selection.getRangeAt(0);
     const img = `<img src="${emoji.src}" alt="${emoji.token}" class='emoji'>`;
     document.execCommand('insertHTML', false, img);
   }
@@ -127,6 +130,9 @@ export class EditDisplayedPostComponent implements OnInit {
     const postText = this.postService.htmlToText(
       this.postTextInput.nativeElement.innerHTML
     );
+
+    if (postText.trim() == '') return this.postService.focusAtEndEditable(this.postTextInput);
+
     await this.postService.updatePost(
       { text: postText },
       this.currentConversationType,

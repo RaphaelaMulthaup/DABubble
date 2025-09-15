@@ -1,13 +1,10 @@
-<form class="current-post-input" [formGroup]="postForm" (ngSubmit)="onSubmit()">
+<form class="current-post-input">
   <div class="textarea-wrapper">
     <div
       #textarea
-      type="text"
-      formControlName="text"
-      name="text"
       class="post-text-input"
-      placeholder="Text einfügen"
       contenteditable="true"
+      (input)="onInput()"
     ></div>
   </div>
   <div class="buttons">
@@ -18,11 +15,11 @@
         class="btn-tertiary add-emoji"
       ></button>
       <button
-        (click)="startUserSearch()"
+        (click)="insertName('@')"
         type="button"
         class="btn-tertiary add-user-or-channel"
       ></button>
     </div>
-    <button type="submit" class="send" [disabled]="postForm.invalid"></button>
+    <button type="submit" class="send" (click)="submitPostInput(); $event.preventDefault()"></button>
   </div>
 </form>
