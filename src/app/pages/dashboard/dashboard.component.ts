@@ -22,6 +22,8 @@ import { MobileDashboardState } from '../../shared/types/mobile-dashboard-state.
 import { ChatService } from '../../services/chat.service';
 import { MobileService } from '../../services/mobile.service';
 import { PostInterface } from '../../shared/models/post.interface';
+import { ScreenService } from '../../services/screen.service';
+import { ScreenSize } from '../../shared/types/screen-size.type';
 
 /**
  * The DashboardComponent represents the main view of the dashboard.
@@ -58,15 +60,18 @@ export class DashboardComponent {
    * The answers are fetched based on the `conversationType`, `conversationId`, and `messageId`.
    */
   answers$!: Observable<PostInterface[]>;
+  screenSize$!: Observable<ScreenSize>;
 
   constructor(
     public overlayService: OverlayService, // Service to handle overlay state
+    public screenService: ScreenService,
     private authService: AuthService, // Service for authentication management
     private chatActiveRouterService: ChatActiveRouterService, // Service for managing active chats
     private route: ActivatedRoute, // To access route parameters for conversation information
     private mobileService: MobileService // Service to manage mobile dashboard state
   ) {
     this.mobileDashboardState = this.mobileService.mobileDashboardState;
+  
   }
 
   /**
@@ -136,6 +141,7 @@ export class DashboardComponent {
         shareReplay({ bufferSize: 1, refCount: true })
       );
     // }
+    this.screenSize$ = this.screenService.screenSize$;
   }
 
   /**
