@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, OnInit, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, inject, OnInit, Output } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
 
 import { FormControl, FormsModule, ReactiveFormsModule, FormGroup, Validators } from '@angular/forms';
@@ -33,7 +33,8 @@ export class ResetPasswordComponent implements OnInit{
   constructor(
     private route: ActivatedRoute,
     private authService : AuthService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {
       const navigation = this.router.getCurrentNavigation();
       this.uid = navigation?.extras.state?.['uid'];
@@ -47,6 +48,13 @@ export class ResetPasswordComponent implements OnInit{
       passwordConfirm: new FormControl('', [Validators.required, Validators.minLength(6)])
      });
      this.verifyResetCode();
+  }
+
+  /**
+   * Checks on any interaction if inputs are identical
+   */
+  ngDoCheck(): void {
+    this.checkPasswords();
   }
 
   /**
@@ -110,19 +118,12 @@ export class ResetPasswordComponent implements OnInit{
     })
   }
 
-    /**
+  /**
    * This function emits the showLogin-variable to change the non-auth-components variable noAccount to false.
    */
   backToLogin() {
     this.changeAuthState.emit('login');
-    this.authService.emptyUserObject();
+    location.reload();
   }
 
-  /**
-   * shows success message
-   */
-  waveFlag() {
-    let wavieFlagie = document.querySelector('.flag-resset');
-    wavieFlagie?.classList.add('showFlag');
-  }
 }
