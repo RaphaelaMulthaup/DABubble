@@ -1,4 +1,4 @@
-<div [ngClass]="overlay" class="flex w-full">
+<section [ngClass]="overlay" class="flex w-full">
   @if(!clickedAddMember){ 
     <div class="flex flex-col items-start gap-[15px] container relative">
       <div class="flex flex-col max-h-400px">
@@ -16,4 +16,4 @@
   }@else {
       <app-add-member-to-channel [channelDetails$]="channelDetails$" />
   }
-</div>
+</section>

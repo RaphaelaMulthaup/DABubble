@@ -1,3 +1,21 @@
+:host {
+  max-width: 100%;
+}
+
+section {
+  max-width: 100%;
+}
+
+.container {
+  max-height: 400px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-width: 100%;
+  >div{
+    max-width: 100%;
+  }
+}
+
 .profil-img {
   width: 50px;
   aspect-ratio: 1;
@@ -11,34 +29,26 @@
   padding-bottom: 4px;
 }
 
-.container{
-  max-height: 400px;
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-
-
-.btn{
+.btn {
   .add-person {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 32px;
-      height: 32px;
-      aspect-ratio: 1;
-      background-image: url('../../../../assets/img/person-add.svg');
-      transition: background-image 0.2 ease;
-      background-repeat: no-repeat;
-      background-position: center;
-        /* centrează imaginea */
-      background-size: contain;
-        /* ajustează să intre în box */
-      transition: background-image 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    aspect-ratio: 1;
+    background-image: url("../../../../assets/img/person-add.svg");
+    transition: background-image 0.2 ease;
+    background-repeat: no-repeat;
+    background-position: center;
+    /* centrează imaginea */
+    background-size: contain;
+    /* ajustează să intre în box */
+    transition: background-image 0.2s ease;
   }
   &:hover {
     .add-person {
-      background-image: url('../../../../assets/img/person-add-hover.svg');
+      background-image: url("../../../../assets/img/person-add-hover.svg");
     }
   }
-
 }
