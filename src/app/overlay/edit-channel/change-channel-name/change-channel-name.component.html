@@ -2,9 +2,17 @@
     <div class="flex w-full items-center justify-between">
         <h4>Channel name</h4>
         @if(isEditActive){
-            <button class="btn" (click)="saveName(nameInput!)"><span class="save"></span></button>
+            @if(isMobile){
+                <button class="btn" (click)="saveName(nameInput!)"><span class="save"></span></button>
+            }@else {
+                <button class="nameTag" (click)="saveName(nameInput!)">Speichern</button>
+            }
         }@else {
+            @if(isMobile){
             <button class="btn" (click)="toggleEdit()"><span class="edit"></span></button>
+            }@else {
+                <button class="nameTag" (click)="toggleEdit()">Bearbeiten</button>
+            }
         }
     </div>
     <div class="w-full">

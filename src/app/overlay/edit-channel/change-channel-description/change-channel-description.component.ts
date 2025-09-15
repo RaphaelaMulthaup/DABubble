@@ -14,6 +14,7 @@ import { UserListItemComponent } from '../../../shared/components/user-list-item
   styleUrl: './change-channel-description.component.scss',
 })
 export class ChangeChannelDescriptionComponent {
+   @Input() isMobile!:boolean;
   @Input() channelId?: string;
   @Input() user$?: Observable<UserInterface>;
 
