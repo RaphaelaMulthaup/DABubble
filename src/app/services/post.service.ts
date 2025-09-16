@@ -421,13 +421,4 @@ export class PostService {
     }
     return this.postCache.get(messageId)!;
   }
-
-  // getUserById(uid: string): Observable<UserInterface> {
-  //   if (!this.userCache.has(uid)) {
-  //     const userDocRef = doc(this.firestore, `users/${uid}`);
-  //     const user$ = docData(userDocRef).pipe(shareReplay(1));
-  //     this.userCache.set(uid, user$ as Observable<UserInterface>);
-  //   }
-  //   return this.userCache.get(uid)!;
-  // }
 }

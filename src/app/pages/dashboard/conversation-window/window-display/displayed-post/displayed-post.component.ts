@@ -46,7 +46,7 @@ export class DisplayedPostComponent {
   @Input() @Output() post!: PostInterface;
   @Input() editingPost?: boolean;
   emojis = EMOJIS;
-  typ$!: Observable<string>;
+  // typ$!: Observable<string>;
   currentConversationType!: 'channel' | 'chat';
   currentConversationId!: string;
   senderName$!: Observable<string>;
@@ -57,7 +57,8 @@ export class DisplayedPostComponent {
   visibleReactions$!: Observable<ReactionInterface[]>;
   allReactionsVisible: boolean = false;
   postClicked: boolean = false;
-  hideAnswersInThread: boolean = false;
+  hideMessageInteractionInThread: boolean = false;
+  parentMessageId?: string; //the id of the message, an answer belongs to -> only if the message is an answer
   private destroy$ = new Subject<void>();
 
   constructor(
@@ -79,23 +80,31 @@ export class DisplayedPostComponent {
         this.currentConversationId = conversationId;
       });
 
-    this.chatActiveRouterService
+    this.conversationActiveRouterService
       .getMessageId$(this.route)
       .pipe(takeUntil(this.destroy$))
       .subscribe((messageId) => {
-        messageId
-          ? (this.hideAnswersInThread = true)
-          : (this.hideAnswersInThread = false);
+        // console.log(this.postType);
+        messageId === this.post.id
+          ? (this.hideMessageInteractionInThread = true)
+          : (this.hideMessageInteractionInThread = false);
+        this.parentMessageId = messageId;
       });
 
     this.reactions$ = of(this.post).pipe(
       filter((post) => post.hasReactions === true),
       switchMap((post) =>
-        this.postService.getReactions(
-          `/${this.currentConversationType}s/${this.currentConversationId}`,
-          'messages',
-          post.id!
-        )
+        this.parentMessageId
+          ? this.postService.getReactions(
+              `/${this.currentConversationType}s/${this.currentConversationId}/messages/${this.parentMessageId}`,
+              'answers',
+              post.id!
+            )
+          : this.postService.getReactions(
+              `/${this.currentConversationType}s/${this.currentConversationId}`,
+              'messages',
+              post.id!
+            )
       ),
       shareReplay({ bufferSize: 1, refCount: true })
     );
@@ -183,15 +192,29 @@ export class DisplayedPostComponent {
     overlay!.ref.instance.selectedEmoji
       .pipe(take(1))
       .subscribe((emoji: { token: string; src: string }) => {
-        this.postService.toggleReaction(
-          '/' +
-            this.currentConversationType +
-            's/' +
-            this.currentConversationId,
-          'messages',
-          this.post.id!,
-          emoji
-        );
+        if (this.parentMessageId) {
+          this.postService.toggleReaction(
+            '/' +
+              this.currentConversationType +
+              's/' +
+              this.currentConversationId +
+              '/messages/' +
+              this.parentMessageId,
+            'answers',
+            this.post.id!,
+            emoji!
+          );
+        } else {
+          this.postService.toggleReaction(
+            '/' +
+              this.currentConversationType +
+              's/' +
+              this.currentConversationId,
+            'messages',
+            this.post.id!,
+            emoji!
+          );
+        }
         this.overlayService.closeAll();
       });
   }
@@ -256,6 +279,7 @@ export class DisplayedPostComponent {
         currentConversationType: this.currentConversationType,
         currentConversationId: this.currentConversationId,
         post: this.post,
+        parentMessageId: this.parentMessageId,
       }
     );
     overlay?.afterClosed$.pipe(take(1)).subscribe(() => {
@@ -270,13 +294,26 @@ export class DisplayedPostComponent {
    *  @param emoji - the image-path for the chosen emoji.
    */
   toggleExistingReaction(emoji: { token: string; src: string }) {
-    console.log(emoji);
-    this.postService.toggleReaction(
-      '/' + this.currentConversationType + 's/' + this.currentConversationId,
-      'messages',
-      this.post.id!,
-      emoji
-    );
+    if (this.parentMessageId) {
+      this.postService.toggleReaction(
+        '/' +
+          this.currentConversationType +
+          's/' +
+          this.currentConversationId +
+          '/messages/' +
+          this.parentMessageId,
+        'answers',
+        this.post.id!,
+        emoji!
+      );
+    } else {
+      this.postService.toggleReaction(
+        '/' + this.currentConversationType + 's/' + this.currentConversationId,
+        'messages',
+        this.post.id!,
+        emoji!
+      );
+    }
     this.overlayService.closeAll();
   }
 }

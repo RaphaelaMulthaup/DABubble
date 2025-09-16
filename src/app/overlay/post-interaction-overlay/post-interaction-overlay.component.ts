@@ -30,6 +30,7 @@ export class PostInteractionOverlayComponent implements OnInit {
   @Input() post!: PostInterface;
   senderIsCurrentUser!: boolean;
   emojis = EMOJIS;
+  parentMessageId?: string; //the id of the message, an answer belongs to -> only if the message is an answer
 
   constructor(
     private authService: AuthService,
@@ -53,12 +54,27 @@ export class PostInteractionOverlayComponent implements OnInit {
   reactToPostWithPreselection(emojiToken: string) {
     let emoji = this.emojis.find((e) => e.token == emojiToken);
 
-    this.postService.toggleReaction(
-      '/' + this.currentConversationType + 's/' + this.currentConversationId,
-      'messages',
-      this.post.id!,
-      emoji!
-    );
+    if (this.parentMessageId) {
+      this.postService.toggleReaction(
+        '/' +
+          this.currentConversationType +
+          's/' +
+          this.currentConversationId +
+          '/messages/' +
+          this.parentMessageId,
+        'answers',
+        this.post.id!,
+        emoji!
+      );
+    } else {
+      this.postService.toggleReaction(
+        '/' + this.currentConversationType + 's/' + this.currentConversationId,
+        'messages',
+        this.post.id!,
+        emoji!
+      );
+    }
+
     this.overlayService.closeAll();
   }
 
@@ -94,15 +110,29 @@ export class PostInteractionOverlayComponent implements OnInit {
     overlay!.ref.instance.selectedEmoji
       .pipe(take(1))
       .subscribe((emoji: { token: string; src: string }) => {
-        this.postService.toggleReaction(
-          '/' +
-            this.currentConversationType +
-            's/' +
-            this.currentConversationId,
-          'messages',
-          this.post.id!,
-          emoji
-        );
+        if (this.parentMessageId) {
+          this.postService.toggleReaction(
+            '/' +
+              this.currentConversationType +
+              's/' +
+              this.currentConversationId +
+              '/messages/' +
+              this.parentMessageId,
+            'answers',
+            this.post.id!,
+            emoji
+          );
+        } else {
+          this.postService.toggleReaction(
+            '/' +
+              this.currentConversationType +
+              's/' +
+              this.currentConversationId,
+            'messages',
+            this.post.id!,
+            emoji
+          );
+        }
         this.overlayService.closeAll();
       });
   }
