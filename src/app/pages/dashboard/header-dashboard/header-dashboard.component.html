@@ -27,7 +27,7 @@
         alt="Profilbild"
         (click)="showSettings()"
       />
-      <app-settings></app-settings>
+      <app-settings class="settings"></app-settings>
     </div>
   </div>
   @if ((authService.currentUser$ | async) && mobileDashboardState() == 'sidenav') { <app-search-bar></app-search-bar>

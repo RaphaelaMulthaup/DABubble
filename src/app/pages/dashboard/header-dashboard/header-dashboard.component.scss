@@ -98,3 +98,9 @@ h1 {
   background-color: var(--color-purple-white);
   padding: 16px;
 }
+
+.settings{
+  @include respond-to(sm) {
+    display: none;
+  }
+}
