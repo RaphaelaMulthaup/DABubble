@@ -123,7 +123,7 @@ export class CurrentPostInput implements OnInit, OnDestroy {
 
     if (this.searchChar) {
       if (this.searchText.length == 1) {
-        this.searchService.search(of(this.searchChar!)).subscribe((results) => {
+        this.searchService.search(of(this.searchChar!), { includeAllChannels: true }).subscribe((results) => {
           if (results.length === 0) return this.overlayService.closeAll();
           this.openSearchOverlay(results);
         });
