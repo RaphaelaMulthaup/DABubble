@@ -1,15 +1,21 @@
-<section class="dashboard w-full"
-[ngClass]="{'new-message-view-mobile': (mobileDashboardState() === 'new-message-view') && (screenSize$|async) === 'handset'}"
+<section
+  class="dashboard w-full"
+  [class.dashboard-web]="(screenSize$ | async) === 'web'"
+  [ngClass]="{
+    'new-message-view-mobile':
+      mobileDashboardState() === 'new-message-view' &&
+      (screenSize$ | async) === 'handset'
+  }"
 >
   <app-header-dashboard />
   @if (mobileDashboardState() === 'new-message-view') {
   <app-header-searchbar></app-header-searchbar>
- <div class="below-from-header-searchbar"></div>
-}
-
-  @if((screenSize$|async) === 'web'){
-  <div class="dashboard-web flex h-full">
-    <app-sidenav></app-sidenav>
+  <div class="below-from-header-searchbar"></div>
+  } @if((screenSize$|async) === 'web'){
+  <div class="dashboard-web-components flex h-full">
+    @if(webNavigationVisible) {
+    <app-sidenav class="relative"></app-sidenav>
+    }
     <app-conversation-window [data$]="messages$"></app-conversation-window>
     <app-conversation-window [data$]="answers$"></app-conversation-window>
   </div>
@@ -29,6 +35,19 @@
   </div>
   }
 </section>
+
+@if((screenSize$|async) === 'web') {
+<section
+  (click)="webNavigationVisible = !webNavigationVisible"
+  class="collapsible"
+>
+  <p>Workspace-Menü {{ webNavigationVisible ? "schließen" : "öffnen" }}</p>
+  <div
+    class="toggle-navigation-img"
+    [ngClass]="webNavigationVisible ? 'hide-navigation' : 'show-navigation'"
+  ></div>
+</section>
+}
 
 <!-- <section class="dashboard flex w-full justify-around h-[calc(100vh-120px)] gap-[24px]">
   <app-header />

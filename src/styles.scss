@@ -153,9 +153,15 @@ input {
   padding: 12px 20px;
   border-bottom-left-radius: 30px;
   border-bottom-right-radius: 30px;
-  rotate: -90deg;
+  rotate: 270deg;
+  transform-origin: 0% 0%;
   box-shadow: 4px 4px 7px 0px #00000033;
   background-color: var(--color-white);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-weight: 500;
 
   &:hover {
     color: var(--color-purple-medium);

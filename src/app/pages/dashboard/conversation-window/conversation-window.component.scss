@@ -1,7 +1,8 @@
 .conversation-window {
-  max-height: calc(100vh - 115px);
+  height: calc(100vh - 115px);
   background-color: var(--color-white);
   position: relative;
+  border-radius: 30px;
   // >* {
   //   padding: 0 16px;
   // }

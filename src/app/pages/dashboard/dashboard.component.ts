@@ -62,6 +62,7 @@ export class DashboardComponent {
    */
   answers$!: Observable<PostInterface[]>;
   screenSize$!: Observable<ScreenSize>;
+  webNavigationVisible: boolean = true;
 
   constructor(
     public overlayService: OverlayService, // Service to handle overlay state
