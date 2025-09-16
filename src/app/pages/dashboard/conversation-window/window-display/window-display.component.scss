@@ -28,7 +28,9 @@ app-displayed-post {
 
 .messages-container {
   height: 100%;
+  padding-top: 16px;
   overflow-y: auto; // wichtig!
+  border-radius: 30px;
 }
 
 .messages-container-empty-view {

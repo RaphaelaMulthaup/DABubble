@@ -17,7 +17,9 @@
     <app-sidenav class="relative"></app-sidenav>
     }
     <app-conversation-window [data$]="messages$"></app-conversation-window>
+    @if (mobileDashboardState()==='thread-window'){
     <app-conversation-window [data$]="answers$"></app-conversation-window>
+    }
   </div>
   } @else {
   <div class="w-full h-full">

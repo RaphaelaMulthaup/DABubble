@@ -1,5 +1,6 @@
 import {
   Component,
+  HostListener,
   Input,
   Output,
   WritableSignal,
@@ -15,6 +16,8 @@ import {
   of,
   shareReplay,
   Subject,
+  Subscribable,
+  Subscription,
   switchMap,
   take,
   takeUntil,
@@ -228,7 +231,7 @@ export class DisplayedPostComponent {
   openReactedUsersOverlay(event: MouseEvent, reaction: ReactionInterface) {
     this.overlayService.openComponent(
       ReactedUsersComponent,
-      null,
+      'close-on-scroll',
       {
         origin: event.currentTarget as HTMLElement,
         originPosition: {
