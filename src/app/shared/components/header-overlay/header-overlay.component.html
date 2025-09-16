@@ -1,5 +1,10 @@
 <header>
-  <h2>{{ overlayHeadline }}</h2>
+  <div class="flex items-center gap-[5px]">
+    @if(isChannelHeader){
+      <div class="tag"> </div>
+    }
+    <h2>{{ overlayHeadline }}</h2>
+  </div>
   <button
     class="btn-tertiary close"
     (click)="

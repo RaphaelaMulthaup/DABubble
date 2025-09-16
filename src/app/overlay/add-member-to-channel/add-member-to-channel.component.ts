@@ -112,7 +112,7 @@ closeOverlay() {
   setTimeout(() => {
       this.overlayService.closeAll();
       this.isClosing = false;
-  }, 1000); // duration matches CSS transition
+  }, 500); // duration matches CSS transition
 
 }
 
