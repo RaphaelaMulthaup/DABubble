@@ -21,10 +21,11 @@ import { ChannelsService } from '../../services/channels.service';
 import { Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { OverlayService } from '../../services/overlay.service';
 import { UserListItemToChannelComponent } from '../../shared/components/user-list-item-to-channel/user-list-item-to-channel.component';
+import { RectangleDragCloseDirective } from '../../shared/directives/rectangle-drag-close.directive';
 
 @Component({
   selector: 'app-add-member-to-channel',
-  imports: [HeaderOverlayComponent, CommonModule, ReactiveFormsModule],
+  imports: [HeaderOverlayComponent, CommonModule, ReactiveFormsModule, RectangleDragCloseDirective],
   templateUrl: './add-member-to-channel.component.html', // Path to the HTML template
   styleUrls: ['./add-member-to-channel.component.scss'],  // Path to the styling file
 })
@@ -101,6 +102,19 @@ export class AddMemberToChannelComponent {
     // Clear the list of users in the service when the component is initialized
     this.overlayService.clearUsers();
   }
+
+
+isClosing = false;
+
+  
+closeOverlay() {
+    this.isClosing = true;
+  setTimeout(() => {
+      this.overlayService.closeAll();
+      this.isClosing = false;
+  }, 1000); // duration matches CSS transition
+
+}
 
 
 

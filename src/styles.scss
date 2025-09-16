@@ -253,6 +253,13 @@ h4 {
   }
 }
 
+.rectangle{
+  width: 62px;
+  height: 6px;
+    aspect-ratio: 1;
+      background-image: url("./assets/img/rectangle.svg");
+}
+
 .tag {
   width: 24px;
   aspect-ratio: 1;

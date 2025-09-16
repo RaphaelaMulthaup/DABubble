@@ -2,7 +2,20 @@
 .mytest{
     display: flex;
     flex-direction: column;
-    width: 100%
+    width: 100%;
+    gap: 20px;
+}
+
+.overlay,
+.overlay-bottom {
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.closing {
+    transform: translateY(100%);
+    opacity: 0;
 }
 
 input {
