@@ -29,12 +29,11 @@
     />
   </div>
   <div class="btn-area flex items-center justify-around w-full">
-    <button
-      class="btn-secondary"
-      (click)="overlayService.closeOne(this.overlayRef)"
-    >
+    <button class="btn-secondary" (click)="overlayService.closeOne(this.overlayRef)">
       Abbrechen
     </button>
-    <button class="btn-primary" (click)="saveName()">Speichern</button>
+    <button class="btn-primary save" (click)="saveName()">
+      Speichern
+    </button>
   </div>
 </div>

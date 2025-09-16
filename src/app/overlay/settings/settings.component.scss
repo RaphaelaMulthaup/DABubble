@@ -1,0 +1,30 @@
+@import './../../../styles.scss';
+
+.settings-view-main{
+    background-color: white;
+    width: 280px;
+    height: 180px;
+    top: 60px;
+    z-index: 10;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    padding: 38px;
+    position: absolute;
+    right: 36px;
+    top: 100px;
+}
+
+.settings-btn{
+    width: 100%;
+    font-size: 24px;
+    font-weight: 600;
+    height: 48px;
+
+    &:hover{
+        cursor: pointer;
+        color: var(--color-blue);
+        background-color: var(--color-purple-white);
+        border-radius: 35px;
+    }
+}

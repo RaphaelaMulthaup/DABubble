@@ -12,7 +12,7 @@
     padding: 38px;
 
     @include respond-to(xs) {
-        width: 100vw;
+        width: 90vw;
     }
 }
 
@@ -62,4 +62,21 @@
 
 .showEdit{
     display: flex;
+}
+
+.edit-mobile-icon{
+    display: none;
+    background-color: var(--color-purple-white);
+    padding: 4px;
+    border-radius: 15px;
+
+    @include respond-to(xs) {
+        display: flex;
+    }
+}
+
+.edit-span{
+    @include respond-to(xs) {
+        display: none;
+    }
 }

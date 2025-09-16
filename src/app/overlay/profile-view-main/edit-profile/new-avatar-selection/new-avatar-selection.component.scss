@@ -10,6 +10,10 @@
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
     padding: 38px;
+
+    @include respond-to(xs) {
+        width: 90dvw;
+    }
 }
 
 .selectedImg{
@@ -28,9 +32,23 @@ img{
     margin: 0px 0px 8px 0px;
 }
 
-@media screen and (max-width: 525px) {
+.avatar-list{
+    @include respond-to(xxs) {
+        display: grid;
+        grid-template-columns: auto auto auto;
+    }
+}
 
-    .new-avatar-selection{
-        width: 100vw;
+.avatar-img{
+    margin: 4px 0px 4px 0px;
+}
+
+.btn-area{
+    @include respond-to(xxs) {
+        flex-direction: column-reverse;
+    }
+
+    .save{
+        margin: 0px 0px 12px 0px;
     }
 }

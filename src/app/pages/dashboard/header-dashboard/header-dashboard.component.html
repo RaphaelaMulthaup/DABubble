@@ -25,9 +25,9 @@
         class="profil-img"
         [src]="(currentUser$ | async)?.photoUrl"
         alt="Profilbild"
-        (click)="showProfile()"
+        (click)="showSettings()"
       />
-      <app-profile-view-main class="profile-view"></app-profile-view-main>
+      <app-settings></app-settings>
     </div>
   </div>
   @if ((authService.currentUser$ | async) && mobileDashboardState() == 'sidenav') { <app-search-bar></app-search-bar>
@@ -55,9 +55,9 @@
       class="profil-img"
       [src]="(currentUser$ | async)?.photoUrl"
       alt="Profilbild"
-      (click)="showProfile()"
+      (click)="showSettings()"
     />
-    <button class="arrow-btn" (click)="showProfile()"></button>
+    <button class="arrow-btn" (click)="showSettings()"></button>
     <app-profile-view-main class="profile-view"></app-profile-view-main>
   </div>
 
