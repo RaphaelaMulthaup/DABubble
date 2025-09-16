@@ -20,7 +20,7 @@
           <li class="container">
             <img class="profil-img" src="{{ user.photoUrl }}" alt="Profilbild" />
             <span>{{ getFirstWord(user.name) }}</span>
-            <button (click)="removeFromList($index)">X</button>
+            <button (click)="removeFromList($index)"><div class="close"></div></button>
           </li>
           }
           <input #addMemberSearchBar type="text" class="" [placeholder]="ListWithMember.length > 0 ? '' : 'Name eingeben'"
