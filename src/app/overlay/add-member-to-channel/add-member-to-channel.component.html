@@ -5,12 +5,12 @@
     @if(onBottom){
       <div class="flex w-full justify-center" ><span class="rectangle" appRectangleDragClose (dragClose)="closeOverlay()"></span></div>
     }
-      <div>
+      <div class="flex flex-col gap-[5px]">
           <app-header-overlay [overlayHeadline]="'Leute hinzufugen'" [overlayRef]="overlayRef" />
           <!-- @if(!onBottom){  here should check if is on mobile/desktop -->
           <div class="flex gap-[15px]">
-            <span class="tag"> </span>
-            <span class="flex w-full">{{ channelDetails.name }}</span>
+            <span class="tag-color"> </span>
+            <span class="flex w-full color">{{ channelDetails.name }}</span>
           </div>
           <!-- } -->
       </div>
@@ -26,9 +26,11 @@
           <input #addMemberSearchBar type="text" class="" [placeholder]="ListWithMember.length > 0 ? '' : 'Name eingeben'"
             [formControl]="searchControl" />
         </div>
-        <button class="btn-primary" (click)="addMembertoChannel(channelDetails.id!)" [disabled]="ListWithMember.length === 0">
-          Hinzufügen
-        </button>
+        <div class="flex w-full justify-end">
+            <button class=" btn-primary " (click)="addMembertoChannel(channelDetails.id!)" [disabled]="ListWithMember.length === 0">
+              Hinzufügen
+            </button>
+        </div>
       </div>
   </div>
           }

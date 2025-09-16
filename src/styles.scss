@@ -188,6 +188,8 @@ h1 {
 h2 {
   font-size: 24px;
   font-weight: 700;
+  margin-block-start: 0;
+  margin-block-end: 0;
 }
 
 h3 {
@@ -264,6 +266,12 @@ h4 {
   width: 24px;
   aspect-ratio: 1;
   background-image: url("./assets/img/tag-black.svg");
+}
+
+.tag-color {
+  width: 24px;
+  aspect-ratio: 1;
+  background-image: url("./assets/img/tag-blue.svg");
 }
 
 .separable {

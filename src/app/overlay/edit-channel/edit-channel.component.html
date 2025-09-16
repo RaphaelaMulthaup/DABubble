@@ -1,6 +1,6 @@
 <div class="flex  max-w-[832px]" [ngClass]="isMobile ? 'mobile-overlay' : 'overlay-left'" >
     <div class="flex vwitdh flex-col relative">
-      <div class="flex w-full justify-between min-h-[90px] max-h-[90px] pb-[10px] pl-[16px] pr-[16px] header-shadow">
+      <div class="flex w-full justify-between min-h-[90px] max-h-[90px] pb-[10px] pl-[16px] pr-[16px]" [class.header-shadow]="isMobile">
                 <app-header-overlay class="flex items-end w-full" [overlayHeadline]="channelName || ''"  [isChannelHeader]="true"/>
       </div>
 
