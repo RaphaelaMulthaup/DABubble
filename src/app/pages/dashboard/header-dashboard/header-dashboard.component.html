@@ -1,10 +1,10 @@
 <header
   [ngClass]="{
-    'header-mobile': isMobile,
-    'header-desktop flex place-content-between': !isMobile
+    'header-mobile': (screenSize$|async) === 'handset',
+    'header-desktop flex place-content-between': (screenSize$|async) === 'web'
   }"
 >
-  @if (isMobile) {
+  @if ((screenSize$|async) === 'handset') {
   <div class="header-mobile-upper-area">
     <div class="logo-box flex items-center">
       @if (mobileDashboardState() == 'sidenav') {
@@ -31,7 +31,7 @@
     </div>
   </div>
   @if ((authService.currentUser$ | async) && mobileDashboardState() == 'sidenav') { <app-search-bar></app-search-bar>
-  } } @else if (!isMobile){
+  } } @else if ((screenSize$|async) === 'web'){
   <div class="logo-box flex items-center">
     @if (mobileDashboardState() == 'sidenav') {
     <img class="logo-final" src="assets/img/logo.png" alt="Logo DABubble" />

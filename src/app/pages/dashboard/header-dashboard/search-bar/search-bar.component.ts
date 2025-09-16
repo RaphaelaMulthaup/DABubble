@@ -30,6 +30,8 @@ import { MobileService } from '../../../../services/mobile.service';
 import { SearchResult } from '../../../../shared/types/search-result.type';
 import { UserInterface } from '../../../../shared/models/user.interface';
 import { ChannelInterface } from '../../../../shared/models/channel.interface';
+import { ScreenSize } from '../../../../shared/types/screen-size.type';
+import { ScreenService } from '../../../../services/screen.service';
 
 @Component({
   selector: 'app-search-bar',
@@ -46,40 +48,32 @@ import { ChannelInterface } from '../../../../shared/models/channel.interface';
   styleUrls: ['./search-bar.component.scss'],
 })
 export class SearchBarComponent implements OnInit, OnDestroy {
-  searchControl = new FormControl<string>('', { nonNullable: true }); 
-  firstFocusHappened = false; 
+  searchControl = new FormControl<string>('', { nonNullable: true });
+  firstFocusHappened = false;
   private destroy$ = new Subject<void>(); // Subject to handle unsubscription
 
-  @ViewChild('searchbar', { static: true }) searchbar!: ElementRef<HTMLElement>; 
+  @ViewChild('searchbar', { static: true }) searchbar!: ElementRef<HTMLElement>;
 
   results: Signal<SearchResult[]>; // Signal for template binding
-
-  isMobile = false;
-  private updateMobile: () => void;
+  screenSize$!: Observable<ScreenSize>;
   searchResultsExisting = false;
 
   constructor(
+    public screenService: ScreenService,
     private overlayService: OverlayService,
     public searchService: SearchService,
     public mobileService: MobileService
   ) {
-    // Function to update mobile detection
-    this.updateMobile = () => {
-      this.isMobile = this.mobileService.isMobile();
-    };
-
+    this.screenSize$ = this.screenService.screenSize$;
     // Initialize the results signal with an empty array
     this.results = toSignal(this.searchService.results$, { initialValue: [] });
   }
 
-  /** 
+  /**
    * Lifecycle hook called after component initialization.
    * Sets mobile detection and adds focus listener to search input.
    */
   ngOnInit() {
-    this.isMobile = this.mobileService.isMobile();
-    window.addEventListener('resize', this.updateMobile);
-
     // Overlay focus logic
     this.searchbar.nativeElement.addEventListener('focus', () => {
       const term = this.searchControl.value.trim();
@@ -89,7 +83,7 @@ export class SearchBarComponent implements OnInit, OnDestroy {
     });
   }
 
-  /** 
+  /**
    * Initializes the input observable and handles the search logic.
    * Runs only on the first focus event to avoid multiple subscriptions.
    */
@@ -122,7 +116,7 @@ export class SearchBarComponent implements OnInit, OnDestroy {
     }
   }
 
-  /** 
+  /**
    * Opens the search results overlay positioned relative to the search bar.
    * Handles backdrop clicks to close overlay and reset input.
    */
@@ -160,7 +154,7 @@ export class SearchBarComponent implements OnInit, OnDestroy {
     });
   }
 
-  /** 
+  /**
    * Computes and groups search results by user and channel.
    * Returns an array of grouped and ungrouped results for display.
    */
@@ -203,7 +197,7 @@ export class SearchBarComponent implements OnInit, OnDestroy {
     return grouped;
   });
 
-  /** 
+  /**
    * Lifecycle hook called before component destruction.
    * Completes the destroy$ subject to unsubscribe all active observables.
    */
@@ -212,7 +206,7 @@ export class SearchBarComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  /** 
+  /**
    * Closes the overlay and clears the search input.
    */
   closeOverlayAndEmptyInput() {

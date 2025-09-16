@@ -11,11 +11,17 @@ import { ChannelMembersLengthComponent } from './channel-members-length/channel-
 import { ChannelMembersComponent } from '../../../../../shared/components/channel-members/channel-members.component';
 import { AddMemberToChannelComponent } from '../../../../../overlay/add-member-to-channel/add-member-to-channel.component';
 import { MobileService } from '../../../../../services/mobile.service';
-import { ChannelListItemComponent } from "../../../../../shared/components/channel-list-item/channel-list-item.component";
+import { ChannelListItemComponent } from '../../../../../shared/components/channel-list-item/channel-list-item.component';
+import { ScreenSize } from '../../../../../shared/types/screen-size.type';
+import { ScreenService } from '../../../../../services/screen.service';
 
 @Component({
   selector: 'app-header-channel',
-  imports: [CommonModule, ChannelMembersLengthComponent, ChannelListItemComponent],
+  imports: [
+    CommonModule,
+    ChannelMembersLengthComponent,
+    ChannelListItemComponent,
+  ],
   templateUrl: './header-channel.component.html',
   styleUrl: './header-channel.component.scss',
 })
@@ -23,19 +29,17 @@ export class HeaderChannelComponent {
   channelId!: string;
   channelDetails$!: Observable<ChannelInterface | undefined>;
   memberIds?: string[];
-  isMobile = false;
-  private updateMobile: () => void;
+  screenSize$!: Observable<ScreenSize>;
 
   constructor(
+    public screenService: ScreenService,
     private overlayService: OverlayService,
     private conversationActiveRouterService: ConversationActiveRouterService,
     private route: ActivatedRoute,
     private channelService: ChannelsService,
     private mobileService: MobileService
   ) {
-    this.updateMobile = () => {
-      this.isMobile = this.mobileService.isMobile();
-    };
+    this.screenSize$ = this.screenService.screenSize$;
   }
 
   ngOnInit() {
@@ -47,12 +51,6 @@ export class HeaderChannelComponent {
           return this.channelService.getCurrentChannel(this.channelId);
         })
       );
-    this.isMobile = this.mobileService.isMobile();
-    window.addEventListener('resize', this.updateMobile);
-  }
-
-  ngOnDestroy() {
-    window.removeEventListener('resize', this.updateMobile);
   }
 
   openEditChannelFormOverlay() {
@@ -80,7 +78,7 @@ export class HeaderChannelComponent {
       {
         channelDetails$: this.channelDetails$ as Observable<ChannelInterface>,
         overlay: 'overlay-right',
-        clickedFromHeader: true
+        clickedFromHeader: true,
       }
     );
   }

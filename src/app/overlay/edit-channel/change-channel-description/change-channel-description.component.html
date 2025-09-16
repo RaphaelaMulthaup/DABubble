@@ -3,13 +3,13 @@
         <div class="flex w-full items-center justify-between">
             <h4>Channel description</h4>
             @if(isEditActive){
-                @if(isMobile){
+                @if((screenSize$|async) === 'handset'){
                     <button class="btn" (click)="saveDescription(descriptionInput!)"><span class="save"></span></button>
                 }@else {
                     <button class="nameTag" (click)="saveDescription(descriptionInput!)">Speichern</button>
                 }
             }@else {
-                @if(isMobile){
+                @if((screenSize$|async) === 'handset'){
                     <button class="btn" (click)="toggleEdit()"><span class="edit"></span></button>
                 }@else {
                     <button class="nameTag" (click)="toggleEdit()">Bearbeiten</button>

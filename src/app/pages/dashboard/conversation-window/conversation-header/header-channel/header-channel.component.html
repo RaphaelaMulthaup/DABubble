@@ -11,7 +11,7 @@
 
   <div class="flex items-center gap-[10px]">
     <app-channel-members-length [channel$]="channelDetails$" (click)="openChannelMembers($event)" />
-      @if(!isMobile){
+      @if((screenSize$|async) === 'web'){
           <button class="btn-tertiary" (click)="openAddMembersToChannel($event)">
             <div class="add-person"></div>
           </button>

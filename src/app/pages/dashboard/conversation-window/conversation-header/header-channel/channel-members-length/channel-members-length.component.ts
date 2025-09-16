@@ -13,6 +13,8 @@ import { ChannelInterface } from '../../../../../../shared/models/channel.interf
 import { UserInterface } from '../../../../../../shared/models/user.interface';
 import { UserService } from '../../../../../../services/user.service';
 import { MobileService } from '../../../../../../services/mobile.service';
+import { ScreenService } from '../../../../../../services/screen.service';
+import { ScreenSize } from '../../../../../../shared/types/screen-size.type';
 
 @Component({
   selector: 'app-channel-members-length',
@@ -30,17 +32,15 @@ export class ChannelMembersLengthComponent {
     channel: ChannelInterface | undefined;
     users: UserInterface[];
   }>;
-  isMobile = false;
-  private updateMobile: () => void;
+  screenSize$!: Observable<ScreenSize>;
   private destroy$ = new Subject<void>();
 
   constructor(
+    public screenService: ScreenService,
     private userService: UserService,
     private mobileService: MobileService
   ) {
-    this.updateMobile = () => {
-      this.isMobile = this.mobileService.isMobile();
-    };
+    this.screenSize$ = this.screenService.screenSize$;
   }
 
   ngOnInit() {
@@ -60,13 +60,10 @@ export class ChannelMembersLengthComponent {
         takeUntil(this.destroy$)
       );
     }
-    this.isMobile = this.mobileService.isMobile();
-    window.addEventListener('resize', this.updateMobile);
   }
 
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
-    window.removeEventListener('resize', this.updateMobile);
   }
 }

@@ -49,11 +49,6 @@ export class CurrentPostInput implements OnInit, OnDestroy {
   messageToReplyId: string | null = null;
   /** Stores any error message to be displayed in the input form. */
   errorMessage: string | null = null;
-  /** Reactive form for creating a new message or reply. */
-  // postForm: FormGroup = new FormGroup({
-  //   /** Input field for the message text. */
-  //   text: new FormControl('', []),
-  // });
   @ViewChild('textarea') postTextInput!: ElementRef;
   searchResults: SearchResult[] = [];
   searchChar: '@' | '#' | null = null;
@@ -97,46 +92,6 @@ export class CurrentPostInput implements OnInit, OnDestroy {
       .subscribe((msgId) => {
         this.messageToReplyId = msgId;
       });
-
-    // this.postForm
-    //   .get('text')!
-    //   .valueChanges.pipe(
-    //     startWith(''),
-    //     debounceTime(200),
-    //     distinctUntilChanged(),
-    //     switchMap((text: string | null) => {
-    //       const safeText = text || '';
-    //       const words = safeText.split(/\s+/);
-    //       // Nimm das letzte Wort
-    //       const lastWord = words[words.length - 1];
-
-    //       if (!lastWord) {
-    //         this.searchResults = [];
-    //         return of([]);
-    //       }
-
-    //       // Prüfe, ob das letzte Wort mit @ oder # beginnt
-    //       if (lastWord.startsWith('@') || lastWord.startsWith('#')) {
-    //         // Sofortige Suche starten
-    //         return this.searchService.search(of(lastWord), {
-    //           includeAllChannels: true,
-    //         });
-    //       } else {
-    //         // Kein Suchergebnis anzeigen, wenn das letzte Wort nicht mit @/# beginnt
-    //         this.searchResults = [];
-    //         return of([]);
-    //       }
-    //     }),
-    //     takeUntil(this.destroy$)
-    //   )
-    //   .subscribe((results: any[]) => {
-    //     this.searchResults = results;
-    //     if (results.length > 0) {
-    //       this.openSearchOverlay(results);
-    //     } else {
-    //       this.overlayService.closeAll();
-    //     }
-    //   });
 
     setTimeout(() => {
       this.postService.focusAtEndEditable(this.postTextInput);
@@ -201,20 +156,6 @@ export class CurrentPostInput implements OnInit, OnDestroy {
 
     return textBeforeCursor.substring(lastTrigger);
   }
-
-  // /**
-  //  * This function returns the textBeforeCursor untill the last searchChar.
-  //  */
-  // insertChar(char: string) {
-  //   this.postService.focusAtEndEditable(this.postTextInput);
-  //   const selection = window.getSelection();
-  //   if (!selection || !selection.rangeCount) return;
-  //   const range = selection.getRangeAt(0);
-  //   const textNode = document.createTextNode(char);
-  //   range.insertNode(textNode);
-  //   this.postService.focusAtEndEditable(this.postTextInput);
-  //   this.onInput();
-  // }
 
   /**
    * This function adds the chosen emoji to the input field as an image.
@@ -330,9 +271,6 @@ export class CurrentPostInput implements OnInit, OnDestroy {
       overlayRef.ref.instance.channelSelected?.subscribe((channel: any) => {
         this.insertName(channel.name, 'channel');
       });
-      // this.searchResults = [];
-      // this.searchChar = null;
-      // this.searchText = null;
     }
   }
 
@@ -346,9 +284,12 @@ export class CurrentPostInput implements OnInit, OnDestroy {
   insertName(text: string, typeOfResult?: 'user' | 'channel') {
     this.overlayService.closeAll();
     this.postService.focusAtEndEditable(this.postTextInput);
-    if (this.searchText) this.deleteBeforeCursor(this.searchText.length);
+    if (this.searchText) this.deleteAfterSearchChar(this.searchText.length);
     this.postTextInput.nativeElement.innerHTML += text;
     this.postService.focusAtEndEditable(this.postTextInput);
+    this.searchResults = [];
+    this.searchChar = null;
+    this.searchText = null;
   }
 
   /**
@@ -356,7 +297,7 @@ export class CurrentPostInput implements OnInit, OnDestroy {
    *
    * @param length how many chars should be deleted
    */
-  deleteBeforeCursor(length: number) {
+  deleteAfterSearchChar(length: number) {
     const selection = window.getSelection();
     if (!selection || !selection.rangeCount) return;
 
@@ -375,42 +316,4 @@ export class CurrentPostInput implements OnInit, OnDestroy {
     range.setEnd(node, offset);
     range.deleteContents();
   }
-
-  // /**
-  //  * Replaces the last word with a selected user or channel name in the input field.
-  //  *
-  //  * @param name the name to be inserted.
-  //  * @param typeOfResult indicates whether it's a 'user' or 'channel'.
-  //  */
-  // insertName(name: string, typeOfResult: 'user' | 'channel') {
-  //   const control = this.postForm.get('text')!;
-  //   const text = control.value || '';
-  //   const words = text.split(/\s+/);
-  //   if (typeOfResult === 'user') {
-  //     words[words.length - 1] = name;
-  //   } else if (typeOfResult === 'channel') {
-  //     words[words.length - 1] = name;
-  //   }
-  //   // control.setValue(words.join(' ') + ' ');
-  //   this.postTextInput.nativeElement.innerHTML += words.join(' ') + ' ';
-  //   //this.postTextInput.nativeElement.focus();
-  //   this.postService.focusAtEndEditable(this.postTextInput);
-  // }
-
-  // /**
-  //  * Starts user search by adding '@' to the end of the input text if it's not already there.
-  //  */
-  // startUserSearch() {
-  //   const control = this.postForm.get('text')!;
-  //   const text = control.value || '';
-  //   console.log(text);
-  //   // Überprüfe das letzte Zeichen
-  //   const lastChar = text.slice(-1);
-
-  //   // If the last character isn't a space, add a space before the '@'
-  //   const newText = lastChar === ' ' ? text + '@' : text + ' @';
-  //   control.setValue(newText);
-  //   //this.postTextInput.nativeElement.focus();
-  //   this.postService.focusAtEndEditable(this.postTextInput);
-  // }
 }

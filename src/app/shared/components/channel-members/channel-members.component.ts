@@ -10,6 +10,8 @@ import { AddMemberToChannelComponent } from '../../../overlay/add-member-to-chan
 import { Subscription } from 'rxjs';
 import { MobileService } from '../../../services/mobile.service';
 import { OverlayRef } from '@angular/cdk/overlay';
+import { ScreenSize } from '../../types/screen-size.type';
+import { ScreenService } from '../../../services/screen.service';
 
 @Component({
   selector: 'app-channel-members',
@@ -27,20 +29,17 @@ export class ChannelMembersComponent implements OnDestroy, OnInit {
   memberIds?: string[];
   clickedFromHeader: boolean = false;
   clickedAddMember: boolean = false;
-  isMobile = false;
+  screenSize$!: Observable<ScreenSize>;
   users$!: Observable<UserInterface[]>;
-  private updateMobile: () => void;
   private destroy$ = new Subject<void>();
 
   constructor(
+    public screenService: ScreenService,
     private mobileService: MobileService,
     private userService: UserService,
     private overlayService: OverlayService
   ) {
-    this.updateMobile = () => {
-      this.isMobile = this.mobileService.isMobile();
-    };
-    this.isMobile = this.mobileService.isMobile();
+    this.screenSize$ = this.screenService.screenSize$;
   }
 
   ngOnInit() {
@@ -50,13 +49,11 @@ export class ChannelMembersComponent implements OnDestroy, OnInit {
         this.users$ = this.userService.getMembersFromChannel(this.memberIds!);
       }
     );
-    window.addEventListener('resize', this.updateMobile);
   }
 
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
-    window.removeEventListener('resize', this.updateMobile);
   }
 
   choiseBetweenComponentAndHeader(event: MouseEvent) {
@@ -81,7 +78,7 @@ export class ChannelMembersComponent implements OnDestroy, OnInit {
             ChannelInterface | undefined
           >,
           overlay: 'overlay',
-          onBottom: this.onBottom 
+          onBottom: this.onBottom,
         }
       );
     } else {

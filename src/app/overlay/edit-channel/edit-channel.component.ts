@@ -29,9 +29,6 @@ import { ScreenSize } from '../../shared/types/screen-size.type';
   styleUrl: './edit-channel.component.scss',
 })
 export class EditChannelComponent {
-  // private updateMobile = () => {
-  //   this.isMobile = this.mobileService.isMobile();
-  // };
 
   currentUser!: string;
   channelId?: string;
@@ -39,7 +36,6 @@ export class EditChannelComponent {
   memberIds?: string[];
   createdById?: string;
   user$?: Observable<UserInterface>;
-  isMobile = false;
   editChannelName:boolean = false;
   editChannelDescription:boolean = false;
   screenSize$!: Observable<ScreenSize>;
@@ -61,7 +57,6 @@ export class EditChannelComponent {
       switchMap((data) => data?.channel ?? of(null)),
       filter((channel): channel is ChannelInterface => !!channel)
     );
-    this.isMobile = this.mobileService.isMobile();
     this.screenSize$ = this.screenService.screenSize$;
   }
 

@@ -1,5 +1,5 @@
 <section class="dashboard w-full"
-[ngClass]="{'new-message-view-mobile': (mobileDashboardState() === 'new-message-view') && isMobile}"
+[ngClass]="{'new-message-view-mobile': (mobileDashboardState() === 'new-message-view') && (screenSize$|async) === 'handset'}"
 >
   <app-header-dashboard />
   @if (mobileDashboardState() === 'new-message-view') {
@@ -43,7 +43,7 @@
   </div>
 </section> -->
 
-<button (click)="logout()">logout</button>
+<!-- <button (click)="logout()">logout</button> -->
 
 <!-- <section >
   <div class="w-[300px] bg-white h-full">

@@ -1,6 +1,6 @@
 @if(channelWithUsers$ | async; as data) {
 @if(data.channel && data.users) {
-    @if(isMobile){
+    @if((screenSize$|async) === 'handset'){
         <button class="btn">
             <div class="add-person"></div>
         </button>
