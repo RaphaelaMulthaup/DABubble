@@ -1,5 +1,4 @@
 import { Component, WritableSignal } from '@angular/core';
-import { inject } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { SidenavComponent } from './sidenav/sidenav.component';
 import { ConversationWindowComponent } from './conversation-window/conversation-window.component';
@@ -10,16 +9,13 @@ import {
   filter,
   map,
   shareReplay,
-  switchMap,
-  tap,
+  switchMap
 } from 'rxjs/operators';
 import { HeaderDashboardComponent } from './header-dashboard/header-dashboard.component';
 import { ConversationActiveRouterService } from '../../services/conversation-active-router.service';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, throwError, EMPTY } from 'rxjs';
-import { HttpParams } from '@angular/common/http';
 import { MobileDashboardState } from '../../shared/types/mobile-dashboard-state.type';
-import { ChatService } from '../../services/chat.service';
 import { MobileService } from '../../services/mobile.service';
 import { PostInterface } from '../../shared/models/post.interface';
 import { ScreenService } from '../../services/screen.service';
