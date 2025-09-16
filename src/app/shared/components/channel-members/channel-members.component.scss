@@ -37,13 +37,13 @@ section {
     width: 32px;
     height: 32px;
     aspect-ratio: 1;
+    border-radius: 50%;
     background-image: url("../../../../assets/img/person-add.svg");
     transition: background-image 0.2 ease;
+    background-color: var(--color-purple-white);
     background-repeat: no-repeat;
     background-position: center;
-    /* centrează imaginea */
-    background-size: contain;
-    /* ajustează să intre în box */
+    background-size: 24px 24px; /* fixed size */    
     transition: background-image 0.2s ease;
   }
   &:hover {

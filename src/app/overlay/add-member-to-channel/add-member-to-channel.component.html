@@ -1,8 +1,10 @@
 
-<div [ngClass]="onBottom ? 'overlay-bottom' : overlay "  [ngStyle]="overlay ? { 'padding': '0'} : {}" class="flex">
+<div [ngClass]="onBottom ? 'overlay-bottom' : overlay "  [ngStyle]="!onBottom ? { 'max-width': '541px' } : {}" class="flex">
   @if(channelDetails$ | async; as channelDetails){
-  <div class="mytest" [ngStyle]="overlay ? { 'max-width':'541px'} : {} ">
-
+  <div class="mytest" >
+    @if(onBottom){
+      <div class="flex w-full justify-center">test</div>
+    }
       <div>
           <app-header-overlay [overlayHeadline]="'Leute hinzufugen'" [overlayRef]="overlayRef" />
           <div class="flex gap-[15px]">
