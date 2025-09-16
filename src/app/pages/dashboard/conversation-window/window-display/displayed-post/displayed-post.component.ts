@@ -59,6 +59,7 @@ export class DisplayedPostComponent {
   postClicked: boolean = false;
   hideAnswersInThread: boolean = false;
   private destroy$ = new Subject<void>();
+  chatActiveRouterService: any;
 
   constructor(
     private authService: AuthService,
@@ -82,7 +83,7 @@ export class DisplayedPostComponent {
     this.chatActiveRouterService
       .getMessageId$(this.route)
       .pipe(takeUntil(this.destroy$))
-      .subscribe((messageId) => {
+      .subscribe((messageId: any) => {
         messageId
           ? (this.hideAnswersInThread = true)
           : (this.hideAnswersInThread = false);

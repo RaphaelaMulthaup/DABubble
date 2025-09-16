@@ -6,6 +6,10 @@ header {
   padding: 75px;
   padding-bottom: 0;
 
+  @include respond-to(xs) {
+    justify-content: center !important;
+  }
+
   .logo-final {
     height: 70px;
     width: 241px;

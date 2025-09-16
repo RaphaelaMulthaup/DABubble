@@ -24,9 +24,9 @@
     font-size: 32px;
     font-weight: 656;
     color: white;
-    margin: 0px 0px 0px 14px;
+    margin: 2px 0px 0px 12px;
     animation: slideFromLeft 1s ease-in;
-    width: 230px;
+    width: 152px;
 }
 
 .name-black{
@@ -40,7 +40,7 @@
 }
 
 .expand{
-    width: 370px;
+    width: 238px;
 }
 
 .show{
@@ -51,6 +51,10 @@
     align-items: baseline;
     height: 100%;
     width: 100%;
+
+    @include respond-to(xs) {
+        justify-content: center;
+    }
 }
 
 .addMargin{
