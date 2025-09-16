@@ -18,7 +18,9 @@
     }
     <app-conversation-window [data$]="messages$"></app-conversation-window>
     @if (mobileDashboardState()==='thread-window'){
-    <app-conversation-window [data$]="answers$"></app-conversation-window>
+    <app-conversation-window class="thread-window"
+      [data$]="answers$"
+    ></app-conversation-window>
     }
   </div>
   } @else {

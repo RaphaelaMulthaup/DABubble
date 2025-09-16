@@ -38,6 +38,8 @@ import { PostInteractionOverlayComponent } from '../../../../../overlay/post-int
 import { MobileService } from '../../../../../services/mobile.service';
 import { EditDisplayedPostComponent } from './edit-displayed-post/edit-displayed-post.component';
 import { EMOJIS } from '../../../../../shared/constants/emojis';
+import { ScreenSize } from '../../../../../shared/types/screen-size.type';
+import { ScreenService } from '../../../../../services/screen.service';
 
 @Component({
   selector: 'app-displayed-post', // Component to display a single message in the conversation
@@ -49,7 +51,6 @@ export class DisplayedPostComponent {
   @Input() @Output() post!: PostInterface;
   @Input() editingPost?: boolean;
   emojis = EMOJIS;
-  // typ$!: Observable<string>;
   currentConversationType!: 'channel' | 'chat';
   currentConversationId!: string;
   senderName$!: Observable<string>;
@@ -62,6 +63,7 @@ export class DisplayedPostComponent {
   postClicked: boolean = false;
   hideMessageInteractionInThread: boolean = false;
   parentMessageId?: string; //the id of the message, an answer belongs to -> only if the message is an answer
+  screenSize$!: Observable<ScreenSize>;
   private destroy$ = new Subject<void>();
 
   constructor(
@@ -71,8 +73,11 @@ export class DisplayedPostComponent {
     private conversationActiveRouterService: ConversationActiveRouterService,
     public overlayService: OverlayService,
     public postService: PostService,
+    public screenService: ScreenService,
     public mobileService: MobileService
-  ) {}
+  ) {
+    this.screenSize$ = this.screenService.screenSize$;
+  }
 
   ngOnChanges() {
     this.conversationActiveRouterService

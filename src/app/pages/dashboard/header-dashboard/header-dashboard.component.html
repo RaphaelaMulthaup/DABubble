@@ -1,8 +1,5 @@
 <header
-  [ngClass]="{
-    'header-mobile': (screenSize$|async) === 'handset',
-    'header-desktop flex place-content-between': (screenSize$|async) === 'web'
-  }"
+  [ngClass]="(screenSize$ | async) === 'web'? 'header-desktop flex place-content-between': 'header-mobile'"
 >
   @if ((screenSize$|async) === 'handset') {
   <div class="header-mobile-upper-area">
@@ -30,9 +27,13 @@
       <app-profile-view-main class="profile-view"></app-profile-view-main>
     </div>
   </div>
-  @if ((authService.currentUser$ | async) && mobileDashboardState() == 'sidenav') { <app-search-bar></app-search-bar>
+  @if ((authService.currentUser$ | async) && mobileDashboardState() ==
+  'sidenav') { <app-search-bar></app-search-bar>
   } } @else if ((screenSize$|async) === 'web'){
-  <div class="logo-box flex items-center">
+  <div
+    class="logo-box flex items-center"
+    [ngStyle]="{ 'width.px': 336 }"
+  >
     @if (mobileDashboardState() == 'sidenav') {
     <img class="logo-final" src="assets/img/logo.png" alt="Logo DABubble" />
     } @else {
@@ -49,7 +50,7 @@
   @if ((authService.currentUser$ | async)) { <app-search-bar></app-search-bar>
   }
 
-  <div class="current-user">
+  <div class="current-user" [ngStyle]="{ 'width.px': 475 }">
     <h1>{{ (currentUser$ | async)?.name }}</h1>
     <img
       class="profil-img"

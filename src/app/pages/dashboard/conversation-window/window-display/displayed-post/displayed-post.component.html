@@ -1,11 +1,14 @@
 <div
   class="post-container w-full flex flex-col"
-  [ngClass]="{ 'post-current-user': senderIsCurrentUser }"
+  [class.post-current-user]="senderIsCurrentUser"
+  [class.web-post-container]="(screenSize$|async) === 'web'"
+  [class.web-post-current-user]="(screenSize$|async) === 'web' && senderIsCurrentUser"
 >
   <div
     class="post flex w-full"
     [class.clicked]="hideMessageInteractionInThread || postClicked"
     [class.editing]="overlayService.editingPostId() === post.id"
+    [class.web-editing]="overlayService.editingPostId() === post.id && (screenSize$|async) === 'web'"
   >
     <div class="profile-img">
       @if(senderPhotoUrl$ | async; as photoUrl) {
@@ -50,7 +53,8 @@
 
       @if (post.ansCounter && !hideMessageInteractionInThread){
       <!-- flex-row for desktop -->
-      <div class="answers flex flex-col-reverse items-start">
+      <div class="answers flex"
+      [ngClass]="(screenSize$|async) === 'web'? 'flex-row items-center': ' flex-col-reverse items-start'">
         <button
           class="link w-full"
           (click)="
@@ -64,7 +68,7 @@
           {{ post.ansCounter }}
           {{ post.ansCounter == 1 ? "Antwort" : "Antworten" }}
         </button>
-        <span class="post-time w-full">
+        <span class="post-time w-full flex">
           Letzte Antwort @if
           (postService.isPostCreatedToday(post.ansLastCreatedAt)) {
           {{
