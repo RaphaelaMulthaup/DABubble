@@ -6,7 +6,7 @@
 >
   <div
     class="post flex w-full"
-    [class.clicked]="hideMessageInteractionInThread || postClicked"
+    [class.clicked]="isThreadTheme || postClicked"
     [class.editing]="overlayService.editingPostId() === post.id"
     [class.web-editing]="overlayService.editingPostId() === post.id && (screenSize$|async) === 'web'"
   >
@@ -44,15 +44,14 @@
         />
         } @else {
         <div
-          (click)="hideMessageInteractionInThread? $event.preventDefault(): openPostInteractionOverlay($event)"
+          (click)="isThreadTheme? $event.preventDefault(): openPostInteractionOverlay($event)"
           class="text"
           [innerHTML]="postService.textToHtml(post.text)"
         ></div>
         }
       </div>
 
-      @if (post.ansCounter && !hideMessageInteractionInThread){
-      <!-- flex-row for desktop -->
+      @if (post.ansCounter && !isThreadTheme){
       <div class="answers flex"
       [ngClass]="(screenSize$|async) === 'web'? 'flex-row items-center': ' flex-col-reverse items-start'">
         <button
@@ -104,7 +103,7 @@
     </div>
   </div>
 
-  @if (!hideMessageInteractionInThread) {
+  @if (!isThreadTheme) {
   <div class="interactions-container flex w-full">
     <div
       class="interactions flex"

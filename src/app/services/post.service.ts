@@ -387,15 +387,17 @@ export class PostService {
    *
    * @param element - the editable to focus on.
    */
-  focusAtEndEditable(element: ElementRef) {
-    element.nativeElement.focus();
-    const range = document.createRange();
-    range.selectNodeContents(element.nativeElement);
-    range.collapse(false);
-    const selection = window.getSelection();
-    if (selection) {
-      selection.removeAllRanges();
-      selection.addRange(range);
+  focusAtEndEditable(element: ElementRef | null) {
+    if (element) {
+      element.nativeElement.focus();
+      const range = document.createRange();
+      range.selectNodeContents(element.nativeElement);
+      range.collapse(false);
+      const selection = window.getSelection();
+      if (selection) {
+        selection.removeAllRanges();
+        selection.addRange(range);
+      }
     }
   }
 

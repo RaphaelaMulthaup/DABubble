@@ -61,9 +61,10 @@ export class DisplayedPostComponent {
   visibleReactions$!: Observable<ReactionInterface[]>;
   allReactionsVisible: boolean = false;
   postClicked: boolean = false;
-  hideMessageInteractionInThread: boolean = false;
+  isThreadTheme: boolean = false;
   parentMessageId?: string; //the id of the message, an answer belongs to -> only if the message is an answer
   screenSize$!: Observable<ScreenSize>;
+  @Input() conversationWindowState?: 'conversation' | 'thread';
   private destroy$ = new Subject<void>();
 
   constructor(
@@ -92,11 +93,12 @@ export class DisplayedPostComponent {
       .getMessageId$(this.route)
       .pipe(takeUntil(this.destroy$))
       .subscribe((messageId) => {
-        // console.log(this.postType);
-        messageId === this.post.id
-          ? (this.hideMessageInteractionInThread = true)
-          : (this.hideMessageInteractionInThread = false);
-        this.parentMessageId = messageId;
+        if (this.conversationWindowState === 'thread') {
+          messageId === this.post.id
+            ? (this.isThreadTheme = true)
+            : (this.isThreadTheme = false);
+          this.parentMessageId = messageId;
+        }
       });
 
     this.reactions$ = of(this.post).pipe(

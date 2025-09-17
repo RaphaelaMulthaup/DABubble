@@ -90,20 +90,23 @@ export class CurrentPostInput implements OnInit, OnDestroy {
       });
 
     this.conversationActiveRouterService
-      .getMessageId$(this.route)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((msgId) => {
-        this.messageToReplyId = msgId;
-      });
-
-    this.conversationActiveRouterService
       .getConversationId$(this.route)
       .pipe(takeUntil(this.destroy$))
       .subscribe((id) => {
         this.conversationId = id;
+      });
+
+    this.conversationActiveRouterService
+      .getMessageId$(this.route)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((msgId) => {
+        this.messageToReplyId = msgId;
         setTimeout(() => {
-          console.log(this.postTextInput)
-          this.postService.focusAtEndEditable(this.postTextInput);
+          if (this.messageToReplyId) {
+            this.postService.focusAtEndEditable(this.textareaThread || null);
+          } else {
+            this.postService.focusAtEndEditable(this.textareaConversation);
+          }
         });
       });
   }
