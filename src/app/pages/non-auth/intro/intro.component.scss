@@ -12,6 +12,11 @@
         width: 71px;
         height: 68px;
         overflow: hidden;
+
+        @include respond-to(xxxs) {
+            width: 65px;
+            height: 65px;
+        }
     }
 }
 
@@ -24,9 +29,14 @@
     font-size: 32px;
     font-weight: 656;
     color: white;
-    margin: 2px 0px 0px 12px;
+    margin: 0px 0px 0px 12px;
     animation: slideFromLeft 1s ease-in;
     width: 152px;
+
+    @include respond-to(xxxs) {
+        margin: 0px 0px 0px 12px !important;
+        width: 156px;
+    }
 }
 
 .name-black{
@@ -37,6 +47,15 @@
     transition: width 2s, height 1.3s, margin 0.7s;
     width: 100px;
     height: 70px;
+
+    @include respond-to(xxxs) {
+        height: 65px;
+        width: 259px;
+    }
+}
+
+.animat-logo{
+    width: 243px;
 }
 
 .expand{
@@ -59,6 +78,10 @@
 
 .addMargin{
     margin: 309px 74px 154px 74px;
+
+    @include respond-to(xxxs) {
+        margin: 304px 74px 154px 74px;
+    }
 }
 
 .getRid{
