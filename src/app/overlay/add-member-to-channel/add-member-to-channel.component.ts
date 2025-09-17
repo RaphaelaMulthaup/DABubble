@@ -3,8 +3,6 @@ import {
   Input,
   Signal,
   effect,
-  inject,
-  OnInit,
   Output,
   ViewChild,
   ElementRef,
@@ -25,19 +23,24 @@ import { RectangleDragCloseDirective } from '../../shared/directives/rectangle-d
 
 @Component({
   selector: 'app-add-member-to-channel',
-  imports: [HeaderOverlayComponent, CommonModule, ReactiveFormsModule, RectangleDragCloseDirective],
+  imports: [
+    HeaderOverlayComponent,
+    CommonModule,
+    ReactiveFormsModule,
+    RectangleDragCloseDirective,
+  ],
   templateUrl: './add-member-to-channel.component.html', // Path to the HTML template
-  styleUrls: ['./add-member-to-channel.component.scss'],  // Path to the styling file
+  styleUrls: ['./add-member-to-channel.component.scss'], // Path to the styling file
 })
 export class AddMemberToChannelComponent {
   @Input() channelDetails$?: Observable<ChannelInterface | undefined>; // Observable to hold channel details
-  @Input() onBottom:boolean = false;
+  @Input() onBottom: boolean = false;
   @Output() overlayRef!: OverlayRef; // Overlay reference to manage the overlay's lifecycle
   ListWithMember: UserInterface[] = []; // List of users to be added to the channel
   overlay: string = ''; // String used to manage overlay state
   private resultsOverlayRef?: OverlayRef; // Here save the overlay ref to close if results are null
 
-      @ViewChild('addMemberSearchBar', { static: false })
+  @ViewChild('addMemberSearchBar', { static: false })
   addMemberSearchBar!: ElementRef<HTMLElement>;
 
   // Reactive form control for the search input
@@ -54,9 +57,9 @@ export class AddMemberToChannelComponent {
   results!: Signal<UserInterface[]>;
 
   constructor(
-    private searchService: SearchService,   // Service to manage search functionality
+    private searchService: SearchService, // Service to manage search functionality
     private channelService: ChannelsService, // Service to manage channels and members
-    private overlayService: OverlayService   // Service for managing overlays
+    private overlayService: OverlayService // Service for managing overlays
   ) {
     // Reacting to reset signal to clear the search field
     effect(() => {
@@ -75,8 +78,10 @@ export class AddMemberToChannelComponent {
     effect(() => {
       const r = this.results();
       if (r.length > 0) {
-        this.openAddMembersToChannel();
-      }else if (this.resultsOverlayRef) {
+        if (!this.resultsOverlayRef) {
+          this.openAddMembersToChannel();
+        }
+      } else if (this.resultsOverlayRef) {
         this.overlayService.closeOne(this.resultsOverlayRef);
         this.resultsOverlayRef = undefined;
       }
@@ -103,20 +108,15 @@ export class AddMemberToChannelComponent {
     this.overlayService.clearUsers();
   }
 
+  isClosing = false;
 
-isClosing = false;
-
-  
-closeOverlay() {
+  closeOverlay() {
     this.isClosing = true;
-  setTimeout(() => {
+    setTimeout(() => {
       this.overlayService.closeAll();
       this.isClosing = false;
-  }, 500); // duration matches CSS transition
-
-}
-
-
+    }, 500); // duration matches CSS transition
+  }
 
   // Method to extract the first word of a user's name
   getFirstWord(name: string): string {
@@ -162,13 +162,13 @@ closeOverlay() {
       },
       {
         results: this.results, // Pass filtered search results to the overlay component
-        onBottom: this.onBottom
+        onBottom: this.onBottom,
       }
     );
     if (!overlay) return; // If overlay is not created, return
     Object.assign(overlay.ref.instance, { overlayRef: overlay.overlayRef }); // Attach the overlay reference
-      this.resultsOverlayRef = overlay.overlayRef;
-      this.resultsOverlayRef.backdropClick().subscribe(() => {
+    this.resultsOverlayRef = overlay.overlayRef;
+    this.resultsOverlayRef.backdropClick().subscribe(() => {
       this.overlayService.closeOne(this.resultsOverlayRef!);
       this.resultsOverlayRef = undefined;
     });

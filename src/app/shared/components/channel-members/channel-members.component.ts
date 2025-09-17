@@ -81,7 +81,7 @@ export class ChannelMembersComponent implements OnDestroy, OnInit {
             ChannelInterface | undefined
           >,
           overlay: 'overlay',
-          onBottom: this.onBottom 
+          onBottom: this.onBottom,
         }
       );
     } else {
