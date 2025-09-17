@@ -11,13 +11,17 @@ import { ChannelMembersLengthComponent } from './channel-members-length/channel-
 import { ChannelMembersComponent } from '../../../../../shared/components/channel-members/channel-members.component';
 import { AddMemberToChannelComponent } from '../../../../../overlay/add-member-to-channel/add-member-to-channel.component';
 import { MobileService } from '../../../../../services/mobile.service';
-import { ChannelListItemComponent } from "../../../../../shared/components/channel-list-item/channel-list-item.component";
+import { ChannelListItemComponent } from '../../../../../shared/components/channel-list-item/channel-list-item.component';
 import { ScreenService } from '../../../../../services/screen.service';
 import { ScreenSize } from '../../../../../shared/types/screen-size.type';
 
 @Component({
   selector: 'app-header-channel',
-  imports: [CommonModule, ChannelMembersLengthComponent, ChannelListItemComponent],
+  imports: [
+    CommonModule,
+    ChannelMembersLengthComponent,
+    ChannelListItemComponent,
+  ],
   templateUrl: './header-channel.component.html',
   styleUrl: './header-channel.component.scss',
 })
@@ -35,7 +39,7 @@ export class HeaderChannelComponent {
     private mobileService: MobileService,
     private screenService: ScreenService
   ) {
-       this.screenSize$ = this.screenService.screenSize$;
+    this.screenSize$ = this.screenService.screenSize$;
   }
 
   ngOnInit() {
@@ -47,17 +51,24 @@ export class HeaderChannelComponent {
           return this.channelService.getCurrentChannel(this.channelId);
         })
       );
-
   }
 
-  ngOnDestroy() {
-  }
+  ngOnDestroy() {}
 
-  openEditChannelFormOverlay() {
+  openEditChannelFormOverlay(event: MouseEvent) {
     this.overlayService.openComponent(
       EditChannelComponent,
       'cdk-overlay-dark-backdrop',
-      { globalPosition: 'center' },
+      {
+        origin: event.currentTarget as HTMLElement,
+        originPosition: {
+          originX: 'start',
+          originY: 'bottom',
+          overlayX: 'start',
+          overlayY: 'top',
+        },
+      },
+
       { channelDetails$: this.channelDetails$ as Observable<ChannelInterface> }
     );
   }
@@ -78,7 +89,7 @@ export class HeaderChannelComponent {
       {
         channelDetails$: this.channelDetails$ as Observable<ChannelInterface>,
         overlay: 'overlay-right',
-        clickedFromHeader: true
+        clickedFromHeader: true,
       }
     );
   }

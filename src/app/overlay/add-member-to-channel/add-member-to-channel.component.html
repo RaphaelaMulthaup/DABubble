@@ -1,37 +1,65 @@
-
-<div [ngClass]="[onBottom ? 'overlay-bottom' : overlay , isClosing? 'closing' : '']"  [ngStyle]="!onBottom ? { 'max-width': '541px' } : {}" class="flex">
+<div
+  [ngClass]="[
+    onBottom ? 'overlay-bottom' : overlay,
+    isClosing ? 'closing' : ''
+  ]"
+  [ngStyle]="!onBottom ? { 'max-width': '541px' } : {}"
+  class="flex"
+>
   @if(channelDetails$ | async; as channelDetails){
-  <div class="mytest" >
+  <div class="mytest">
     @if(onBottom){
-      <div class="flex w-full justify-center" ><span class="rectangle" appRectangleDragClose (dragClose)="closeOverlay()"></span></div>
+    <div class="flex w-full justify-center">
+      <span
+        class="rectangle"
+        appRectangleDragClose
+        (dragClose)="closeOverlay()"
+      ></span>
+    </div>
     }
-      <div class="flex flex-col gap-[5px]">
-          <app-header-overlay [overlayHeadline]="'Leute hinzufugen'" [overlayRef]="overlayRef" />
-          <!-- @if(!onBottom){  here should check if is on mobile/desktop -->
-          <div class="flex gap-[15px]">
-            <span class="tag-color"> </span>
-            <span class="flex w-full color">{{ channelDetails.name }}</span>
-          </div>
-          <!-- } -->
+    <div class="flex flex-col gap-[5px]">
+      <app-header-overlay
+        [overlayHeadline]="'Leute hinzufugen'"
+        [overlayRef]="overlayRef"
+      />
+      <!-- @if(!onBottom){  here should check if is on mobile/desktop -->
+      <div class="flex gap-[15px]">
+        <span class="tag-color"> </span>
+        <span class="flex w-full color">{{ channelDetails.name }}</span>
       </div>
-      <div class="flex w-full flex-col gap-[20px]">
-        <div class="cont" >
-          @for(user of ListWithMember; track $index){
-          <li class="container">
-            <img class="profil-img" src="{{ user.photoUrl }}" alt="Profilbild" />
-            <span>{{ getFirstWord(user.name) }}</span>
-            <button (click)="removeFromList($index)"><div class="close"></div></button>
-          </li>
-          }
-          <input #addMemberSearchBar type="text" class="" [placeholder]="ListWithMember.length > 0 ? '' : 'Name eingeben'"
-            [formControl]="searchControl" />
-        </div>
-        <div class="flex w-full justify-end">
-            <button class=" btn-primary " (click)="addMembertoChannel(channelDetails.id!)" [disabled]="ListWithMember.length === 0">
-              Hinzufügen
-            </button>
-        </div>
+      <!-- } -->
+    </div>
+    <div class="flex w-full flex-col gap-[20px]">
+      <ul class="cont">
+        @for(user of ListWithMember; track $index){
+        <li class="container">
+          <img class="profil-img" src="{{ user.photoUrl }}" alt="Profilbild" />
+          <span>{{ getFirstWord(user.name) }}</span>
+          <button (click)="removeFromList($index)">
+            <div class="close"></div>
+          </button>
+        </li>
+        }
+        <li class="flex items-center">
+          <input
+            #addMemberSearchBar
+            type="text"
+            class=""
+            [placeholder]="ListWithMember.length > 0 ? '' : 'Name eingeben'"
+            [formControl]="searchControl"
+          />
+        </li>
+      </ul>
+      <div class="flex w-full justify-end">
+        <button
+          class="btn-primary"
+          (click)="addMembertoChannel(channelDetails.id!)"
+          [disabled]="ListWithMember.length === 0"
+        >
+          Hinzufügen
+        </button>
       </div>
+    </div>
   </div>
-          }
+  }
 </div>

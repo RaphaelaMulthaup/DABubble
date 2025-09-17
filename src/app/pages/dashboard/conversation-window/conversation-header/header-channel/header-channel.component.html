@@ -1,23 +1,24 @@
-
-
 @if(channelDetails$ | async; as channel) {
-<section class="flex justify-between w-screen px-[10px] py-[16px] max-h-[60px] lg:px-[25px] lg:py-[45px] lg:max-h-[96px]">
-  <div class="flex items-center">
-    <!-- <div class="tag"></div>
-    <button #editChannelBtn (click)="openEditChannelFormOverlay()">
-      <h2>{{ channel.name }}</h2>
-    </button>
-    <img class="arrow-dropdown" src="/assets/img/arrow-drop-down.svg" alt="arrow-drop-down" /> -->
-    <app-channel-list-item [channel]="channel" (click)="openEditChannelFormOverlay()" [isInChannelHeader]="true"/>
+<section
+  class="flex justify-between w-screen px-[10px] py-[16px] max-h-[60px] lg:px-[25px] lg:py-[45px] lg:max-h-[96px]"
+>
+  <div
+    class="flex fit-content items-center"
+    (click)="openEditChannelFormOverlay($event)"
+  >
+    <app-channel-list-item [channel]="channel" [isInChannelHeader]="true" />
   </div>
 
   <div class="flex items-center gap-[10px]">
-    <app-channel-members-length [channel$]="channelDetails$" (click)="openChannelMembers($event)" />
-      @if((screenSize$|async) !== 'handset'){
-          <button class="btn-tertiary" (click)="openAddMembersToChannel($event)">
-            <div class="add-person"></div>
-          </button>
-      }
+    <app-channel-members-length
+      [channel$]="channelDetails$"
+      (click)="openChannelMembers($event)"
+    />
+    @if((screenSize$|async) !== 'handset'){
+    <button class="btn-tertiary" (click)="openAddMembersToChannel($event)">
+      <div class="add-person"></div>
+    </button>
+    }
   </div>
 </section>
 }
