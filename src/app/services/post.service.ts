@@ -388,6 +388,7 @@ export class PostService {
    * @param element - the editable to focus on.
    */
   focusAtEndEditable(element: ElementRef) {
+    console.log(element);
     element.nativeElement.focus();
     const range = document.createRange();
     range.selectNodeContents(element.nativeElement);

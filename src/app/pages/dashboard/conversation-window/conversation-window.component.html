@@ -1,4 +1,11 @@
-<section class="conversation-window flex flex-col">
+<section
+  class="conversation-window flex flex-col"
+  [style.height]="
+    (screenSize$ | async) === 'web'
+      ? 'calc(100vh - 147px)'
+      : 'calc(100vh - 96px)'
+  "
+>
   <app-conversation-header></app-conversation-header>
   @if (data$) {
   <app-window-display [messages$]="data$"></app-window-display>

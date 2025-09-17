@@ -8,6 +8,7 @@ app-displayed-post {
 .seperator-container {
   width: 100%;
   margin: 4px 0;
+  padding: 0 24px;
 
   .seperator {
     width: 100%;
@@ -19,6 +20,12 @@ app-displayed-post {
     padding: 6px 16px;
     border: 2px solid var(--color-purple-white);
     border-radius: 30px;
+  }
+
+  span {
+    padding-right: 20px;
+    white-space: nowrap;
+    color:var(--color-purple-light-lines)
   }
 }
 

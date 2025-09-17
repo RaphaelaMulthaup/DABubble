@@ -171,6 +171,9 @@ export class OverlayService {
     // Store the reference of the open overlay.
     this.overlayRefs.push(this.overlayRef!);
     if (this.overlayRefs.length > 0) {
+      const scrollbarWidth =
+        window.innerWidth - document.documentElement.clientWidth;
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
       document.body.style.overflow = 'hidden';
     }
 
@@ -201,6 +204,7 @@ export class OverlayService {
           (ref) => ref !== this.overlayRef
         );
         if (this.overlayRefs.length === 0) {
+          document.body.style.paddingRight = '';
           document.body.style.overflow = '';
         }
         afterClosed$.next();

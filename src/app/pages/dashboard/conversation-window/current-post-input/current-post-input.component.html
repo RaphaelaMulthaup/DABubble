@@ -1,11 +1,20 @@
 <form class="current-post-input">
   <div class="textarea-wrapper">
+    @if(messageToReplyId !== null){
     <div
-      #textarea
-      class="post-text-input"
+      #textareaThread
+      class="t post-text-input"
       contenteditable="true"
       (input)="onInput()"
     ></div>
+    } @else {
+    <div
+      #textareaConversation
+      class="c post-text-input"
+      contenteditable="true"
+      (input)="onInput()"
+    ></div>
+    }
   </div>
   <div class="buttons">
     <div>
@@ -20,6 +29,10 @@
         class="btn-tertiary add-user-or-channel"
       ></button>
     </div>
-    <button type="submit" class="send" (click)="submitPostInput(); $event.preventDefault()"></button>
+    <button
+      type="submit"
+      class="send"
+      (click)="submitPostInput(); $event.preventDefault()"
+    ></button>
   </div>
 </form>

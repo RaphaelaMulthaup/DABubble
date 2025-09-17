@@ -6,6 +6,7 @@ import {
   Output,
   WritableSignal,
 } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { ConversationHeaderComponent } from './conversation-header/conversation-header.component';
 import { WindowDisplayComponent } from './window-display/window-display.component';
 import { CurrentPostInput } from './current-post-input/current-post-input.component';
@@ -13,6 +14,8 @@ import { Observable } from 'rxjs';
 import { PostInterface } from '../../../shared/models/post.interface';
 import { MobileDashboardState } from '../../../shared/types/mobile-dashboard-state.type';
 import { MobileService } from '../../../services/mobile.service';
+import { ScreenSize } from '../../../shared/types/screen-size.type';
+import { ScreenService } from '../../../services/screen.service';
 
 /**
  * Component representing a conversation window.
@@ -22,6 +25,7 @@ import { MobileService } from '../../../services/mobile.service';
 @Component({
   selector: 'app-conversation-window', // The component selector for use in HTML
   imports: [
+    CommonModule,
     ConversationHeaderComponent, // Child component to display conversation header
     WindowDisplayComponent, // Child component to display messages
     CurrentPostInput, // Child component to handle user input for new posts
@@ -53,12 +57,10 @@ export class ConversationWindowComponent {
    * The state can be modified and communicated to other parts of the app.
    */
   mobileDashboardState!: WritableSignal<MobileDashboardState>;
+  screenSize$!: Observable<ScreenSize>;
 
-  /**
-   * On component initialization, the `mobileDashboardState` is set to the state from the `MobileService`.
-   */
-  ngOnInit() {
-    // Initialize mobileDashboardState with the value from MobileService
+  constructor(public screenService: ScreenService) {
     this.mobileDashboardState = this.mobileService.mobileDashboardState;
+    this.screenSize$ = this.screenService.screenSize$;
   }
 }

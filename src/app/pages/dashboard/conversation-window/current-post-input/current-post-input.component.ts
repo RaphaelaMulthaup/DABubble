@@ -21,6 +21,7 @@ import {
   takeUntil,
   distinctUntilChanged,
   of,
+  Observable,
 } from 'rxjs';
 import { SearchResult } from '../../../../shared/types/search-result.type';
 import { SearchService } from '../../../../services/search.service';
@@ -30,6 +31,8 @@ import { OverlayService } from '../../../../services/overlay.service';
 import { EmojiPickerComponent } from '../../../../overlay/emoji-picker/emoji-picker.component';
 import { EMOJIS } from '../../../../shared/constants/emojis';
 import { SearchResultsCurrentPostInputComponent } from '../../../../overlay/search-results-current-post-input/search-results-current-post-input.component';
+import { ScreenSize } from '../../../../shared/types/screen-size.type';
+import { ScreenService } from '../../../../services/screen.service';
 
 @Component({
   selector: 'app-current-post-input',
@@ -46,25 +49,30 @@ export class CurrentPostInput implements OnInit, OnDestroy {
   conversationType!: any;
   conversationId!: string;
   /** If replying, holds the ID of the message being replied to; otherwise null. */
-  messageToReplyId: string | null = null;
+  messageToReplyId!: string | null;
   /** Stores any error message to be displayed in the input form. */
   errorMessage: string | null = null;
-  @ViewChild('textarea') postTextInput!: ElementRef;
+  @ViewChild('textareaThread') textareaThread!: ElementRef;
+  @ViewChild('textareaConversation') textareaConversation!: ElementRef;
   searchResults: SearchResult[] = [];
   searchChar: '@' | '#' | null = null;
   searchText: string | null = null;
   emojis = EMOJIS;
+  screenSize$!: Observable<ScreenSize>;
   private destroy$ = new Subject<void>();
 
   constructor(
     private authService: AuthService,
+    public screenService: ScreenService,
     public overlayService: OverlayService,
     public postService: PostService,
     public searchService: SearchService,
 
     private route: ActivatedRoute,
     private conversationActiveRouterService: ConversationActiveRouterService
-  ) {}
+  ) {
+    this.screenSize$ = this.screenService.screenSize$;
+  }
 
   /**
    * Angular lifecycle hook that runs after the component is initialized.
@@ -80,27 +88,32 @@ export class CurrentPostInput implements OnInit, OnDestroy {
       });
 
     this.conversationActiveRouterService
-      .getConversationId$(this.route)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((id) => {
-        this.conversationId = id;
-      });
-
-    this.conversationActiveRouterService
       .getMessageId$(this.route)
       .pipe(takeUntil(this.destroy$))
       .subscribe((msgId) => {
         this.messageToReplyId = msgId;
       });
 
-    setTimeout(() => {
-      this.postService.focusAtEndEditable(this.postTextInput);
-    });
+    this.conversationActiveRouterService
+      .getConversationId$(this.route)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((id) => {
+        this.conversationId = id;
+        setTimeout(() => {
+          this.postService.focusAtEndEditable(this.postTextInput);
+        });
+      });
   }
 
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  get postTextInput(): ElementRef {
+    return this.messageToReplyId
+      ? this.textareaThread
+      : this.textareaConversation;
   }
 
   /**
@@ -123,10 +136,12 @@ export class CurrentPostInput implements OnInit, OnDestroy {
 
     if (this.searchChar) {
       if (this.searchText.length == 1) {
-        this.searchService.search(of(this.searchChar!), { includeAllChannels: true }).subscribe((results) => {
-          if (results.length === 0) return this.overlayService.closeAll();
-          this.openSearchOverlay(results);
-        });
+        this.searchService
+          .search(of(this.searchChar!), { includeAllChannels: true })
+          .subscribe((results) => {
+            if (results.length === 0) return this.overlayService.closeAll();
+            this.openSearchOverlay(results);
+          });
       } else if (this.searchText.length > 1) {
         this.searchService.search(of(this.searchText)).subscribe((results) => {
           if (results.length === 0) return this.overlayService.closeAll();

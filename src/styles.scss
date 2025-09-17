@@ -267,8 +267,8 @@ h4 {
 }
 
 .emoji {
-  width: 28px !important;
-  height: 28px !important;
+  width: clamp(1.75rem, 1.6500rem + 0.5000vw, 2.25rem) !important;
+  height: clamp(1.75rem, 1.6500rem + 0.5000vw, 2.25rem) !important;
   display: inline-block;
   vertical-align: middle;
   line-height: 1;
