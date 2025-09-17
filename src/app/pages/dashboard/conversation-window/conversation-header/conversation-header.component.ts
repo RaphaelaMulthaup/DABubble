@@ -49,7 +49,6 @@ export class ConversationHeaderComponent {
       .pipe(takeUntil(this.destroy$)) // Unsubscribe on component destroy
       .subscribe((t) => {
         this.conversationType = t; // Update the conversation type state
-        //console.log(`aici trebuie tip  |  ${this.type} `);
       });
 
     // Subscribe to the conversation ID from the route and update the component's state
@@ -58,7 +57,6 @@ export class ConversationHeaderComponent {
       .pipe(takeUntil(this.destroy$)) // Unsubscribe on component destroy
       .subscribe((id) => {
         this.conversationId = id; // Update the conversation ID state
-        //console.log(`aici channelid    | ${this.conversationId}`);
       });
 
     // Subscribe to the message ID from the route and update the component's state
@@ -67,7 +65,6 @@ export class ConversationHeaderComponent {
       .pipe(takeUntil(this.destroy$)) // Unsubscribe on component destroy
       .subscribe((msgId) => {
         this.messageToReplyId = msgId; // Update the message reply ID state
-        //console.log(` aici messageid    |  ${this.messageToReplyId}`);
       });
   }
 

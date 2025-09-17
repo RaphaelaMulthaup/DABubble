@@ -10,13 +10,10 @@
   <app-header-searchbar></app-header-searchbar>
   <div class="below-from-header-searchbar"></div>
   } @if((screenSize$|async) === 'web'){
-  <div class="dashboard-web flex h-full gap-[20px]">
+  <div class="dashboard-web flex h-full">
     <app-sidenav></app-sidenav>
-    <app-conversation-window
-      [data$]="messages$"
-      class="flex flex-1"
-    ></app-conversation-window>
-    <!-- <app-conversation-window [data$]="answers$"></app-conversation-window> -->
+    <app-conversation-window [data$]="messages$"></app-conversation-window>
+    <app-conversation-window [data$]="answers$"></app-conversation-window>
   </div>
   } @else {
   <div class="w-full h-full">

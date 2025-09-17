@@ -1,0 +1,17 @@
+span {
+  font-weight: 400;
+  font-size: 16px;
+  color: var(--color-purple-light);
+}
+.tag-color {
+  background-size: 16px 16px;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.close {
+  background-image: url("../../../../../../assets/img/close.svg");
+  &:hover {
+    background-image: url("../../../../../../assets/img/close-hover.svg");
+  }
+}
