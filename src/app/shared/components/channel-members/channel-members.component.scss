@@ -1,20 +1,7 @@
-:host {
-  max-width: 100%;
-}
-
-section {
-  max-width: 100%;
-}
-
-.container {
-  max-height: 400px;
+.overflowYAuto {
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-width: none;
-  max-width: 100%;
-  >div{
-    max-width: 100%;
-  }
 }
 
 .profil-img {
@@ -44,7 +31,7 @@ section {
     background-color: var(--color-purple-white);
     background-repeat: no-repeat;
     background-position: center;
-    background-size: 24px 24px; /* fixed size */    
+    background-size: 24px 24px; /* fixed size */
     transition: background-image 0.2s ease;
   }
   &:hover {
@@ -52,4 +39,17 @@ section {
       background-image: url("../../../../assets/img/person-add-hover.svg");
     }
   }
+}
+
+.overlay {
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 1s ease-in, transform 1s ease-in;
+  display: none;
+}
+
+.overlay.show {
+  opacity: 1;
+  transform: translateY(0);
+  display: block;
 }
