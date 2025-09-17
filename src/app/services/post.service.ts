@@ -360,6 +360,18 @@ export class PostService {
         img.replaceWith(textNode);
       }
     });
+
+    doc.querySelectorAll('.mark').forEach((mark) => {
+      if (mark) {
+        const data = mark.getAttribute('data');
+        // const typeOfResult = data?.charAt(0);
+        // const name = data?.substring(1);
+        const token = `{${data}}`;
+        const textNode = doc.createTextNode(token);
+        mark.replaceWith(textNode);
+      }
+    });
+
     const postText = doc.body.innerText;
     return postText;
   }
@@ -376,9 +388,26 @@ export class PostService {
     let result = text.replaceAll('\n', '</div><div>');
 
     this.emojis.forEach((e) => {
-      const imgTag = `<img src="${e.src}" alt="${e.token}" class="emoji">`;
+      const imgTag = `&nbsp;<img src="${e.src}" alt="${e.token}" class="emoji">&nbsp;`;
       result = result.replaceAll(e.token, imgTag);
     });
+
+    result = result.replace(
+      /\{@([^}]+)\}/g,
+      `<mark class="mark flex" data="@\$1" contenteditable="false">
+        <img src="/assets/img/alternate-email-purple.svg" alt="mark">
+        <span>$1</span>
+     </mark>&nbsp;`
+    );
+
+    result = result.replace(
+      /\{#([^}]+)\}/g,
+      `<mark class="mark flex" data="#\$1" contenteditable="false">
+        <img src="/assets/img/tag-blue.svg" alt="mark">
+        <span>$1</span>
+     </mark>&nbsp;`
+    );
+
     return result;
   }
 

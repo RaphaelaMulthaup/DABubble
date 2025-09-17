@@ -3,14 +3,14 @@
     @if(conversationWindowState === 'conversation'){
     <div
       #textareaConversation
-      class="c post-text-input"
+      class="post-text-input"
       contenteditable="true"
       (input)="onInput()"
     ></div>
     } @else {
     <div
       #textareaThread
-      class="t post-text-input"
+      class="post-text-input"
       contenteditable="true"
       (input)="onInput()"
     ></div>

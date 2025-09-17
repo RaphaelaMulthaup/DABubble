@@ -34,6 +34,8 @@ import { EMOJIS } from '../../../../shared/constants/emojis';
 import { SearchResultsCurrentPostInputComponent } from '../../../../overlay/search-results-current-post-input/search-results-current-post-input.component';
 import { ScreenSize } from '../../../../shared/types/screen-size.type';
 import { ScreenService } from '../../../../services/screen.service';
+import { UserInterface } from '../../../../shared/models/user.interface';
+import { ChannelInterface } from '../../../../shared/models/channel.interface';
 
 @Component({
   selector: 'app-current-post-input',
@@ -190,8 +192,7 @@ export class CurrentPostInput implements OnInit, OnDestroy {
     this.postService.focusAtEndEditable(this.postTextInput);
     const selection = window.getSelection();
     if (!selection || !selection.rangeCount) return;
-    const range = selection.getRangeAt(0);
-    const img = `<img src="${emoji.src}" alt="${emoji.token}" class='emoji'>`;
+    const img = `&nbsp;<img src="${emoji.src}" alt="${emoji.token}" class='emoji'>&nbsp;`;
     document.execCommand('insertHTML', false, img);
   }
 
@@ -264,6 +265,7 @@ export class CurrentPostInput implements OnInit, OnDestroy {
     }
     this.postTextInput.nativeElement.innerHTML = '';
     this.searchResults = [];
+    this.overlayService.closeAll();
   }
 
   /**
@@ -289,16 +291,18 @@ export class CurrentPostInput implements OnInit, OnDestroy {
     );
 
     if (overlayRef) {
-      overlayRef.ref.instance.userSelected?.subscribe((user: any) => {
+      overlayRef.ref.instance.userSelected?.subscribe((user: UserInterface) => {
         const mark = this.getMarkTemplate(user.name, 'user');
         this.insertName(mark);
         this.overlayService.closeAll();
       });
-      overlayRef.ref.instance.channelSelected?.subscribe((channel: any) => {
-        const mark = this.getMarkTemplate(channel.name, 'channel');
-        this.insertName(mark);
-        this.overlayService.closeAll();
-      });
+      overlayRef.ref.instance.channelSelected?.subscribe(
+        (channel: ChannelInterface) => {
+          const mark = this.getMarkTemplate(channel.name, 'channel');
+          this.insertName(mark);
+          this.overlayService.closeAll();
+        }
+      );
     }
   }
 
@@ -313,7 +317,6 @@ export class CurrentPostInput implements OnInit, OnDestroy {
     if (this.searchText) this.deleteAfterSearchChar(this.searchText.length);
     const selection = window.getSelection();
     if (!selection || !selection.rangeCount) return;
-    const range = selection.getRangeAt(0);
     document.execCommand('insertHTML', false, mark);
     this.postService.focusAtEndEditable(this.postTextInput);
     this.searchResults = [];
@@ -327,13 +330,13 @@ export class CurrentPostInput implements OnInit, OnDestroy {
    * @param name the selected user- or channelname or the selected '@'-char
    * @param typeOfResult whether the result is of type user or channel
    */
-  getMarkTemplate(name: string, typeOfResult?: 'user' | 'channel'):string {
-    return `<mark class="mark flex">
+  getMarkTemplate(name: string, typeOfResult?: 'user' | 'channel'): string {
+    return `&nbsp;<mark class="mark" contenteditable="false" data="${typeOfResult == 'user' ? '@' : '#'}${name}">
               <img src="/assets/img/${
                 typeOfResult == 'user' ? 'alternate-email-purple' : 'tag-blue'
-              }.svg" alt="mark-${typeOfResult}">
+              }.svg" alt="mark">
               <span>${name}</span>
-            </mark>`;
+            </mark>&nbsp;`;
   }
 
   /**
