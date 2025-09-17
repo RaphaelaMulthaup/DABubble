@@ -58,9 +58,14 @@ export class ConversationWindowComponent {
    */
   mobileDashboardState!: WritableSignal<MobileDashboardState>;
   screenSize$!: Observable<ScreenSize>;
+  @Input() conversationWindowState?: 'conversation' | 'thread';
 
   constructor(public screenService: ScreenService) {
     this.mobileDashboardState = this.mobileService.mobileDashboardState;
     this.screenSize$ = this.screenService.screenSize$;
+    setTimeout(() => {
+      console.log(this.conversationWindowState)
+    }, 500);
+    
   }
 }

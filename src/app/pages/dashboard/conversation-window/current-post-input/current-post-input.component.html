@@ -1,16 +1,16 @@
 <form class="current-post-input">
   <div class="textarea-wrapper">
-    @if(messageToReplyId !== null){
+    @if(conversationWindowState === 'conversation'){
     <div
-      #textareaThread
-      class="t post-text-input"
+      #textareaConversation
+      class="c post-text-input"
       contenteditable="true"
       (input)="onInput()"
     ></div>
     } @else {
     <div
-      #textareaConversation
-      class="c post-text-input"
+      #textareaThread
+      class="t post-text-input"
       contenteditable="true"
       (input)="onInput()"
     ></div>

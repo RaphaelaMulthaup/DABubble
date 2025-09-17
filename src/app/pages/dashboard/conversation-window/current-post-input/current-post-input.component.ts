@@ -2,6 +2,7 @@ import {
   Component,
   ElementRef,
   inject,
+  Input,
   OnDestroy,
   OnInit,
   ViewChild,
@@ -59,6 +60,7 @@ export class CurrentPostInput implements OnInit, OnDestroy {
   searchText: string | null = null;
   emojis = EMOJIS;
   screenSize$!: Observable<ScreenSize>;
+  @Input() conversationWindowState?: 'conversation' | 'thread';
   private destroy$ = new Subject<void>();
 
   constructor(
@@ -100,6 +102,7 @@ export class CurrentPostInput implements OnInit, OnDestroy {
       .subscribe((id) => {
         this.conversationId = id;
         setTimeout(() => {
+          console.log(this.postTextInput)
           this.postService.focusAtEndEditable(this.postTextInput);
         });
       });
@@ -111,9 +114,9 @@ export class CurrentPostInput implements OnInit, OnDestroy {
   }
 
   get postTextInput(): ElementRef {
-    return this.messageToReplyId
-      ? this.textareaThread
-      : this.textareaConversation;
+    return this.conversationWindowState === 'conversation'
+      ? this.textareaConversation
+      : this.textareaThread;
   }
 
   /**

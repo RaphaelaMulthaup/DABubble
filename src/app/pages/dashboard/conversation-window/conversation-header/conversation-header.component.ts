@@ -1,4 +1,4 @@
-import { Component, inject, WritableSignal } from '@angular/core';
+import { Component, inject, Input, WritableSignal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ConversationActiveRouterService } from '../../../../services/conversation-active-router.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -27,6 +27,7 @@ export class ConversationHeaderComponent {
   conversationType!: string; // Holds the type of conversation (e.g., chat, channel)
   conversationId!: string; // Holds the ID of the current conversation
   messageToReplyId: string | null = null; // Holds the ID of the message to reply to (if any)
+  @Input() conversationWindowState?: 'conversation' | 'thread';
   private destroy$ = new Subject<void>(); // Subject to handle unsubscribe logic on component destruction
 
   constructor(
