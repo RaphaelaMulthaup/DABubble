@@ -116,6 +116,9 @@ export class CurrentPostInput implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
+  /**
+   * This Getter returns the textarea that belongs to the conversationWindowState (thread or conversation)
+   */
   get postTextInput(): ElementRef {
     return this.conversationWindowState === 'conversation'
       ? this.textareaConversation
@@ -243,10 +246,10 @@ export class CurrentPostInput implements OnInit, OnDestroy {
     if (postText.trim() == '')
       return this.postService.focusAtEndEditable(this.postTextInput);
 
-    if (this.messageToReplyId) {
+    if (this.postTextInput === this.textareaThread) {
       this.postService.createAnswer(
         this.conversationId,
-        this.messageToReplyId,
+        this.messageToReplyId!,
         currentUserId!,
         postText,
         this.conversationType
@@ -260,7 +263,7 @@ export class CurrentPostInput implements OnInit, OnDestroy {
       );
     }
     this.postTextInput.nativeElement.innerHTML = '';
-    this.searchResults = []; // Reset search results
+    this.searchResults = [];
   }
 
   /**
@@ -287,30 +290,50 @@ export class CurrentPostInput implements OnInit, OnDestroy {
 
     if (overlayRef) {
       overlayRef.ref.instance.userSelected?.subscribe((user: any) => {
-        this.insertName(user.name, 'user');
+        const mark = this.getMarkTemplate(user.name, 'user');
+        this.insertName(mark);
+        this.overlayService.closeAll();
       });
       overlayRef.ref.instance.channelSelected?.subscribe((channel: any) => {
-        this.insertName(channel.name, 'channel');
+        const mark = this.getMarkTemplate(channel.name, 'channel');
+        this.insertName(mark);
+        this.overlayService.closeAll();
       });
     }
   }
 
   /**
-   * This function deletes the searchText from the postTextInput and adds the selected name instead.
+   * This function deletes the searchText from the postTextInput and adds the selected mark instead.
    * After that, all variables are set back to default.
    *
-   * @param text the selected user- or channelname or the selected '@'-char
-   * @param typeOfResult whether the result is of type user or channel
+   * @param mark the marked user- or channel name as a template.
    */
-  insertName(text: string, typeOfResult?: 'user' | 'channel') {
-    this.overlayService.closeAll();
+  insertName(mark: string) {
     this.postService.focusAtEndEditable(this.postTextInput);
     if (this.searchText) this.deleteAfterSearchChar(this.searchText.length);
-    this.postTextInput.nativeElement.innerHTML += text;
+    const selection = window.getSelection();
+    if (!selection || !selection.rangeCount) return;
+    const range = selection.getRangeAt(0);
+    document.execCommand('insertHTML', false, mark);
     this.postService.focusAtEndEditable(this.postTextInput);
     this.searchResults = [];
     this.searchChar = null;
     this.searchText = null;
+  }
+
+  /**
+   * This function returns a template for the marked user or channel.
+   *
+   * @param name the selected user- or channelname or the selected '@'-char
+   * @param typeOfResult whether the result is of type user or channel
+   */
+  getMarkTemplate(name: string, typeOfResult?: 'user' | 'channel'):string {
+    return `<mark class="mark flex">
+              <img src="/assets/img/${
+                typeOfResult == 'user' ? 'alternate-email-purple' : 'tag-blue'
+              }.svg" alt="mark-${typeOfResult}">
+              <span>${name}</span>
+            </mark>`;
   }
 
   /**

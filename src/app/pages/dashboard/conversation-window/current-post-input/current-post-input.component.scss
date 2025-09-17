@@ -11,7 +11,7 @@
   &:hover {
     border: 1px solid var(--color-purple-light);
     .add-emoji {
-      background-image: url("./../../../../../assets/img/sentiment-satisfied-black.svg?v=1");
+      background-image: url("./../../../../../assets/img/emoji-black.svg?v=1");
     }
     .add-user-or-channel {
       background-image: url("./../../../../../assets/img/alternate-email-black.svg?v=1");
@@ -26,7 +26,6 @@
 .textarea-wrapper {
   width: 100%;
 
-  textarea,
   .post-text-input {
     width: 100%;
     font-size: 18px;
@@ -54,16 +53,16 @@
 }
 
 .add-emoji {
-  background-image: url("./../../../../../assets/img/sentiment-satisfied-gray.svg");
+  background-image: url("./../../../../../assets/img/emoji-gray.svg");
   &:hover {
-    background-image: url("./../../../../../assets/img/sentiment-satisfied-blue.svg") !important;
+    background-image: url("./../../../../../assets/img/emoji-purple.svg") !important;
   }
 }
 
 .add-user-or-channel {
   background-image: url("./../../../../../assets/img/alternate-email-gray.svg");
   &:hover {
-    background-image: url("./../../../../../assets/img/alternate-email-blue.svg") !important;
+    background-image: url("./../../../../../assets/img/alternate-email-purple.svg") !important;
   }
 }
 

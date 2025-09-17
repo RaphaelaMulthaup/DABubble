@@ -62,10 +62,6 @@ export class ConversationWindowComponent {
 
   constructor(public screenService: ScreenService) {
     this.mobileDashboardState = this.mobileService.mobileDashboardState;
-    this.screenSize$ = this.screenService.screenSize$;
-    setTimeout(() => {
-      console.log(this.conversationWindowState)
-    }, 500);
-    
+    this.screenSize$ = this.screenService.screenSize$;   
   }
 }
