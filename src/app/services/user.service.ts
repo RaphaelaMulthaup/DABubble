@@ -10,7 +10,7 @@ import {
   getDocs,
 } from '@angular/fire/firestore';
 import { UserInterface } from '../shared/models/user.interface';
-import { map, Observable, shareReplay } from 'rxjs';
+import { combineLatest, map, Observable, of, shareReplay } from 'rxjs';
 import { docData } from '@angular/fire/firestore';
 
 @Injectable({
@@ -37,11 +37,24 @@ export class UserService {
    * @param uid - User ID.
    * Returns an Observable of UserInterface.
    */
+  // getUserById(uid: string): Observable<UserInterface> {
+  //   if (!this.userCache.has(uid)) {
+  //     const userDocRef = doc(this.firestore, `users/${uid}`);
+  //     const user$ = docData(userDocRef).pipe(shareReplay(1));
+  //     this.userCache.set(uid, user$ as Observable<UserInterface>);
+  //   }
+  //   return this.userCache.get(uid)!;
+  // }
+
   getUserById(uid: string): Observable<UserInterface> {
     if (!this.userCache.has(uid)) {
+      // folosește Firestore din constructor
       const userDocRef = doc(this.firestore, `users/${uid}`);
-      const user$ = docData(userDocRef).pipe(shareReplay(1));
-      this.userCache.set(uid, user$ as Observable<UserInterface>);
+      const user$ = docData(userDocRef, { idField: 'uid' }).pipe(
+        map((doc) => doc as UserInterface),
+        shareReplay({ bufferSize: 1, refCount: true })
+      );
+      this.userCache.set(uid, user$);
     }
     return this.userCache.get(uid)!;
   }
@@ -90,10 +103,54 @@ export class UserService {
    * @param memberIds - List of user IDs.
    * Returns an Observable of UserInterface for the members.
    */
+  // getMembersFromChannel(memberIds: string[]): Observable<UserInterface[]> {
+  //   const userColl = collection(this.firestore, 'users');
+  //   const q = query(userColl, where('uid', 'in', memberIds)); // Query for users whose UID is in memberIds
+  //   return collectionData(q, { idField: 'id' }) as Observable<UserInterface[]>;
+  // }
+
+  /**
+   * Fetches users from Firestore whose UIDs are included in the provided array of member IDs.
+   *
+   * Firestore has a limitation on `in` queries: you can only query for up to 10 values at a time.
+   * This function automatically splits the `memberIds` array into batches of 10 and queries Firestore
+   * for each batch separately, then combines the results into a single Observable emitting an array
+   * of `UserInterface`.
+   *
+   * @param memberIds - Array of user IDs (UIDs) for the members you want to fetch.
+   * @returns Observable<UserInterface[]> - Emits an array of `UserInterface` objects corresponding
+   *           to the requested member IDs. If `memberIds` is empty, emits an empty array immediately.
+   *
+   * @example
+   * // Example usage:
+   * const memberIds = ['uid1', 'uid2', 'uid3'];
+   * userService.getMembersFromChannel(memberIds).subscribe(users => {
+   *   console.log(users); // Array of UserInterface objects for uid1, uid2, uid3
+   * });
+   *
+   * @note
+   * - Handles Firestore's `in` query limitation by batching requests in groups of 10.
+   * - Returns a single combined array if multiple batches are required.
+   * - Uses `combineLatest` to merge results from multiple batches into a single array.
+   */
   getMembersFromChannel(memberIds: string[]): Observable<UserInterface[]> {
-    const userColl = collection(this.firestore, 'users');
-    const q = query(userColl, where('uid', 'in', memberIds)); // Query for users whose UID is in memberIds
-    return collectionData(q, { idField: 'id' }) as Observable<UserInterface[]>;
+    if (memberIds.length === 0) return of([]);
+    const batches: Observable<UserInterface[]>[] = [];
+
+    for (let i = 0; i < memberIds.length; i += 10) {
+      const batchIds = memberIds.slice(i, i + 10);
+      const q = query(
+        collection(this.firestore, 'users'),
+        where('uid', 'in', batchIds)
+      );
+      batches.push(
+        collectionData(q, { idField: 'uid' }) as Observable<UserInterface[]>
+      );
+    }
+
+    return batches.length > 1
+      ? combineLatest(batches).pipe(map((arrs) => arrs.flat()))
+      : batches[0];
   }
 
   /**
