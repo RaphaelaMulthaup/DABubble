@@ -32,7 +32,7 @@
     <button
       type="submit"
       class="send"
-      (click)="submitPostInput(); $event.preventDefault()"
+      (click)="$event.preventDefault(); submitPostInput()"
     ></button>
   </div>
 </form>

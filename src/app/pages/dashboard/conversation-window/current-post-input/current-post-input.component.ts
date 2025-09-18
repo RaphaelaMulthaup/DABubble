@@ -23,6 +23,7 @@ import {
   distinctUntilChanged,
   of,
   Observable,
+  take,
 } from 'rxjs';
 import { SearchResult } from '../../../../shared/types/search-result.type';
 import { SearchService } from '../../../../services/search.service';
@@ -63,6 +64,7 @@ export class CurrentPostInput implements OnInit, OnDestroy {
   emojis = EMOJIS;
   screenSize$!: Observable<ScreenSize>;
   @Input() conversationWindowState?: 'conversation' | 'thread';
+  private input$ = new Subject<string>();
   private destroy$ = new Subject<void>();
 
   constructor(
@@ -140,7 +142,10 @@ export class CurrentPostInput implements OnInit, OnDestroy {
 
     if (lastChar === '@' || lastChar === '#') {
       this.searchChar = lastChar;
-    } else if (!this.searchText.includes(this.searchChar!)) {
+    } else if (
+      !this.searchText.includes(this.searchChar!) ||
+      !this.searchText
+    ) {
       this.searchChar = null;
       this.overlayService.closeAll();
     }
@@ -148,13 +153,13 @@ export class CurrentPostInput implements OnInit, OnDestroy {
     if (this.searchChar) {
       if (this.searchText.length == 1) {
         this.searchService
-          .search(of(this.searchChar!), { includeAllChannels: true })
+          .search(of(this.searchChar!), { includeAllChannels: true }).pipe(take(1))
           .subscribe((results) => {
             if (results.length === 0) return this.overlayService.closeAll();
             this.openSearchOverlay(results);
           });
       } else if (this.searchText.length > 1) {
-        this.searchService.search(of(this.searchText)).subscribe((results) => {
+        this.searchService.search(of(this.searchText)).pipe(take(1)).subscribe((results) => {
           if (results.length === 0) return this.overlayService.closeAll();
           this.openSearchOverlay(results);
         });
@@ -263,9 +268,14 @@ export class CurrentPostInput implements OnInit, OnDestroy {
         this.conversationType
       );
     }
+
     this.postTextInput.nativeElement.innerHTML = '';
+    this.postTextInput.nativeElement.textContent = '';
     this.searchResults = [];
+    this.searchChar = null;
+    this.searchText = null;
     this.overlayService.closeAll();
+    this.postService.focusAtEndEditable(this.postTextInput);
   }
 
   /**
@@ -274,7 +284,11 @@ export class CurrentPostInput implements OnInit, OnDestroy {
    * @param results the search results that should be displayed.
    */
   openSearchOverlay(results: SearchResult[]) {
-    this.overlayService.closeAll();
+    if (!results || results.length === 0) {
+      this.overlayService.closeAll();
+      return;
+    }
+    
     const overlayRef = this.overlayService.openComponent(
       SearchResultsCurrentPostInputComponent,
       'cdk-overlay-transparent-backdrop',
@@ -291,18 +305,20 @@ export class CurrentPostInput implements OnInit, OnDestroy {
     );
 
     if (overlayRef) {
-      overlayRef.ref.instance.userSelected?.subscribe((user: UserInterface) => {
-        const mark = this.getMarkTemplate(user.name, 'user');
-        this.insertName(mark);
-        this.overlayService.closeAll();
-      });
-      overlayRef.ref.instance.channelSelected?.subscribe(
-        (channel: ChannelInterface) => {
+      overlayRef.ref.instance.userSelected
+        ?.pipe(take(1))
+        .subscribe((user: UserInterface) => {
+          const mark = this.getMarkTemplate(user.name, 'user');
+          this.insertName(mark);
+          this.overlayService.closeAll();
+        });
+      overlayRef.ref.instance.channelSelected
+        ?.pipe(take(1))
+        .subscribe((channel: ChannelInterface) => {
           const mark = this.getMarkTemplate(channel.name, 'channel');
           this.insertName(mark);
           this.overlayService.closeAll();
-        }
-      );
+        });
     }
   }
 
@@ -331,12 +347,14 @@ export class CurrentPostInput implements OnInit, OnDestroy {
    * @param typeOfResult whether the result is of type user or channel
    */
   getMarkTemplate(name: string, typeOfResult?: 'user' | 'channel'): string {
-    return `&nbsp;<mark class="mark" contenteditable="false" data="${typeOfResult == 'user' ? '@' : '#'}${name}">
+    return `&nbsp;<mark class="mark" contenteditable="false" data="${
+      typeOfResult == 'user' ? '@' : '#'
+    }${name}">
               <img src="/assets/img/${
                 typeOfResult == 'user' ? 'alternate-email-purple' : 'tag-blue'
               }.svg" alt="mark">
               <span>${name}</span>
-            </mark>&nbsp;`;
+            </mark>`;
   }
 
   /**
