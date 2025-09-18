@@ -1,24 +1,24 @@
 :host {
-    max-width: 100%;
+  max-width: 100%;
 }
 
 .container {
-    max-height: 400px;
-    overflow-y: auto;
-    /* activează scroll pe axa Y doar când e nevoie */
-    overflow-x: hidden;
-    /* (opțional) ascunde scroll pe X */
+  max-height: 400px;
+  overflow-y: auto;
+  /* activează scroll pe axa Y doar când e nevoie */
+  overflow-x: hidden;
+  /* (opțional) ascunde scroll pe X */
 }
 
 .profil-img {
-    width: 50px;
-    aspect-ratio: 1;
-    border-radius: 50%;
+  width: 50px;
+  aspect-ratio: 1;
+  border-radius: 50%;
 }
 
 .user-list-item {
-    gap: 15px !important;
-    border-radius: 35px;
-    padding-top: 4px;
-    padding-bottom: 4px;
+  gap: 15px !important;
+  border-radius: 35px;
+  padding-top: 4px;
+  padding-bottom: 4px;
 }
