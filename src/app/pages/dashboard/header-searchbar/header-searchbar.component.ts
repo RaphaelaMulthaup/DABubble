@@ -137,7 +137,7 @@ export class HeaderSearchbarComponent {
         },
       },
       {
-        results: this.results(), // Pass the search term to the overlay
+        results: this.results, // Pass the search term to the overlay
       }
     );
     if (!overlay) return;
