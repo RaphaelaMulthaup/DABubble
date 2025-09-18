@@ -64,7 +64,6 @@ export class CurrentPostInput implements OnInit, OnDestroy {
   emojis = EMOJIS;
   screenSize$!: Observable<ScreenSize>;
   @Input() conversationWindowState?: 'conversation' | 'thread';
-  private input$ = new Subject<string>();
   private destroy$ = new Subject<void>();
 
   constructor(
@@ -189,6 +188,15 @@ export class CurrentPostInput implements OnInit, OnDestroy {
   }
 
   /**
+   * This function adds an '@' char in the input (like the user typed it in).
+   */
+  insertAt() {
+    this.postTextInput.nativeElement.innerHTML += '@';
+    this.postService.focusAtEndEditable(this.postTextInput);
+    this.onInput()
+  }
+
+  /**
    * This function adds the chosen emoji to the input field as an image.
    *
    * @param emoji the emoji-object from the EMOJIS-array.
@@ -270,7 +278,6 @@ export class CurrentPostInput implements OnInit, OnDestroy {
     }
 
     this.postTextInput.nativeElement.innerHTML = '';
-    this.postTextInput.nativeElement.textContent = '';
     this.searchResults = [];
     this.searchChar = null;
     this.searchText = null;
