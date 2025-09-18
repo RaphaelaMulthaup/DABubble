@@ -146,7 +146,7 @@ export class SearchBarComponent implements OnInit, OnDestroy {
         },
       },
       {
-        results$: this.groupedResults(),
+        results$: this.groupedResults,
         searchTerm: term,
       }
     );
