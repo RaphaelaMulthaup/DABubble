@@ -7,7 +7,7 @@
                 <app-header-chat></app-header-chat>
             }
         } @case ('thread') {
-            <app-header-thread></app-header-thread>
+            <app-header-thread [conversationId]="conversationId" [conversationType]="conversationType"></app-header-thread>
         }
     }
 } @else {
@@ -19,7 +19,7 @@
                 <app-header-chat></app-header-chat>
             }
         } @case ('thread-window') {
-            <app-header-thread></app-header-thread>
+            <app-header-thread [conversationId]="conversationId" [conversationType]="conversationType"></app-header-thread>
         }
     }
 }
