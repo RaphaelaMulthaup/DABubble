@@ -57,6 +57,7 @@ export class WindowDisplayComponent {
     'Samstag',
   ];
 
+  @Input() conversationWindowState?: 'conversation' | 'thread';
   private pendingScrollTo?: string; // Stores a post ID to scroll to once available
   private destroy$ = new Subject<void>(); // Used to clean up subscriptions
 

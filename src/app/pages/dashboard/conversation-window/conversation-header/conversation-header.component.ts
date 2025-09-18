@@ -1,4 +1,4 @@
-import { Component, inject, WritableSignal } from '@angular/core';
+import { Component, inject, Input, WritableSignal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ConversationActiveRouterService } from '../../../../services/conversation-active-router.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -8,7 +8,9 @@ import { HeaderChatComponent } from './header-chat/header-chat.component';
 import { MobileService } from '../../../../services/mobile.service';
 import { MobileDashboardState } from '../../../../shared/types/mobile-dashboard-state.type';
 import { HeaderThreadComponent } from './header-thread/header-thread.component';
-import { Subject, takeUntil } from 'rxjs';
+import { Observable, Subject, takeUntil } from 'rxjs';
+import { ScreenSize } from '../../../../shared/types/screen-size.type';
+import { ScreenService } from '../../../../services/screen.service';
 
 @Component({
   selector: 'app-conversation-header',
@@ -27,15 +29,19 @@ export class ConversationHeaderComponent {
   conversationType!: string; // Holds the type of conversation (e.g., chat, channel)
   conversationId!: string; // Holds the ID of the current conversation
   messageToReplyId: string | null = null; // Holds the ID of the message to reply to (if any)
+  @Input() conversationWindowState?: 'conversation' | 'thread';
+  screenSize$!: Observable<ScreenSize>;
   private destroy$ = new Subject<void>(); // Subject to handle unsubscribe logic on component destruction
 
   constructor(
+    public screenService: ScreenService,
     private mobileService: MobileService, // Service for managing mobile state
     private route: ActivatedRoute, // Angular route service to access route parameters
     private router: Router, // Angular router service to navigate between routes
     private conversationActiveRouterService: ConversationActiveRouterService // Custom service for handling active chat/router state
   ) {
     this.mobileDashboardState = this.mobileService.mobileDashboardState; // Inject the mobile state from the service
+    this.screenSize$ = this.screenService.screenSize$;
   }
 
   /**
@@ -69,6 +75,8 @@ export class ConversationHeaderComponent {
         this.messageToReplyId = msgId; // Update the message reply ID state
         //console.log(` aici messageid    |  ${this.messageToReplyId}`);
       });
+
+      console.log(this.conversationWindowState)
   }
 
   /**

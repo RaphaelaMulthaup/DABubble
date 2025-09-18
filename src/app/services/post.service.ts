@@ -328,6 +328,18 @@ export class PostService {
         img.replaceWith(textNode);
       }
     });
+
+    doc.querySelectorAll('.mark').forEach((mark) => {
+      if (mark) {
+        const data = mark.getAttribute('data');
+        // const typeOfResult = data?.charAt(0);
+        // const name = data?.substring(1);
+        const token = `{${data}}`;
+        const textNode = doc.createTextNode(token);
+        mark.replaceWith(textNode);
+      }
+    });
+
     const postText = doc.body.innerText;
     return postText;
   }
@@ -343,21 +355,68 @@ export class PostService {
     if (!text) return '';
     let result = text.replaceAll('\n', '<br>');
     this.emojis.forEach((e) => {
-      const imgTag = `<img src="${e.src}" alt="${e.token}" class="emoji">`;
+      const imgTag = `&nbsp;<img src="${e.src}" alt="${e.token}" class="emoji">&nbsp;`;
       result = result.replaceAll(e.token, imgTag);
     });
+
+    result = result.replace(
+      /\{@([^}]+)\}/g,
+      `<mark class="mark flex" data="@\$1" contenteditable="false">
+        <img src="/assets/img/alternate-email-purple.svg" alt="mark">
+        <span>$1</span>
+     </mark>&nbsp;`
+    );
+
+    result = result.replace(
+      /\{#([^}]+)\}/g,
+      `<mark class="mark flex" data="#\$1" contenteditable="false">
+        <img src="/assets/img/tag-blue.svg" alt="mark">
+        <span>$1</span>
+     </mark>&nbsp;`
+    );
+
     return result;
   }
 
-  focusAtEndEditable(element: ElementRef) {
-    element.nativeElement.focus();
-    const range = document.createRange();
-    range.selectNodeContents(element.nativeElement);
-    range.collapse(false);
-    const selection = window.getSelection();
-    if (selection) {
-      selection.removeAllRanges();
-      selection.addRange(range);
+  /**
+   * This function sets the cursor to the end of an editable div.
+   *
+   * @param element - the editable to focus on.
+   */
+  focusAtEndEditable(element: ElementRef | null) {
+    if (element) {
+      element.nativeElement.focus();
+      const range = document.createRange();
+      range.selectNodeContents(element.nativeElement);
+      range.collapse(false);
+      const selection = window.getSelection();
+      if (selection) {
+        selection.removeAllRanges();
+        selection.addRange(range);
+      }
     }
+  }
+
+  /**
+   * Fetch a single user by UID.
+   * @param uid - User ID.
+   * Returns an Observable of UserInterface.
+   */
+  getPostById(
+    conversationType: 'channel' | 'chat',
+    conversationId: string,
+    messageId: string
+  ): Observable<PostInterface> {
+    if (!this.postCache.has(messageId)) {
+      const ref = doc(
+        this.firestore,
+        `${conversationType}s/${conversationId}/messages/${messageId}`
+      );
+      const post$ = docData(ref).pipe(
+        shareReplay({ bufferSize: 1, refCount: true })
+      );
+      this.postCache.set(messageId, post$ as Observable<PostInterface>);
+    }
+    return this.postCache.get(messageId)!;
   }
 }

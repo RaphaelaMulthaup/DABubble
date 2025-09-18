@@ -4,6 +4,8 @@ import { CommonModule } from '@angular/common';
 import { ChannelsService } from '../../../services/channels.service';
 import { Observable } from 'rxjs';
 import { ChannelInterface } from '../../../shared/models/channel.interface';
+import { ScreenService } from '../../../services/screen.service';
+import { ScreenSize } from '../../../shared/types/screen-size.type';
 
 @Component({
   selector: 'app-change-channel-name',
@@ -15,11 +17,16 @@ export class ChangeChannelNameComponent {
   @Input() channelId?: string;
   @Input() channel?: ChannelInterface;
   @Output() editActiveChange = new EventEmitter<boolean>();
-
+  screenSize$!: Observable<ScreenSize>;
   isEditActive: boolean = false;
   nameInput?: string;
 
-  constructor(private channelService: ChannelsService) {}
+  constructor(
+    private channelService: ChannelsService,
+    public screenService: ScreenService
+  ) {
+    this.screenSize$ = this.screenService.screenSize$;
+  }
 
   async saveName(newName: string) {
     this.channelService.changeChannelName(this.channelId!, newName);

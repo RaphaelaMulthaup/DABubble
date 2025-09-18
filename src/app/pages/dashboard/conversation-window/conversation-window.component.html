@@ -1,7 +1,14 @@
-<section class="conversation-window flex flex-col">
-  <app-conversation-header></app-conversation-header>
+<section
+  class="conversation-window flex flex-col"
+  [style.height]="
+    (screenSize$ | async) === 'web'
+      ? '100%'
+      : 'calc(100vh - 82px)'
+  "
+>
+  <app-conversation-header [conversationWindowState]="conversationWindowState"></app-conversation-header>
   @if (data$) {
-  <app-window-display [messages$]="data$"></app-window-display>
-  <app-current-post-input></app-current-post-input>
+  <app-window-display [messages$]="data$" [conversationWindowState]="conversationWindowState"></app-window-display>
+  <app-current-post-input [conversationWindowState]="conversationWindowState"></app-current-post-input>
   }
 </section>

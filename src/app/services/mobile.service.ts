@@ -10,10 +10,6 @@ export class MobileService {
 
   constructor(private router: Router) {}
 
-  isMobile(): boolean {
-    return window.innerWidth < 768; // you can adjust breakpoint
-  }
-
   setMobileDashboardState(state: MobileDashboardState) {
     this.mobileDashboardState.set(state);
     if (state === 'sidenav') {
@@ -21,13 +17,3 @@ export class MobileService {
     }
   }
 }
-
-
-// Vorschlag für isMobile 
-// isMobile = signal(window.innerWidth < 768);
-
-//   constructor() {
-//     window.addEventListener('resize', () => {
-//       this.isMobile.set(window.innerWidth < 768);
-//     });
-//   }

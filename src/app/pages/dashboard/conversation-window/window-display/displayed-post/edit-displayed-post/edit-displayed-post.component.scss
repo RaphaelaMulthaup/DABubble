@@ -24,11 +24,11 @@
 .add-emoji {
   width: 40px;
   aspect-ratio: 1 / 1;
-  background-image: url("../../../../../../../assets/img/sentiment-satisfied-gray.svg");
+  background-image: url("../../../../../../../assets/img/emoji-gray.svg");
   background-repeat: no-repeat;
   background-position: center;
 
   &:hover {
-    background-image: url("../../../../../../../assets/img/sentiment-satisfied-gray.svg");
+    background-image: url("../../../../../../../assets/img/emoji-gray.svg");
   }
 }

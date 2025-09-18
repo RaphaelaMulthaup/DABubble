@@ -15,6 +15,7 @@ import {
   OverlayRef,
   FlexibleConnectedPositionStrategy,
   ConnectedPosition,
+  ScrollStrategyOptions,
 } from '@angular/cdk/overlay';
 import { ComponentPortal, TemplatePortal } from '@angular/cdk/portal';
 import { ChannelInterface } from '../shared/models/channel.interface';
@@ -64,7 +65,11 @@ export class OverlayService {
   users = signal<UserInterface[]>([]);
   searchReset = signal(false);
 
-  constructor(private overlay: Overlay, private injector: Injector) {}
+  constructor(
+    private overlay: Overlay,
+    private injector: Injector,
+    private scrollStrategies: ScrollStrategyOptions
+  ) {}
 
   // Method to add a user to the users signal (used for tracking users).
   addUser(user: UserInterface) {
@@ -86,9 +91,9 @@ export class OverlayService {
     this.searchReset.set(false);
   }
 
-/**
+  /**
    * Opens a component inside an overlay with configurable backdrop and positioning options.
-   * 
+   *
    * @template T - The component type to be opened.
    * @param component - The component class to render inside the overlay.
    * @param backdropType - Defines the backdrop style (`dark`, `transparent`) or disables it (`null`).
@@ -100,11 +105,12 @@ export class OverlayService {
    * @param data - Optional partial data object to assign to the component instance.
    * @returns An `OpenComponentResult` containing the component reference, overlay reference,
    *          and observables for closure and backdrop clicks, or `undefined` if opening failed.
-   */  openComponent<T extends Object>(
+   */ openComponent<T extends Object>(
     component: Type<T>,
     backdropType:
       | 'cdk-overlay-dark-backdrop'
       | 'cdk-overlay-transparent-backdrop'
+      | 'close-on-scroll'
       | null,
     position: {
       origin?: HTMLElement; // The element to which the overlay is connected (leave empty for global overlays).
@@ -115,7 +121,7 @@ export class OverlayService {
     data?: Partial<T>
   ): OpenComponentResult<T> | undefined {
     const destroy$ = new Subject<void>();
-    const   backdropClickSubject = new Subject<void>();
+    const backdropClickSubject = new Subject<void>();
 
     let positionStrategy;
 
@@ -148,6 +154,12 @@ export class OverlayService {
         positionStrategy,
         hasBackdrop: false,
       });
+    } else if (backdropType === 'close-on-scroll') {
+      this.overlayRef = this.overlay.create({
+        positionStrategy,
+        hasBackdrop: false,
+        scrollStrategy: this.scrollStrategies.close(),
+      });
     } else {
       this.overlayRef = this.overlay.create({
         positionStrategy,
@@ -159,6 +171,9 @@ export class OverlayService {
     // Store the reference of the open overlay.
     this.overlayRefs.push(this.overlayRef!);
     if (this.overlayRefs.length > 0) {
+      const scrollbarWidth =
+        window.innerWidth - document.documentElement.clientWidth;
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
       document.body.style.overflow = 'hidden';
     }
 
@@ -189,6 +204,7 @@ export class OverlayService {
           (ref) => ref !== this.overlayRef
         );
         if (this.overlayRefs.length === 0) {
+          document.body.style.paddingRight = '';
           document.body.style.overflow = '';
         }
         afterClosed$.next();

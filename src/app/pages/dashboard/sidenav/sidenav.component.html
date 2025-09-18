@@ -2,7 +2,7 @@
   <app-channel-list></app-channel-list>
   <app-contacts-list></app-contacts-list>
 </nav>
-@if (isMobile) {
+@if ((screenSize$|async) === 'handset') {
 <button
   class="new-message"
   (click)="openNewMessageView()"

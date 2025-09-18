@@ -1,11 +1,19 @@
 <div
   class="post-container w-full flex flex-col"
-  [ngClass]="{ 'post-current-user': senderIsCurrentUser }"
+  [class.post-current-user]="senderIsCurrentUser"
+  [class.web-post-container]="(screenSize$ | async) === 'web'"
+  [class.web-post-current-user]="
+    (screenSize$ | async) === 'web' && senderIsCurrentUser
+  "
 >
   <div
     class="post flex w-full"
-    [ngClass]="{ clicked: postClicked }"
-    [ngClass]="{ editing: overlayService.editingPostId() === post.id}"
+    [class.clicked]="postClicked"
+    [class.editing]="overlayService.editingPostId() === post.id"
+    [class.web-editing]="
+      overlayService.editingPostId() === post.id &&
+      (screenSize$ | async) === 'web'
+    "
   >
     <div class="profile-img">
       @if(senderPhotoUrl$ | async; as photoUrl) {
@@ -40,13 +48,27 @@
           class="w-full h-full"
         />
         } @else {
-        <div (click)="openPostInteractionOverlay($event)" class="text" [innerHTML]="postService.textToHtml(post.text)"></div>
+        <div
+          (click)="
+            isThreadTheme
+              ? $event.preventDefault()
+              : openPostInteractionOverlay($event)
+          "
+          class="text"
+          [innerHTML]="postService.textToHtml(post.text)"
+        ></div>
         }
       </div>
 
-      @if (post.ansCounter){
-      <!-- flex-row for desktop -->
-      <div class="answers flex flex-col-reverse items-start">
+      @if (post.ansCounter && !isThreadTheme){
+      <div
+        class="answers flex"
+        [ngClass]="
+          (screenSize$ | async) === 'web'
+            ? 'flex-row items-center'
+            : ' flex-col-reverse items-start'
+        "
+      >
         <button
           class="link w-full"
           (click)="
@@ -60,7 +82,7 @@
           {{ post.ansCounter }}
           {{ post.ansCounter == 1 ? "Antwort" : "Antworten" }}
         </button>
-        <span class="post-time w-full">
+        <span class="post-time w-full flex">
           Letzte Antwort @if
           (postService.isPostCreatedToday(post.ansLastCreatedAt)) {
           {{
@@ -96,6 +118,7 @@
     </div>
   </div>
 
+  @if (!isThreadTheme) {
   <div class="interactions-container flex w-full">
     <div
       class="interactions flex"
@@ -110,7 +133,11 @@
         (click)="toggleExistingReaction(reaction.emoji)"
         class="reaction flex place-items-center"
       >
-        <img class="reaction-img" [src]="reaction.emoji.src" [alt]="reaction.emoji.token"/>
+        <img
+          class="reaction-img"
+          [src]="reaction.emoji.src"
+          [alt]="reaction.emoji.token"
+        />
         <p>{{ reaction.users.length }}</p>
       </div>
       } }
@@ -135,4 +162,5 @@
       </div>
     </div>
   </div>
+  }
 </div>

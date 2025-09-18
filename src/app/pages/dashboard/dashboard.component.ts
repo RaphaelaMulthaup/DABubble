@@ -1,4 +1,4 @@
-import { Component, WritableSignal } from '@angular/core';
+import { Component, Output, WritableSignal } from '@angular/core';
 import { inject } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { SidenavComponent } from './sidenav/sidenav.component';
@@ -48,10 +48,6 @@ export class DashboardComponent {
    * This will allow updating and reflecting the dashboard's mobile state.
    */
   mobileDashboardState!: WritableSignal<MobileDashboardState>;
-  // A flag indicating whether the application is in mobile view.
-  isMobile = false;
-  // Function to update the `isMobile` flag based on window size.
-  private updateMobile: () => void;
   /**
    * Observable that holds the messages in the active conversation.
    * The messages are fetched based on the `conversationType` and `conversationId`.
@@ -63,6 +59,8 @@ export class DashboardComponent {
    * The answers are fetched based on the `conversationType`, `conversationId`, and `messageId`.
    */
   answers$!: Observable<PostInterface[]>;
+  screenSize$!: Observable<ScreenSize>;
+  webNavigationVisible: boolean = true;
 
   constructor(
     public overlayService: OverlayService, // Service to handle overlay state
@@ -71,11 +69,8 @@ export class DashboardComponent {
     private route: ActivatedRoute, // To access route parameters for conversation information
     private mobileService: MobileService // Service to manage mobile dashboard state
   ) {
-    // Initializing the function to update mobile view state based on window size
-    this.updateMobile = () => {
-      this.isMobile = this.mobileService.isMobile();
-    };
-    this.isMobile = this.mobileService.isMobile();
+    this.mobileDashboardState = this.mobileService.mobileDashboardState;
+    this.screenSize$ = this.screenService.screenSize$;
   }
 
   /**

@@ -1,10 +1,29 @@
-@if(messageToReplyId){
+<!-- @if(messageToReplyId){
 <button (click)="redirectTo(conversationType, conversationId)">x</button>
-} @switch (mobileDashboardState()) { @case ('message-window') { @if
-(conversationType === 'channel') {
-<app-header-channel class="flex" />
-} @if (conversationType === 'chat') {
-<app-header-chat></app-header-chat>
-}} @case ('thread-window') {
-<app-header-thread></app-header-thread>
-} }
+}  -->
+
+@if ((screenSize$ | async) === 'web') {
+    @switch (conversationWindowState) {
+        @case ('conversation') {
+             @if(conversationType === 'channel') {
+                <app-header-channel class="flex" />
+            } @if (conversationType === 'chat') {
+                <app-header-chat></app-header-chat>
+            }
+        } @case ('thread') {
+            <app-header-thread></app-header-thread>
+        }
+    }
+} @else {
+    @switch (mobileDashboardState()) { 
+        @case ('message-window') {
+             @if(conversationType === 'channel') {
+                <app-header-channel class="flex" />
+            } @if (conversationType === 'chat') {
+                <app-header-chat></app-header-chat>
+            }
+        } @case ('thread-window') {
+            <app-header-thread></app-header-thread>
+        }
+    }
+}

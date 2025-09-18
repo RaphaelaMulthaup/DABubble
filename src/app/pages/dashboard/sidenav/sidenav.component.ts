@@ -8,6 +8,8 @@ import { MobileService } from '../../../services/mobile.service';
 import { MobileDashboardState } from '../../../shared/types/mobile-dashboard-state.type';
 import { CommonModule } from '@angular/common';
 import { SearchService } from '../../../services/search.service';
+import { ScreenService } from '../../../services/screen.service';
+import { ScreenSize } from '../../../shared/types/screen-size.type';
 
 /**
  * The SidenavComponent is responsible for rendering the sidebar of the application,
@@ -39,18 +41,7 @@ export class SidenavComponent {
    */
   private destroy$ = new Subject<void>();
 
-  /**
-   * A flag indicating whether the application is in mobile view.
-   * This flag is used to determine whether to display mobile-specific UI.
-   */
-  isMobile = false;
-
-  /**
-   * Function to update the `isMobile` flag based on window size.
-   * Called when the window is resized to dynamically adjust the sidebar view.
-   */
-  private updateMobile: () => void;
-
+  screenSize$!: Observable<ScreenSize>;
   /**
    * The state of the mobile dashboard.
    * This signal stores the current state of the mobile dashboard (e.g., whether it's in 'new-message-view').
@@ -58,6 +49,7 @@ export class SidenavComponent {
   mobileDashboardState: WritableSignal<MobileDashboardState>;
 
   constructor(
+    public screenService: ScreenService,
     private authService: AuthService, // AuthService to manage user authentication
     public mobileService: MobileService, // MobileService to manage mobile-specific functionality
     public searchService: SearchService // SearchService to manage searching
@@ -67,11 +59,7 @@ export class SidenavComponent {
 
     // Fetching the current user observable from the AuthService
     this.user$ = this.authService.currentUser$;
-
-    // Initializing the function to update mobile view state based on window size
-    this.updateMobile = () => {
-      this.isMobile = this.mobileService.isMobile();
-    };
+    this.screenSize$ = this.screenService.screenSize$;
   }
 
   /**
@@ -80,12 +68,6 @@ export class SidenavComponent {
    * Also sets up a resize event listener to handle changes in screen size for mobile behavior.
    */
   ngOnInit() {
-    // Set initial mobile state based on window size
-    this.isMobile = this.mobileService.isMobile();
-
-    // Listen for window resize events and update mobile state
-    window.addEventListener('resize', this.updateMobile);
-
     // Subscribe to the user observable to update the display name when user data changes
     this.user$.pipe(takeUntil(this.destroy$)).subscribe((user) => {
       this.userDisplayName = user?.name ?? null;

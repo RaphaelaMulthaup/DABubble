@@ -2,6 +2,7 @@ import {
   Component,
   ElementRef,
   inject,
+  Input,
   OnDestroy,
   OnInit,
   ViewChild,
@@ -21,6 +22,8 @@ import {
   takeUntil,
   distinctUntilChanged,
   of,
+  Observable,
+  take,
 } from 'rxjs';
 import { SearchResult } from '../../../../shared/types/search-result.type';
 import { SearchService } from '../../../../services/search.service';
@@ -30,6 +33,10 @@ import { OverlayService } from '../../../../services/overlay.service';
 import { EmojiPickerComponent } from '../../../../overlay/emoji-picker/emoji-picker.component';
 import { EMOJIS } from '../../../../shared/constants/emojis';
 import { SearchResultsCurrentPostInputComponent } from '../../../../overlay/search-results-current-post-input/search-results-current-post-input.component';
+import { ScreenSize } from '../../../../shared/types/screen-size.type';
+import { ScreenService } from '../../../../services/screen.service';
+import { UserInterface } from '../../../../shared/models/user.interface';
+import { ChannelInterface } from '../../../../shared/models/channel.interface';
 
 @Component({
   selector: 'app-current-post-input',
@@ -46,27 +53,29 @@ export class CurrentPostInput implements OnInit, OnDestroy {
   conversationType!: any;
   conversationId!: string;
   /** If replying, holds the ID of the message being replied to; otherwise null. */
-  messageToReplyId: string | null = null;
+  messageToReplyId!: string | null;
   /** Stores any error message to be displayed in the input form. */
   errorMessage: string | null = null;
-  /** Reactive form for creating a new message or reply. */
-  postForm: FormGroup = new FormGroup({
-    /** Input field for the message text. */
-    text: new FormControl('', []),
-  });
+  @ViewChild('textareaThread') textareaThread!: ElementRef;
+  @ViewChild('textareaConversation') textareaConversation!: ElementRef;
   searchResults: SearchResult[] = [];
   emojis = EMOJIS;
+  screenSize$!: Observable<ScreenSize>;
+  @Input() conversationWindowState?: 'conversation' | 'thread';
   private destroy$ = new Subject<void>();
   @ViewChild('textarea') postTextInput!: ElementRef;
 
   constructor(
     private authService: AuthService,
+    public screenService: ScreenService,
     public overlayService: OverlayService,
     public postService: PostService,
     public searchService: SearchService,
     private route: ActivatedRoute,
     private conversationActiveRouterService: ConversationActiveRouterService
-  ) {}
+  ) {
+    this.screenSize$ = this.screenService.screenSize$;
+  }
 
   /**
    * Angular lifecycle hook that runs after the component is initialized.
@@ -93,46 +102,13 @@ export class CurrentPostInput implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe((msgId) => {
         this.messageToReplyId = msgId;
-      });
-
-    this.postForm
-      .get('text')!
-      .valueChanges.pipe(
-        startWith(''),
-        debounceTime(200),
-        distinctUntilChanged(),
-        switchMap((text: string | null) => {
-          const safeText = text || '';
-          const words = safeText.split(/\s+/);
-          // Nimm das letzte Wort
-          const lastWord = words[words.length - 1];
-
-          if (!lastWord) {
-            this.searchResults = [];
-            return of([]);
-          }
-
-          // Prüfe, ob das letzte Wort mit @ oder # beginnt
-          if (lastWord.startsWith('@') || lastWord.startsWith('#')) {
-            // Sofortige Suche starten
-            return this.searchService.search(of(lastWord), {
-              includeAllChannels: true,
-            });
+        setTimeout(() => {
+          if (this.messageToReplyId) {
+            this.postService.focusAtEndEditable(this.textareaThread || null);
           } else {
-            // Kein Suchergebnis anzeigen, wenn das letzte Wort nicht mit @/# beginnt
-            this.searchResults = [];
-            return of([]);
+            this.postService.focusAtEndEditable(this.textareaConversation);
           }
-        }),
-        takeUntil(this.destroy$)
-      )
-      .subscribe((results: any[]) => {
-        this.searchResults = results;
-        if (results.length > 0) {
-          this.openSearchOverlay(results);
-        } else {
-          this.overlayService.closeAll();
-        }
+        });
       });
   }
 
@@ -142,13 +118,92 @@ export class CurrentPostInput implements OnInit, OnDestroy {
   }
 
   /**
+   * This Getter returns the textarea that belongs to the conversationWindowState (thread or conversation)
+   */
+  get postTextInput(): ElementRef {
+    return this.conversationWindowState === 'conversation'
+      ? this.textareaConversation
+      : this.textareaThread;
+  }
+
+  /**
+   * This function handles the textarea's input.
+   * When @ or # are added in the input, the searchChar is set to this char.
+   * When the textBeforeCursor does not include the searchChar anymore, the searchChar is set back to null.
+   * If a searchChar exists the searchOverlay with all users (@) or channels (#) opens.
+   * If there are more chars after the searchChar, the searchOverlays results are filtered to match the textBeforeCursor.
+   */
+  onInput() {
+    this.searchText = this.getInputContentBeforeCursor();
+    const lastChar = this.searchText.slice(-1);
+
+    if (lastChar === '@' || lastChar === '#') {
+      this.searchChar = lastChar;
+    } else if (
+      !this.searchText.includes(this.searchChar!) ||
+      !this.searchText
+    ) {
+      this.searchChar = null;
+      this.overlayService.closeAll();
+    }
+
+    if (this.searchChar) {
+      if (this.searchText.length == 1) {
+        this.searchService
+          .search(of(this.searchChar!), { includeAllChannels: true }).pipe(take(1))
+          .subscribe((results) => {
+            if (results.length === 0) return this.overlayService.closeAll();
+            this.openSearchOverlay(results);
+          });
+      } else if (this.searchText.length > 1) {
+        this.searchService.search(of(this.searchText)).pipe(take(1)).subscribe((results) => {
+          if (results.length === 0) return this.overlayService.closeAll();
+          this.openSearchOverlay(results);
+        });
+      }
+    }
+  }
+
+  /**
+   * This function returns the textBeforeCursor untill the last searchChar.
+   */
+  getInputContentBeforeCursor(): string {
+    const selection = window.getSelection();
+    if (!selection || !selection.anchorNode) return '';
+
+    const range = selection.getRangeAt(0).cloneRange();
+    range.selectNodeContents(this.postTextInput.nativeElement);
+    range.setEnd(selection.anchorNode, selection.anchorOffset);
+
+    const textBeforeCursor = range.cloneContents().textContent || '';
+    const lastAt = textBeforeCursor.lastIndexOf('@');
+    const lastHash = textBeforeCursor.lastIndexOf('#');
+    const lastTrigger = Math.max(lastAt, lastHash);
+
+    if (lastTrigger === -1) return '';
+
+    return textBeforeCursor.substring(lastTrigger);
+  }
+
+  /**
+   * This function adds an '@' char in the input (like the user typed it in).
+   */
+  insertAt() {
+    this.postTextInput.nativeElement.innerHTML += '@';
+    this.postService.focusAtEndEditable(this.postTextInput);
+    this.onInput()
+  }
+
+  /**
    * This function adds the chosen emoji to the input field as an image.
    * 
    * @param emoji the emoji-object from the EMOJIS-array.
    */
   addEmoji(emoji: { token: string; src: string }) {
-    const editor = document.querySelector('.post-text-input') as HTMLElement;
-    const img = `<img src="${emoji.src}" alt="${emoji.token}" class='emoji'>`;
+    this.postService.focusAtEndEditable(this.postTextInput);
+    const selection = window.getSelection();
+    if (!selection || !selection.rangeCount) return;
+    const img = `&nbsp;<img src="${emoji.src}" alt="${emoji.token}" class='emoji'>&nbsp;`;
     document.execCommand('insertHTML', false, img);
   }
 
@@ -200,10 +255,13 @@ export class CurrentPostInput implements OnInit, OnDestroy {
       this.postTextInput.nativeElement.innerHTML
     );
 
-    if (this.messageToReplyId) {
+    if (postText.trim() == '')
+      return this.postService.focusAtEndEditable(this.postTextInput);
+
+    if (this.postTextInput === this.textareaThread) {
       this.postService.createAnswer(
         this.conversationId,
-        this.messageToReplyId,
+        this.messageToReplyId!,
         currentUserId!,
         postText,
         this.conversationType
@@ -216,8 +274,13 @@ export class CurrentPostInput implements OnInit, OnDestroy {
         this.conversationType
       );
     }
+
     this.postTextInput.nativeElement.innerHTML = '';
-    this.searchResults = []; // Reset search results
+    this.searchResults = [];
+    this.searchChar = null;
+    this.searchText = null;
+    this.overlayService.closeAll();
+    this.postService.focusAtEndEditable(this.postTextInput);
   }
 
   /**
@@ -225,7 +288,12 @@ export class CurrentPostInput implements OnInit, OnDestroy {
    * 
    * @param results the search results that should be displayed.
    */
-  openSearchOverlay(results: any[]) {
+  openSearchOverlay(results: SearchResult[]) {
+    if (!results || results.length === 0) {
+      this.overlayService.closeAll();
+      return;
+    }
+    
     const overlayRef = this.overlayService.openComponent(
       SearchResultsCurrentPostInputComponent,
       'cdk-overlay-transparent-backdrop',
@@ -242,52 +310,80 @@ export class CurrentPostInput implements OnInit, OnDestroy {
     );
 
     if (overlayRef) {
-      overlayRef.ref.instance.userSelected?.subscribe((user: any) => {
-        this.insertName(user.name, 'user');
-        this.overlayService.closeAll();
-      });
-      overlayRef.ref.instance.channelSelected?.subscribe((channel: any) => {
-        this.insertName(channel.name, 'channel');
-        this.overlayService.closeAll();
-      });
+      overlayRef.ref.instance.userSelected
+        ?.pipe(take(1))
+        .subscribe((user: UserInterface) => {
+          const mark = this.getMarkTemplate(user.name, 'user');
+          this.insertName(mark);
+          this.overlayService.closeAll();
+        });
+      overlayRef.ref.instance.channelSelected
+        ?.pipe(take(1))
+        .subscribe((channel: ChannelInterface) => {
+          const mark = this.getMarkTemplate(channel.name, 'channel');
+          this.insertName(mark);
+          this.overlayService.closeAll();
+        });
     }
   }
 
   /**
-   * Replaces the last word with a selected user or channel name in the input field.
-   * 
-   * @param name the name to be inserted.
-   * @param typeOfResult indicates whether it's a 'user' or 'channel'.
+   * This function deletes the searchText from the postTextInput and adds the selected mark instead.
+   * After that, all variables are set back to default.
+   *
+   * @param mark the marked user- or channel name as a template.
    */
-  insertName(name: string, typeOfResult: 'user' | 'channel') {
-    const control = this.postForm.get('text')!;
-    const text = control.value || '';
-    const words = text.split(/\s+/);
-    if (typeOfResult === 'user') {
-      words[words.length - 1] = name;
-    } else if (typeOfResult === 'channel') {
-      words[words.length - 1] = name;
-    }
-    // control.setValue(words.join(' ') + ' ');
-    this.postTextInput.nativeElement.innerHTML += words.join(' ') + ' ';
-    //this.postTextInput.nativeElement.focus();
+  insertName(mark: string) {
     this.postService.focusAtEndEditable(this.postTextInput);
+    if (this.searchText) this.deleteAfterSearchChar(this.searchText.length);
+    const selection = window.getSelection();
+    if (!selection || !selection.rangeCount) return;
+    document.execCommand('insertHTML', false, mark);
+    this.postService.focusAtEndEditable(this.postTextInput);
+    this.searchResults = [];
+    this.searchChar = null;
+    this.searchText = null;
   }
 
   /**
-   * Starts user search by adding '@' to the end of the input text if it's not already there.
+   * This function returns a template for the marked user or channel.
+   *
+   * @param name the selected user- or channelname or the selected '@'-char
+   * @param typeOfResult whether the result is of type user or channel
    */
-  startUserSearch() {
-    const control = this.postForm.get('text')!;
-    const text = control.value || '';
-    console.log(text);
-    // Überprüfe das letzte Zeichen
-    const lastChar = text.slice(-1);
+  getMarkTemplate(name: string, typeOfResult?: 'user' | 'channel'): string {
+    return `&nbsp;<mark class="mark" contenteditable="false" data="${
+      typeOfResult == 'user' ? '@' : '#'
+    }${name}">
+              <img src="/assets/img/${
+                typeOfResult == 'user' ? 'alternate-email-purple' : 'tag-blue'
+              }.svg" alt="mark">
+              <span>${name}</span>
+            </mark>`;
+  }
 
-    // If the last character isn't a space, add a space before the '@'
-    const newText = lastChar === ' ' ? text + '@' : text + ' @';
-    control.setValue(newText);
-    //this.postTextInput.nativeElement.focus();
-    this.postService.focusAtEndEditable(this.postTextInput);
+  /**
+   * This function deletes the chars of the searchText and the searchChar.
+   *
+   * @param length how many chars should be deleted
+   */
+  deleteAfterSearchChar(length: number) {
+    const selection = window.getSelection();
+    if (!selection || !selection.rangeCount) return;
+
+    let node = selection.anchorNode!;
+    let offset = selection.anchorOffset;
+
+    if (node.nodeType !== Node.TEXT_NODE) {
+      node = node.childNodes[offset - 1] || node;
+      if (node.nodeType !== Node.TEXT_NODE) return;
+      offset = (node.textContent || '').length;
+    }
+
+    const startOffset = Math.max(offset - length, 0);
+    const range = document.createRange();
+    range.setStart(node, startOffset);
+    range.setEnd(node, offset);
+    range.deleteContents();
   }
 }

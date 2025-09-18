@@ -1,12 +1,34 @@
-<section class="dashboard w-full"
-[ngClass]="{'new-message-view-mobile': (mobileDashboardState() === 'new-message-view') && isMobile}"
+<section
+  class="dashboard w-full"
+  [class.dashboard-web]="(screenSize$ | async) === 'web'"
+  [ngClass]="{
+    'new-message-view-mobile':
+      mobileDashboardState() === 'new-message-view' &&
+      (screenSize$ | async) === 'handset'
+  }"
 >
   <app-header-dashboard />
   @if (mobileDashboardState() === 'new-message-view') {
   <app-header-searchbar></app-header-searchbar>
- <div class="below-from-header-searchbar"></div>
-}
-
+  <div class="below-from-header-searchbar"></div>
+  } @if((screenSize$|async) === 'web'){
+  <div class="dashboard-web-components flex h-full">
+    @if(webNavigationVisible) {
+    <app-sidenav class="relative"></app-sidenav>
+    }
+    <app-conversation-window
+      [data$]="messages$"
+      [conversationWindowState]="'conversation'"
+    ></app-conversation-window>
+    @if (mobileDashboardState()==='thread-window'){
+    <app-conversation-window
+      class="thread-window"
+      [data$]="answers$"
+      [conversationWindowState]="'thread'"
+    ></app-conversation-window>
+    }
+  </div>
+  } @else {
   <div class="w-full h-full">
     @switch (mobileDashboardState()) { @case ('sidenav') {
     <app-sidenav></app-sidenav>
@@ -19,6 +41,19 @@
     } }
   </div>
 </section>
+
+@if((screenSize$|async) === 'web') {
+<section
+  (click)="webNavigationVisible = !webNavigationVisible"
+  class="collapsible"
+>
+  <p>Workspace-Menü {{ webNavigationVisible ? "schließen" : "öffnen" }}</p>
+  <div
+    class="toggle-navigation-img"
+    [ngClass]="webNavigationVisible ? 'hide-navigation' : 'show-navigation'"
+  ></div>
+</section>
+}
 
 <!-- <section class="dashboard flex w-full justify-around h-[calc(100vh-120px)] gap-[24px]">
   <app-header />
@@ -33,7 +68,7 @@
   </div>
 </section> -->
 
-<button (click)="logout()">logout</button>
+<!-- <button (click)="logout()">logout</button> -->
 
 <!-- <section >
   <div class="w-[300px] bg-white h-full">

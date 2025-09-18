@@ -20,9 +20,22 @@
     </p>
     <div class="seperator"></div>
   </div>
+  } 
+  @if (postAnswered && $index === 0 && conversationWindowState === 'thread') {
+  <app-displayed-post
+    [post]="postAnswered"
+    [conversationWindowState]="conversationWindowState"
+  ></app-displayed-post>
+  <div class="seperator-container flex flex-row place-items-center">
+    <span>{{ (messages$ | async)!.length }} Antworten</span>
+    <div class="seperator"></div>
+  </div>
   }
-
-  <app-displayed-post [post]="message" [id]="message.id"></app-displayed-post>
+  <app-displayed-post
+    [post]="message"
+    [id]="message.id"
+    [conversationWindowState]="conversationWindowState"
+  ></app-displayed-post>
   } } @else { @switch (channelTyp$ | async) { @case ('chat') { @if
   (currentConversationId) {
   <app-empty-chat-view

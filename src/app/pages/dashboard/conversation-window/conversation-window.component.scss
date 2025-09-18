@@ -1,10 +1,8 @@
 .conversation-window {
-  max-height: calc(100vh - 115px);
   background-color: var(--color-white);
   position: relative;
-  // >* {
-  //   padding: 0 16px;
-  // }
+  border-radius: 30px;
+  height: 100%;
 }
 
 app-conversation-header {
@@ -16,21 +14,19 @@ app-conversation-header {
 
 app-window-display {
   overflow-y: auto;
-  margin-top: 68px;
-  margin-bottom: 170px;
+  margin-top: 96px;
   height: calc(100vh - 82px);
 }
 
 app-current-post-input {
-  position: absolute;
-  bottom: 0px;
-  right: 16px;
-  left: 16px;
+  border-bottom-right-radius: 30px;
+  border-bottom-left-radius: 30px;
   background-color: var(--color-white);
-  box-shadow: 0px 0px 12px 6px #ffffff;
+  box-shadow: 0px -6px 12px -6px #ffffff;
 }
 
 .below-from-header-searchbar {
   width: 100%;
-  height: calc(100vh - 205px);
+  height: 100vh;
+  // height: calc(100vh - 205px);
 }
