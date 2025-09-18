@@ -42,6 +42,7 @@ export class CreateChannelFormComponent {
   });
 
   showErrorMessage: boolean = false;
+  createSub: any;
 
   constructor(
     public overlayService: OverlayService,
@@ -74,22 +75,36 @@ export class CreateChannelFormComponent {
    * Throws error-message if channel-name is taken
    */
   handlePossibleError(name: string, description?: string): void {
-    this.channelService.createChannel(name, description).subscribe({
-      next: () => {
+    if (this.createSub) {
+      this.createSub.unsubscribe();
+    }
+    this.createSub = this.channelService.createChannel(name, description).subscribe({
+      next:  () => {
         this.errorMessage = null;
         this.createChannel.reset();
         this.overlayService.closeAll();
-      },
-      error: (err) => {
+      }, error: (err) => {
         if (err.message === 'name vergeben') {
           this.showErrorMessage = true;
         } else {
           this.errorMessage = err.message;
         }
-      },
-    });
+      }
+    })
   }
 
+  /**
+   * Ends subscription if necessary.
+   */
+  ngOnDestroy() {
+    if (this.createSub) {
+      this.createSub.unsubscribe();
+    }
+  }
+
+  /**
+   * Check if name is taken on interaction.
+   */
   onNameInput(): void {
     const nameControl = this.createChannel.get('name');
     const value = nameControl?.value.trim();

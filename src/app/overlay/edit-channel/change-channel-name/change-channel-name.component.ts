@@ -19,14 +19,45 @@ export class ChangeChannelNameComponent {
 
   isEditActive: boolean = false;
   nameInput?: string;
+  isNameTaken!: boolean;
+  showErrorMessage: boolean = false;
 
 
   constructor(private channelService: ChannelsService) {}
 
+  /**
+   * Changes Channel-name and throw error if name is allready in use 
+   * 
+   */
   async saveName(newName: string) {
-    this.channelService.changeChannelName(this.channelId!, newName);
-    this.isEditActive = !this.isEditActive;
-    this.editActiveChange.emit(this.isEditActive);
+    if (!this.channelId || !newName || newName.trim() === '') return;
+    
+    if(this.channel && newName.trim() === this.channel.name) {
+      this.isEditActive = false;
+      this.editActiveChange.emit(this.isEditActive);
+      this.showErrorMessage = false;
+      return;
+    }
+
+    let isAvailable = await this.channelService.checkNameTacken(newName).toPromise();
+
+    if (isAvailable) {
+      await this.channelService.changeChannelName(this.channelId, newName);
+      this.isEditActive = false;
+      this.editActiveChange.emit(this.isEditActive);
+      this.isNameTaken = false;
+    } else {
+      this.showErrorMessage = true;
+      this.isNameTaken = true;
+    }
+  }
+
+  /**
+   * Disarms errorMessage on new inputfield interaction.
+   */
+  onInputChange() {
+    this.showErrorMessage = false;
+    this.isNameTaken = false;
   }
 
   toggleEdit() {
