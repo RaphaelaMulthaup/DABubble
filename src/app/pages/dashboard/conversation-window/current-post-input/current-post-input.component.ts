@@ -193,7 +193,7 @@ export class CurrentPostInput implements OnInit, OnDestroy {
   insertAt() {
     this.postTextInput.nativeElement.innerHTML += '@';
     this.postService.focusAtEndEditable(this.postTextInput);
-    this.onInput()
+    this.onInput();
   }
 
   /**
@@ -354,9 +354,8 @@ export class CurrentPostInput implements OnInit, OnDestroy {
    * @param typeOfResult whether the result is of type user or channel
    */
   getMarkTemplate(name: string, typeOfResult?: 'user' | 'channel'): string {
-    return `&nbsp;<mark class="mark" contenteditable="false" data="${
-      typeOfResult == 'user' ? '@' : '#'
-    }${name}">
+    return `&nbsp;<mark class="mark" contenteditable="false" data-type="${typeOfResult}" 
+            data-name="${name}">
               <img src="/assets/img/${
                 typeOfResult == 'user' ? 'alternate-email-purple' : 'tag-blue'
               }.svg" alt="mark">

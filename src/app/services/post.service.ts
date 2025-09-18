@@ -364,10 +364,7 @@ export class PostService {
     doc.querySelectorAll('.mark').forEach((mark) => {
       if (mark) {
         const data = mark.getAttribute('data');
-        // const typeOfResult = data?.charAt(0);
-        // const name = data?.substring(1);
-        const token = `{${data}}`;
-        const textNode = doc.createTextNode(token);
+        const textNode = doc.createTextNode(`{${data}}`);
         mark.replaceWith(textNode);
       }
     });
@@ -394,19 +391,21 @@ export class PostService {
 
     result = result.replace(
       /\{@([^}]+)\}/g,
-      `<mark class="mark flex" data="@\$1" contenteditable="false">
-        <img src="/assets/img/alternate-email-purple.svg" alt="mark">
-        <span>$1</span>
-     </mark>&nbsp;`
-    );
+      (_, name) => {
+      return  `<mark class="mark flex" data="${name}" contenteditable="false">
+                <img src="/assets/img/alternate-email-purple.svg" alt="mark">
+                <span>${name}</span>
+              </mark>&nbsp;`
+    });
 
     result = result.replace(
       /\{#([^}]+)\}/g,
-      `<mark class="mark flex" data="#\$1" contenteditable="false">
-        <img src="/assets/img/tag-blue.svg" alt="mark">
-        <span>$1</span>
-     </mark>&nbsp;`
-    );
+       (_, name) => {
+      return  `<mark class="mark flex" data="${name}" contenteditable="false">
+                <img src="/assets/img/tag-blue.svg" alt="mark">
+                <span>${name}</span>
+              </mark>&nbsp;`
+    });
 
     return result;
   }

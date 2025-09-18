@@ -13,7 +13,7 @@ import { ConversationActiveRouterService } from '../../../../../../services/conv
 import { ActivatedRoute } from '@angular/router';
 import { PostService } from '../../../../../../services/post.service';
 import { OverlayService } from '../../../../../../services/overlay.service';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, take, takeUntil } from 'rxjs';
 import { EMOJIS } from '../../../../../../shared/constants/emojis';
 import { EmojiPickerComponent } from '../../../../../../overlay/emoji-picker/emoji-picker.component';
 
@@ -29,7 +29,7 @@ export class EditDisplayedPostComponent implements OnInit {
   currentConversationId!: string;
   messageId!: string;
   emojis = EMOJIS;
-  @ViewChild('textarea') postTextInput!: ElementRef;
+  @ViewChild('textareaEdit') postTextInput!: ElementRef;
   private destroy$ = new Subject<void>();
 
   constructor(
@@ -66,7 +66,7 @@ export class EditDisplayedPostComponent implements OnInit {
   }
 
   /**
-   * This function adds the chosen emojis to the input field as an image.
+   * This function adds the chosen emoji to the input field as an image.
    *
    * @param emoji the emoji-object from the EMOJIS-array.
    */
@@ -74,8 +74,7 @@ export class EditDisplayedPostComponent implements OnInit {
     this.postService.focusAtEndEditable(this.postTextInput);
     const selection = window.getSelection();
     if (!selection || !selection.rangeCount) return;
-    const range = selection.getRangeAt(0);
-    const img = `<img src="${emoji.src}" alt="${emoji.token}" class='emoji'>`;
+    const img = `&nbsp;<img src="${emoji.src}" alt="${emoji.token}" class='emoji'>&nbsp;`;
     document.execCommand('insertHTML', false, img);
   }
 
@@ -106,7 +105,7 @@ export class EditDisplayedPostComponent implements OnInit {
       }
     );
 
-    overlay!.ref.instance.selectedEmoji.subscribe(
+    overlay!.ref.instance.selectedEmoji.pipe(take(1)).subscribe(
       (emoji: { token: string; src: string }) => {
         this.addEmoji(emoji);
         // this.overlayService.closeAll();
@@ -131,9 +130,10 @@ export class EditDisplayedPostComponent implements OnInit {
       this.postTextInput.nativeElement.innerHTML
     );
 
-    if (postText.trim() == '') return this.postService.focusAtEndEditable(this.postTextInput);
+    if (postText.trim() == '')
+      return this.postService.focusAtEndEditable(this.postTextInput);
 
-    await this.postService.updatePost(
+    this.postService.updatePost(
       { text: postText },
       this.currentConversationType,
       this.currentConversationId,

@@ -1,10 +1,9 @@
-<div class="text">
+<div class="current-post-input">
   <div
-    #textarea
+    #textareaEdit
     class="post-text-input w-full"
     contenteditable="true"
     [innerHTML]="postService.textToHtml(post.text)"
-    autofocus="true"
   ></div>
   <div class="flex justify-between align-center">
     <button (click)="$event.preventDefault(); openEmojiPickerOverlay($event)" class="add-emoji btn-tertiary relative"></button>
