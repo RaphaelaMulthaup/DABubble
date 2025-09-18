@@ -18,7 +18,7 @@ import { ScreenSize } from '../../../shared/types/screen-size.type';
 import { ScreenService } from '../../../services/screen.service';
 
 /**
- * Component representing a conversation window. 
+ * Component representing a conversation window.
  * This component is responsible for displaying the conversation header, messages, and post input field.
  * It also manages the state of the mobile dashboard, communicating with the `MobileService`.
  */
@@ -44,7 +44,8 @@ export class ConversationWindowComponent {
    * EventEmitter that emits the change in mobile dashboard state.
    * The parent component can listen to this event to track changes in the state.
    */
-  @Output() changeMobileDashboardState = new EventEmitter<MobileDashboardState>();
+  @Output() changeMobileDashboardState =
+    new EventEmitter<MobileDashboardState>();
 
   /**
    * Instance of `MobileService`, injected to access mobile dashboard state.

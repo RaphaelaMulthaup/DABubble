@@ -11,6 +11,7 @@ import {
   Firestore,
   getCountFromServer,
   getDoc,
+  getDocs,
   increment,
   orderBy,
   query,
@@ -18,7 +19,15 @@ import {
   setDoc,
   updateDoc,
 } from '@angular/fire/firestore';
-import { BehaviorSubject, Observable, of, shareReplay, Subject } from 'rxjs';
+import {
+  BehaviorSubject,
+  filter,
+  Observable,
+  of,
+  shareReplay,
+  Subject,
+  switchMap,
+} from 'rxjs';
 import { PostInterface } from '../shared/models/post.interface';
 import { ReactionInterface } from '../shared/models/reaction.interface';
 import { ChatInterface } from '../shared/models/chat.interface';
@@ -32,7 +41,8 @@ import { EMOJIS } from '../shared/constants/emojis';
 })
 export class PostService {
   emojis = EMOJIS;
-  private reactionsCache = new Map<string, Observable<ReactionInterface[]>>();
+  private reactionCache = new Map<string, Observable<ReactionInterface[]>>();
+  private postCache = new Map<string, Observable<PostInterface>>();
 
   constructor(
     private firestore: Firestore,
@@ -77,6 +87,7 @@ export class PostService {
       ...post,
       id: newDocRef.id, // Save the document ID in the document
       createdAt: serverTimestamp(),
+      hasReactions: false,
     });
 
     return newDocRef.id; // Return the ID of the created document (optional)
@@ -101,28 +112,31 @@ export class PostService {
     postId: string,
     emoji: { token: string; src: string }
   ) {
-    let userId = this.authService.currentUser?.uid ?? null;
+    let userId = this.authService.currentUser.uid;
+    const postPath = `${parentPath}/${subcollectionName}/${postId}`;
+    const postRef = doc(this.firestore, postPath);
     const reactionRef = doc(
       this.firestore,
-      `${parentPath}/${subcollectionName}/${postId}/reactions/${emoji.token}`
+      `${postPath}/reactions/${emoji.token}`
     );
-
     const reactionSnap = await getDoc(reactionRef);
-
     if (reactionSnap.exists()) {
       const data = reactionSnap.data();
       const users: string[] = data['users'] || [];
 
-      if (userId && users.includes(userId)) {
+      if (users.includes(userId)) {
         // User already reacted → remove their reaction
         await updateDoc(reactionRef, {
           users: arrayRemove(userId),
         });
+        const postHasReactions = await this.checkForPostReactions(postPath);
+        await updateDoc(postRef, { hasReactions: postHasReactions });
       } else {
         // User has not reacted → add their reaction
         await updateDoc(reactionRef, {
           users: arrayUnion(userId),
         });
+        await updateDoc(postRef, { hasReactions: true });
       }
     } else {
       // First reaction with this emoji → create a new reaction document
@@ -130,7 +144,25 @@ export class PostService {
         emoji,
         users: [userId],
       });
+      await updateDoc(postRef, { hasReactions: true });
     }
+  }
+
+  /**
+   * This function checks for each reaction of a post, if its user-array contains any users.
+   * If an array contains users, the function returns true.
+   * If no reactions-array contains users, the function returns false.
+   *
+   * @param postPath - the path to the post in firebase.
+   */
+  async checkForPostReactions(postPath: string): Promise<boolean> {
+    const reactionsColRef = collection(this.firestore, `${postPath}/reactions`);
+    const reactionsSnap = await getDocs(reactionsColRef);
+
+    return reactionsSnap.docs.some((docSnap) => {
+      const users: string[] = docSnap.data()?.['users'] || [];
+      return users.length > 0;
+    });
   }
 
   /**
@@ -147,7 +179,7 @@ export class PostService {
     postId: string
   ): Observable<ReactionInterface[]> {
     const cacheKey = `${parentPath}/${subcollectionName}/${postId}`;
-    if (!this.reactionsCache.has(cacheKey)) {
+    if (!this.reactionCache.has(cacheKey)) {
       const reactionsRef = collection(
         this.firestore,
         `${parentPath}/${subcollectionName}/${postId}/reactions`
@@ -155,12 +187,12 @@ export class PostService {
       const reactions$ = collectionData(reactionsRef, { idField: 'id' }).pipe(
         shareReplay({ bufferSize: 1, refCount: true })
       );
-      this.reactionsCache.set(
+      this.reactionCache.set(
         cacheKey,
         reactions$ as Observable<ReactionInterface[]>
       );
     }
-    return this.reactionsCache.get(cacheKey)!;
+    return this.reactionCache.get(cacheKey)!;
   }
 
   /**
@@ -353,7 +385,8 @@ export class PostService {
    */
   textToHtml(text: string): string {
     if (!text) return '';
-    let result = text.replaceAll('\n', '<br>');
+    let result = text.replaceAll('\n', '</div><div>');
+
     this.emojis.forEach((e) => {
       const imgTag = `&nbsp;<img src="${e.src}" alt="${e.token}" class="emoji">&nbsp;`;
       result = result.replaceAll(e.token, imgTag);

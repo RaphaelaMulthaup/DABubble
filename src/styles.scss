@@ -237,6 +237,22 @@ h4 {
   padding: 40px 20px;
 }
 
+//i use this to style name from edit channel btn
+.nameTag {
+  font-weight: 600;
+  font-size: 18px;
+  color: var(--color-purple-medium);
+  transition: all 0.2s ease;
+  cursor: pointer;
+
+  &:hover {
+    font-weight: 700;
+    font-style: Bold;
+    font-size: 18px;
+    color: var(--color-purple-dark);
+  }
+}
+
 .tag {
   width: 24px;
   aspect-ratio: 1;

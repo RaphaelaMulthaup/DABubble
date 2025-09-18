@@ -10,7 +10,7 @@
             ? '/assets/img/online.svg'
             : '/assets/img/offline.svg'
         " alt="Status" />
-        <span [ngClass]="(user$ | async)?.active ? 'green' : ''">
+        <span>
           {{ (user$ | async)?.active ? "Aktiv" : "Abwesend" }}
         </span>
       </div>

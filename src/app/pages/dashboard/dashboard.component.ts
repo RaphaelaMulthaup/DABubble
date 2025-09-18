@@ -22,6 +22,8 @@ import { MobileDashboardState } from '../../shared/types/mobile-dashboard-state.
 import { ChatService } from '../../services/chat.service';
 import { MobileService } from '../../services/mobile.service';
 import { PostInterface } from '../../shared/models/post.interface';
+import { ScreenService } from '../../services/screen.service';
+import { ScreenSize } from '../../shared/types/screen-size.type';
 import { HeaderSearchbarComponent } from './header-searchbar/header-searchbar.component';
 
 /**
@@ -64,6 +66,7 @@ export class DashboardComponent {
 
   constructor(
     public overlayService: OverlayService, // Service to handle overlay state
+    public screenService: ScreenService,
     private authService: AuthService, // Service for authentication management
     private conversationActiveRouterService: ConversationActiveRouterService, // Service for managing active chats
     private route: ActivatedRoute, // To access route parameters for conversation information
@@ -80,67 +83,66 @@ export class DashboardComponent {
    */
   ngOnInit() {
     // Initialize mobileDashboardState with the value from the MobileService
-    this.mobileDashboardState = this.mobileService.mobileDashboardState;
-    window.addEventListener('resize', this.updateMobile);
-
-    // Set up the observable for fetching messages from the active conversation
-    this.messages$ = this.route.paramMap.pipe(
-      map((params) => ({
-        conversationType: params.get('conversationType'),
-        conversationId: params.get('conversationId'),
-      })),
-      // Ensure conversation type and ID are distinct before triggering the fetch
-      distinctUntilChanged(
-        (a, b) =>
-          a.conversationType === b.conversationType &&
-          a.conversationId === b.conversationId
-      ),
-      // Ensure valid conversationType and conversationId
-      filter(
-        ({ conversationType, conversationId }) =>
-          !!conversationType && !!conversationId
-      ),
-      // Fetch messages for the active conversation from the service
-      switchMap(({ conversationType, conversationId }) =>
-        this.conversationActiveRouterService.getMessages(
-          conversationType!,
-          conversationId!
-        )
-      ),
-      // Share the last value and maintain a reference count to avoid multiple fetches
-      shareReplay({ bufferSize: 1, refCount: true })
-    );
-
-    // Set up the observable for fetching answers to a particular message in the conversation
-    this.answers$ = this.route.paramMap.pipe(
-      map((params) => ({
-        conversationType: params.get('conversationType'),
-        conversationId: params.get('conversationId'),
-        messageId: params.get('messageId'),
-      })),
-      // Ensure conversation and message IDs are distinct before triggering the fetch
-      distinctUntilChanged(
-        (a, b) =>
-          a.conversationType === b.conversationType &&
-          a.conversationId === b.conversationId &&
-          a.messageId === b.messageId
-      ),
-      // Ensure valid conversationType, conversationId, and messageId
-      filter(
-        ({ conversationType, conversationId, messageId }) =>
-          !!conversationType && !!conversationId && !!messageId
-      ),
-      // Fetch answers to a particular message
-      switchMap(({ conversationType, conversationId, messageId }) =>
-        this.conversationActiveRouterService.getAnswers(
-          conversationType!,
-          conversationId!,
-          messageId!
-        )
-      ),
-      // Share the last value and maintain a reference count to avoid multiple fetches
-      shareReplay({ bufferSize: 1, refCount: true })
-    );
+    // if (this.mobileDashboardState() === 'message-window') {
+      // Set up the observable for fetching messages from the active conversation
+      this.messages$ = this.route.paramMap.pipe(
+        map((params) => ({
+          conversationType: params.get('conversationType'),
+          conversationId: params.get('conversationId'),
+        })),
+        // Ensure conversation type and ID are distinct before triggering the fetch
+        distinctUntilChanged(
+          (a, b) =>
+            a.conversationType === b.conversationType &&
+            a.conversationId === b.conversationId
+        ),
+        // Ensure valid conversationType and conversationId
+        filter(
+          ({ conversationType, conversationId }) =>
+            !!conversationType && !!conversationId
+        ),
+        // Fetch messages for the active conversation from the service
+        switchMap(({ conversationType, conversationId }) =>
+          this.conversationActiveRouterService.getMessages(
+            conversationType!,
+            conversationId!
+          )
+        ),
+        // Share the last value and maintain a reference count to avoid multiple fetches
+        shareReplay({ bufferSize: 1, refCount: true })
+      );
+    // } else if (this.mobileDashboardState() === 'thread-window') {
+      // Set up the observable for fetching answers to a particular message in the conversation
+      this.answers$ = this.route.paramMap.pipe(
+        map((params) => ({
+          conversationType: params.get('conversationType'),
+          conversationId: params.get('conversationId'),
+          messageId: params.get('messageId'),
+        })),
+        // Ensure conversation and message IDs are distinct before triggering the fetch
+        distinctUntilChanged(
+          (a, b) =>
+            a.conversationType === b.conversationType &&
+            a.conversationId === b.conversationId &&
+            a.messageId === b.messageId
+        ),
+        // Ensure valid conversationType, conversationId, and messageId
+        filter(
+          ({ conversationType, conversationId, messageId }) =>
+            !!conversationType && !!conversationId && !!messageId
+        ),
+        // Fetch answers to a particular message
+        switchMap(({ conversationType, conversationId, messageId }) =>
+          this.conversationActiveRouterService.getAnswers(
+            conversationType!,
+            conversationId!,
+            messageId!
+          )
+        ),
+        // Share the last value and maintain a reference count to avoid multiple fetches
+        shareReplay({ bufferSize: 1, refCount: true })
+      );
+    // }
   }
 
   /**

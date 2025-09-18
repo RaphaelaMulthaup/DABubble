@@ -1,16 +1,16 @@
 <section [ngClass]="overlay" class="flex w-full">
   @if(!clickedAddMember){ 
-    <div class="flex flex-col items-start gap-[15px] container relative">
-      <div class="flex flex-col max-h-400px">
-        @for(user of users$| async; track $index){
-        <app-user-list-item [user]="user" [showProfile]="true" />
-        }
+    <div class="flex flex-col items-start gap-[15px] container relative ">
+      <div class="flex flex-col max-w-[415px]">
+          @for(user of users$| async; track $index){
+          <app-user-list-item [user]="user" [showProfile]="true" />
+          }
       </div>
       <div class="flex sticky bottom-0 pt-[20px] w-full bg-white">
-        <button class="list-item user-list-item btn" (click)="choiseBetweenComponentAndHeader($event)">
-          <div class="add-person"></div>
-          <span> Mitglieder hinzufugen</span>
-        </button>
+          <button class="list-item user-list-item btn" (click)="choiseBetweenComponentAndHeader($event)">
+              <div class="add-person"></div>
+              <span> Mitglieder hinzufugen</span>
+          </button>
       </div>
     </div>
   }@else {

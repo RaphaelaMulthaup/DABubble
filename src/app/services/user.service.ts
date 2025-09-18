@@ -17,7 +17,7 @@ import { docData } from '@angular/fire/firestore';
   providedIn: 'root',
 })
 export class UserService {
-  private userCache = new Map<string, Observable<UserInterface>>();
+  public userCache = new Map<string, Observable<UserInterface>>();
 
   constructor(private firestore: Firestore) {}
 

@@ -11,7 +11,7 @@ import { ScreenService } from '../../../services/screen.service';
 
 @Component({
   selector: 'app-change-channel-description',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, UserListItemComponent],
   templateUrl: './change-channel-description.component.html',
   styleUrl: './change-channel-description.component.scss',
 })

@@ -5,6 +5,7 @@ import {
   Input,
   QueryList,
   ViewChildren,
+  WritableSignal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PostService } from '../../../../services/post.service';
@@ -23,6 +24,8 @@ import { ConversationActiveRouterService } from '../../../../services/conversati
 import { tap } from 'rxjs';
 import { ChatService } from '../../../../services/chat.service';
 import { EmptyChatViewComponent } from './empty-chat-view/empty-chat-view.component';
+import { MobileDashboardState } from '../../../../shared/types/mobile-dashboard-state.type';
+import { MobileService } from '../../../../services/mobile.service';
 import { EmptyChannelViewComponent } from './empty-channel-view/empty-channel-view.component';
 
 @Component({
@@ -38,6 +41,11 @@ import { EmptyChannelViewComponent } from './empty-channel-view/empty-channel-vi
 })
 export class WindowDisplayComponent {
   @Input() messages$!: import('rxjs').Observable<PostInterface[]>;
+  // an array with all posts in this conversation
+  currentConversationType?: 'channel' | 'chat';
+  postAnsweredId?: string | null;
+  postAnswered?: PostInterface;
+  mobileDashboardState: WritableSignal<MobileDashboardState>;
   // Observable stream of all posts in the current conversation
 
   postInfo: PostInterface[] = []; // Cached list of posts
@@ -67,8 +75,11 @@ export class WindowDisplayComponent {
     private router: Router,
     public postService: PostService,
     private chatService: ChatService,
+    public mobileService: MobileService,
     private conversationActiveRouterService: ConversationActiveRouterService
-  ) {}
+  ) {
+    this.mobileDashboardState = this.mobileService.mobileDashboardState;
+  }
 
   /**
    * Lifecycle hook: initializes subscriptions to route params,
@@ -81,13 +92,33 @@ export class WindowDisplayComponent {
 
     // Subscribe to conversation ID from route params
     this.route.params.pipe(takeUntil(this.destroy$)).subscribe((params) => {
-      const conversationId = params['conversationId'];
-      this.currentConversationId = conversationId;
+      this.currentConversationId = params['conversationId']; // get chat id from route params
+      this.currentConversationType = params['conversationType'];
+      const id = params['scrollTo'];
+      if (id) this.handleScrollRequest(id);
+
+      params['messageId']
+        ? (this.postAnsweredId = params['messageId'])
+        : (this.postAnsweredId = null);
     });
 
-    // Subscribe to incoming messages
+    if (this.postAnsweredId) {
+      this.postService
+        .getPostById(
+          this.currentConversationType!,
+          this.currentConversationId!,
+          this.postAnsweredId!
+        )
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((post) => (this.postAnswered = post));
+    }
+
     this.messages$.pipe(takeUntil(this.destroy$)).subscribe((data) => {
-      this.onContentChange(this.currentConversationId, data);
+      // Update content when new messages are received
+      this.onContentChange(
+        this.currentConversationId, // new chat ID
+        data // new messages
+      );
     });
 
     // Subscribe to scroll requests from PostService
@@ -153,6 +184,7 @@ export class WindowDisplayComponent {
    */
   onContentChange(newChatId?: string, newMessages: PostInterface[] = []) {
     const previousChatId = this.currentConversationId;
+
     this.currentConversationId = newChatId;
     this.postInfo = newMessages;
 

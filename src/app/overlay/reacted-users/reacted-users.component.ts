@@ -23,25 +23,23 @@ export class ReactedUsersComponent {
   ) {}
 
   ngOnInit() {
-    const currentUserId = this.authService.currentUser?.uid ?? null;
-    if (currentUserId) {
-      this.currentUserReacted = this.reaction.users.includes(currentUserId);
-      if (this.currentUserReacted) {
-        this.userService
-          .getUserById(currentUserId)
-          .pipe(takeUntil(this.destroy$))
-          .subscribe((user) => this.userNames.push(user.name));
-      }
-      let otherUserIds = this.reaction.users.filter(
-        (id) => id !== currentUserId
-      );
-      otherUserIds.forEach((userId) =>
-        this.userService
-          .getUserById(userId)
-          .pipe(takeUntil(this.destroy$))
-          .subscribe((user) => this.userNames.push(user.name))
-      );
+    const currentUserId = this.authService.currentUser.uid!;
+    this.currentUserReacted = this.reaction.users.includes(currentUserId);
+
+    if (this.currentUserReacted) {
+      this.userService
+        .getUserById(currentUserId)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((user) => this.userNames.push(user.name));
     }
+
+    let otherUserIds = this.reaction.users.filter((id) => id !== currentUserId);
+    otherUserIds.forEach((userId) =>
+      this.userService
+        .getUserById(userId)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((user) => this.userNames.push(user.name))
+    );
   }
 
   ngOnDestroy() {

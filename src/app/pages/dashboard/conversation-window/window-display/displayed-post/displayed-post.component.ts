@@ -80,7 +80,7 @@ export class DisplayedPostComponent {
     this.screenSize$ = this.screenService.screenSize$;
   }
 
-  async ngOnChanges() {
+  ngOnChanges() {
     this.conversationActiveRouterService
       .getParams$(this.route)
       .pipe(takeUntil(this.destroy$))
@@ -118,17 +118,19 @@ export class DisplayedPostComponent {
       ),
       shareReplay({ bufferSize: 1, refCount: true })
     );
+
     this.visibleReactions$ = this.reactions$.pipe(
       map((list) =>
         list
           .filter((r) => r.users.length > 0)
           .sort((a, b) => b.users.length - a.users.length)
-      )
+      ),
+      distinctUntilChanged((a, b) => a === b)
     );
 
     if (!this.post) return;
-    const user = await firstValueFrom(this.authService.currentUser$);
-    this.senderIsCurrentUser = this.post.senderId === user?.uid;
+    this.senderIsCurrentUser =
+      this.post.senderId === this.authService.currentUser.uid;
     const user$ = this.userService.getUserById(this.post.senderId);
     this.senderName$ = user$.pipe(map((u) => u?.name ?? ''));
     this.senderPhotoUrl$ = user$.pipe(map((u) => u?.photoUrl ?? ''));

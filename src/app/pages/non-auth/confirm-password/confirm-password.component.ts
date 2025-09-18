@@ -76,7 +76,6 @@ export class ConfirmPasswordComponent implements OnInit {
         console.error('Reset-Mail konnte nicht versendet werden', error);
         this.showErrorMessage = true;
       });
-      console.log(`Benutzer UID: ${uid}`);
     } else {
       this.showErrorMessage = true;
     }
@@ -96,14 +95,6 @@ export class ConfirmPasswordComponent implements OnInit {
   procedToReset() {
     this.changeAuthState.emit('reset-password-confirm');
   }
-
-  // /**
-  //  * Shows "mail send" message bevor function "procedToReset"
-  //  */
-  // waveFlag() {
-  //   let wavieFlagie = document.querySelector('.toast-notification');
-  //   wavieFlagie?.classList.add('.show-toast');
-  // }
 
   /**
    * Sends linkt to reset password to found email

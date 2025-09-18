@@ -1,4 +1,4 @@
-<div class="overlay-left container">
+<div [ngClass]=" onBottom ? 'overlayBottom' : 'overlay-left' "  class="container">
     <ul>
         @for (user of results(); track $index) {
         <li class="list-item user-list-item" (click)="addMemberToArray(user)">

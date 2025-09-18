@@ -13,6 +13,8 @@ import { UserInterface } from '../../shared/models/user.interface';
 import { AuthService } from '../../services/auth.service';
 import { ChannelsService } from '../../services/channels.service';
 import { MobileService } from '../../services/mobile.service';
+import { ScreenService } from '../../services/screen.service';
+import { ScreenSize } from '../../shared/types/screen-size.type';
 
 @Component({
   selector: 'app-edit-channel',
@@ -36,6 +38,7 @@ export class EditChannelComponent {
   user$?: Observable<UserInterface>;
   editChannelName:boolean = false;
   editChannelDescription:boolean = false;
+  screenSize$!: Observable<ScreenSize>;
 
   // CORECT: Inițializare corectă a observabilului
   channelDetails$!: Observable<ChannelInterface | undefined>;
@@ -46,12 +49,10 @@ export class EditChannelComponent {
     private authService: AuthService,
     private mobileService: MobileService,
     public channelService: ChannelsService,
-    public overlayService: OverlayService
+    public overlayService: OverlayService,
+    public screenService: ScreenService
   ) {
-    let currentUser = this.authService.currentUser?.uid ?? null;
-    if (currentUser) {
-      this.currentUser = currentUser;
-    }
+    this.currentUser = this.authService.currentUser.uid;
     this.channelDetails$ = this.overlayService.overlayInput.pipe(
       switchMap((data) => data?.channel ?? of(null)),
       filter((channel): channel is ChannelInterface => !!channel)
@@ -71,11 +72,11 @@ export class EditChannelComponent {
         }
       }
     );
-    window.addEventListener('resize', this.updateMobile);
+    // window.addEventListener('resize', this.updateMobile);
   }
 
   ngOnDestroy() {
-    window.removeEventListener('resize', this.updateMobile);
+    // window.removeEventListener('resize', this.updateMobile);
     this.destroy$.next();
     this.destroy$.complete();
   }

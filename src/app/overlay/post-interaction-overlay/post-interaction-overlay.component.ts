@@ -16,6 +16,7 @@ import { AuthService } from '../../services/auth.service';
 import { EditPostBtnComponent } from '../edit-post-btn/edit-post-btn.component';
 import { MobileService } from '../../services/mobile.service';
 import { OverlayRef } from '@angular/cdk/overlay';
+import { EMOJIS } from '../../shared/constants/emojis';
 
 @Component({
   selector: 'app-post-interaction-overlay',
@@ -41,7 +42,7 @@ export class PostInteractionOverlayComponent implements OnInit {
   ngOnInit() {
     if (!this.post) return;
     this.senderIsCurrentUser =
-      this.post.senderId === this.authService.currentUser?.uid;
+      this.post.senderId === this.authService.currentUser.uid;
   }
 
   /**
@@ -80,7 +81,7 @@ export class PostInteractionOverlayComponent implements OnInit {
   /**
    * This function opens the emoji-picker overlay and transmits the isMessageFromCurrentUser-variable.
    * The overlay possibly emits an emoji and this emoji is used to react to the post.
-   * 
+   *
    * @param event the user-interaction with an object.
    */
   openEmojiPickerOverlay(event: MouseEvent) {
@@ -138,7 +139,7 @@ export class PostInteractionOverlayComponent implements OnInit {
 
   /**
    * This functions opens the edit-post-overlay.
-   * 
+   *
    * @param event the user-interaction with an object.
    */
   openEditPostBtnOverlay(event: MouseEvent) {

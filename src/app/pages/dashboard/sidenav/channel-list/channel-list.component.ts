@@ -38,7 +38,7 @@ export class ChannelListComponent {
     private channnelsService: ChannelsService,
     private authService: AuthService,
     private overlayService: OverlayService,
-    private mobileService: MobileService
+    public mobileService: MobileService
   ) {
     this.mobileDashboardState = this.mobileService.mobileDashboardState;
     this.currentUserId = this.authService.getCurrentUserId();

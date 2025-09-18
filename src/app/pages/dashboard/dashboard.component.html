@@ -38,8 +38,11 @@
     </div>
     } @case ('thread-window') {
     <app-conversation-window [data$]="answers$"></app-conversation-window>
+    } @case ('new-message-view') {
+    <app-conversation-window></app-conversation-window>
     } }
   </div>
+  }
 </section>
 
 @if((screenSize$|async) === 'web') {

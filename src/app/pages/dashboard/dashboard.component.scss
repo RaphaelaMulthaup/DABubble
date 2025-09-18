@@ -4,11 +4,10 @@
   align-items: center;
   justify-content: space-between;
   overflow: hidden;
-  &.new-message-view-mobile{
+  &.new-message-view-mobile {
     background-color: white;
   }
 }
-
 
 .disabled {
   pointer-events: none;
@@ -30,7 +29,7 @@ app-header {
   background-color: transparent;
 }
 
-.below-from-header-searchbar{
+.below-from-header-searchbar {
   width: 100%;
   height: calc(100vh - 205px);
 }

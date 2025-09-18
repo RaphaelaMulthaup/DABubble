@@ -6,6 +6,8 @@ import {
   inject,
   OnInit,
   Output,
+  ViewChild,
+  ElementRef,
 } from '@angular/core';
 import { HeaderOverlayComponent } from '../../shared/components/header-overlay/header-overlay.component';
 import { ChannelInterface } from '../../shared/models/channel.interface';
@@ -24,13 +26,18 @@ import { UserListItemToChannelComponent } from '../../shared/components/user-lis
   selector: 'app-add-member-to-channel',
   imports: [HeaderOverlayComponent, CommonModule, ReactiveFormsModule],
   templateUrl: './add-member-to-channel.component.html', // Path to the HTML template
-  styleUrl: './add-member-to-channel.component.scss',  // Path to the styling file
+  styleUrls: ['./add-member-to-channel.component.scss'],  // Path to the styling file
 })
 export class AddMemberToChannelComponent {
   @Input() channelDetails$?: Observable<ChannelInterface | undefined>; // Observable to hold channel details
+  @Input() onBottom:boolean = false;
   @Output() overlayRef!: OverlayRef; // Overlay reference to manage the overlay's lifecycle
   ListWithMember: UserInterface[] = []; // List of users to be added to the channel
   overlay: string = ''; // String used to manage overlay state
+  private resultsOverlayRef?: OverlayRef; // Here save the overlay ref to close if results are null
+
+      @ViewChild('addMemberSearchBar', { static: false })
+  addMemberSearchBar!: ElementRef<HTMLElement>;
 
   // Reactive form control for the search input
   searchControl = new FormControl<string>('', { nonNullable: true });
@@ -67,7 +74,10 @@ export class AddMemberToChannelComponent {
     effect(() => {
       const r = this.results();
       if (r.length > 0) {
-        this.openAddMembersToChannel(new MouseEvent('click'));
+        this.openAddMembersToChannel();
+      }else if (this.resultsOverlayRef) {
+        this.overlayService.closeOne(this.resultsOverlayRef);
+        this.resultsOverlayRef = undefined;
       }
     });
 
@@ -92,6 +102,8 @@ export class AddMemberToChannelComponent {
     this.overlayService.clearUsers();
   }
 
+
+
   // Method to extract the first word of a user's name
   getFirstWord(name: string): string {
     return name.split(' ')[0];
@@ -115,12 +127,12 @@ export class AddMemberToChannelComponent {
   }
 
   // Method to open the overlay for adding members to the channel
-  openAddMembersToChannel(event: MouseEvent) {
+  openAddMembersToChannel() {
     const overlay = this.overlayService.openComponent(
       UserListItemToChannelComponent, // Component to display users
-      'cdk-overlay-dark-backdrop', // Styling for the overlay backdrop
+      null, // Styling for the overlay backdrop
       {
-        origin: event.currentTarget as HTMLElement, // Positioning of the overlay relative to the event
+        origin: this.addMemberSearchBar.nativeElement, // Positioning of the overlay relative to the event
         originPosition: {
           originX: 'start',
           originY: 'bottom',
@@ -129,17 +141,22 @@ export class AddMemberToChannelComponent {
         },
         originPositionFallback: {
           originX: 'start',
-          originY: 'bottom',
+          originY: 'top',
           overlayX: 'start',
-          overlayY: 'top',
+          overlayY: 'bottom',
         },
       },
       {
         results: this.results, // Pass filtered search results to the overlay component
+        onBottom: this.onBottom
       }
     );
-
     if (!overlay) return; // If overlay is not created, return
     Object.assign(overlay.ref.instance, { overlayRef: overlay.overlayRef }); // Attach the overlay reference
+      this.resultsOverlayRef = overlay.overlayRef;
+      this.resultsOverlayRef.backdropClick().subscribe(() => {
+      this.overlayService.closeOne(this.resultsOverlayRef!);
+      this.resultsOverlayRef = undefined;
+    });
   }
 }

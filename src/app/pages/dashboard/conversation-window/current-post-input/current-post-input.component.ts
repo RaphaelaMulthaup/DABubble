@@ -59,11 +59,12 @@ export class CurrentPostInput implements OnInit, OnDestroy {
   @ViewChild('textareaThread') textareaThread!: ElementRef;
   @ViewChild('textareaConversation') textareaConversation!: ElementRef;
   searchResults: SearchResult[] = [];
+  searchChar: '@' | '#' | null = null;
+  searchText: string | null = null;
   emojis = EMOJIS;
   screenSize$!: Observable<ScreenSize>;
   @Input() conversationWindowState?: 'conversation' | 'thread';
   private destroy$ = new Subject<void>();
-  @ViewChild('textarea') postTextInput!: ElementRef;
 
   constructor(
     private authService: AuthService,
@@ -71,6 +72,7 @@ export class CurrentPostInput implements OnInit, OnDestroy {
     public overlayService: OverlayService,
     public postService: PostService,
     public searchService: SearchService,
+
     private route: ActivatedRoute,
     private conversationActiveRouterService: ConversationActiveRouterService
   ) {
@@ -196,7 +198,7 @@ export class CurrentPostInput implements OnInit, OnDestroy {
 
   /**
    * This function adds the chosen emoji to the input field as an image.
-   * 
+   *
    * @param emoji the emoji-object from the EMOJIS-array.
    */
   addEmoji(emoji: { token: string; src: string }) {
@@ -249,8 +251,8 @@ export class CurrentPostInput implements OnInit, OnDestroy {
    * - Calls PostService accordingly.
    * - Resets the form afterwards.
    */
-  onSubmit() {
-    const currentUserId: string | null = this.authService.currentUser?.uid ?? null;
+  submitPostInput() {
+    const currentUserId: string | null = this.authService.currentUser.uid;
     const postText = this.postService.htmlToText(
       this.postTextInput.nativeElement.innerHTML
     );
@@ -285,7 +287,7 @@ export class CurrentPostInput implements OnInit, OnDestroy {
 
   /**
    * Opens the search overlay with user/channel results.
-   * 
+   *
    * @param results the search results that should be displayed.
    */
   openSearchOverlay(results: SearchResult[]) {
