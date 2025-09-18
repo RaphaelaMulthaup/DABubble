@@ -8,7 +8,7 @@ import {
 import { PostInterface } from '../../../../../shared/models/post.interface';
 import { AuthService } from '../../../../../services/auth.service';
 import { UserService } from '../../../../../services/user.service';
-import { map, of, Subject, take, takeUntil } from 'rxjs';
+import { firstValueFrom, map, of, Subject, take, takeUntil } from 'rxjs';
 import { Timestamp } from '@angular/fire/firestore';
 import { CommonModule } from '@angular/common';
 import { OverlayService } from '../../../../../services/overlay.service';
@@ -59,7 +59,7 @@ export class DisplayedPostComponent {
     public mobileService: MobileService
   ) {}
 
-  ngOnChanges() {
+  async ngOnChanges() {
     this.conversationActiveRouterService
       .getParams$(this.route)
       .pipe(takeUntil(this.destroy$))
@@ -82,8 +82,8 @@ export class DisplayedPostComponent {
     );
 
     if (!this.post) return;
-    this.senderIsCurrentUser =
-      this.post.senderId === this.authService.currentUser.uid;
+    const user = await firstValueFrom(this.authService.currentUser$);
+    this.senderIsCurrentUser = this.post.senderId === user?.uid;
     const user$ = this.userService.getUserById(this.post.senderId);
     this.senderName$ = user$.pipe(map((u) => u?.name ?? ''));
     this.senderPhotoUrl$ = user$.pipe(map((u) => u?.photoUrl ?? ''));
@@ -170,7 +170,7 @@ export class DisplayedPostComponent {
 
   /**
    * This functions opens the reacted-users-overlay.
-   * 
+   *
    * @param event the user-interaction with an object.
    * @param reaction the reaction, that is hovered over.
    */
@@ -200,7 +200,7 @@ export class DisplayedPostComponent {
   /**
    * This functions opens the post-interaction-overlay.
    * Fist it sets postClicked to true. It subscribes the overlays afterClosed$ Observable and sets postClicked to false, as the overlay closes.
-   * 
+   *
    * @param event the user-interaction with an object.
    */
   openPostInteractionOverlay(event: MouseEvent) {
@@ -241,8 +241,8 @@ export class DisplayedPostComponent {
    *
    *  @param emoji - the image-path for the chosen emoji.
    */
-  toggleExistingReaction(emoji: { token: string; src: string;}) {
-    console.log(emoji)
+  toggleExistingReaction(emoji: { token: string; src: string }) {
+    console.log(emoji);
     this.postService.toggleReaction(
       '/' + this.currentConversationType + 's/' + this.currentConversationId,
       'messages',

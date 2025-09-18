@@ -52,7 +52,10 @@ export class EditChannelComponent {
     public channelService: ChannelsService,
     public overlayService: OverlayService
   ) {
-    this.currentUser = this.authService.currentUser.uid;
+    let currentUser = this.authService.currentUser?.uid ?? null;
+    if (currentUser) {
+      this.currentUser = currentUser;
+    }
     this.channelDetails$ = this.overlayService.overlayInput.pipe(
       switchMap((data) => data?.channel ?? of(null)),
       filter((channel): channel is ChannelInterface => !!channel)

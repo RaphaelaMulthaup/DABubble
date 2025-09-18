@@ -101,7 +101,7 @@ export class PostService {
     postId: string,
     emoji: { token: string; src: string }
   ) {
-    let userId = this.authService.currentUser.uid;
+    let userId = this.authService.currentUser?.uid ?? null;
     const reactionRef = doc(
       this.firestore,
       `${parentPath}/${subcollectionName}/${postId}/reactions/${emoji.token}`
@@ -113,7 +113,7 @@ export class PostService {
       const data = reactionSnap.data();
       const users: string[] = data['users'] || [];
 
-      if (users.includes(userId)) {
+      if (userId && users.includes(userId)) {
         // User already reacted → remove their reaction
         await updateDoc(reactionRef, {
           users: arrayRemove(userId),

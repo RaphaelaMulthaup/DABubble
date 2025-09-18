@@ -53,7 +53,7 @@ export class UserListItemComponent {
     public mobileService: MobileService // Injecting MobileService for handling mobile-specific state
   ) {
     // Initialize currentUserId with the logged-in user's ID from AuthService
-    this.currentUserId = this.authService.currentUser.uid;
+    this.currentUserId = this.authService.currentUser?.uid ?? null;
   }
 
   /**

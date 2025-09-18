@@ -14,6 +14,7 @@ import {
   takeUntil,
   Subject,
   shareReplay,
+  firstValueFrom,
 } from 'rxjs';
 import { UserInterface } from '../../../../shared/models/user.interface';
 import { UserListItemComponent } from '../../../../shared/components/user-list-item/user-list-item.component';
@@ -30,6 +31,7 @@ export class ContactsListComponent implements OnInit {
   contacts$: Observable<UserInterface[]> = of([]); // Observable holding list of contacts
   directMessagesVisible = true; // UI flag for showing/hiding direct messages
   currentUser$!: Observable<UserInterface | null>; // Observable of the current logged-in user
+  currentUser!: UserInterface; // hier speichern wir den User
   mobileDashboardState!: WritableSignal<MobileDashboardState>; // Signal to track mobile dashboard state
 
   constructor(
@@ -45,7 +47,11 @@ export class ContactsListComponent implements OnInit {
   }
 
   /*** Initialize contacts observable on component init ***/
-  ngOnInit(): void {
+  async ngOnInit() {
+    let currentUser = await firstValueFrom(this.authService.currentUser$);
+    if (currentUser) {
+      this.currentUser = currentUser;
+    }
     this.contacts$ = this.authService.currentUser$.pipe(
       filter((user): user is UserInterface => !!user), // Only proceed if user exists
       switchMap((user) =>
