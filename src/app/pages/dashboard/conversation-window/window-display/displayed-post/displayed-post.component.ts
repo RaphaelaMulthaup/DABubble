@@ -66,6 +66,7 @@ export class DisplayedPostComponent {
   screenSize$!: Observable<ScreenSize>;
   @Input() conversationWindowState?: 'conversation' | 'thread';
   private destroy$ = new Subject<void>();
+  chatActiveRouterService: any;
 
   constructor(
     private authService: AuthService,

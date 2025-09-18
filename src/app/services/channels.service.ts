@@ -193,4 +193,12 @@ export class ChannelsService {
     const channelDocRef = doc(this.firestore, `channels/${channelId}`);
     await updateDoc(channelDocRef, { description: newValue });
   }
+
+  checkNameTacken(name: string): Observable<boolean> {
+    let channelRef = collection(this.firestore, 'channels');
+    let q = query(channelRef, where('name', '==', name));
+    return from(getDocs(q)).pipe(
+      map((snapshot) => snapshot.empty)
+    );
+  }
 }

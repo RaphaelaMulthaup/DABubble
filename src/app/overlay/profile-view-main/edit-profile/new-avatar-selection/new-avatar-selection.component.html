@@ -19,6 +19,7 @@
     <div class="avatar-list flex items-center place-content-between w-full">
       @for (img of avatarOptions; track $index) {
       <img
+        class="avatar-img"
         (click)="selectAvatar($index + 1)"
         src="{{ img }}"
         alt="avatar option"
@@ -27,12 +28,11 @@
     </div>
   </div>
   <div class="btn-area flex items-center justify-between w-full">
-    <button
-      class="btn-secondary"
-      (click)="overlayService.closeOne(this.overlayRef)"
-    >
+    <button class="btn-secondary" (click)="overlayService.closeOne(this.overlayRef)">
       Abbrechen
     </button>
-    <button class="btn-primary" (click)="saveAvatar()">Speichern</button>
+    <button class="btn-primary save" (click)="saveAvatar()">
+      Speichern
+    </button>
   </div>
 </div>

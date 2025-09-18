@@ -18,6 +18,7 @@ import { ProfileViewMainComponent } from '../../../overlay/profile-view-main/pro
 import { OverlayService } from '../../../services/overlay.service';
 import { ScreenSize } from '../../../shared/types/screen-size.type';
 import { ScreenService } from '../../../services/screen.service';
+import { SettingsComponent } from '../../../overlay/settings/settings.component';
 
 @Component({
   selector: 'app-header-dashboard',
@@ -25,6 +26,7 @@ import { ScreenService } from '../../../services/screen.service';
     AsyncPipe,
     SearchBarComponent,
     ProfileViewMainComponent,
+    SettingsComponent,
     CommonModule,
   ],
   templateUrl: './header-dashboard.component.html',
@@ -57,9 +59,9 @@ export class HeaderDashboardComponent {
   /**
    * Opens a profile overlay using the OverlayService when the profile is clicked.
    */
-  showProfile() {
+  showSettings() {
     this.overlayService.openComponent(
-      ProfileViewMainComponent, // The component to be displayed in the overlay.
+      SettingsComponent, // The component to be displayed in the overlay.
       'cdk-overlay-dark-backdrop', // Backdrop style for the overlay.
       { globalPosition: 'center' } // Position of the overlay (centered globally).
     );

@@ -10,6 +10,10 @@
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
     padding: 38px;
+
+    @include respond-to(xs) {
+        width: 90dvw;
+    }
 }
 
 .img-area{
@@ -31,16 +35,19 @@
     margin: 0px 0px 0px 20px;
 }
 
+.btn-area{
+  @include respond-to(xxs) {
+    flex-direction: column-reverse;
+  }
+
+  .save{
+    margin: 0px 0px 12px 0px;
+  }
+}
+
 .close {
   background-image: url("./../../../../assets/img/close.svg");
   &:hover {
     background-image: url("./../../../../assets/img/close-hover.svg");
-  }
-}
-
-@media screen and (max-width: 525px) {
-
-  .edit-profile-main{
-    width: 100vw;
   }
 }

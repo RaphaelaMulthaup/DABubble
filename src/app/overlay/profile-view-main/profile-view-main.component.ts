@@ -21,6 +21,7 @@ import { OverlayRef } from '@angular/cdk/overlay';
 })
 export class ProfileViewMainComponent {
   user$: Observable<UserInterface | null>;
+  overlayRef!: OverlayRef;
 
   constructor(
     public overlayService: OverlayService,

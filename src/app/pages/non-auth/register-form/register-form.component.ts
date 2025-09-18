@@ -11,6 +11,7 @@ import {
 import { AuthState } from '../../../shared/types/auth-state.type';
 import { UserService } from '../../../services/user.service';
 import { UserInterface } from '../../../shared/models/user.interface';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-register-form',
@@ -27,7 +28,8 @@ export class RegisterFormComponent {
 
   constructor(
     private authService: AuthService,
-    private userService: UserService
+    private userService: UserService,
+    private http: HttpClient
   ) {
     this.registerForm = new FormGroup({
       displayName: new FormControl(
@@ -86,5 +88,17 @@ export class RegisterFormComponent {
     this.authService.userToRegister.password = thisForm.password;
     this.authService.userToRegister.policyAccepted = true;
     this.changeAuthState.emit('registration-avatar');
+  }
+
+  registerUser() {
+    this.authService.register().subscribe(() => {
+      const user = this.authService.currentUser;
+      const email = user.email;
+      const name = this.registerForm.get('displayName')?.value;
+
+      this.http.post('src/app/sendMail.php', { email, name }).subscribe(response => {
+        console.log('Willkommensmail gesendet', response);
+      });
+    });
   }
 }

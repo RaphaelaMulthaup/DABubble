@@ -30,5 +30,20 @@
     }
 }
 
+.nameAndError{
+    //height: 88px;
+}
+
+.error-massage {
+    position: relative;
+    color: red;
+    height: 16px;
+    padding-top: 4px;
+    padding-left: 12px;
+    font-size: 16px;
+    color: var(--color-pink);
+    line-height: 1;
+}
+
 
 

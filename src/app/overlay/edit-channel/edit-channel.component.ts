@@ -83,8 +83,18 @@ export class EditChannelComponent {
 
   editName(isActive: boolean) {
     this.editChannelName = isActive;
-}
+    this.changeHightOnFocus();
+  }
+
   editDescription(isActive: boolean) {
     this.editChannelDescription= isActive;
-}
+  }
+
+  /**
+   * Changes hight on focus and creates enough space for inputfield and errer-message.
+   */
+  changeHightOnFocus() {
+    let nameAndError = document.querySelector(".nameAndError");
+    nameAndError?.classList.add("nameAndErrorEdit");
+  }
 }

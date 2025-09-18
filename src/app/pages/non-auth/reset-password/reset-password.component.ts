@@ -69,18 +69,6 @@ export class ResetPasswordComponent implements OnInit{
     })
   }
 
- /**
-  * Fetch Email and UserId
-  */
-  // async fetchUserEmail() {
-  //   const usersRef = doc(this.firestore, 'users', this.uid);
-  //   const userSnap = await getDoc(usersRef);
-  //     if (userSnap.exists()) {
-  //       const userData = userSnap.data();
-  //       this.email = userData['email'];
-  //     }
-  // }
-
   onSubmit() {
     this.checkPasswords();
 

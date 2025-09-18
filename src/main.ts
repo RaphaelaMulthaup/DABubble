@@ -7,6 +7,8 @@ import { provideAuth, getAuth } from '@angular/fire/auth';
 
 import { provideRouter } from '@angular/router';
 import { routes } from './app/app.routes';
+import { importProvidersFrom } from '@angular/core';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 // Bootstraps the Angular application with the root component
 bootstrapApplication(AppComponent, {
@@ -24,6 +26,7 @@ bootstrapApplication(AppComponent, {
     provideAuth(() => getAuth()),
 
     // Add additional providers here if needed
+    importProvidersFrom(HttpClientModule),
   ]
 })
 // Catches and logs any errors during application bootstrap

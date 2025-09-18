@@ -6,10 +6,19 @@ header {
   padding: 75px;
   padding-bottom: 0;
 
+  @include respond-to(xs) {
+    justify-content: center !important;
+  }
+
   .logo-final {
     height: 70px;
     width: 241px;
     visibility: hidden;
+
+    @include respond-to(xxxs) {
+      height: 56px !important;
+      width: 164px !important;
+    }
   }
 
   .showLogo {

@@ -46,7 +46,7 @@ export class IntroComponent implements OnInit {
 
        setTimeout(() => {
         animatName?.classList.add("show");
-       }, 1000);
+       }, 1700);
   }
 
   /**
