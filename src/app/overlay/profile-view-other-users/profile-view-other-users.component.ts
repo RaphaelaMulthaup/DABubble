@@ -1,4 +1,4 @@
-import { AsyncPipe } from '@angular/common';
+import { AsyncPipe, CommonModule } from '@angular/common';
 import { Component, inject, Input } from '@angular/core';
 import { User } from '@angular/fire/auth';
 import { combineLatest, firstValueFrom, Observable } from 'rxjs';
@@ -19,7 +19,7 @@ import { HeaderOverlayComponent } from '../../shared/components/header-overlay/h
 
 @Component({
   selector: 'app-profile-view-other-users',
-  imports: [AsyncPipe, HeaderOverlayComponent],
+  imports: [AsyncPipe, HeaderOverlayComponent, CommonModule],
   templateUrl: './profile-view-other-users.component.html',
   styleUrl: './profile-view-other-users.component.scss',
 })
