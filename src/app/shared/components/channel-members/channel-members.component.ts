@@ -13,6 +13,7 @@ import { OverlayRef } from '@angular/cdk/overlay';
 import { ScreenSize } from '../../types/screen-size.type';
 import { ScreenService } from '../../../services/screen.service';
 
+
 @Component({
   selector: 'app-channel-members',
   imports: [CommonModule, UserListItemComponent, AddMemberToChannelComponent],
@@ -36,7 +37,7 @@ export class ChannelMembersComponent implements OnDestroy, OnInit {
   constructor(
     public screenService: ScreenService,
     private mobileService: MobileService,
-    private userService: UserService,
+    private userService: UserService, 
     private overlayService: OverlayService
   ) {
     this.screenSize$ = this.screenService.screenSize$;
