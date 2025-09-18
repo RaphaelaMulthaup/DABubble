@@ -13,4 +13,5 @@ export class HeaderOverlayComponent {
 
   @Input() overlayHeadline: string = '';
   @Input() overlayRef!: OverlayRef;
+  @Input() isChannelHeader:boolean = false;
 }

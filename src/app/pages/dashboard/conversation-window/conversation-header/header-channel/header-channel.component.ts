@@ -37,7 +37,7 @@ export class HeaderChannelComponent {
     private conversationActiveRouterService: ConversationActiveRouterService,
     private route: ActivatedRoute,
     private channelService: ChannelsService,
-    private mobileService: MobileService
+    private mobileService: MobileService,
   ) {
     this.screenSize$ = this.screenService.screenSize$;
   }
@@ -53,11 +53,20 @@ export class HeaderChannelComponent {
       );
   }
 
-  openEditChannelFormOverlay() {
+  openEditChannelFormOverlay(event: MouseEvent) {
     this.overlayService.openComponent(
       EditChannelComponent,
       'cdk-overlay-dark-backdrop',
-      { globalPosition: 'center' },
+      {
+        origin: event.currentTarget as HTMLElement,
+        originPosition: {
+          originX: 'start',
+          originY: 'bottom',
+          overlayX: 'start',
+          overlayY: 'top',
+        },
+      },
+
       { channelDetails$: this.channelDetails$ as Observable<ChannelInterface> }
     );
   }

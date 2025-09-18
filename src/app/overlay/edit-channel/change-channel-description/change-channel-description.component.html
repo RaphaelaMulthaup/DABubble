@@ -1,7 +1,7 @@
 <div class="flex flex-col w-full gap-[20px]">
    <div class="flex w-full flex-col gap-[20px]">
         <div class="flex w-full items-center justify-between">
-            <h4>Channel description</h4>
+            <h4>Beschreibung</h4>
             @if(isEditActive){
                 @if((screenSize$|async) === 'handset'){
                     <button class="btn" (click)="saveDescription(descriptionInput!)"><span class="save"></span></button>

@@ -1,13 +1,12 @@
-import { Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Observable, Subject, takeUntil } from 'rxjs';
+import { from, Observable, Subject, takeUntil } from 'rxjs';
 import { UserInterface } from '../../models/user.interface';
 import { UserService } from '../../../services/user.service';
 import { ChannelInterface } from '../../models/channel.interface';
 import { UserListItemComponent } from '../user-list-item/user-list-item.component';
 import { OverlayService } from '../../../services/overlay.service';
 import { AddMemberToChannelComponent } from '../../../overlay/add-member-to-channel/add-member-to-channel.component';
-import { Subscription } from 'rxjs';
 import { MobileService } from '../../../services/mobile.service';
 import { OverlayRef } from '@angular/cdk/overlay';
 import { ScreenSize } from '../../types/screen-size.type';

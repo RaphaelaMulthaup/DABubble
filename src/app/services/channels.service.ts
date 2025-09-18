@@ -16,7 +16,7 @@ import {
   arrayUnion,
   deleteDoc,
 } from '@angular/fire/firestore';
-import { from, map, Observable, of, switchMap, tap } from 'rxjs';
+import { from, map, Observable, of, shareReplay, switchMap, tap } from 'rxjs';
 import { AuthService } from './auth.service';
 import { ChannelInterface } from '../shared/models/channel.interface';
 import { Router } from '@angular/router';
@@ -35,6 +35,11 @@ export class ChannelsService {
   //   ) as Observable<ChannelInterface[]>;
   // }
 
+  private channelCache = new Map<
+    string,
+    Observable<ChannelInterface | undefined>
+  >();
+
   constructor(
     private firestore: Firestore,
     private authService: AuthService,
@@ -46,10 +51,18 @@ export class ChannelsService {
   getCurrentChannel(
     channelId: string
   ): Observable<ChannelInterface | undefined> {
+    if (this.channelCache.has(channelId)) {
+      return this.channelCache.get(channelId)!;
+    }
+
     const channelRef = doc(this.firestore, `channels/${channelId}`);
-    return docData(channelRef, { idField: 'id' }) as Observable<
-      ChannelInterface | undefined
-    >;
+    const channel$ = docData(channelRef, { idField: 'id' }).pipe(
+      map((doc) => doc as ChannelInterface | undefined),
+      shareReplay({ bufferSize: 1, refCount: true })
+    );
+
+    this.channelCache.set(channelId, channel$);
+    return channel$;
   }
 
   /**
@@ -109,9 +122,13 @@ export class ChannelsService {
   deleteChannel(channelId: string): Observable<void> {
     const channelDocRef = doc(this.firestore, `channels/${channelId}`);
     const promise = deleteDoc(channelDocRef);
+
+    this.channelCache.delete(channelId);
+
     this.router.navigate(['/dashboard']);
     this.mobileService.setMobileDashboardState('sidenav');
     this.overlayService.closeAll();
+
     return from(promise);
   }
 
@@ -136,7 +153,7 @@ export class ChannelsService {
     const channelDocRef = doc(this.firestore, `channels/${channelId}`);
     await updateDoc(channelDocRef, { memberIds: arrayRemove(currentUserId) });
     this.overlayService.closeAll();
-        this.mobileService.setMobileDashboardState('sidenav');
+    this.mobileService.setMobileDashboardState('sidenav');
     this.router.navigate(['/dashboard']);
   }
 
@@ -148,9 +165,15 @@ export class ChannelsService {
   addChannel(channelId: string): Observable<void> {
     const channelDocRef = doc(this.firestore, `channels/${channelId}`);
     const promise = updateDoc(channelDocRef, { deleted: false });
+
     return from(promise);
   }
 
+  /**
+   * Add a new member to channel
+   * @param channelId ID of the channel where a new member is added
+   * @param newMembers: string[] with membersIds
+   */
   async addMemberToChannel(channelId: string, newMembers: string[]) {
     const channelDocRef = doc(this.firestore, `channels/${channelId}`);
     await updateDoc(channelDocRef, { memberIds: arrayUnion(...newMembers) });

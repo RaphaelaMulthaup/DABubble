@@ -1,14 +1,14 @@
-<div [ngClass]=" onBottom ? 'overlayBottom' : 'overlay-left' "  class="container">
-    <ul>
-        @for (user of results(); track $index) {
-        <li class="list-item user-list-item" (click)="addMemberToArray(user)">
-            <img class="profil-img" src="{{ user.photoUrl }}" alt="Profilbild" />
-            <div>
-                <span>
-                    {{ user.name }}
-                </span>
-            </div>
-        </li>
-        }
-    </ul>
+<div [ngClass]="onBottom ? 'overlayBottom' : 'overlay-left'" class="container">
+  <ul>
+    @for (user of results(); track $index) {
+    <li class="list-item user-list-item" (click)="addMemberToArray(user)">
+      <img class="profil-img" src="{{ user.photoUrl }}" alt="Profilbild" />
+      <div>
+        <span>
+          {{ user.name }}
+        </span>
+      </div>
+    </li>
+    }
+  </ul>
 </div>

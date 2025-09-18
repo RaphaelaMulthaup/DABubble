@@ -1,6 +1,9 @@
 <div class="flex  max-w-[832px]" [ngClass]="(screenSize$|async) === 'handset' ? 'mobile-overlay' : 'overlay-left'" >
-    <div class="flex vwitdh flex-col">
-        <app-header-overlay [overlayHeadline]="channelName || ''" />
+    <div class="flex vwitdh flex-col relative">
+      <div class="flex w-full justify-between min-h-[90px] max-h-[90px] pb-[10px] pl-[16px] pr-[16px]" [class.header-shadow]="(screenSize$|async) === 'handset'">
+                <app-header-overlay class="flex items-end w-full" [overlayHeadline]="channelName || ''"  [isChannelHeader]="true"/>
+      </div>
+
         <div class="flex flex-col w-full py-[16px] px-[20px] gap-[20px] items-center">
             @if(channelDetails$ | async; as channel){
             <app-change-channel-name class="nameAndError container w-full" [class.container-boarder]="!editChannelName" [channelId]="channelId"

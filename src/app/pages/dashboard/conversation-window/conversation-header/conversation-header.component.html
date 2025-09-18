@@ -1,7 +1,3 @@
-<!-- @if(messageToReplyId){
-<button (click)="redirectTo(conversationType, conversationId)">x</button>
-}  -->
-
 @if ((screenSize$ | async) === 'web') {
     @switch (conversationWindowState) {
         @case ('conversation') {
