@@ -3,6 +3,8 @@
 .current-post-input {
   border-radius: 20px;
   width: 100%;
+  max-width: -webkit-fill-available;
+  margin: 4px 16px 16px 16px;
   padding: 20px;
   @include dFlex($g: 15px);
   flex-direction: column;
@@ -21,56 +23,64 @@
   &:focus-within {
     border: 1px solid var(--color-purple-medium);
   }
-}
 
-.textarea-wrapper {
-  width: 100%;
-
-  .post-text-input {
+  .textarea-wrapper {
     width: 100%;
-    font-size: 18px;
-    resize: none;
-    overflow: auto;
-    scrollbar-width: none;
-    &::-webkit-scrollbar {
-      width: 0;
-      height: 0;
+
+    .post-text-input {
+      width: 100%;
+      font-size: 18px;
+      resize: none;
+      overflow: auto;
+      scrollbar-width: none;
+      &::-webkit-scrollbar {
+        width: 0;
+        height: 0;
+      }
+      &::placeholder {
+        color: var(--color-gray);
+      }
+      &:focus {
+        outline: none; /* entfernt den blauen Rahmen */
+        box-shadow: none; /* entfernt Schatten, falls Browser ihn setzen */
+        border-color: #ccc;
+      }
     }
-    &::placeholder {
-      color: var(--color-gray);
+  }
+
+  .buttons {
+    width: 100%;
+    @include dFlex($jc: space-between);
+
+    >div, >button {
+      height: 40px;
     }
-    &:focus {
-      outline: none; /* entfernt den blauen Rahmen */
-      box-shadow: none; /* entfernt Schatten, falls Browser ihn setzen */
-      border-color: #ccc;
+
+    .add-emoji {
+      background-image: url("./../../../../../assets/img/emoji-gray.svg");
+      &:hover {
+        background-image: url("./../../../../../assets/img/emoji-purple.svg") !important;
+      }
+    }
+
+    .add-user-or-channel {
+      background-image: url("./../../../../../assets/img/alternate-email-gray.svg");
+      &:hover {
+        background-image: url("./../../../../../assets/img/alternate-email-purple.svg") !important;
+      }
+    }
+
+    .send {
+      width: 40px;
+      background-image: url("./../../../../../assets/img/send-icon.svg");
+      &:hover {
+        background-image: url("./../../../../../assets/img/send-icon-hover.svg");
+      }
     }
   }
 }
 
-.buttons {
-  width: 100%;
-  @include dFlex($jc: space-between);
-}
-
-.add-emoji {
-  background-image: url("./../../../../../assets/img/emoji-gray.svg");
-  &:hover {
-    background-image: url("./../../../../../assets/img/emoji-purple.svg") !important;
-  }
-}
-
-.add-user-or-channel {
-  background-image: url("./../../../../../assets/img/alternate-email-gray.svg");
-  &:hover {
-    background-image: url("./../../../../../assets/img/alternate-email-purple.svg") !important;
-  }
-}
-
-.send {
-  height: 40px;
-  width: 40px;
-  background-image: url("./../../../../../assets/img/send-icon.svg");
-  &:hover {
-    background-image: url("./../../../../../assets/img/send-icon-hover.svg");
-  }
+.web-current-post-input {
+  height: 145px;
+  margin: 8px 24px 24px 24px;
 }

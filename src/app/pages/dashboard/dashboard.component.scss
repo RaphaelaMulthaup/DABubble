@@ -39,6 +39,7 @@ app-header {
 }
 
 .dashboard-web-components {
+  height: calc(100vh - 115px);
   padding: 0 20px;
   gap: 20px;
   background-color: var(--color-purple-white);

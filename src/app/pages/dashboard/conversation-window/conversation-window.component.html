@@ -2,8 +2,8 @@
   class="conversation-window flex flex-col"
   [style.height]="
     (screenSize$ | async) === 'web'
-      ? 'calc(100vh - 147px)'
-      : 'calc(100vh - 96px)'
+      ? '100%'
+      : 'calc(100vh - 82px)'
   "
 >
   <app-conversation-header [conversationWindowState]="conversationWindowState"></app-conversation-header>

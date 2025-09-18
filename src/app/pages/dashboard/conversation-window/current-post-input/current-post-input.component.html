@@ -1,4 +1,4 @@
-<form class="current-post-input">
+<form class="current-post-input" [class.web-current-post-input]="((screenSize$|async)==='web')">
   <div class="textarea-wrapper">
     @if(conversationWindowState === 'conversation'){
     <div

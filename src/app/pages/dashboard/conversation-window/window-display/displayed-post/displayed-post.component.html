@@ -8,7 +8,7 @@
 >
   <div
     class="post flex w-full"
-    [class.clicked]="isThreadTheme || postClicked"
+    [class.clicked]="postClicked"
     [class.editing]="overlayService.editingPostId() === post.id"
     [class.web-editing]="
       overlayService.editingPostId() === post.id &&

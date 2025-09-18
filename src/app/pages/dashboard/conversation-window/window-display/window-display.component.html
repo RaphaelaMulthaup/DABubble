@@ -20,7 +20,8 @@
     </p>
     <div class="seperator"></div>
   </div>
-  } @if (postAnswered && $index === 0 && conversationWindowState === 'thread') {
+  } 
+  @if (postAnswered && $index === 0 && conversationWindowState === 'thread') {
   <app-displayed-post
     [post]="postAnswered"
     [conversationWindowState]="conversationWindowState"
