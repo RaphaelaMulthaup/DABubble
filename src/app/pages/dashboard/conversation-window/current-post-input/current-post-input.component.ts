@@ -330,7 +330,7 @@ export class CurrentPostInput implements OnInit, OnDestroy {
         .subscribe((user: UserInterface) => {
           const mark = this.getMarkTemplate(user.name, 'user');
           this.insertName(mark);
-          this.searchOverlayRef.close();
+          this.overlayService.closeOne(this.searchOverlayRef);
           this.searchOverlayRef = null;
         });
       this.searchOverlayRef.ref.instance.channelSelected
@@ -338,7 +338,7 @@ export class CurrentPostInput implements OnInit, OnDestroy {
         .subscribe((channel: ChannelInterface) => {
           const mark = this.getMarkTemplate(channel.name, 'channel');
           this.insertName(mark);
-          this.searchOverlayRef.close();
+          this.overlayService.closeOne(this.searchOverlayRef);
           this.searchOverlayRef = null;
         });
     }
