@@ -93,12 +93,16 @@ export class RegisterFormComponent {
   registerUser() {
     this.authService.register().subscribe(() => {
       const user = this.authService.currentUser;
-      const email = user.email;
-      const name = this.registerForm.get('displayName')?.value;
+      if (user) {
+        const email = user.email;
+        const name = this.registerForm.get('displayName')?.value;
 
-      this.http.post('src/app/sendMail.php', { email, name }).subscribe(response => {
-        console.log('Willkommensmail gesendet', response);
-      });
+        this.http
+          .post('src/app/sendMail.php', { email, name })
+          .subscribe((response) => {
+            console.log('Willkommensmail gesendet', response);
+          });
+      }
     });
   }
 }

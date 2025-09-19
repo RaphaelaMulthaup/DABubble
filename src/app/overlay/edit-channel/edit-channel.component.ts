@@ -29,15 +29,14 @@ import { ScreenSize } from '../../shared/types/screen-size.type';
   styleUrl: './edit-channel.component.scss',
 })
 export class EditChannelComponent {
-
   currentUser!: string;
   channelId?: string;
   channelName?: string;
   memberIds?: string[];
   createdById?: string;
   user$?: Observable<UserInterface>;
-  editChannelName:boolean = false;
-  editChannelDescription:boolean = false;
+  editChannelName: boolean = false;
+  editChannelDescription: boolean = false;
   screenSize$!: Observable<ScreenSize>;
 
   // CORECT: Inițializare corectă a observabilului
@@ -52,7 +51,10 @@ export class EditChannelComponent {
     public overlayService: OverlayService,
     public screenService: ScreenService
   ) {
-    this.currentUser = this.authService.currentUser.uid;
+    let currentUser = this.authService.currentUser?.uid ?? null;
+    if (currentUser) {
+      this.currentUser = currentUser;
+    }
     this.channelDetails$ = this.overlayService.overlayInput.pipe(
       switchMap((data) => data?.channel ?? of(null)),
       filter((channel): channel is ChannelInterface => !!channel)
@@ -87,14 +89,14 @@ export class EditChannelComponent {
   }
 
   editDescription(isActive: boolean) {
-    this.editChannelDescription= isActive;
+    this.editChannelDescription = isActive;
   }
 
   /**
    * Changes hight on focus and creates enough space for inputfield and errer-message.
    */
   changeHightOnFocus() {
-    let nameAndError = document.querySelector(".nameAndError");
-    nameAndError?.classList.add("nameAndErrorEdit");
+    let nameAndError = document.querySelector('.nameAndError');
+    nameAndError?.classList.add('nameAndErrorEdit');
   }
 }

@@ -19,8 +19,8 @@ import { ProfileViewMainComponent } from '../../../overlay/profile-view-main/pro
   ],
 })
 export class UserListItemComponent {
-  /** 
-   * Input property that receives a user object from the parent component. 
+  /**
+   * Input property that receives a user object from the parent component.
    * This is used to display information about a specific user.
    */
   @Input() user!: UserInterface;
@@ -50,16 +50,16 @@ export class UserListItemComponent {
     private authService: AuthService, // Injecting AuthService to get the current user
     private chatService: ChatService, // Injecting ChatService to handle chat-related functions
     private overlayService: OverlayService, // Injecting OverlayService to manage overlays like the profile view
-    public mobileService: MobileService, // Injecting MobileService for handling mobile-specific state
+    public mobileService: MobileService // Injecting MobileService for handling mobile-specific state
   ) {
     // Initialize currentUserId with the logged-in user's ID from AuthService
-    this.currentUserId = this.authService.currentUser.uid;
+    this.currentUserId = this.authService.currentUser?.uid ?? null;
   }
 
-  /** 
+  /**
    * Finds a chat between the current user and a selected user,
    * then navigates to it if it exists.
-   * 
+   *
    * This function checks if the user is logged in and uses the ChatService to navigate to the chat.
    */
   async pickOutAndNavigateToChat() {
@@ -68,7 +68,7 @@ export class UserListItemComponent {
     this.chatService.navigateToChat(this.currentUserId, this.user);
   }
 
-  /** 
+  /**
    * Decides whether to navigate to the chat or show the profile overlay based on certain conditions.
    * It checks if the current user is logged in and whether specific flags are set.
    */
@@ -86,12 +86,12 @@ export class UserListItemComponent {
     }
   }
 
-  /** 
-   * Opens the profile overlay for the selected user. 
+  /**
+   * Opens the profile overlay for the selected user.
    * This is done using the OverlayService, and the user information is passed as an observable.
    */
   openProfileOverlay() {
-if (this.user.uid === this.currentUserId) {
+    if (this.user.uid === this.currentUserId) {
       this.overlayService.openComponent(
         ProfileViewMainComponent, // The component to be displayed in the overlay.
         'cdk-overlay-dark-backdrop', // Backdrop style for the overlay.
@@ -104,5 +104,6 @@ if (this.user.uid === this.currentUserId) {
         { globalPosition: 'center' }, // Position the overlay in the center of the screen
         { user$: of(this.user) } // Pass the selected user as an observable to the overlay
       );
-    }  }
+    }
+  }
 }

@@ -42,7 +42,7 @@ export class PostInteractionOverlayComponent implements OnInit {
   ngOnInit() {
     if (!this.post) return;
     this.senderIsCurrentUser =
-      this.post.senderId === this.authService.currentUser.uid;
+      this.post.senderId === this.authService.currentUser?.uid;
   }
 
   /**
