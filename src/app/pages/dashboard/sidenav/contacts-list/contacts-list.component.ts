@@ -27,45 +27,29 @@ import { MobileDashboardState } from '../../../../shared/types/mobile-dashboard-
   styleUrls: ['./contacts-list.component.scss'],
 })
 export class ContactsListComponent implements OnInit {
-  // Holds the list of contacts as an observable
-  contacts$: Observable<UserInterface[]> = of([]);
-  // Controls visibility of direct messages section
-  directMessagesVisible = true;
-  currentUser!: UserInterface; // Stores the currently logged-in user
-  mobileDashboardState: WritableSignal<MobileDashboardState>;
-  private destroy$ = new Subject<void>(); // Subject used for cleanup during component destruction
-
+  contacts$: Observable<UserInterface[]> = of([]); // Observable holding list of contacts
+  directMessagesVisible = true; // UI flag for showing/hiding direct messages
+  currentUser$!: Observable<UserInterface | null>; // Observable of the current logged-in user
+  mobileDashboardState!: WritableSignal<MobileDashboardState>; // Signal to track mobile dashboard state
   constructor(
     private userService: UserService,
     private authService: AuthService,
     private chatService: ChatService,
     public mobileService: MobileService
   ) {
-    this.mobileDashboardState = this.mobileService.mobileDashboardState; // Injects mobile dashboard state service
+    // Subscribe to current user observable from AuthService
+    this.currentUser$ = this.authService.currentUser$;
+    // Initialize mobile dashboard state signal
+    this.mobileDashboardState = this.mobileService.mobileDashboardState;
   }
 
-  /***
-   * Lifecycle hook that runs once the component has been initialized.
-   * Subscribes to the authenticated user stream and loads the user's contacts.
-   */
+  /*** Initialize contacts observable on component init ***/
   ngOnInit(): void {
-    // Subscribe to the current user observable from AuthService
-    this.authService.currentUser$
-      .pipe(
-        takeUntil(this.destroy$), // Unsubscribes when the component is destroyed
-        filter((user): user is UserInterface => user !== null) // Ensures user is not null
-      )
-      .subscribe((user) => (this.currentUser = user)); // Sets currentUser when updated
-
-    // Load contacts based on the authenticated user's chats
     this.contacts$ = this.authService.currentUser$.pipe(
-      switchMap((user) => {
-        if (!user) {
-          return of([]); // If no user, return an empty array
-        }
-
-        // Fetch chat data for the current user
-        return this.chatService.getChatsForUser(user.uid).pipe(
+      filter((user): user is UserInterface => !!user), // Only proceed if user exists
+      switchMap((user) =>
+        this.chatService.getChatsForUser(user.uid).pipe(
+          // Get all chat objects for the current user
           map((chats) =>
             chats.map(
               (chat) => this.chatService.getOtherUserId(chat.id!, user.uid) // Get the ID of the other user in the chat
@@ -78,18 +62,11 @@ export class ContactsListComponent implements OnInit {
               contactIds.map((id) => this.userService.getUserById(id))
             );
           }),
-          map((users) =>
-            users.filter((u) => u && u.uid !== this.currentUser?.uid)
-          )
-        );
-      }),
-      shareReplay({ bufferSize: 1, refCount: true }) // Share the observable to avoid duplicate requests
+          // Remove current user from the contact list just in case
+          map((users) => users.filter((u) => u.uid !== user.uid))
+        )
+      ),
+      shareReplay({ bufferSize: 1, refCount: true }) // Cache latest contacts for new subscribers
     );
-  }
-
-  ngOnDestroy() {
-    // Cleanup logic: complete destroy subject to avoid memory leaks
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 }
