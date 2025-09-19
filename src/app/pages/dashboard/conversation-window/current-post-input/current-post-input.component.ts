@@ -181,20 +181,11 @@ export class CurrentPostInput implements OnInit, OnDestroy {
         this.searchService
           .search(of(this.searchChar!), { includeAllChannels: true })
           .pipe(take(1))
-          .search(of(this.searchChar!), { includeAllChannels: true })
-          .pipe(take(1))
           .subscribe((results) => {
             if (results.length === 0) return this.overlayService.closeAll();
             this.openSearchOverlay(results);
           });
       } else if (this.searchText.length > 1) {
-        this.searchService
-          .search(of(this.searchText))
-          .pipe(take(1))
-          .subscribe((results) => {
-            if (results.length === 0) return this.overlayService.closeAll();
-            this.openSearchOverlay(results);
-          });
         this.searchService
           .search(of(this.searchText))
           .pipe(take(1))
@@ -367,25 +358,10 @@ export class CurrentPostInput implements OnInit, OnDestroy {
     // Subscriptions für Auswahl
     if (this.searchOverlayRef) {
       this.searchOverlayRef.ref.instance.userSelected
-    // Subscriptions für Auswahl
-    if (this.searchOverlayRef) {
-      this.searchOverlayRef.ref.instance.userSelected
         ?.pipe(take(1))
         .subscribe((user: UserInterface) => {
           const mark = this.getMarkTemplate(user.name, 'user');
           this.insertName(mark);
-          this.overlayService.closeOne(this.searchOverlayRef);
-          this.searchOverlayRef = null;
-          this.overlayService.closeOne(this.searchOverlayRef);
-          this.searchOverlayRef = null;
-        });
-      this.searchOverlayRef.ref.instance.channelSelected
-        ?.pipe(take(1))
-        .subscribe((channel: ChannelInterface) => {
-          const mark = this.getMarkTemplate(channel.name, 'channel');
-          this.insertName(mark);
-          this.overlayService.closeOne(this.searchOverlayRef);
-          this.searchOverlayRef = null;
           this.overlayService.closeOne(this.searchOverlayRef);
           this.searchOverlayRef = null;
         });
