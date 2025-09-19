@@ -68,6 +68,7 @@ export class CurrentPostInput implements OnInit, OnDestroy {
   emojis = EMOJIS;
   screenSize$!: Observable<ScreenSize>;
   @Input() conversationWindowState?: 'conversation' | 'thread';
+  private savedRange: Range | null = null;
   private destroy$ = new Subject<void>();
 
   constructor(
@@ -177,6 +178,11 @@ export class CurrentPostInput implements OnInit, OnDestroy {
     }
 
     if (this.searchChar) {
+      const selection = window.getSelection();
+      if (selection && selection.rangeCount > 0) {
+        this.savedRange = selection.getRangeAt(0).cloneRange();
+      }
+
       if (this.searchText.length == 1) {
         this.searchService
           .search(of(this.searchChar!), { includeAllChannels: true })
@@ -237,7 +243,6 @@ export class CurrentPostInput implements OnInit, OnDestroy {
    * @param emoji the emoji-object from the EMOJIS-array.
    */
   addEmoji(emoji: { token: string; src: string }) {
-    this.postService.focusAtEndEditable(this.postTextInput);
     const selection = window.getSelection();
     if (!selection || !selection.rangeCount) return;
     const img = `&nbsp;<img src="${emoji.src}" alt="${emoji.token}" class='emoji'>&nbsp;`;
@@ -368,15 +373,19 @@ export class CurrentPostInput implements OnInit, OnDestroy {
    * @param mark the marked user- or channel name as a template.
    */
   insertName(mark: string) {
-    this.postService.focusAtEndEditable(this.postTextInput);
-    if (this.searchText) this.deleteAfterSearchChar(this.searchText.length);
     const selection = window.getSelection();
-    if (!selection || !selection.rangeCount) return;
+    if (!this.savedRange || !selection) return;
+    selection.removeAllRanges();
+    selection.addRange(this.savedRange);
+    const range = selection.getRangeAt(0);
+    range.collapse(false);
+
+    if (this.searchText) this.deleteAfterSearchChar(this.searchText.length);
     document.execCommand('insertHTML', false, mark);
-    this.postService.focusAtEndEditable(this.postTextInput);
     this.searchResults = [];
     this.searchChar = null;
     this.searchText = null;
+    this.savedRange = null;
   }
 
   /**

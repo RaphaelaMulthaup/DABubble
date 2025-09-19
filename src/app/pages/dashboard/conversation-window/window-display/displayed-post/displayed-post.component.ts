@@ -291,7 +291,7 @@ export class DisplayedPostComponent {
         currentConversationId: this.currentConversationId,
         post: this.post,
         parentMessageId: this.parentMessageId,
-        conversationWindowState: this.conversationWindowState
+        conversationWindowState: this.conversationWindowState,
       }
     );
     overlay?.afterClosed$.pipe(take(1)).subscribe(() => {

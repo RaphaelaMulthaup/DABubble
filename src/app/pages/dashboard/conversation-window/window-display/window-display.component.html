@@ -4,7 +4,7 @@
     'messages-container-empty-view': (messages$ | async)?.length === 0
   }"
 >
-  @if ((messages$ | async); as messages) { @if (messages.length > 0) { @for
+  @if ((messages$ | async); as messages) { @for
   (message of messages; track $index) { @if (shouldShowDate($index)) {
   <div class="seperator-container flex flex-row place-items-center">
     <div class="seperator"></div>
@@ -20,16 +20,20 @@
     </p>
     <div class="seperator"></div>
   </div>
-  } @if (postAnswered && $index === 0 && conversationWindowState === 'thread') {
+  }
+  
+  @if (postAnswered && $index === 0 && conversationWindowState === 'thread') {
   <app-displayed-post
     [post]="postAnswered"
     [conversationWindowState]="conversationWindowState"
   ></app-displayed-post>
+  @if ((messages$|async)!) {
   <div class="seperator-container flex flex-row place-items-center">
     <span>{{ (messages$ | async)!.length }} Antworten</span>
     <div class="seperator"></div>
   </div>
-  }
+  } }
+  
   <app-displayed-post
     [post]="message"
     [id]="message.id"
@@ -42,5 +46,5 @@
   ></app-empty-chat-view>
   } } @case ('channel') {
   <app-empty-channel-view></app-empty-channel-view>
-  } } } } }
+  } } } }
 </section>
