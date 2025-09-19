@@ -67,8 +67,8 @@ export class ContactsListComponent implements OnInit {
         // Fetch chat data for the current user
         return this.chatService.getChatsForUser(user.uid).pipe(
           map((chats) =>
-            chats.map((chat) =>
-              this.chatService.getOtherUserId(chat.id!, user.uid) // Get the ID of the other user in the chat
+            chats.map(
+              (chat) => this.chatService.getOtherUserId(chat.id!, user.uid) // Get the ID of the other user in the chat
             )
           ),
           switchMap((contactIds) => {
@@ -78,7 +78,9 @@ export class ContactsListComponent implements OnInit {
               contactIds.map((id) => this.userService.getUserById(id))
             );
           }),
-          map((users) => users.filter((u) => u.uid !== this.currentUser.uid)) // Filter out the current user from contacts
+          map((users) =>
+            users.filter((u) => u && u.uid !== this.currentUser?.uid)
+          )
         );
       }),
       shareReplay({ bufferSize: 1, refCount: true }) // Share the observable to avoid duplicate requests
