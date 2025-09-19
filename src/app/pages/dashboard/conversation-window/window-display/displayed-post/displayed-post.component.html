@@ -43,6 +43,7 @@
         @if(senderIsCurrentUser && overlayService.editingPostId() === post.id) {
         <app-edit-displayed-post
           [post]="post"
+          [conversationWindowState]="conversationWindowState"
           (endEditingPost)="editingPost = false"
           (click)="$event.preventDefault()"
           class="w-full h-full"

@@ -34,7 +34,6 @@ export class HeaderThreadComponent {
     this.channelDetails$ = this.channelService.getCurrentChannel(
       this.conversationId
     );
-    console.log(this.channelDetails$);
   }
 
   redirectTo(conversationType: string, id: string) {

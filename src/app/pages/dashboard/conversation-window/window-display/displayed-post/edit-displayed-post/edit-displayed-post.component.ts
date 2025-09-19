@@ -25,6 +25,7 @@ import { EmojiPickerComponent } from '../../../../../../overlay/emoji-picker/emo
 })
 export class EditDisplayedPostComponent implements OnInit {
   @Input() post!: PostInterface;
+  @Input() conversationWindowState?: 'conversation' | 'thread';
   currentConversationType!: 'channel' | 'chat';
   currentConversationId!: string;
   messageId!: string;
@@ -60,11 +61,12 @@ export class EditDisplayedPostComponent implements OnInit {
     });
   }
 
-  ngAfterViewInit(){
+  ngAfterViewInit() {
     const textarea = this.postTextInput.nativeElement as HTMLElement;
     textarea.querySelectorAll('mark.mark').forEach((mark) => {
       mark.setAttribute('contenteditable', 'false');
     });
+    console.log(this.conversationWindowState)
   }
 
   ngOnDestroy() {
@@ -140,13 +142,22 @@ export class EditDisplayedPostComponent implements OnInit {
     if (postText.trim() == '')
       return this.postService.focusAtEndEditable(this.postTextInput);
 
-    this.postService.updatePost(
-      { text: postText },
-      this.currentConversationType,
-      this.currentConversationId,
-      this.messageId == null ? this.post.id! : this.messageId,
-      this.messageId == null ? '' : this.post.id!
-    );
+    if (this.conversationWindowState === 'conversation') {
+      this.postService.updatePost(
+        { text: postText },
+        this.currentConversationType,
+        this.currentConversationId,
+        this.post.id!
+      );
+    } else if (this.conversationWindowState === 'thread') {
+      this.postService.updatePost(
+        { text: postText },
+        this.currentConversationType,
+        this.currentConversationId,
+        this.messageId,
+        this.post.id!
+      );
+    }
     this.endEdit();
   }
 }
