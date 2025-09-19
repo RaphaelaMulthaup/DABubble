@@ -27,6 +27,8 @@ import { EmptyChatViewComponent } from './empty-chat-view/empty-chat-view.compon
 import { MobileDashboardState } from '../../../../shared/types/mobile-dashboard-state.type';
 import { MobileService } from '../../../../services/mobile.service';
 import { EmptyChannelViewComponent } from './empty-channel-view/empty-channel-view.component';
+import { ScreenSize } from '../../../../shared/types/screen-size.type';
+import { ScreenService } from '../../../../services/screen.service';
 
 @Component({
   selector: 'app-window-display', // Component selector used in parent templates
@@ -68,6 +70,7 @@ export class WindowDisplayComponent {
   @Input() conversationWindowState?: 'conversation' | 'thread';
   private pendingScrollTo?: string; // Stores a post ID to scroll to once available
   private destroy$ = new Subject<void>(); // Used to clean up subscriptions
+  screenSize$!: Observable<ScreenSize>;
 
   constructor(
     private el: ElementRef,
@@ -76,9 +79,11 @@ export class WindowDisplayComponent {
     public postService: PostService,
     private chatService: ChatService,
     public mobileService: MobileService,
+    public screenService: ScreenService,
     private conversationActiveRouterService: ConversationActiveRouterService
   ) {
     this.mobileDashboardState = this.mobileService.mobileDashboardState;
+    this.screenSize$ = this.screenService.screenSize$;
   }
 
   /**
@@ -86,9 +91,8 @@ export class WindowDisplayComponent {
    * messages, and scroll requests.
    */
   ngOnInit() {
-    this.channelTyp$ = this.conversationActiveRouterService.getConversationType$(
-      this.route
-    );
+    this.channelTyp$ =
+      this.conversationActiveRouterService.getConversationType$(this.route);
 
     // Subscribe to conversation ID from route params
     this.route.params.pipe(takeUntil(this.destroy$)).subscribe((params) => {

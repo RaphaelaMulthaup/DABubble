@@ -363,6 +363,20 @@ h4 {
   z-index: 1001;
 }
 
+.empty-consersation-view {
+  @include dFlex($jc: flex-start);
+  width: 100%;
+}
+
+.empty-consersation-view-handset-tablet {
+  padding: 0 16px 45px;
+}
+
+.empty-consersation-view-web {
+  padding: 0 45px 73px;
+}
+
+
 /* nunito-200 - latin */
 @font-face {
   font-display: swap;

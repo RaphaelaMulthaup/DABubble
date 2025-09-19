@@ -1,7 +1,6 @@
 @import '../../../../../../styles.scss';
 
 section {
-    padding: 0 16px;
     @include dFlex($g: 24px, $ai: flex-start);
     flex-direction: column;
 }
