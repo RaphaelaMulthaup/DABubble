@@ -37,6 +37,9 @@ import { ScreenSize } from '../../../../shared/types/screen-size.type';
 import { ScreenService } from '../../../../services/screen.service';
 import { UserInterface } from '../../../../shared/models/user.interface';
 import { ChannelInterface } from '../../../../shared/models/channel.interface';
+import { ChannelsService } from '../../../../services/channels.service';
+import { ChatService } from '../../../../services/chat.service';
+import { UserService } from '../../../../services/user.service';
 
 @Component({
   selector: 'app-current-post-input',
@@ -50,8 +53,9 @@ import { ChannelInterface } from '../../../../shared/models/channel.interface';
   styleUrl: './current-post-input.component.scss',
 })
 export class CurrentPostInput implements OnInit, OnDestroy {
-  conversationType!: any;
+  conversationType!: 'channel' | 'chat';
   conversationId!: string;
+  conversationName!: string;
   /** If replying, holds the ID of the message being replied to; otherwise null. */
   messageToReplyId!: string | null;
   /** Stores any error message to be displayed in the input form. */
@@ -67,12 +71,14 @@ export class CurrentPostInput implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   constructor(
-    private authService: AuthService,
     public screenService: ScreenService,
     public overlayService: OverlayService,
     public postService: PostService,
     public searchService: SearchService,
-
+    private authService: AuthService,
+    private channelService: ChannelsService,
+    private chatService: ChatService,
+    private userService: UserService,
     private route: ActivatedRoute,
     private conversationActiveRouterService: ConversationActiveRouterService
   ) {
@@ -88,8 +94,8 @@ export class CurrentPostInput implements OnInit, OnDestroy {
     this.conversationActiveRouterService
       .getConversationType$(this.route)
       .pipe(takeUntil(this.destroy$))
-      .subscribe((t) => {
-        this.conversationType = t;
+      .subscribe((conversationType: string) => {
+        this.conversationType = conversationType as 'channel' | 'chat';
       });
 
     this.conversationActiveRouterService
@@ -112,6 +118,27 @@ export class CurrentPostInput implements OnInit, OnDestroy {
           }
         });
       });
+
+    if (this.conversationType === 'channel') {
+      this.channelService
+        .getCurrentChannel(this.conversationId)
+        .pipe(take(1))
+        .subscribe((channel) => {
+          this.conversationName = channel!.name;
+        });
+    } else {
+      console.log(this.conversationId);
+      const otherUserId = this.chatService.getOtherUserId(
+        this.conversationId,
+        this.authService.getCurrentUserId()!
+      );
+      this.userService
+        .getUserById(otherUserId)
+        .pipe(take(1))
+        .subscribe((user) => {
+          this.conversationName = user.name;
+        });
+    }
   }
 
   ngOnDestroy() {
@@ -152,17 +179,25 @@ export class CurrentPostInput implements OnInit, OnDestroy {
     if (this.searchChar) {
       if (this.searchText.length == 1) {
         this.searchService
-          .search(of(this.searchChar!), { includeAllChannels: true }).pipe(take(1))
+          .search(of(this.searchChar!), { includeAllChannels: true })
+          .pipe(take(1))
           .subscribe((results) => {
             if (results.length === 0) return this.overlayService.closeAll();
             this.openSearchOverlay(results);
           });
       } else if (this.searchText.length > 1) {
-        this.searchService.search(of(this.searchText)).pipe(take(1)).subscribe((results) => {
-          if (results.length === 0) return this.overlayService.closeAll();
-          this.openSearchOverlay(results);
-        });
+        this.searchService
+          .search(of(this.searchText))
+          .pipe(take(1))
+          .subscribe((results) => {
+            if (results.length === 0) return this.overlayService.closeAll();
+            this.openSearchOverlay(results);
+          });
       }
+    }
+
+    if (this.postTextInput.nativeElement.innerText.trim() === '') {
+      this.postTextInput.nativeElement.innerText = '';
     }
   }
 
@@ -295,7 +330,7 @@ export class CurrentPostInput implements OnInit, OnDestroy {
       this.overlayService.closeAll();
       return;
     }
-    
+
     const overlayRef = this.overlayService.openComponent(
       SearchResultsCurrentPostInputComponent,
       'cdk-overlay-transparent-backdrop',

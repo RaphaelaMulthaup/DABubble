@@ -37,13 +37,15 @@
         width: 0;
         height: 0;
       }
-      &::placeholder {
+      &:empty:before {
+        content: attr(data-placeholder);
         color: var(--color-gray);
+        pointer-events: none;
       }
       &:focus {
-        outline: none; /* entfernt den blauen Rahmen */
-        box-shadow: none; /* entfernt Schatten, falls Browser ihn setzen */
-        border-color: #ccc;
+        outline: none;
+        box-shadow: none; 
+        border-color:var(--color-gray);
       }
     }
   }
@@ -52,7 +54,8 @@
     width: 100%;
     @include dFlex($jc: space-between);
 
-    >div, >button {
+    > div,
+    > button {
       height: 40px;
     }
 
