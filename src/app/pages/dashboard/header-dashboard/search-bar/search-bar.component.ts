@@ -105,7 +105,7 @@ export class SearchBarComponent implements OnInit, OnDestroy {
         if (term.length > 0) {
           this.searchResultsExisting = true;
           this.searchService.overlaySearchResultsOpen = true;
-          this.openOverlay(term);
+          this.openOverlay(term); // Overlay wiederverwenden oder neu öffnen
         } else {
           this.searchOverlayRef?.close();
           this.searchOverlayRef = null;

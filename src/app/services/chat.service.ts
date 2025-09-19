@@ -124,7 +124,7 @@ export class ChatService {
    */
   getOtherUserId(chatId: string, currentUserId: string): string {
     const [userA, userB] = chatId.split('_'); // Split the chat ID into two user IDs
-    return userA === currentUserId ? userB : userA; // Return the other user's ID
+    return userA == currentUserId ? userB : userA; // Return the other user's ID
   }
 
   /**

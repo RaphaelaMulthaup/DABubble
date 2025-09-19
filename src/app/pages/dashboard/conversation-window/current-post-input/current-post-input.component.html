@@ -1,4 +1,7 @@
-<form class="current-post-input" [class.web-current-post-input]="((screenSize$|async)==='web')">
+<form
+  class="current-post-input"
+  [class.web-current-post-input]="(screenSize$ | async) === 'web'"
+>
   <div class="textarea-wrapper">
     @if(conversationWindowState === 'conversation'){
     <div
@@ -6,6 +9,11 @@
       class="post-text-input"
       contenteditable="true"
       (input)="onInput()"
+      [attr.data-placeholder]="
+        conversationType === 'channel'
+          ? 'Nachricht an #' + conversationName
+          : 'Nachricht an @'+ conversationName
+      "
     ></div>
     } @else {
     <div
@@ -13,6 +21,7 @@
       class="post-text-input"
       contenteditable="true"
       (input)="onInput()"
+      data-placeholder="Antworten..."
     ></div>
     }
   </div>

@@ -54,6 +54,7 @@ export class HeaderSearchbarComponent {
    */
   results: Signal<SearchResult[]>;
   private searchOverlayRef: any;
+  private searchOverlayRef: any;
   /**
    * ViewChild for accessing the HTML element of the search bar.
    * This is used to manage position of the overlay.
@@ -88,8 +89,11 @@ export class HeaderSearchbarComponent {
     // Subscribe to the search term observable
     this.term$.pipe(takeUntil(this.destroy$)).subscribe((term) => {
       if (term.length > 0) {
+        this.openOverlay(); // Overlay wiederverwenden oder neu öffnen
         this.openOverlay();
       } else {
+        this.searchOverlayRef?.close();
+        this.searchOverlayRef = null;
         this.searchOverlayRef?.close();
         this.searchOverlayRef = null;
       }
@@ -130,10 +134,24 @@ export class HeaderSearchbarComponent {
 
     // Overlay neu öffnen
     this.searchOverlayRef = this.overlayService.openComponent(
+    if (!this.results() || this.results().length === 0) {
+      this.searchOverlayRef?.close();
+      this.searchOverlayRef = null;
+      return;
+    }
+
+    // Wenn Overlay schon offen ist, nur die Daten aktualisieren
+    if (this.searchOverlayRef) {
+      this.searchOverlayRef.ref.instance.results = this.results();
+      return;
+    }
+
+    // Overlay neu öffnen
+    this.searchOverlayRef = this.overlayService.openComponent(
       SearchResultsNewMessageComponent,
       'cdk-overlay-transparent-backdrop',
       {
-        origin: this.headerSearchbar.nativeElement, // Position the overlay relative to the search bar
+        origin: this.headerSearchbar.nativeElement,
         originPosition: {
           originX: 'center',
           originY: 'bottom',
@@ -156,7 +174,13 @@ export class HeaderSearchbarComponent {
     // BackdropClick schließen
     this.searchOverlayRef.backdropClick$
       .pipe(take(1), takeUntil(this.destroy$))
+    // BackdropClick schließen
+    this.searchOverlayRef.backdropClick$
+      .pipe(take(1), takeUntil(this.destroy$))
       .subscribe(() => {
+        this.searchControl.setValue('');
+        this.searchOverlayRef?.close();
+        this.searchOverlayRef = null;
         this.searchControl.setValue(''); // Feld leeren
         this.searchOverlayRef?.close();
         this.searchOverlayRef = null;

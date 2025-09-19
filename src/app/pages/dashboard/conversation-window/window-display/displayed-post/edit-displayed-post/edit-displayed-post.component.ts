@@ -60,6 +60,13 @@ export class EditDisplayedPostComponent implements OnInit {
     });
   }
 
+  ngAfterViewInit(){
+    const textarea = this.postTextInput.nativeElement as HTMLElement;
+    textarea.querySelectorAll('mark.mark').forEach((mark) => {
+      mark.setAttribute('contenteditable', 'false');
+    });
+  }
+
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
@@ -105,12 +112,12 @@ export class EditDisplayedPostComponent implements OnInit {
       }
     );
 
-    overlay!.ref.instance.selectedEmoji.pipe(take(1)).subscribe(
-      (emoji: { token: string; src: string }) => {
+    overlay!.ref.instance.selectedEmoji
+      .pipe(take(1))
+      .subscribe((emoji: { token: string; src: string }) => {
         this.addEmoji(emoji);
         // this.overlayService.closeAll();
-      }
-    );
+      });
   }
 
   /**
