@@ -72,8 +72,6 @@ export class ConversationHeaderComponent {
       .subscribe((msgId) => {
         this.messageToReplyId = msgId; // Update the message reply ID state
       });
-
-      console.log(this.conversationWindowState)
   }
 
   /**

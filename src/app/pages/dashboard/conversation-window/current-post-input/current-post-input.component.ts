@@ -354,11 +354,10 @@ export class CurrentPostInput implements OnInit, OnDestroy {
    * @param typeOfResult whether the result is of type user or channel
    */
   getMarkTemplate(name: string, typeOfResult?: 'user' | 'channel'): string {
-    return `&nbsp;<mark class="mark" contenteditable="false" data-type="${typeOfResult}" 
-            data-name="${name}">
+    return `&nbsp;<mark class="mark" contenteditable="false">
               <img src="/assets/img/${
                 typeOfResult == 'user' ? 'alternate-email-purple' : 'tag-blue'
-              }.svg" alt="mark">
+              }.svg" alt="mark-${typeOfResult}">
               <span>${name}</span>
             </mark>`;
   }
