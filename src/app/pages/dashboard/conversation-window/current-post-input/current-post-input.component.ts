@@ -65,7 +65,7 @@ export class CurrentPostInput implements OnInit, OnDestroy {
   screenSize$!: Observable<ScreenSize>;
   @Input() conversationWindowState?: 'conversation' | 'thread';
   private destroy$ = new Subject<void>();
-
+  private searchOverlayRef: any;
   constructor(
     private authService: AuthService,
     public screenService: ScreenService,
@@ -152,16 +152,20 @@ export class CurrentPostInput implements OnInit, OnDestroy {
     if (this.searchChar) {
       if (this.searchText.length == 1) {
         this.searchService
-          .search(of(this.searchChar!), { includeAllChannels: true }).pipe(take(1))
+          .search(of(this.searchChar!), { includeAllChannels: true })
+          .pipe(take(1))
           .subscribe((results) => {
             if (results.length === 0) return this.overlayService.closeAll();
             this.openSearchOverlay(results);
           });
       } else if (this.searchText.length > 1) {
-        this.searchService.search(of(this.searchText)).pipe(take(1)).subscribe((results) => {
-          if (results.length === 0) return this.overlayService.closeAll();
-          this.openSearchOverlay(results);
-        });
+        this.searchService
+          .search(of(this.searchText))
+          .pipe(take(1))
+          .subscribe((results) => {
+            if (results.length === 0) return this.overlayService.closeAll();
+            this.openSearchOverlay(results);
+          });
       }
     }
   }
@@ -292,11 +296,19 @@ export class CurrentPostInput implements OnInit, OnDestroy {
    */
   openSearchOverlay(results: SearchResult[]) {
     if (!results || results.length === 0) {
-      this.overlayService.closeAll();
+      this.searchOverlayRef?.close();
+      this.searchOverlayRef = null;
       return;
     }
-    
-    const overlayRef = this.overlayService.openComponent(
+
+    // Wenn Overlay schon offen ist, nur die Daten aktualisieren
+    if (this.searchOverlayRef) {
+      this.searchOverlayRef.ref.instance.results = results;
+      return;
+    }
+
+    // Overlay neu öffnen
+    this.searchOverlayRef = this.overlayService.openComponent(
       SearchResultsCurrentPostInputComponent,
       'cdk-overlay-transparent-backdrop',
       {
@@ -311,20 +323,23 @@ export class CurrentPostInput implements OnInit, OnDestroy {
       { results }
     );
 
-    if (overlayRef) {
-      overlayRef.ref.instance.userSelected
+    // Subscriptions für Auswahl
+    if (this.searchOverlayRef) {
+      this.searchOverlayRef.ref.instance.userSelected
         ?.pipe(take(1))
         .subscribe((user: UserInterface) => {
           const mark = this.getMarkTemplate(user.name, 'user');
           this.insertName(mark);
-          this.overlayService.closeAll();
+          this.searchOverlayRef.close();
+          this.searchOverlayRef = null;
         });
-      overlayRef.ref.instance.channelSelected
+      this.searchOverlayRef.ref.instance.channelSelected
         ?.pipe(take(1))
         .subscribe((channel: ChannelInterface) => {
           const mark = this.getMarkTemplate(channel.name, 'channel');
           this.insertName(mark);
-          this.overlayService.closeAll();
+          this.searchOverlayRef.close();
+          this.searchOverlayRef = null;
         });
     }
   }
