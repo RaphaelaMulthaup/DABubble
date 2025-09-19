@@ -2,14 +2,20 @@
   class="interaction-options flex place-content-center"
   [ngClass]="{ 'post-current-user': senderIsCurrentUser }"
 >
-  <button (click)="reactToPostWithPreselection(':thumbs-up:')" class="btn-tertiary">
+  <button
+    (click)="reactToPostWithPreselection(':thumbs-up:')"
+    class="btn-tertiary"
+  >
     <img
       class="reaction-img"
       src="../../../assets/img/emojis/thumbs-up.svg"
       alt="check-mark"
     />
   </button>
-  <button (click)="reactToPostWithPreselection(':thumbs-down:')" class="btn-tertiary">
+  <button
+    (click)="reactToPostWithPreselection(':thumbs-down:')"
+    class="btn-tertiary"
+  >
     <img
       class="reaction-img"
       src="../../../assets/img/emojis/thumbs-down.svg"
@@ -21,11 +27,19 @@
     class="add-reaction btn-tertiary"
   ></button>
 
-  @if(mobileService.mobileDashboardState() !== 'thread-window') {
-  <button (click)="postService.openAnswers(post.id!, currentConversationType, currentConversationId); overlayService.closeAll()" class="open-answers btn-tertiary"></button>
-  } 
-  
-  @if (senderIsCurrentUser) {
+  @if(conversationWindowState === 'conversation') {
+  <button
+    (click)="
+      postService.openAnswers(
+        post.id!,
+        currentConversationType,
+        currentConversationId
+      );
+      overlayService.closeAll()
+    "
+    class="open-answers btn-tertiary"
+  ></button>
+  } @if (senderIsCurrentUser) {
   <button
     (click)="openEditPostBtnOverlay($event)"
     class="more-options btn-tertiary"

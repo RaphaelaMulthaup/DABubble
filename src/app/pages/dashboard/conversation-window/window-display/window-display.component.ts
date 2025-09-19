@@ -152,6 +152,8 @@ export class WindowDisplayComponent {
     // Handle initial scrollTo param (on first load)
     const initial = this.route.snapshot.queryParams['scrollTo'];
     if (initial) this.handleScrollRequest(initial);
+
+    console.log(this.conversationWindowState)
   }
 
   /**

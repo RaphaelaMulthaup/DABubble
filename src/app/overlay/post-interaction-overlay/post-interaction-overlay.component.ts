@@ -30,6 +30,7 @@ export class PostInteractionOverlayComponent implements OnInit {
   @Input() post!: PostInterface;
   senderIsCurrentUser!: boolean;
   emojis = EMOJIS;
+  conversationWindowState?: 'conversation' | 'thread';
   parentMessageId?: string; //the id of the message, an answer belongs to -> only if the message is an answer
 
   constructor(
