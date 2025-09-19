@@ -57,7 +57,7 @@ export class SearchBarComponent implements OnInit, OnDestroy {
   results: Signal<SearchResult[]>; // Signal for template binding
   screenSize$!: Observable<ScreenSize>;
   searchResultsExisting = false;
-
+  private searchOverlayRef: any;
   constructor(
     public screenService: ScreenService,
     private overlayService: OverlayService,
@@ -103,14 +103,14 @@ export class SearchBarComponent implements OnInit, OnDestroy {
       // Subscribe to search terms to open or close overlay accordingly
       term$.pipe(takeUntil(this.destroy$)).subscribe((term) => {
         if (term.length > 0) {
-          this.overlayService.closeAll();
           this.searchResultsExisting = true;
           this.searchService.overlaySearchResultsOpen = true;
-          this.openOverlay(term);
+          this.openOverlay(term); // Overlay wiederverwenden oder neu öffnen
         } else {
+          this.searchOverlayRef?.close();
+          this.searchOverlayRef = null;
           this.searchResultsExisting = false;
           this.searchService.overlaySearchResultsOpen = false;
-          this.overlayService.closeAll();
         }
       });
     }
@@ -121,7 +121,23 @@ export class SearchBarComponent implements OnInit, OnDestroy {
    * Handles backdrop clicks to close overlay and reset input.
    */
   private openOverlay(term: string) {
-    const overlay = this.overlayService.openComponent(
+    if (!this.results() || this.results().length === 0) {
+      this.searchOverlayRef?.close();
+      this.searchOverlayRef = null;
+      this.searchResultsExisting = false;
+      this.searchService.overlaySearchResultsOpen = false;
+      return;
+    }
+
+    // Overlay schon offen → nur die Daten aktualisieren
+    if (this.searchOverlayRef) {
+      this.searchOverlayRef.ref.instance.results$ = this.groupedResults();
+      this.searchOverlayRef.ref.instance.searchTerm = term;
+      return;
+    }
+
+    // Overlay neu öffnen
+    this.searchOverlayRef = this.overlayService.openComponent(
       SearchResultsComponent,
       'cdk-overlay-transparent-backdrop',
       {
@@ -145,13 +161,18 @@ export class SearchBarComponent implements OnInit, OnDestroy {
       }
     );
 
-    if (!overlay) return;
+    if (!this.searchOverlayRef) return;
 
-    overlay.backdropClick$.pipe(takeUntil(this.destroy$)).subscribe(() => {
-      this.searchControl.setValue('');
-      this.searchResultsExisting = false;
-      this.searchService.overlaySearchResultsOpen = false;
-    });
+    // BackdropClick → Overlay schließen und Input leeren
+    this.searchOverlayRef.backdropClick$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.searchControl.setValue('');
+        this.searchResultsExisting = false;
+        this.searchService.overlaySearchResultsOpen = false;
+        this.searchOverlayRef?.close();
+        this.searchOverlayRef = null;
+      });
   }
 
   /**

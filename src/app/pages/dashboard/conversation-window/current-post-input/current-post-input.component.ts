@@ -69,6 +69,7 @@ export class CurrentPostInput implements OnInit, OnDestroy {
   screenSize$!: Observable<ScreenSize>;
   @Input() conversationWindowState?: 'conversation' | 'thread';
   private destroy$ = new Subject<void>();
+  private searchOverlayRef: any;
 
   constructor(
     public screenService: ScreenService,
@@ -327,7 +328,8 @@ export class CurrentPostInput implements OnInit, OnDestroy {
    */
   openSearchOverlay(results: SearchResult[]) {
     if (!results || results.length === 0) {
-      this.overlayService.closeAll();
+      this.searchOverlayRef?.close();
+      this.searchOverlayRef = null;
       return;
     }
 
@@ -346,20 +348,24 @@ export class CurrentPostInput implements OnInit, OnDestroy {
       { results }
     );
 
-    if (overlayRef) {
-      overlayRef.ref.instance.userSelected
+    // Subscriptions für Auswahl
+    if (this.searchOverlayRef) {
+      this.searchOverlayRef.ref.instance.userSelected
         ?.pipe(take(1))
         .subscribe((user: UserInterface) => {
           const mark = this.getMarkTemplate(user.name, 'user');
           this.insertName(mark);
-          this.overlayService.closeAll();
+          this.overlayService.closeOne(this.searchOverlayRef);
+          this.searchOverlayRef = null;
         });
-      overlayRef.ref.instance.channelSelected
+
+      this.searchOverlayRef.ref.instance.channelSelected
         ?.pipe(take(1))
         .subscribe((channel: ChannelInterface) => {
           const mark = this.getMarkTemplate(channel.name, 'channel');
           this.insertName(mark);
-          this.overlayService.closeAll();
+          this.overlayService.closeOne(this.searchOverlayRef);
+          this.searchOverlayRef = null;
         });
     }
   }

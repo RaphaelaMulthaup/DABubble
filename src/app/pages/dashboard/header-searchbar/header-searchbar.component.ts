@@ -53,7 +53,7 @@ export class HeaderSearchbarComponent {
    * It is a reactive representation of the search results.
    */
   results: Signal<SearchResult[]>;
-
+  private searchOverlayRef: any;
   /**
    * ViewChild for accessing the HTML element of the search bar.
    * This is used to manage position of the overlay.
@@ -88,12 +88,10 @@ export class HeaderSearchbarComponent {
     // Subscribe to the search term observable
     this.term$.pipe(takeUntil(this.destroy$)).subscribe((term) => {
       if (term.length > 0) {
-        this.overlayService.closeAll();
-        this.searchService.overlaySearchResultsNewMessageOpen = true;
-        this.openOverlay(); // Close any open overlays when searching
+        this.openOverlay(); // Overlay wiederverwenden oder neu öffnen
       } else {
-        this.searchService.overlaySearchResultsNewMessageOpen = false;
-        this.overlayService.closeAll(); // Optionally close the overlay when search input is empty
+        this.searchOverlayRef?.close();
+        this.searchOverlayRef = null;
       }
     });
     this.headerSearchbar.nativeElement.addEventListener('focus', () => {
@@ -118,11 +116,24 @@ export class HeaderSearchbarComponent {
    * passes the current results as input, and clears the search field when the backdrop is clicked.
    */
   private openOverlay() {
-    const overlay = this.overlayService.openComponent(
+    if (!this.results() || this.results().length === 0) {
+      this.searchOverlayRef?.close();
+      this.searchOverlayRef = null;
+      return;
+    }
+
+    // Wenn Overlay schon offen ist, nur die Daten aktualisieren
+    if (this.searchOverlayRef) {
+      this.searchOverlayRef.ref.instance.results = this.results();
+      return;
+    }
+
+    // Overlay neu öffnen
+    this.searchOverlayRef = this.overlayService.openComponent(
       SearchResultsNewMessageComponent,
       'cdk-overlay-transparent-backdrop',
       {
-        origin: this.headerSearchbar.nativeElement, // Position the overlay relative to the search bar
+        origin: this.headerSearchbar.nativeElement,
         originPosition: {
           originX: 'center',
           originY: 'bottom',
@@ -137,16 +148,19 @@ export class HeaderSearchbarComponent {
         },
       },
       {
-        results: this.results(), // Pass the search term to the overlay
+        results: this.results(),
       }
     );
-    if (!overlay) return;
 
-    overlay.backdropClick$
-      .pipe(take(1), takeUntil(this.destroy$)) // take(1) = nur einmal pro Overlay, takeUntil = cleanup beim Component Destroy
+    if (!this.searchOverlayRef) return;
+
+    // BackdropClick schließen
+    this.searchOverlayRef.backdropClick$
+      .pipe(take(1), takeUntil(this.destroy$))
       .subscribe(() => {
-        this.searchControl.setValue(''); // Feld leeren
+        this.searchControl.setValue('');
+        this.searchOverlayRef?.close();
+        this.searchOverlayRef = null;
       });
-    // this.headerSearchbar.nativeElement.querySelector('input')?.focus();
   }
 }

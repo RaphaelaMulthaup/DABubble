@@ -20,8 +20,7 @@
     </p>
     <div class="seperator"></div>
   </div>
-  } 
-  @if (postAnswered && $index === 0 && conversationWindowState === 'thread') {
+  } @if (postAnswered && $index === 0 && conversationWindowState === 'thread') {
   <app-displayed-post
     [post]="postAnswered"
     [conversationWindowState]="conversationWindowState"
@@ -36,12 +35,12 @@
     [id]="message.id"
     [conversationWindowState]="conversationWindowState"
   ></app-displayed-post>
-  } } @else { @switch (channelTyp$ | async) { @case ('chat') { @if
-  (currentConversationId) {
+  } } @else { @if (mobileDashboardState()!=='thread-window') { @switch
+  (channelTyp$ | async) { @case ('chat') { @if (currentConversationId) {
   <app-empty-chat-view
     [currentChatId]="currentConversationId"
   ></app-empty-chat-view>
   } } @case ('channel') {
   <app-empty-channel-view></app-empty-channel-view>
-  } } } }
+  } } } } }
 </section>
