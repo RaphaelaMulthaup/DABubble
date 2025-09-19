@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common'; // Importing CommonModule for ba
 import { MobileService } from '../../../services/mobile.service'; // Importing MobileService for handling mobile-specific state
 import { ProfileViewOtherUsersComponent } from '../../../overlay/profile-view-other-users/profile-view-other-users.component'; // Importing the profile view component for users
 import { of } from 'rxjs'; // Importing `of` to create observables from static values
+import { ProfileViewMainComponent } from '../../../overlay/profile-view-main/profile-view-main.component';
 
 @Component({
   selector: 'app-user-list-item', // Component selector used in parent templates
@@ -90,11 +91,18 @@ export class UserListItemComponent {
    * This is done using the OverlayService, and the user information is passed as an observable.
    */
   openProfileOverlay() {
-    this.overlayService.openComponent(
-      ProfileViewOtherUsersComponent, // The overlay component to open
-      'cdk-overlay-dark-backdrop', // The backdrop style for the overlay
-      { globalPosition: 'center' }, // Position the overlay in the center of the screen
-      { user$: of(this.user) } // Pass the selected user as an observable to the overlay
-    );
-  }
+if (this.user.uid === this.currentUserId) {
+      this.overlayService.openComponent(
+        ProfileViewMainComponent, // The component to be displayed in the overlay.
+        'cdk-overlay-dark-backdrop', // Backdrop style for the overlay.
+        { globalPosition: 'center' } // Position of the overlay (centered globally).
+      );
+    } else {
+      this.overlayService.openComponent(
+        ProfileViewOtherUsersComponent, // The overlay component to open
+        'cdk-overlay-dark-backdrop', // The backdrop style for the overlay
+        { globalPosition: 'center' }, // Position the overlay in the center of the screen
+        { user$: of(this.user) } // Pass the selected user as an observable to the overlay
+      );
+    }  }
 }
