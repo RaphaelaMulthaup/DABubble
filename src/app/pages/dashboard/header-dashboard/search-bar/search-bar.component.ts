@@ -77,9 +77,10 @@ export class SearchBarComponent implements OnInit, OnDestroy {
     // Overlay focus logic
     this.searchbar.nativeElement.addEventListener('focus', () => {
       const term = this.searchControl.value.trim();
-      if (term.length > 0
+      if (
+        term.length > 0
         //  && this.searchResultsExisting
-        ) {
+      ) {
         this.openOverlay(term);
       }
     });
@@ -110,7 +111,7 @@ export class SearchBarComponent implements OnInit, OnDestroy {
           this.openOverlay(term); // Overlay wiederverwenden oder neu öffnen
         } else {
           // this.searchOverlayRef?.close();
-          this.overlayService.closeOne(this.searchOverlayRef);
+          this.overlayService.closeOne(this.searchOverlayRef?.overlayRef);
           this.searchOverlayRef = null;
           this.searchResultsExisting = false;
           this.searchService.overlaySearchResultsOpen = false;
@@ -124,10 +125,8 @@ export class SearchBarComponent implements OnInit, OnDestroy {
    * Handles backdrop clicks to close overlay and reset input.
    */
   private openOverlay(term: string) {
-    console.log('IN OPENoVERLAY');
-    
     if (!this.results() || this.results().length === 0) {
-      this.searchOverlayRef?.close();
+      this.overlayService.closeOne(this.searchOverlayRef?.overlayRef);
       this.searchOverlayRef = null;
       this.searchResultsExisting = false;
       this.searchService.overlaySearchResultsOpen = false;
@@ -175,7 +174,7 @@ export class SearchBarComponent implements OnInit, OnDestroy {
         this.searchControl.setValue('');
         this.searchResultsExisting = false;
         this.searchService.overlaySearchResultsOpen = false;
-        this.searchOverlayRef?.close();
+        this.overlayService.closeOne(this.searchOverlayRef?.overlayRef);
         this.searchOverlayRef = null;
       });
   }

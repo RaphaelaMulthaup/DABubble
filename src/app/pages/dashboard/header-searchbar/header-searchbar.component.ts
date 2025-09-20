@@ -90,7 +90,7 @@ export class HeaderSearchbarComponent {
       if (term.length > 0) {
         this.openOverlay(); // Overlay wiederverwenden oder neu öffnen
       } else {
-        this.overlayService.closeOne(this.searchOverlayRef);
+        this.overlayService.closeOne(this.searchOverlayRef?.overlayRef);
         this.searchOverlayRef = null;
       }
     });
@@ -117,7 +117,7 @@ export class HeaderSearchbarComponent {
    */
   private openOverlay() {
     if (!this.results() || this.results().length === 0) {
-      this.searchOverlayRef?.close();
+      this.overlayService.closeOne(this.searchOverlayRef?.overlayRef);
       this.searchOverlayRef = null;
       return;
     }
@@ -158,7 +158,7 @@ export class HeaderSearchbarComponent {
       .pipe(take(1), takeUntil(this.destroy$))
       .subscribe(() => {
         this.searchControl.setValue(''); // Feld leeren
-        this.searchOverlayRef?.close();
+        this.overlayService.closeOne(this.searchOverlayRef?.overlayRef);
         this.searchOverlayRef = null;
       });
   }
