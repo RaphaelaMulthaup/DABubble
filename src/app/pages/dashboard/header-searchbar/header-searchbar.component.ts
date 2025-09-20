@@ -90,7 +90,7 @@ export class HeaderSearchbarComponent {
       if (term.length > 0) {
         this.openOverlay(); // Overlay wiederverwenden oder neu öffnen
       } else {
-        this.searchOverlayRef?.close();
+        this.overlayService.closeOne(this.searchOverlayRef);
         this.searchOverlayRef = null;
       }
     });
@@ -124,7 +124,7 @@ export class HeaderSearchbarComponent {
 
     // Wenn Overlay schon offen ist, nur die Daten aktualisieren
     if (this.searchOverlayRef) {
-      this.searchOverlayRef.ref.instance.results = this.results();
+      this.searchOverlayRef.ref.instance.results = this.results;
       return;
     }
 
