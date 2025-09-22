@@ -1,0 +1,15 @@
+<div class="seperator-container flex flex-row place-items-center">
+  <div class="seperator"></div>
+  <p class="date">
+    @if(postService.isPostCreatedToday(post.createdAt)) { Heute }
+    @else {
+    {{ days[post.createdAt.toDate().getDay()] }},
+    {{ post.createdAt.toDate().getDate().toString().padStart(2, "0") }}.
+    {{
+    post.createdAt.toDate().toLocaleString("de-DE", { month: "long" })
+    }}
+    }
+  </p>
+  <div class="seperator"></div>
+</div>
+<app-displayed-post [post]="post" [conversationWindowState]="'thread'"></app-displayed-post>

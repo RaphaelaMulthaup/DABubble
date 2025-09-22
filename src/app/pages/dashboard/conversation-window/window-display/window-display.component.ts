@@ -13,6 +13,7 @@ import { DisplayedPostComponent } from './displayed-post/displayed-post.componen
 import { PostInterface } from '../../../../shared/models/post.interface';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {
+  distinctUntilChanged,
   map,
   Observable,
   Subject,
@@ -29,6 +30,8 @@ import { MobileService } from '../../../../services/mobile.service';
 import { EmptyChannelViewComponent } from './empty-channel-view/empty-channel-view.component';
 import { ScreenSize } from '../../../../shared/types/screen-size.type';
 import { ScreenService } from '../../../../services/screen.service';
+import { EmptyThreadViewComponent } from './empty-thread-view/empty-thread-view.component';
+import { DAYS } from '../../../../shared/constants/days';
 
 @Component({
   selector: 'app-window-display', // Component selector used in parent templates
@@ -37,6 +40,7 @@ import { ScreenService } from '../../../../services/screen.service';
     CommonModule,
     EmptyChatViewComponent,
     EmptyChannelViewComponent,
+    EmptyThreadViewComponent
   ], // Child components needed in the template
   templateUrl: './window-display.component.html', // External HTML template
   styleUrl: './window-display.component.scss', // External SCSS styles
@@ -45,8 +49,8 @@ export class WindowDisplayComponent {
   @Input() messages$!: import('rxjs').Observable<PostInterface[]>;
   // an array with all posts in this conversation
   currentConversationType?: 'channel' | 'chat';
-  postAnsweredId?: string | null;
-  postAnswered?: PostInterface;
+  postAnsweredId!: string | null;
+  postAnswered!: PostInterface | null;
   mobileDashboardState: WritableSignal<MobileDashboardState>;
   // Observable stream of all posts in the current conversation
 
@@ -57,15 +61,7 @@ export class WindowDisplayComponent {
   channelTyp$?: Observable<string>; // Observable for channel type (chat or channel)
 
   // Localized days of the week for displaying timestamps
-  days = [
-    'Sonntag',
-    'Montag',
-    'Dienstag',
-    'Mittwoch',
-    'Donnerstag',
-    'Freitag',
-    'Samstag',
-  ];
+  days = DAYS;
 
   @Input() conversationWindowState?: 'conversation' | 'thread';
   private pendingScrollTo?: string; // Stores a post ID to scroll to once available
@@ -95,27 +91,40 @@ export class WindowDisplayComponent {
       this.conversationActiveRouterService.getConversationType$(this.route);
 
     // Subscribe to conversation ID from route params
-    this.route.params.pipe(takeUntil(this.destroy$)).subscribe((params) => {
-      this.currentConversationId = params['conversationId']; // get chat id from route params
+    this.route.params
+    .pipe(takeUntil(this.destroy$))
+    .subscribe((params) => {
+      this.currentConversationId = params['conversationId'];
       this.currentConversationType = params['conversationType'];
+
       const id = params['scrollTo'];
       if (id) this.handleScrollRequest(id);
-
-      params['messageId']
-        ? (this.postAnsweredId = params['messageId'])
-        : (this.postAnsweredId = null);
     });
 
-    if (this.postAnsweredId) {
-      this.postService
-        .getPostById(
-          this.currentConversationType!,
-          this.currentConversationId!,
-          this.postAnsweredId!
-        )
-        .pipe(takeUntil(this.destroy$))
-        .subscribe((post) => (this.postAnswered = post));
-    }
+    this.route.params
+    .pipe(
+      map((params) => params['messageId'] ?? null),
+      distinctUntilChanged(),
+      takeUntil(this.destroy$)
+    )
+    .subscribe((messageId) => {
+      this.postAnsweredId = messageId;
+
+      if (this.postAnsweredId) {
+        this.postService
+          .getPostById(
+            this.currentConversationType!,
+            this.currentConversationId!,
+            this.postAnsweredId!
+          )
+          .pipe(takeUntil(this.destroy$))
+          .subscribe((post) => {
+            this.postAnswered = post;
+          });
+      } else {
+        this.postAnswered = null;
+      }
+    });
 
     this.messages$.pipe(takeUntil(this.destroy$)).subscribe((data) => {
       // Update content when new messages are received
@@ -156,8 +165,6 @@ export class WindowDisplayComponent {
     // Handle initial scrollTo param (on first load)
     const initial = this.route.snapshot.queryParams['scrollTo'];
     if (initial) this.handleScrollRequest(initial);
-
-    console.log(this.conversationWindowState)
   }
 
   /**

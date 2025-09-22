@@ -147,7 +147,6 @@ export class CurrentPostInput implements OnInit, OnDestroy {
           this.conversationName = channel?.name || '';
         });
     } else {
-      console.log(this.conversationId);
       const otherUserId = this.chatService.getOtherUserId(
         this.conversationId,
         this.authService.getCurrentUserId()!
