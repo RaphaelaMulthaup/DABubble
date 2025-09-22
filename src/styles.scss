@@ -300,13 +300,14 @@ h4 {
 
 .mark {
   width: fit-content;
-  max-width: clamp(10rem, 9.0000rem + 5.0000vw, 15rem);
+  max-width: clamp(10rem, 9rem + 5vw, 15rem);
   overflow: hidden;
   text-overflow: ellipsis;
   display: inline-flex;
   vertical-align: middle;
   white-space: nowrap;
-  padding: clamp(0.063rem, 0.0506rem + 0.0620vw, 0.125rem) clamp(0.25rem, 0.2250rem + 0.1250vw, 0.375rem);
+  padding: clamp(0.063rem, 0.0506rem + 0.062vw, 0.125rem)
+    clamp(0.25rem, 0.225rem + 0.125vw, 0.375rem);
   border-radius: 30px;
   background-color: var(--color-purple-white);
   color: var(--color-purple-dark) !important;
@@ -363,24 +364,25 @@ h4 {
   z-index: 1001;
 }
 
-::-webkit-scrollbar{
+::-webkit-scrollbar {
   width: 10px;
   border-radius: 5px;
 }
 
-::-webkit-scrollbar-thumb{
+::-webkit-scrollbar-thumb {
   background-color: var(--color-purple-light-lines);
   border-radius: 10px;
   height: 64px;
 }
 
-::-webkit-scrollbar-thumb:hover{
+::-webkit-scrollbar-thumb:hover {
   background-color: var(--color-purple-light);
+  cursor: grab;
 }
 
-::-webkit-scrollbar-track{
+::-webkit-scrollbar-track {
   height: 36px;
-  background-color: var(--color-purple-white);
+  background-color: var(--color-white) !important;
   border-radius: 5px;
 }
 

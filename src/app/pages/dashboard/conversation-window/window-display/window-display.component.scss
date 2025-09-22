@@ -48,24 +48,3 @@ app-displayed-post {
 .highlight {
   background-color: var(--color-purple-light-lines);
 }
-
-::-webkit-scrollbar{
-  width: 10px;
-  border-radius: 5px;
-}
-
-::-webkit-scrollbar-thumb{
-  background-color: var(--color-purple-light-lines);
-  border-radius: 10px;
-  height: 64px;
-}
-
-::-webkit-scrollbar-thumb:hover{
-  background-color: var(--color-purple-light);
-}
-
-::-webkit-scrollbar-track{
-  height: 36px;
-  background-color: var(--color-purple-white);
-  border-radius: 5px;
-}
