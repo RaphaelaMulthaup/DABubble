@@ -70,7 +70,6 @@ export class CurrentPostInput implements OnInit, OnDestroy {
   @Input() conversationWindowState?: 'conversation' | 'thread';
   private savedRange: Range | null = null;
   private destroy$ = new Subject<void>();
-
   constructor(
     public screenService: ScreenService,
     public overlayService: OverlayService,
@@ -292,7 +291,8 @@ export class CurrentPostInput implements OnInit, OnDestroy {
    * - Resets the form afterwards.
    */
   submitPostInput() {
-    const currentUserId: string | null = this.authService.currentUser.uid;
+    const currentUserId: string | null =
+      this.authService.currentUser?.uid ?? null;
     const postText = this.postService.htmlToText(
       this.postTextInput.nativeElement.innerHTML
     );

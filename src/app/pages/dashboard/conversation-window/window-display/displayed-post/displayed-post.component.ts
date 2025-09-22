@@ -12,6 +12,7 @@ import { UserService } from '../../../../../services/user.service';
 import {
   distinctUntilChanged,
   filter,
+  firstValueFrom,
   map,
   of,
   shareReplay,
@@ -81,7 +82,7 @@ export class DisplayedPostComponent {
     this.screenSize$ = this.screenService.screenSize$;
   }
 
-  ngOnChanges() {
+  async ngOnChanges() {
     this.conversationActiveRouterService
       .getParams$(this.route)
       .pipe(takeUntil(this.destroy$))
@@ -132,7 +133,7 @@ export class DisplayedPostComponent {
     setTimeout(() => {
       if (!this.post) return;
       this.senderIsCurrentUser =
-        this.post.senderId === this.authService.currentUser.uid;
+        this.post.senderId === this.authService.currentUser?.uid;
       const user$ = this.userService.getUserById(this.post.senderId);
       this.senderName$ = user$.pipe(map((u) => u?.name ?? ''));
       this.senderPhotoUrl$ = user$.pipe(map((u) => u?.photoUrl ?? ''));

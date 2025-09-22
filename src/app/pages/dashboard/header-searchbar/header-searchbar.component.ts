@@ -90,7 +90,7 @@ export class HeaderSearchbarComponent {
       if (term.length > 0) {
         this.openOverlay(); // Overlay wiederverwenden oder neu öffnen
       } else {
-        this.searchOverlayRef?.close();
+        this.overlayService.closeOne(this.searchOverlayRef?.overlayRef);
         this.searchOverlayRef = null;
       }
     });
@@ -117,14 +117,14 @@ export class HeaderSearchbarComponent {
    */
   private openOverlay() {
     if (!this.results() || this.results().length === 0) {
-      this.searchOverlayRef?.close();
+      this.overlayService.closeOne(this.searchOverlayRef?.overlayRef);
       this.searchOverlayRef = null;
       return;
     }
 
     // Wenn Overlay schon offen ist, nur die Daten aktualisieren
     if (this.searchOverlayRef) {
-      this.searchOverlayRef.ref.instance.results = this.results();
+      this.searchOverlayRef.ref.instance.results = this.results;
       return;
     }
 
@@ -148,18 +148,17 @@ export class HeaderSearchbarComponent {
         },
       },
       {
-        results: this.results(),
+        results: this.results, // Pass the search term to the overlay
       }
     );
-
     if (!this.searchOverlayRef) return;
 
     // BackdropClick schließen
     this.searchOverlayRef.backdropClick$
       .pipe(take(1), takeUntil(this.destroy$))
       .subscribe(() => {
-        this.searchControl.setValue('');
-        this.searchOverlayRef?.close();
+        this.searchControl.setValue(''); // Feld leeren
+        this.overlayService.closeOne(this.searchOverlayRef?.overlayRef);
         this.searchOverlayRef = null;
       });
   }

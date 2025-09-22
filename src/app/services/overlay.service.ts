@@ -235,7 +235,7 @@ export class OverlayService {
    * Closes a specific overlay by its reference.
    * @param ref The reference to the overlay to be closed.
    */
-  closeOne(ref: OverlayRef): void {
+  closeOne(ref: OverlayRef): void {    
     const index = this.overlayRefs.indexOf(ref);
     if (index !== -1) {
       ref.dispose();

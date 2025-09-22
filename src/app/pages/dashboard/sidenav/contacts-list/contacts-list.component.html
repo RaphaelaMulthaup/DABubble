@@ -14,7 +14,7 @@
 
 @if (directMessagesVisible) {
 <ul class="contacts-list">
-  @if (currentUser) {
+  @if (currentUser$) {
   <app-user-list-item [user]="currentUser" (click)="mobileService.mobileDashboardState.set('message-window')"></app-user-list-item>
   } @for (user of contacts$ | async; track $index) {
   <app-user-list-item [user]="user" (click)="mobileService.mobileDashboardState.set('message-window')"></app-user-list-item>

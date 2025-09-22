@@ -6,9 +6,7 @@ import {
   signOut,
   User,
 } from '@angular/fire/auth';
-import {
-  signInWithEmailAndPassword
-} from 'firebase/auth';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 
 import {
   Firestore,
@@ -25,7 +23,7 @@ import {
   sendPasswordResetEmail,
 } from 'firebase/auth';
 
-import { from, Observable } from 'rxjs';
+import { from, Observable, of, shareReplay, switchMap, tap } from 'rxjs';
 import { BehaviorSubject } from 'rxjs';
 import { UserInterface } from '../shared/models/user.interface';
 import { UserService } from './user.service';
@@ -34,18 +32,7 @@ import { UserService } from './user.service';
   providedIn: 'root',
 })
 export class AuthService {
-  // Holds the current user state (null if not logged in)
-  private currentUserSubject = new BehaviorSubject<UserInterface | null>(null);
-  // Observable stream of the current user
-  currentUser$ = this.currentUserSubject.asObservable();
-
-  // Google authentication provider
-  provider = new GoogleAuthProvider();
-
-  // BehaviorSubject to hold the current user state
-  public userSubject = new BehaviorSubject<User | null>(null);
-  // Observable for external components to subscribe to user changes
-  user$ = this.userSubject.asObservable();
+  private provider = new GoogleAuthProvider(); // Google Auth provider
 
   //the data of the user in the registration-process
   userToRegister = {
@@ -56,63 +43,46 @@ export class AuthService {
     photoURL: '',
   };
 
-  /**
-   * AuthService constructor.
-   *
-   * Initializes the service by listening to Firebase authentication state changes.
-   * When a user is authenticated, their data is loaded from Firestore via `userService`
-   * and emitted through `currentUserSubject`. If no user is logged in, `currentUserSubject`
-   * is set to null.
-   *
-   * @param auth - The Firebase Auth instance used for authentication state tracking.
-   * @param firestore - The Firestore instance used to fetch user data.
-   */
+  // Reaktives Observable für den aktuellen Firestore User
+  currentUser$: Observable<UserInterface | null>;
+
+  // Optional synchroner Zugriff
+  private currentUserSnapshot: UserInterface | null = null;
+
   constructor(
     private auth: Auth,
     private firestore: Firestore,
     private userService: UserService
   ) {
-    // Listen to authentication state changes and update the userSubject
-    onAuthStateChanged(this.auth, (user) => {
-      this.emptyUserObject();
-      this.userSubject.next(user);
-      if (user) {
-        // Firestore-User laden
-        this.userService.getUserById(user.uid).subscribe((userData) => {
-          this.currentUserSubject.next(userData);
-        });
-      } else {
-        this.currentUserSubject.next(null);
-      }
-    });
+    // Voll reaktives Observable, das automatisch auf AuthStateChanges reagiert
+    this.currentUser$ = new Observable<User | null>((subscriber) =>
+      onAuthStateChanged(this.auth, subscriber.next.bind(subscriber))
+    ).pipe(
+      switchMap((firebaseUser) => {
+        this.emptyUserObject(); // Registrierung zurücksetzen
+        if (firebaseUser) {
+          return this.userService.getUserById(firebaseUser.uid); // Firestore User laden
+        } else {
+          return of(null); // Kein User eingeloggt
+        }
+      }),
+      tap((user) => (this.currentUserSnapshot = user)), // Snapshot für synchronen Zugriff speichern
+      shareReplay(1) // Letzten Wert für neue Subscribers zwischenspeichern
+    );
   }
 
-  /**
-   * Gets the currently authenticated user.
-   *
-   * @returns The current user object (`UserInterface`) if logged in, otherwise `null`.
-   */
-  get currentUser(): UserInterface {
-    // if (!this.currentUserSubject.value) {
-    //   throw new Error('Kein User eingeloggt!');
-    // }
-    return this.currentUserSubject.value!;
+  /*** Synchronously get the current Firestore User ***/
+  get currentUser(): UserInterface | null {
+    return this.currentUserSnapshot;
   }
 
-  /**
-   * Returns the current user's ID or null if no user is logged in
-   */
-  getCurrentUserId() {
+  /*** Get current Firebase Auth user ID or null ***/
+  getCurrentUserId(): string | null {
     const user = this.auth.currentUser;
     return user ? user.uid : null;
   }
 
-  /**
-   * Creates a new user document in Firestore or updates an existing one
-   * @param user Firebase User object
-   * @param authProvider Authentication provider ('google.com' or 'password')
-   * @param displayName Optional display name for the user
-   */
+  /*** Create or update Firestore user document ***/
   private async createOrUpdateUserInFirestore(
     user: User,
     authProvider: 'google.com' | 'password',
@@ -150,9 +120,6 @@ export class AuthService {
       this.userToRegister.password
     ).then(async (response) => {
       const user = response.user;
-      //console.log(this.userToRegister.displayName, this.userToRegister.photoURL)
-      // await updateProfile(user, { displayName, photoURL });
-      // Create or update the user document in Firestore
       await this.createOrUpdateUserInFirestore(
         user,
         'password',
@@ -162,8 +129,6 @@ export class AuthService {
         name: this.userToRegister.displayName,
         photoUrl: this.userToRegister.photoURL,
       });
-      // Update the userSubject with the newly registered user
-      this.userSubject.next(user);
     });
     return from(promise);
   }
@@ -190,9 +155,6 @@ export class AuthService {
   login(email: string, password: string): Observable<void> {
     const promise = signInWithEmailAndPassword(this.auth, email, password).then(
       async (response) => {
-        // Update the userSubject with the logged-in user
-        this.userSubject.next(response.user);
-        // Create or update the user document in Firestore
         await this.createOrUpdateUserInFirestore(response.user, 'password');
       }
     );
@@ -208,9 +170,6 @@ export class AuthService {
     const promise = signInWithPopup(auth, this.provider)
       .then(async (response) => {
         const user = response.user;
-        // Update the userSubject with the logged-in Google user
-        this.userSubject.next(user);
-        // Create or update the user document in Firestore
         await this.createOrUpdateUserInFirestore(user, 'google.com');
       })
       .catch((error) => {

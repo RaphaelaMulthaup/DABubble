@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Signal } from '@angular/core';
 import { UserListItemComponent } from '../../shared/components/user-list-item/user-list-item.component'; // Importing the user list item component for rendering individual user results
 import { ChannelListItemComponent } from '../../shared/components/channel-list-item/channel-list-item.component'; // Importing the channel list item component for rendering individual channel results
 import { PostListItemComponent } from '../../shared/components/post-list-item/post-list-item.component'; // Importing the post list item component for rendering individual post results
@@ -15,20 +15,20 @@ import { OverlayService } from '../../services/overlay.service'; // Importing th
   styleUrl: './search-results.component.scss', // The styles specific to this component
 })
 export class SearchResultsComponent {
-  /** 
-   * Input property that receives an array of search results. 
+  /**
+   * Input property that receives an array of search results.
    * This array can contain users, channels, or posts based on the search context.
    */
-  @Input() results$: any[] = [];
+  @Input() results$!: Signal<any[]>;
 
-  /** 
-   * Input property that receives the search term. 
+  /**
+   * Input property that receives the search term.
    * This is used to display or highlight the search query.
    */
   @Input() searchTerm: string = '';
 
-  /** 
-   * Constructor that injects the OverlayService to manage overlay-related functionality. 
+  /**
+   * Constructor that injects the OverlayService to manage overlay-related functionality.
    * The OverlayService can be used to open or close various overlays, like profile views.
    */
   constructor(public overlayService: OverlayService) {}

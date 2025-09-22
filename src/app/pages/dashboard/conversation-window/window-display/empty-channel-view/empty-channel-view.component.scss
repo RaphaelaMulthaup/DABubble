@@ -3,7 +3,6 @@
 section {
   @include dFlex($ai: flex-start, $g: 13px);
   flex-direction: column;
-  padding: 0 16px;
 }
 
 .infos {
