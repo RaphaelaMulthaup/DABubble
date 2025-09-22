@@ -103,6 +103,7 @@ export class CurrentPostInput implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe((id) => {
         this.conversationId = id;
+        this.getConversationName();
       });
 
     this.conversationActiveRouterService
@@ -118,27 +119,6 @@ export class CurrentPostInput implements OnInit, OnDestroy {
           }
         });
       });
-
-    if (this.conversationType === 'channel') {
-      this.channelService
-        .getCurrentChannel(this.conversationId)
-        .pipe(take(1))
-        .subscribe((channel) => {
-          this.conversationName = channel!.name;
-        });
-    } else {
-      console.log(this.conversationId);
-      const otherUserId = this.chatService.getOtherUserId(
-        this.conversationId,
-        this.authService.getCurrentUserId()!
-      );
-      this.userService
-        .getUserById(otherUserId)
-        .pipe(take(1))
-        .subscribe((user) => {
-          this.conversationName = user.name;
-        });
-    }
   }
 
   ngOnDestroy() {
@@ -153,6 +133,32 @@ export class CurrentPostInput implements OnInit, OnDestroy {
     return this.conversationWindowState === 'conversation'
       ? this.textareaConversation
       : this.textareaThread;
+  }
+
+  /**
+   * This function sets the name of the current conversation, whether its a channel or a chat.
+   */
+  getConversationName() {
+    if (this.conversationType === 'channel') {
+      this.channelService
+        .getCurrentChannel(this.conversationId)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((channel) => {
+          this.conversationName = channel?.name || '';
+        });
+    } else {
+      console.log(this.conversationId);
+      const otherUserId = this.chatService.getOtherUserId(
+        this.conversationId,
+        this.authService.getCurrentUserId()!
+      );
+      this.userService
+        .getUserById(otherUserId)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((user) => {
+          this.conversationName = user?.name || '';
+        });
+    }
   }
 
   /**
