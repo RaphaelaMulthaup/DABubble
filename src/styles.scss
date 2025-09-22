@@ -363,6 +363,27 @@ h4 {
   z-index: 1001;
 }
 
+::-webkit-scrollbar{
+  width: 10px;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb{
+  background-color: var(--color-purple-light-lines);
+  border-radius: 10px;
+  height: 64px;
+}
+
+::-webkit-scrollbar-thumb:hover{
+  background-color: var(--color-purple-light);
+}
+
+::-webkit-scrollbar-track{
+  height: 36px;
+  background-color: var(--color-purple-white);
+  border-radius: 5px;
+}
+
 /* nunito-200 - latin */
 @font-face {
   font-display: swap;
