@@ -129,12 +129,14 @@ export class DisplayedPostComponent {
       distinctUntilChanged((a, b) => a === b)
     );
 
-    if (!this.post) return;
-    this.senderIsCurrentUser =
-      this.post.senderId === this.authService.currentUser.uid;
-    const user$ = this.userService.getUserById(this.post.senderId);
-    this.senderName$ = user$.pipe(map((u) => u?.name ?? ''));
-    this.senderPhotoUrl$ = user$.pipe(map((u) => u?.photoUrl ?? ''));
+    setTimeout(() => {
+      if (!this.post) return;
+      this.senderIsCurrentUser =
+        this.post.senderId === this.authService.currentUser.uid;
+      const user$ = this.userService.getUserById(this.post.senderId);
+      this.senderName$ = user$.pipe(map((u) => u?.name ?? ''));
+      this.senderPhotoUrl$ = user$.pipe(map((u) => u?.photoUrl ?? ''));
+    });
 
     // Zeit formatieren
     this.createdAtTime$ = of(this.post.createdAt).pipe(
