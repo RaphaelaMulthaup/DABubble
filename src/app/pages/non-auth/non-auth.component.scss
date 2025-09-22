@@ -1,14 +1,14 @@
 @import "../../shared/styles/outside-dashboard.scss";
 
-// header {
-//     .logo{
-//         visibility: hidden;
-//     }
+header {
+    .logo{
+        visibility: hidden;
+    }
+}
 
-//     .show-logo{
-//         visibility: visible;
-//     }
-// }
+.show-logo{
+    visibility: visible;
+}
 
 footer {
     padding-bottom: 16px;

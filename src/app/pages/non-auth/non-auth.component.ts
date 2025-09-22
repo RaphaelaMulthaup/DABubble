@@ -117,7 +117,7 @@ export class NonAuthComponent {
    * shows intro animation only if currentState is "login"
    */
   handleIntroState() {
-    if (this.currentState = 'login') {
+    if (this.currentState === 'login') {
       this.showLogo();
     } else {
       this.noIntro();
@@ -128,10 +128,15 @@ export class NonAuthComponent {
    * Make sure page is displayed correct if currentState is not "login"
    */
   noIntro() {
-    let intro = document.querySelector('.intro');
+    let intro  = document.querySelector('.intro');
     let showLogo = document.querySelector('.logo');
 
-    intro?.classList.add('hide');
-    showLogo?.classList.add('.show-logo');
+    if (intro) {
+      intro.classList.add('hiderIntro');
+    }
+
+    if (showLogo) {
+      showLogo.classList.add('show-logo');
+    }
   }
 }
