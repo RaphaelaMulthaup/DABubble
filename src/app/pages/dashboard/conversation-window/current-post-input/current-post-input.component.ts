@@ -377,7 +377,7 @@ export class CurrentPostInput implements OnInit, OnDestroy {
    *
    * @param mark the marked user- or channel name as a template.
    */
-  insertName(mark: string) {
+  async insertName(mark: string) {
     const selection = window.getSelection();
     if (!this.savedRange || !selection) return;
     selection.removeAllRanges();
@@ -385,8 +385,9 @@ export class CurrentPostInput implements OnInit, OnDestroy {
     const range = selection.getRangeAt(0);
     range.collapse(false);
 
-    if (this.searchText) this.deleteAfterSearchChar(this.searchText.length);
+    if (this.searchText) await this.deleteAfterSearchChar(this.searchText.length);
     document.execCommand('insertHTML', false, mark);
+    this.postService.focusAtEndEditable(this.postTextInput);
     this.searchResults = [];
     this.searchChar = null;
     this.searchText = null;
@@ -405,7 +406,7 @@ export class CurrentPostInput implements OnInit, OnDestroy {
                 typeOfResult == 'user' ? 'alternate-email-purple' : 'tag-blue'
               }.svg" alt="mark-${typeOfResult}">
               <span>${name}</span>
-            </mark>`;
+            </mark>&nbsp;`;
   }
 
   /**
@@ -413,23 +414,12 @@ export class CurrentPostInput implements OnInit, OnDestroy {
    *
    * @param length how many chars should be deleted
    */
-  deleteAfterSearchChar(length: number) {
+  async deleteAfterSearchChar(length: number) {
     const selection = window.getSelection();
-    if (!selection || !selection.rangeCount) return;
-
-    let node = selection.anchorNode!;
-    let offset = selection.anchorOffset;
-
-    if (node.nodeType !== Node.TEXT_NODE) {
-      node = node.childNodes[offset - 1] || node;
-      if (node.nodeType !== Node.TEXT_NODE) return;
-      offset = (node.textContent || '').length;
-    }
-
-    const startOffset = Math.max(offset - length, 0);
-    const range = document.createRange();
-    range.setStart(node, startOffset);
-    range.setEnd(node, offset);
+    const range = selection!.getRangeAt(0).cloneRange();
+    range.setStart(range.endContainer, Math.max(range.endOffset - length, 0));
     range.deleteContents();
+    selection!.removeAllRanges();
+    selection!.addRange(range);
   }
 }
