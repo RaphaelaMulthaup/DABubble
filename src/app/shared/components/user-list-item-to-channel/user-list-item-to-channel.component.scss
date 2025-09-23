@@ -1,11 +1,15 @@
+.border {
+  border: 1px solid #adb0d9;
+  width: 100%;
+  max-width: 411px;
+  height: 171px;
+}
 .container {
-  max-width: 335px;
-  max-height: 171px;
+  max-height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  border: 1px solid #adb0d9;
 }
 
 .profil-img {
@@ -15,6 +19,8 @@
 }
 
 .user-list-item {
+  display: flex;
+  width: 100vw;
   gap: 15px !important;
   border-radius: 35px;
   padding-top: 4px;

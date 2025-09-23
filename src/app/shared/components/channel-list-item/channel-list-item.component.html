@@ -6,15 +6,21 @@
       : emitChannel()
   "
   [routerLink]="
-    !isInSearchResultsCurrentPostInput ? ['/dashboard', 'channel', channel.id] : null
+    !isInSearchResultsCurrentPostInput
+      ? ['/dashboard', 'channel', channel.id]
+      : null
   "
   [ngClass]="{ 'related-to-search-result-post': relatedToSearchResultPost }"
 >
-  <div class="tag"></div>
-
   @if(isInChannelHeader){
-    <h2>{{ channel.name }}</h2>
-    <span class="arrow"></span>
+  <div class="tag"></div>
+  @if((screenSize$|async) === 'handset'){
+  <h2>{{ truncate(channel.name, 15) }}</h2>
+  }@else {
+  <h2>{{ channel.name }}</h2>
+  }
+
+  <span class="arrow"></span>
   }@else {
   <span>{{ channel.name }}</span>
   }

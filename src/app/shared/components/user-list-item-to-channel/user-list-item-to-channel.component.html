@@ -1,5 +1,5 @@
-<div [ngClass]="onBottom ? 'overlayBottom' : 'overlay-left'" class="container">
-  <ul>
+<div [ngClass]="onBottom ? 'overlayBottom' : 'overlay-left'" class="border">
+  <ul class="container">
     @for (user of results(); track $index) {
     <li class="list-item user-list-item" (click)="addMemberToArray(user)">
       <img class="profil-img" src="{{ user.photoUrl }}" alt="Profilbild" />

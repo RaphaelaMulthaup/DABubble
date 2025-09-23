@@ -3,6 +3,9 @@ import { ChannelInterface } from '../../models/channel.interface'; // Importing 
 import { RouterLink } from '@angular/router'; // Importing Angular's Router and RouterLink for navigation
 import { CommonModule } from '@angular/common'; // Importing Angular's CommonModule for basic Angular functionality
 import { MobileService } from '../../../services/mobile.service'; // Importing the MobileService to handle mobile-specific logic
+import { ScreenService } from '../../../services/screen.service';
+import { ScreenSize } from '../../types/screen-size.type';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-channel-list-item', // Component selector for this item
@@ -14,9 +17,14 @@ import { MobileService } from '../../../services/mobile.service'; // Importing t
   ],
 })
 export class ChannelListItemComponent {
+  screenSize$!: Observable<ScreenSize>;
+
   constructor(
-    public mobileService: MobileService, // Injecting MobileService for handling mobile-specific state
-  ) {}
+    public mobileService: MobileService, // Injecting MobileService for handling mobile-specific state\
+    public screenService: ScreenService
+  ) {
+    this.screenSize$ = this.screenService.screenSize$;
+  }
 
   /**
    * The channel whose information should be displayed.
@@ -43,5 +51,9 @@ export class ChannelListItemComponent {
    */
   emitChannel() {
     this.channelSelected.emit(this.channel); // Emit the channel data to the parent component
+  }
+
+  truncate(text: string, maxLength: number): string {
+    return text.length > maxLength ? text.slice(0, maxLength) + '…' : text;
   }
 }

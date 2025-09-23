@@ -4,6 +4,7 @@ import {
   inject,
   Input,
   QueryList,
+  ViewChild,
   ViewChildren,
   WritableSignal,
 } from '@angular/core';
@@ -56,6 +57,11 @@ export class WindowDisplayComponent {
   postElements!: QueryList<ElementRef>; // References to all rendered posts
   channelTyp$?: Observable<string>; // Observable for channel type (chat or channel)
 
+  @ViewChild('messagesContainer')
+  messagesContainer!: ElementRef<HTMLDivElement>;
+  @ViewChildren('messageElement', { read: ElementRef })
+  messageElements!: QueryList<ElementRef>;
+
   // Localized days of the week for displaying timestamps
   days = [
     'Sonntag',
@@ -71,6 +77,7 @@ export class WindowDisplayComponent {
   private pendingScrollTo?: string; // Stores a post ID to scroll to once available
   private destroy$ = new Subject<void>(); // Used to clean up subscriptions
   screenSize$!: Observable<ScreenSize>;
+  private initialScrollDone = false;
 
   constructor(
     private el: ElementRef,
@@ -123,6 +130,7 @@ export class WindowDisplayComponent {
         this.currentConversationId, // new chat ID
         data // new messages
       );
+      setTimeout(() => this.scrollToLastMessage(), 0);
     });
 
     // Subscribe to scroll requests from PostService
@@ -146,6 +154,20 @@ export class WindowDisplayComponent {
    * Used to scroll to posts once DOM elements are available.
    */
   ngAfterViewInit() {
+    setTimeout(() => {
+      if (!this.initialScrollDone) {
+        this.scrollToLastMessage();
+      }
+    }, 0);
+
+    this.messageElements.changes
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        if (!this.initialScrollDone) {
+          this.scrollToLastMessage();
+        }
+      });
+
     // Retry pending scroll requests when ViewChildren change
     this.postElements.changes.pipe(takeUntil(this.destroy$)).subscribe(() => {
       if (this.pendingScrollTo) {
@@ -157,7 +179,21 @@ export class WindowDisplayComponent {
     const initial = this.route.snapshot.queryParams['scrollTo'];
     if (initial) this.handleScrollRequest(initial);
 
-    console.log(this.conversationWindowState)
+    console.log(this.conversationWindowState);
+  }
+
+  private scrollToLastMessage() {
+    const messagesArray = this.messageElements?.toArray();
+    if (!messagesArray?.length) return;
+
+    const lastMessage = messagesArray[messagesArray.length - 1].nativeElement;
+
+    lastMessage.scrollIntoView({
+      block: 'end', // aliniază mesajul la baza containerului
+      behavior: 'auto', // auto | smoth
+    });
+
+    this.initialScrollDone = true;
   }
 
   /**
