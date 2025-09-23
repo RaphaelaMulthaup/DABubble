@@ -12,8 +12,18 @@ import { ChannelInterface } from '../../shared/models/channel.interface';
 import { CommonModule } from '@angular/common';
 import { SearchService } from '../../services/search.service';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { debounceTime, startWith, map, Observable, combineLatest } from 'rxjs';
-import { toSignal } from '@angular/core/rxjs-interop';
+import {
+  debounceTime,
+  startWith,
+  map,
+  Observable,
+  combineLatest,
+  takeUntil,
+  Subject,
+  of,
+  BehaviorSubject,
+} from 'rxjs';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { UserInterface } from '../../shared/models/user.interface';
 import { ChannelsService } from '../../services/channels.service';
 import { Overlay, OverlayRef } from '@angular/cdk/overlay';
@@ -56,6 +66,9 @@ export class AddMemberToChannelComponent {
   // Signal for storing filtered users based on the search term
   results!: Signal<UserInterface[]>;
 
+  private destroy$ = new Subject<void>();
+  membersIds$ = new BehaviorSubject<string[]>([]);
+
   constructor(
     private searchService: SearchService, // Service to manage search functionality
     private channelService: ChannelsService, // Service to manage channels and members
@@ -89,13 +102,18 @@ export class AddMemberToChannelComponent {
 
     // Combining search term and users from the service to filter users based on the term
     this.results = toSignal(
-      combineLatest([this.term$, this.searchService.users$]).pipe(
-        map(([term, users]) => {
+      combineLatest([
+        this.term$,
+        this.searchService.users$,
+        this.membersIds$,
+      ]).pipe(
+        map(([term, users, memberIds]) => {
           if (!term) return []; // No search term, return empty array
           return users.filter(
             (user) =>
-              user.name?.toLowerCase().includes(term) ||
-              user.email?.toLowerCase().includes(term) // Filter users by name or email
+              !memberIds.includes(user.uid) &&
+              (user.name?.toLowerCase().includes(term) ||
+                user.email?.toLowerCase().includes(term))
           );
         })
       ),
@@ -104,8 +122,18 @@ export class AddMemberToChannelComponent {
   }
 
   ngOnInit() {
+    this.channelDetails$
+      ?.pipe(takeUntil(this.destroy$))
+      .subscribe((channel) => {
+        this.membersIds$.next(channel?.memberIds ?? []);
+      });
     // Clear the list of users in the service when the component is initialized
     this.overlayService.clearUsers();
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   isClosing = false;

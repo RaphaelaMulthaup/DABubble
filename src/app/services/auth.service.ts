@@ -30,6 +30,7 @@ import { from, Observable, of, shareReplay, switchMap, tap } from 'rxjs';
 import { BehaviorSubject } from 'rxjs';
 import { UserInterface } from '../shared/models/user.interface';
 import { UserService } from './user.service';
+import { ChatService } from './chat.service';
 
 @Injectable({
   providedIn: 'root',
@@ -55,7 +56,8 @@ export class AuthService {
   constructor(
     private auth: Auth,
     private firestore: Firestore,
-    private userService: UserService
+    private userService: UserService,
+    private chatService: ChatService
   ) {
     // Voll reaktives Observable, das automatisch auf AuthStateChanges reagiert
     this.currentUser$ = new Observable<User | null>((subscriber) =>
@@ -164,11 +166,6 @@ export class AuthService {
     return from(promise);
   }
 
-  private getRandomAvatar(): string {
-    const random = Math.floor(Math.random() * 6); // 0–5
-    return `./assets/img/avatar-option-${random}.svg`;
-  }
-
   loginAsGuest(): Observable<void> {
     const promise = signInAnonymously(this.auth)
       .then(async (credential) => {
@@ -178,11 +175,24 @@ export class AuthService {
         await this.userService.updateUser(user.uid, {
           photoUrl: avatar,
         });
+        await this.addDirectChatToTeam(user.uid);
       })
       .catch((error) => {
         console.error('Guest login error:', error);
       });
     return from(promise) as Observable<void>;
+  }
+
+  private getRandomAvatar(): string {
+    const random = Math.floor(Math.random() * 6); // 0–5
+    return `./assets/img/avatar-option-${random}.svg`;
+  }
+
+  async addDirectChatToTeam(userId: string) {
+    await this.chatService.createChat(userId, 'XbsVa8YOj8Nd9vztzX1kAQXrc7Z2');
+    await this.chatService.createChat(userId, '5lntBSrRRUM9JB5AFE14z7lTE6n1');
+    await this.chatService.createChat(userId, 'rUnD1S8sHOgwxvN55MtyuD9iwAD2');
+    await this.chatService.createChat(userId, 'NxSyGPn1LkPV3bwLSeW94FPKRzm1');
   }
 
   /**
