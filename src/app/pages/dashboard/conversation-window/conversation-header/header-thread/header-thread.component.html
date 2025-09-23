@@ -1,11 +1,12 @@
-@if(channelDetails$ | async; as channel) {
 <section
   class="flex item-center justify-between w-full px-[10px] py-[16px] max-h-[60px] lg:px-[25px] lg:py-[45px] lg:max-h-[96px]"
 >
   <div class="flex items-center">
     <h2>Thread</h2>
+    @if(channelDetails$ | async; as channel) {
     <div class="flex tag-color"></div>
     <span>{{ channel.name }}</span>
+    }
   </div>
   <div class="flex items-center">
     <button (click)="redirectTo(conversationType, conversationId)">
@@ -13,4 +14,3 @@
     </button>
   </div>
 </section>
-}
