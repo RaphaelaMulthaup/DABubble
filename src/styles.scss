@@ -386,6 +386,13 @@ h4 {
   border-radius: 5px;
 }
 
+//for firefox scrollbar
+
+* {
+  scrollbar-width: auto; /* auto | thin | none */
+  scrollbar-color: var(--color-purple-light-lines) var(--color-white);
+}
+
 .empty-consersation-view {
   @include dFlex($jc: flex-start);
   width: 100%;
