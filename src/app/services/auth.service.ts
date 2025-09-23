@@ -7,9 +7,12 @@ import {
   User,
 } from '@angular/fire/auth';
 import { signInWithEmailAndPassword } from 'firebase/auth';
+import { signInAnonymously } from 'firebase/auth';
+import { deleteUser } from 'firebase/auth';
 
 import {
   Firestore,
+  deleteDoc,
   doc,
   getDoc,
   setDoc,
@@ -85,7 +88,7 @@ export class AuthService {
   /*** Create or update Firestore user document ***/
   private async createOrUpdateUserInFirestore(
     user: User,
-    authProvider: 'google.com' | 'password',
+    authProvider: 'google.com' | 'password' | 'anonymous',
     displayName?: string
   ) {
     const userRef = doc(this.firestore, `users/${user.uid}`);
@@ -161,6 +164,27 @@ export class AuthService {
     return from(promise);
   }
 
+  private getRandomAvatar(): string {
+    const random = Math.floor(Math.random() * 6); // 0–5
+    return `./assets/img/avatar-option-${random}.svg`;
+  }
+
+  loginAsGuest(): Observable<void> {
+    const promise = signInAnonymously(this.auth)
+      .then(async (credential) => {
+        const user = credential.user;
+        const avatar = this.getRandomAvatar();
+        await this.createOrUpdateUserInFirestore(user, 'anonymous', 'Guest');
+        await this.userService.updateUser(user.uid, {
+          photoUrl: avatar,
+        });
+      })
+      .catch((error) => {
+        console.error('Guest login error:', error);
+      });
+    return from(promise) as Observable<void>;
+  }
+
   /**
    * Logs in a user with Google authentication
    * @returns Observable<void>
@@ -175,7 +199,6 @@ export class AuthService {
       .catch((error) => {
         console.error('Google Login Error:', error);
       });
-
     return from(promise) as Observable<void>;
   }
 
@@ -188,7 +211,20 @@ export class AuthService {
       return signOut(this.auth);
     }
     const userRef = doc(this.firestore, `users/${user.uid}`);
-    return updateDoc(userRef, { active: false }).then(() => signOut(this.auth));
+    const isGuest = user.isAnonymous;
+
+    if (isGuest) {
+      return deleteDoc(userRef)
+        .catch(() => {})
+        .then(() => {
+          return deleteUser(user);
+        })
+        .catch((err) => console.error('Failed to delete guest user:', err));
+    } else {
+      return updateDoc(userRef, { active: false }).then(() =>
+        signOut(this.auth)
+      );
+    }
   }
 
   /**

@@ -9,7 +9,7 @@ export interface UserInterface {
   name: string;
   email: string;
   photoUrl?: string;
-  authProvider: 'password' | 'google.com';
+  authProvider: 'password' | 'google.com' | 'anonymous';
   active: boolean;
   role: 'user' | 'admin';
 }
