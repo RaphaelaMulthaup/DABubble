@@ -85,4 +85,17 @@ export class LoginFormComponent {
       },
     });
   }
+
+  loginGuest() {
+    const user = 'max@musterman.com';
+    const password = '123456';
+    this.authService.login(user, password).subscribe({
+      next: () => {
+        console.log('Login like a Guest successful');
+      },
+      error: (err) => {
+        console.error('Login like a Guest failed', err);
+      },
+    });
+  }
 }

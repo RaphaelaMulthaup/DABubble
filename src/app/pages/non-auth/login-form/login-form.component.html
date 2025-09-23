@@ -1,55 +1,100 @@
 <div *ngIf="showLogin">
-    <section class="flex flex-col items-center">
-        <div class="headline flex flex-col">
-            <h1>Anmeldung</h1>
-            <p>Wir empfehlen dir, die E-Mail-Adresse zu nutzen, die du bei der Arbeit verwendest.</p>
+  <section class="flex flex-col items-center">
+    <div class="headline flex flex-col">
+      <h1>Anmeldung</h1>
+      <p>
+        Wir empfehlen dir, die E-Mail-Adresse zu nutzen, die du bei der Arbeit
+        verwendest.
+      </p>
+    </div>
+    <form
+      action=""
+      [formGroup]="loginForm"
+      (ngSubmit)="onSubmit()"
+      class="form-group flex flex-col items-center w-full"
+    >
+      <div class="input-container flex flex-col w-full">
+        <div>
+          <div class="flex items-center relative">
+            <img
+              class="input-icon absolute"
+              src="./assets/img/mail.svg"
+              alt="mail"
+            />
+            <input
+              class="input-primary"
+              id="emailId"
+              type="text"
+              placeholder="beispielname@email.com"
+              formControlName="email"
+              name="email"
+              required
+              pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}"
+              (keydown.enter)="$event.preventDefault(); onSubmit()"
+            />
+          </div>
+          <p class="error-message">
+            @if (loginForm.get('email')?.touched &&
+            loginForm.get('email')?.invalid) {Bitte gib eine gültige
+            E-Mail-Addresse ein.}
+          </p>
         </div>
-        <form action="" [formGroup]="loginForm" (ngSubmit)="onSubmit()"
-            class="form-group flex flex-col items-center w-full">
-            <div class="input-container flex flex-col w-full">
-                <div>
-                    <div class="flex items-center relative">
-                        <img class="input-icon absolute" src="./assets/img/mail.svg" alt="mail">
-                        <input class="input-primary" id="emailId" type="text" placeholder="beispielname@email.com"
-                            formControlName="email" name="email" required pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}" (keydown.enter)="$event.preventDefault(); onSubmit()">
-                    </div>
-                    <p class="error-message">
-                    @if (loginForm.get('email')?.touched && loginForm.get('email')?.invalid)
-                        {Bitte gib eine gültige E-Mail-Addresse ein.}
-                    </p>
-                </div>
-                <div>
-                    <div class="flex items-center relative">
-                        <img class="input-icon absolute" src="./assets/img/lock.svg" alt="lock">
-                        <input class="input-primary" id="passwordId" type="password" placeholder="Passwort"
-                            formControlName="password" name="password" required (keydown.enter)="$event.preventDefault(); onSubmit()">
-                    </div>
-                    <p class="error-message">
-                    @if (loginForm.get('password')?.invalid &&loginForm.get('password')?.touched)
-                        {Dein Passwort muss min. 6 Zeichen lang sein.}</p>
-                </div>
-                <p class="error-message">
-                    @if (showErrorMessage && !isSubmittingWithGoogle){E-Mail und Passwort stimmen nicht überein.}
-                </p>
-            </div>
+        <div>
+          <div class="flex items-center relative">
+            <img
+              class="input-icon absolute"
+              src="./assets/img/lock.svg"
+              alt="lock"
+            />
+            <input
+              class="input-primary"
+              id="passwordId"
+              type="password"
+              placeholder="Passwort"
+              formControlName="password"
+              name="password"
+              required
+              (keydown.enter)="$event.preventDefault(); onSubmit()"
+            />
+          </div>
+          <p class="error-message">
+            @if (loginForm.get('password')?.invalid
+            &&loginForm.get('password')?.touched) {Dein Passwort muss min. 6
+            Zeichen lang sein.}
+          </p>
+        </div>
+        <p class="error-message">
+          @if (showErrorMessage && !isSubmittingWithGoogle){E-Mail und Passwort
+          stimmen nicht überein.}
+        </p>
+      </div>
 
-            <button type="button" class="link" (click)="onForgotPassword()">Passwort vergessen?</button>
+      <button type="button" class="link" (click)="onForgotPassword()">
+        Passwort vergessen?
+      </button>
 
-            <div class="seperator-container flex items-center w-full">
-                <div class="seperator"></div>
-                <p>ODER</p>
-                <div class="seperator"></div>
-            </div>
+      <div class="seperator-container flex items-center w-full">
+        <div class="seperator"></div>
+        <p>ODER</p>
+        <div class="seperator"></div>
+      </div>
 
-            <button (click)="loginWithGoogle()" class="google-login-btn flex items-center place-content-center w-full">
-                <img src="./assets/img/google.svg" alt="Google icon">
-                <p>Anmelden mit Google</p>
-            </button>
+      <button
+        (click)="loginWithGoogle()"
+        class="google-login-btn flex items-center place-content-center w-full"
+      >
+        <img src="./assets/img/google.svg" alt="Google icon" />
+        <p>Anmelden mit Google</p>
+      </button>
 
-            <div class="submit-btns flex">
-                <button class="btn-primary" type="submit" [disabled]="!loginForm.valid">Anmelden</button>
-                <button class="btn-secondary">Gäste-Login</button>
-            </div>
-        </form>
-    </section>
+      <div class="submit-btns flex">
+        <button class="btn-primary" type="submit" [disabled]="!loginForm.valid">
+          Anmelden
+        </button>
+        <button class="btn-secondary" (click)="loginGuest()">
+          Gäste-Login
+        </button>
+      </div>
+    </form>
+  </section>
 </div>
