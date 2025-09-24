@@ -4,11 +4,15 @@ nav {
   // max-width: 336px;
   // border-radius: 30px;
   padding-top: 32px;
-  padding-right: 30px;
   padding-bottom: 32px;
   padding-left: 30px;
   gap: 28px;
   border-radius: 30px;
+}
+
+.nav-content {
+  height: 100%;
+  overflow-y: auto;
 }
 
 app-channel-list {
@@ -33,3 +37,4 @@ app-contacts-list {
     background-color: var(--color-purple-light);
   }
 }
+
