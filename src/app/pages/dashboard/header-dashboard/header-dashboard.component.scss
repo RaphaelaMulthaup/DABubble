@@ -35,6 +35,11 @@ app-search-bar {
   @include dFlex($jc: flex-end, $g: 20px);
 }
 
+h1{
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 h1 {
   white-space: nowrap;
   color: var(--color-black);

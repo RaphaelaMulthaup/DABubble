@@ -23,6 +23,10 @@
 
 .user-name{
     color: black;
+    width: 300px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .profile-h3{
