@@ -1,57 +1,68 @@
-@import './../../../styles.scss';
+@import "./../../../styles.scss";
 
-.settings-view-main{
-    background-color: white;
-    width: 280px;
-    height: 180px;
-    z-index: 10;
-    border-top-left-radius: 10px;
-    border-bottom-left-radius: 10px;
-    border-bottom-right-radius: 10px;
-    padding: 38px;
-    position: absolute;
-    right: 36px;
-    top: 100px;
+.settings-view-main {
+  background-color: white;
+  width: 280px;
+  height: 180px;
+  z-index: 10;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  padding: 38px;
+  position: absolute;
+  right: 36px;
+  top: 100px;
 
-    @include respond-to(xs) {
-        top: unset;
-        right: 0;
-        bottom: 0px;
-        width: 100%;
-        height: 200px;
-        border-top-left-radius: 35px;
-        border-top-right-radius: 35px;
-    }
+  @include respond-to(xs) {
+    top: unset;
+    right: 0;
+    bottom: 0px;
+    width: 100%;
+    height: 200px;
+    border-top-left-radius: 35px;
+    border-top-right-radius: 35px;
+  }
 }
 
-.settings-btn{
-    width: 100%;
-    font-size: 24px;
-    font-weight: 600;
-    height: 48px;
-    border-radius: 35px;
+.settings-btn {
+  width: 100%;
+  font-size: 24px;
+  font-weight: 600;
+  height: 48px;
+  border-radius: 35px;
 
-    &:hover{
-        cursor: pointer;
-        color: var(--color-blue);
-        background-color: var(--color-purple-white);
+  &:hover {
+    cursor: pointer;
+    color: var(--color-blue);
+    background-color: var(--color-purple-white);
+  }
+
+  @include respond-to(xs) {
+    justify-content: start;
+
+    &:hover {
+      color: black;
+      background-color: white;
     }
+  }
+
+  .settingsIcon {
+    display: none;
+    padding: 0px 15px 0px 0px;
 
     @include respond-to(xs) {
-        justify-content: start;
-
-        &:hover{
-            color: black;
-            background-color: white;
-        }
+      display: flex;
     }
+  }
+}
 
-    .settingsIcon{
-        display: none;
-        padding: 0px 15px 0px 0px;
+.overlay-close {
+  transition: transform 0.5s ease, opacity 0.5s ease;
+  transform: translateY(0);
+  opacity: 1;
+}
 
-        @include respond-to(xs) {
-            display: flex;
-        }
-    }
+.overlay-close.closing {
+  transform: translateY(100%);
+  opacity: 0;
 }

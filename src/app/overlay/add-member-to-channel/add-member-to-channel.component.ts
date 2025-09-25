@@ -50,6 +50,9 @@ export class AddMemberToChannelComponent {
   overlay: string = ''; // String used to manage overlay state
   private resultsOverlayRef?: OverlayRef; // Here save the overlay ref to close if results are null
 
+  //We use this boolean to check if our overlay is open or close
+  isClosing = false;
+
   @ViewChild('addMemberSearchBar', { static: false })
   addMemberSearchBar!: ElementRef<HTMLElement>;
 
@@ -136,13 +139,10 @@ export class AddMemberToChannelComponent {
     this.destroy$.complete();
   }
 
-  isClosing = false;
-
   closeOverlay() {
     this.isClosing = true;
     setTimeout(() => {
       this.overlayService.closeAll();
-      this.isClosing = false;
     }, 500); // duration matches CSS transition
   }
 
