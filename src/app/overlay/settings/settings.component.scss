@@ -26,10 +26,14 @@
 
 .btn-area{
     width: 100%;
+
+    @include respond-to(xs) {
+        justify-content: start;
+        align-items: baseline;
+
 }
 
 .settings-btn{
-    width: 100%;
     font-size: 24px;
     font-weight: 600;
     height: 48px;
@@ -40,9 +44,6 @@
         color: var(--color-blue);
         background-color: var(--color-purple-white);
     }
-
-    @include respond-to(xs) {
-        justify-content: start;
 
         &:hover{
             color: black;
