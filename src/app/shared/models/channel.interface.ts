@@ -4,7 +4,6 @@ export interface ChannelInterface {
   description?: string;
   memberIds: string[];
   name: string;
-  deleted: boolean;
   createdAt?: Date;
   // messages?: PostInterface[];
 }

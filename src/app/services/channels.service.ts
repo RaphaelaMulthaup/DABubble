@@ -88,7 +88,10 @@ export class ChannelsService {
    * @param description Optional description of the channel
    * @returns Observable that completes when the channel is created
    */
-  createChannel(name: string, description?: string): Observable<void> {
+  createChannel(
+    name: string,
+    description?: string
+  ): Observable<ChannelInterface | undefined> {
     const user = this.authService.currentUser;
     if (!user) throw new Error('User not logged in');
 
@@ -106,10 +109,11 @@ export class ChannelsService {
           description: description ?? '',
           memberIds: [user.uid],
           name,
-          deleted: false,
           createdAt: new Date(),
         };
-        return from(addDoc(channelRef, channelData)).pipe(map(() => {}));
+        return from(addDoc(channelRef, channelData)).pipe(
+          switchMap((docRef) => this.getCurrentChannel(docRef.id))
+        );
       })
     );
   }
@@ -220,8 +224,6 @@ export class ChannelsService {
   checkNameTacken(name: string): Observable<boolean> {
     let channelRef = collection(this.firestore, 'channels');
     let q = query(channelRef, where('name', '==', name));
-    return from(getDocs(q)).pipe(
-      map((snapshot) => snapshot.empty)
-    );
+    return from(getDocs(q)).pipe(map((snapshot) => snapshot.empty));
   }
 }
