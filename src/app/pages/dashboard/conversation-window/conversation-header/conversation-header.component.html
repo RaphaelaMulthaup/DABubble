@@ -15,7 +15,7 @@
         @case ('message-window') {
              @if(conversationType === 'channel') {
                 <app-header-channel class="flex" />
-            } @if (conversationType === 'chat') {
+            } @else if(conversationType === 'chat') {
                 <app-header-chat></app-header-chat>
             }
         } @case ('thread-window') {

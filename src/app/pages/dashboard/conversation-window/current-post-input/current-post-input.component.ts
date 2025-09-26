@@ -55,7 +55,7 @@ import { UserService } from '../../../../services/user.service';
 export class CurrentPostInput implements OnInit, OnDestroy {
   conversationType!: 'channel' | 'chat';
   conversationId!: string;
-  conversationName!: string;
+  conversationName!: string | null;
   /** If replying, holds the ID of the message being replied to; otherwise null. */
   messageToReplyId!: string | null;
   /** Stores any error message to be displayed in the input form. */
@@ -103,6 +103,7 @@ export class CurrentPostInput implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe((id) => {
         this.conversationId = id;
+        this.getConversationName();
       });
 
     this.conversationActiveRouterService
@@ -118,27 +119,6 @@ export class CurrentPostInput implements OnInit, OnDestroy {
           }
         });
       });
-
-    if (this.conversationType === 'channel') {
-      this.channelService
-        .getCurrentChannel(this.conversationId)
-        .pipe(take(1))
-        .subscribe((channel) => {
-          this.conversationName = channel!.name;
-        });
-    } else {
-      console.log(this.conversationId);
-      const otherUserId = this.chatService.getOtherUserId(
-        this.conversationId,
-        this.authService.getCurrentUserId()!
-      );
-      this.userService
-        .getUserById(otherUserId)
-        .pipe(take(1))
-        .subscribe((user) => {
-          this.conversationName = user.name;
-        });
-    }
   }
 
   ngOnDestroy() {
@@ -153,6 +133,33 @@ export class CurrentPostInput implements OnInit, OnDestroy {
     return this.conversationWindowState === 'conversation'
       ? this.textareaConversation
       : this.textareaThread;
+  }
+
+  /**
+   * This function sets the name of the current conversation, whether its a channel or a chat.
+   */
+  getConversationName() {
+    if (this.conversationType === 'channel') {
+      this.channelService
+        .getCurrentChannel(this.conversationId)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((channel) => {
+          this.conversationName = '#' + channel!.name || '';
+        });
+    } else if (this.conversationType === 'chat') {
+      const otherUserId = this.chatService.getOtherUserId(
+        this.conversationId,
+        this.authService.getCurrentUserId()!
+      );
+        this.userService
+          .getUserById(otherUserId)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe((user) => {
+            this.conversationName = '@' + user!.name || '';
+          });
+    } else {
+      this.conversationName = null;
+    }
   }
 
   /**
@@ -372,7 +379,7 @@ export class CurrentPostInput implements OnInit, OnDestroy {
    *
    * @param mark the marked user- or channel name as a template.
    */
-  insertName(mark: string) {
+  async insertName(mark: string) {
     const selection = window.getSelection();
     if (!this.savedRange || !selection) return;
     selection.removeAllRanges();
@@ -380,8 +387,10 @@ export class CurrentPostInput implements OnInit, OnDestroy {
     const range = selection.getRangeAt(0);
     range.collapse(false);
 
-    if (this.searchText) this.deleteAfterSearchChar(this.searchText.length);
+    if (this.searchText)
+      await this.deleteAfterSearchChar(this.searchText.length);
     document.execCommand('insertHTML', false, mark);
+    this.postService.focusAtEndEditable(this.postTextInput);
     this.searchResults = [];
     this.searchChar = null;
     this.searchText = null;
@@ -400,7 +409,7 @@ export class CurrentPostInput implements OnInit, OnDestroy {
                 typeOfResult == 'user' ? 'alternate-email-purple' : 'tag-blue'
               }.svg" alt="mark-${typeOfResult}">
               <span>${name}</span>
-            </mark>`;
+            </mark>&nbsp;`;
   }
 
   /**
@@ -408,23 +417,12 @@ export class CurrentPostInput implements OnInit, OnDestroy {
    *
    * @param length how many chars should be deleted
    */
-  deleteAfterSearchChar(length: number) {
+  async deleteAfterSearchChar(length: number) {
     const selection = window.getSelection();
-    if (!selection || !selection.rangeCount) return;
-
-    let node = selection.anchorNode!;
-    let offset = selection.anchorOffset;
-
-    if (node.nodeType !== Node.TEXT_NODE) {
-      node = node.childNodes[offset - 1] || node;
-      if (node.nodeType !== Node.TEXT_NODE) return;
-      offset = (node.textContent || '').length;
-    }
-
-    const startOffset = Math.max(offset - length, 0);
-    const range = document.createRange();
-    range.setStart(node, startOffset);
-    range.setEnd(node, offset);
+    const range = selection!.getRangeAt(0).cloneRange();
+    range.setStart(range.endContainer, Math.max(range.endOffset - length, 0));
     range.deleteContents();
+    selection!.removeAllRanges();
+    selection!.addRange(range);
   }
 }

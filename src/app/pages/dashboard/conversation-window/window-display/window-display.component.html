@@ -2,9 +2,14 @@
   #messagesContainer
   class="messages-container"
   [ngClass]="{
-    'messages-container-empty-view': (messages$ | async)?.length === 0
+    'messages-container-empty-view': (messages$ | async)?.length === 0 && conversationWindowState !== 'thread'
   }"
 >
+
+  @if (postAnswered && conversationWindowState === 'thread' && (!postAnswered.ansCounter || postAnswered.ansCounter === 0)) {
+    <app-empty-thread-view [post]="postAnswered"></app-empty-thread-view>
+  }
+
   @if ((messages$ | async); as messages) { @for (message of messages; track
   $index) { @if (shouldShowDate($index)) {
   <div class="seperator-container flex flex-row place-items-center">
@@ -15,7 +20,7 @@
       {{ days[message.createdAt.toDate().getDay()] }},
       {{ message.createdAt.toDate().getDate().toString().padStart(2, "0") }}.
       {{
-        message.createdAt.toDate().toLocaleString("de-DE", { month: "long" })
+      message.createdAt.toDate().toLocaleString("de-DE", { month: "long" })
       }}
       }
     </p>
@@ -41,15 +46,11 @@
   ></app-displayed-post>
   } } @else { @if (mobileDashboardState()!=='thread-window') { @switch
   (channelTyp$ | async) { @case ('chat') { @if (currentConversationId) {
-  <app-empty-chat-view
-    class="empty-consersation-view"
-    [ngClass]="
+  <app-empty-chat-view class="empty-consersation-view" [ngClass]="
       (screenSize$ | async) === 'web'
         ? 'empty-consersation-view-web'
         : 'empty-consersation-view-handset-tablet'
-    "
-    [currentChatId]="currentConversationId"
-  ></app-empty-chat-view>
+    " [currentChatId]="currentConversationId"></app-empty-chat-view>
   } } @case ('channel') {
   <app-empty-channel-view
     class="empty-consersation-view"
