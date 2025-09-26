@@ -47,8 +47,5 @@
   font-size: 18px;
 }
 .tag-is-active {
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: auto;
-  background-image: url("./../../../../assets/img/tag-blue.svg");
+  background-image: url("./../../../../assets/img/tag-blue.svg") !important;
 }
