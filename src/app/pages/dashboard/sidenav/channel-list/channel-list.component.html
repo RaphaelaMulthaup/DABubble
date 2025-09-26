@@ -12,9 +12,12 @@
     </div>
   </button>
 
-  <div class="flex items-center">
-    <button (click)="openCreateChannelFormOverlay()" class="btn-tertiary">
-      <img src="./assets/img/add.svg" alt="add button" />
+  <div class="flex items-center pr-[30px]">
+    <button
+      (click)="openCreateChannelFormOverlay()"
+      class="btn-tertiary flex items-center justify-center"
+    >
+      <img src="./assets/img/add.svg" alt="add button" class="w-[24px]" />
     </button>
   </div>
 </div>
@@ -22,7 +25,10 @@
 @if (channelsVisible) {
 <div class="channel-list">
   @for (channel of channels$ | async; track $index) {
-  <app-channel-list-item [channel]="channel" (click)="mobileService.mobileDashboardState.set('message-window')"></app-channel-list-item>
+  <app-channel-list-item
+    [channel]="channel"
+    (click)="mobileService.mobileDashboardState.set('message-window')"
+  ></app-channel-list-item>
   }
   <button
     (click)="openCreateChannelFormOverlay()"
