@@ -1,58 +1,63 @@
 .btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background-color: var(--color-purple-white);
-    padding-top: 3px;
-    padding-bottom: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--color-purple-white);
+  padding-top: 3px;
+  padding-bottom: 3px;
 
+  .save {
+    width: 24px;
+    height: 24px;
+    background-image: url("../../../../assets/img/check-circle-black.svg");
+    transition: background-image 0.2 ease;
+  }
+
+  .edit {
+    width: 24px;
+    height: 24px;
+    background-image: url("../../../../assets/img/edit.svg");
+    transition: background-image 0.2 ease;
+  }
+
+  &:hover {
     .save {
-        width: 24px;
-        height: 24px;
-        background-image: url("../../../../assets/img/check-circle-black.svg");
-        transition: background-image 0.2 ease;
+      background-image: url("../../../../assets/img/check-circle-blue.svg");
     }
 
     .edit {
-        width: 24px;
-        height: 24px;
-        background-image: url("../../../../assets/img/edit.svg");
-        transition: background-image 0.2 ease;
+      background-image: url("../../../../assets/img/edit-blue.svg");
     }
-
-    &:hover {
-        .save {
-            background-image: url("../../../../assets/img/check-circle-blue.svg");
-        }
-
-        .edit {
-            background-image: url("../../../../assets/img/edit-blue.svg");
-        }
-    }
+  }
 }
 
-.createdBy{
-    color: var(--color-purple-medium);
-    font-weight: 400;
-    font-size: 24px;
-    line-height: 100%;
-    letter-spacing: 0%;
+.createdBy {
+  color: var(--color-purple-medium);
+  font-weight: 400;
+  font-size: 24px;
+  line-height: 100%;
+  letter-spacing: 0%;
 }
 
 textarea {
-    width: 100%;
-    outline: unset;
-    border: 1px solid var(--color-purple-white);
-    border-radius: 30px;
+  width: 100%;
+  outline: unset;
+  border: 1px solid var(--color-purple-white);
+  border-radius: 30px;
 
-    &::placeholder {
-        color: var(--color-gray);
-    }
+  &::placeholder {
+    color: var(--color-gray);
+  }
 
-    &:focus-within {
-        border: 1px solid var(--color-purple-medium);
-    }
+  &:focus-within {
+    border: 1px solid var(--color-purple-medium);
+  }
+}
+
+.word-break {
+  overflow-wrap: break-word; /* sau word-wrap: break-word; pentru compatibilitate mai veche */
+  word-break: break-word; /* forțează ruperea cuvintelor lungi */
 }
