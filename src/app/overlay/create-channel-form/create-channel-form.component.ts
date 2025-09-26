@@ -13,6 +13,7 @@ import { CommonModule } from '@angular/common';
 import { AddMemberToChannelComponent } from '../add-member-to-channel/add-member-to-channel.component';
 import { ChannelInterface } from '../../shared/models/channel.interface';
 import { Observable, of } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-create-channel-form',
@@ -54,7 +55,8 @@ export class CreateChannelFormComponent {
 
   constructor(
     public overlayService: OverlayService,
-    private channelService: ChannelsService
+    private channelService: ChannelsService,
+    private router: Router
   ) {}
 
   /**
@@ -94,6 +96,7 @@ export class CreateChannelFormComponent {
           this.createChannel.reset();
           this.inviteMembers = true;
           this.channel = channel;
+          this.router.navigate(['/dashboard', 'channel', channel?.id]);
         },
         error: (err) => {
           if (err.message === 'name vergeben') {
@@ -105,10 +108,14 @@ export class CreateChannelFormComponent {
       });
   }
 
+  /**
+   *  Function witch transform a normal object to a observable.
+   */
   channelToObservable() {
     this.channel$ = of(this.channel);
     return this.channel$;
   }
+
   /**
    * Ends subscription if necessary.
    */
