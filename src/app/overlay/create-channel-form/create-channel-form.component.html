@@ -1,9 +1,12 @@
 <div class="overlay">
+  @if(!inviteMembers){
   <app-header-overlay [overlayHeadline]="'Channel erstellen'" />
   <form action="" [formGroup]="createChannel" (ngSubmit)="onSubmit()">
     <div class="form-group flex flex-col max-w-[872px] mt-[20px] gap-[20px]">
-      <p>Channels dienen deinem Team zur Kommunikation. Am besten sollten sie themenbezogen sein #marketing zum
-        Beispiel.</p>
+      <p>
+        Channels dienen deinem Team zur Kommunikation. Am besten sollten sie
+        themenbezogen sein #marketing zum Beispiel.
+      </p>
       <div class="flex flex-col gap-[20px]">
         <label for="nameId">
           <h4>Channel-Name</h4>
@@ -11,25 +14,51 @@
         <div class="input-wrapper">
           <span class="prefix">#</span>
           <div class="inputAndErrorMessage flex flex-col w-full">
-            <input id="nameId" type="text" class="input-secondary input-gap" placeholder="z.B Kooperationsprojekte"
-              formControlName="name" name="name" required (input)="onNameInput()">
-            <p *ngIf="showErrorMessage" class="error-massage">Channel-Name bereits vergeben.</p>
-          </div>  
+            <input
+              id="nameId"
+              type="text"
+              class="input-secondary input-gap"
+              placeholder="z.B Kooperationsprojekte"
+              formControlName="name"
+              name="name"
+              required
+              (input)="onNameInput()"
+            />
+            <p *ngIf="showErrorMessage" class="error-massage">
+              Channel-Name bereits vergeben.
+            </p>
+          </div>
         </div>
       </div>
       <div class="flex flex-col gap-[20px]">
         <label for="descriptionId" class="flex">
-          <h4>Beschreibung</h4><span class="">(optional)</span>
+          <h4>Beschreibung</h4>
+          <span class="">(optional)</span>
         </label>
-        <input id="descriptionId" class="input-secondary p-[20px]" type="text" placeholder="Dein Text hier"
-          formControlName="description" name="description">
+        <input
+          id="descriptionId"
+          class="input-secondary p-[20px]"
+          type="text"
+          placeholder="Dein Text hier"
+          formControlName="description"
+          name="description"
+        />
       </div>
       @if(errorMessage) {
       <div class="error">{{ errorMessage }}</div>
       }
       <div class="flex justify-end">
-        <button type="submit" [disabled]="!createChannel.valid" class="btn-primary">Erstellen</button>
+        <button
+          type="submit"
+          [disabled]="!createChannel.valid"
+          class="btn-primary"
+        >
+          Erstellen
+        </button>
       </div>
     </div>
   </form>
+  }@else {
+  <app-add-member-to-channel [channelDetails$]="channelToObservable()" />
+  }
 </div>

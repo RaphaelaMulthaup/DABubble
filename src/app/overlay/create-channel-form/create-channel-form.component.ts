@@ -10,6 +10,9 @@ import {
 import { OverlayService } from '../../services/overlay.service';
 import { HeaderOverlayComponent } from '../../shared/components/header-overlay/header-overlay.component';
 import { CommonModule } from '@angular/common';
+import { AddMemberToChannelComponent } from '../add-member-to-channel/add-member-to-channel.component';
+import { ChannelInterface } from '../../shared/models/channel.interface';
+import { Observable, of } from 'rxjs';
 
 @Component({
   selector: 'app-create-channel-form',
@@ -18,6 +21,7 @@ import { CommonModule } from '@angular/common';
     ReactiveFormsModule,
     HeaderOverlayComponent,
     CommonModule,
+    AddMemberToChannelComponent,
   ],
   templateUrl: './create-channel-form.component.html',
   styleUrl: './create-channel-form.component.scss',
@@ -43,6 +47,10 @@ export class CreateChannelFormComponent {
 
   showErrorMessage: boolean = false;
   createSub: any;
+
+  inviteMembers: boolean = false;
+  channel: ChannelInterface | undefined;
+  channel$!: Observable<ChannelInterface | undefined>;
 
   constructor(
     public overlayService: OverlayService,
@@ -78,21 +86,29 @@ export class CreateChannelFormComponent {
     if (this.createSub) {
       this.createSub.unsubscribe();
     }
-    this.createSub = this.channelService.createChannel(name, description).subscribe({
-      next:  () => {
-        this.errorMessage = null;
-        this.createChannel.reset();
-        this.overlayService.closeAll();
-      }, error: (err) => {
-        if (err.message === 'name vergeben') {
-          this.showErrorMessage = true;
-        } else {
-          this.errorMessage = err.message;
-        }
-      }
-    })
+    this.createSub = this.channelService
+      .createChannel(name, description)
+      .subscribe({
+        next: (channel) => {
+          this.errorMessage = null;
+          this.createChannel.reset();
+          this.inviteMembers = true;
+          this.channel = channel;
+        },
+        error: (err) => {
+          if (err.message === 'name vergeben') {
+            this.showErrorMessage = true;
+          } else {
+            this.errorMessage = err.message;
+          }
+        },
+      });
   }
 
+  channelToObservable() {
+    this.channel$ = of(this.channel);
+    return this.channel$;
+  }
   /**
    * Ends subscription if necessary.
    */
