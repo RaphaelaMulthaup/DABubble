@@ -8,6 +8,7 @@ header {
 
   @include respond-to(xs) {
     justify-content: center !important;
+    padding: 75px 0px 75px 0px;
   }
 
   .logo-final {

@@ -1,5 +1,14 @@
+@import './../../../styles.scss';
 @import "../../shared/styles/outside-dashboard.scss";
 
 h1 {
     align-self: flex-start;
+
+    @include respond-to(xs) {
+        font-size: 24px;
+    }
+}
+
+.txt-area{
+    padding: 0px 48px 0px 48px;
 }

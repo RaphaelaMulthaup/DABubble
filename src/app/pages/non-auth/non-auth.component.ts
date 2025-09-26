@@ -87,7 +87,6 @@ export class NonAuthComponent {
     collectionData(usersRef).pipe(
       map((users: any[]) => users.map(user => user.name))
     ).subscribe(userNames => {
-      console.log('User names from Firestore:', userNames);
     });
   }
 

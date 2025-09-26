@@ -1,5 +1,22 @@
+@import './../../../styles.scss';
 @import "../../shared/styles/outside-dashboard.scss";
+
+.section{
+    width: 80%;
+}
 
 h1 {
     align-self: flex-start;
+
+    @include respond-to(xs) {
+        font-size: 24px;
+    }
+}
+
+.txt-area{
+    padding: 0px 48px 0px 48px;
+}
+
+a{
+    color: var(--color-purple-dark);
 }
