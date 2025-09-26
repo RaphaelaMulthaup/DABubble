@@ -1,7 +1,7 @@
 @import "./../../../styles.scss";
 
 .settings-view-main {
-  background-color: white;
+  background-color: var(--color-white);
   width: 280px;
   height: 180px;
   z-index: 10;
@@ -44,7 +44,7 @@
 
   &:hover {
     cursor: pointer;
-    color: var(--color-blue);
+    color: var(--color-purple-medium);
     background-color: var(--color-purple-white);
   }
 
@@ -52,8 +52,8 @@
     justify-content: start;
 
     &:hover {
-      color: black;
-      background-color: white;
+      color: var(--color-black);
+      background-color: var(--color-white);
     }
   }
 
@@ -64,8 +64,8 @@
     @include respond-to(xs) {
       display: flex;
         &:hover{
-            color: black;
-            background-color: white;
+            color: var(--color-black);
+            background-color: var(--color-white);
         }
     }
   }
