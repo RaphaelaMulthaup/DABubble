@@ -27,7 +27,6 @@
         alt="Profilbild"
         (click)="showSettings()"
       />
-      <app-settings class="settings"></app-settings>
     </div>
   </div>
   @if ((authService.currentUser$ | async) && mobileDashboardState() ==

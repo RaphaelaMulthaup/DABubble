@@ -89,7 +89,7 @@ h1 {
 }
 
 .header-mobile {
-  background-color: white;
+  background-color: var(--color-white);
   app-search-bar {
     margin: 32px 16px 0 16px;
     display: block;
@@ -101,10 +101,4 @@ h1 {
   @include dFlex($jc: space-between);
   background-color: var(--color-purple-white);
   padding: 16px;
-}
-
-.settings{
-  @include respond-to(sm) {
-    display: none;
-  }
 }

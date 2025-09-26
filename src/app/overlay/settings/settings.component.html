@@ -1,8 +1,9 @@
 <div
   class="settings-view-main flex flex-col items-center justify-between overlay overlay-close"
+  [class.mobile-settings-view-main]="(screenSize$|async) !== 'web'"
   [ngClass]="{ closing: isClosing }"
 >
-  @if((screenSize$|async) === 'handset'){
+  @if((screenSize$|async) !== 'web'){
   <div class="flex w-full justify-center">
     <span
       class="rectangle"
@@ -11,6 +12,7 @@
     ></span>
   </div>
   }
+  
   <button
     class="settings-btn flex items-center justify-center"
     (click)="showProfile()"
