@@ -1,6 +1,6 @@
 @import "./../../../../styles.scss";
-:host{
-  max-width: 100%
+:host {
+  max-width: 100%;
 }
 .channel-list-item {
   gap: 10px !important;
@@ -12,7 +12,7 @@
     background-position: center;
     background-size: auto;
   }
-  .arrow{
+  .arrow {
     width: 30px;
     height: 30px;
     background-image: url("../../../../assets/img/keyboard-arrow-down-black.svg");
@@ -27,7 +27,7 @@
     .arrow {
       background-image: url("../../../../assets/img/keyboard-arrow-down-blue.svg");
     }
-    h2{
+    h2 {
       color: var(--color-purple-medium);
     }
   }
@@ -38,4 +38,17 @@
       }
     }
   }
+}
+
+.channel-is-active {
+  color: var(--color-purple-medium);
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 18px;
+}
+.tag-is-active {
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: auto;
+  background-image: url("./../../../../assets/img/tag-blue.svg");
 }

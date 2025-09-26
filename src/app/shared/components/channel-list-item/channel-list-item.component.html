@@ -19,9 +19,9 @@
   }@else {
   <h2>{{ channel.name }}</h2>
   }
-
   <span class="arrow"></span>
   }@else {
-  <span>{{ channel.name }}</span>
+  <div class="tag" [class.tag-is-active]="active"></div>
+  <span [class.channel-is-active]="active">{{ channel.name }}</span>
   }
 </li>
