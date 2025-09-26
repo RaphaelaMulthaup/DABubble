@@ -94,9 +94,10 @@ export class CreateChannelFormComponent {
         next: (channel) => {
           this.errorMessage = null;
           this.createChannel.reset();
-          this.inviteMembers = true;
+          // this.inviteMembers = true;
           this.channel = channel;
           this.router.navigate(['/dashboard', 'channel', channel?.id]);
+          this.openAddMembersToChannel();
         },
         error: (err) => {
           if (err.message === 'name vergeben') {
@@ -136,5 +137,20 @@ export class CreateChannelFormComponent {
       this.showErrorMessage = false;
       this.errorMessage = null;
     }
+  }
+
+  openAddMembersToChannel() {
+    this.overlayService.openComponent(
+      AddMemberToChannelComponent,
+      'cdk-overlay-dark-backdrop',
+      {
+        globalPosition: 'center',
+      },
+      {
+        channelDetails$:
+          this.channelToObservable() as Observable<ChannelInterface>,
+        overlay: 'overlay',
+      }
+    );
   }
 }
