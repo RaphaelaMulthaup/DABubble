@@ -55,7 +55,7 @@ import { UserService } from '../../../../services/user.service';
 export class CurrentPostInput implements OnInit, OnDestroy {
   conversationType!: 'channel' | 'chat';
   conversationId!: string;
-  conversationName!: string;
+  conversationName!: string | null;
   /** If replying, holds the ID of the message being replied to; otherwise null. */
   messageToReplyId!: string | null;
   /** Stores any error message to be displayed in the input form. */
@@ -144,19 +144,21 @@ export class CurrentPostInput implements OnInit, OnDestroy {
         .getCurrentChannel(this.conversationId)
         .pipe(takeUntil(this.destroy$))
         .subscribe((channel) => {
-          this.conversationName = channel?.name || '';
+          this.conversationName = '#' + channel!.name || '';
         });
-    } else {
+    } else if (this.conversationType === 'chat') {
       const otherUserId = this.chatService.getOtherUserId(
         this.conversationId,
         this.authService.getCurrentUserId()!
       );
-      this.userService
-        .getUserById(otherUserId)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe((user) => {
-          this.conversationName = user?.name || '';
-        });
+        this.userService
+          .getUserById(otherUserId)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe((user) => {
+            this.conversationName = '@' + user!.name || '';
+          });
+    } else {
+      this.conversationName = null;
     }
   }
 
@@ -385,7 +387,8 @@ export class CurrentPostInput implements OnInit, OnDestroy {
     const range = selection.getRangeAt(0);
     range.collapse(false);
 
-    if (this.searchText) await this.deleteAfterSearchChar(this.searchText.length);
+    if (this.searchText)
+      await this.deleteAfterSearchChar(this.searchText.length);
     document.execCommand('insertHTML', false, mark);
     this.postService.focusAtEndEditable(this.postTextInput);
     this.searchResults = [];

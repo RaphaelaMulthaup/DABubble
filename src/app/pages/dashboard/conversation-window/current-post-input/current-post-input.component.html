@@ -9,11 +9,9 @@
       class="post-text-input"
       contenteditable="true"
       (input)="onInput()"
-      [attr.data-placeholder]="
-        conversationType === 'channel'
-          ? 'Nachricht an #' + conversationName
-          : 'Nachricht an @'+ conversationName
-      "
+      [attr.data-placeholder]="conversationName
+          ? 'Nachricht an ' + conversationName
+          : ''"
     ></div>
     } @else {
     <div
