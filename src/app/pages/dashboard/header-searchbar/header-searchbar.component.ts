@@ -89,7 +89,8 @@ export class HeaderSearchbarComponent {
     this.term$.pipe(takeUntil(this.destroy$)).subscribe((term) => {
       if (term.length > 0) {
         this.openOverlay(); // Overlay wiederverwenden oder neu öffnen
-      } else {
+      }
+       else {
         this.overlayService.closeOne(this.searchOverlayRef?.overlayRef);
         this.searchOverlayRef = null;
       }
@@ -116,11 +117,6 @@ export class HeaderSearchbarComponent {
    * passes the current results as input, and clears the search field when the backdrop is clicked.
    */
   private openOverlay() {
-    if (!this.results() || this.results().length === 0) {
-      this.overlayService.closeOne(this.searchOverlayRef?.overlayRef);
-      this.searchOverlayRef = null;
-      return;
-    }
 
     // Wenn Overlay schon offen ist, nur die Daten aktualisieren
     if (this.searchOverlayRef) {

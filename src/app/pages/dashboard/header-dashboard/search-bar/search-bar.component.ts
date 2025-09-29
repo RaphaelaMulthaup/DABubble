@@ -125,13 +125,6 @@ export class SearchBarComponent implements OnInit, OnDestroy {
    * Handles backdrop clicks to close overlay and reset input.
    */
   private openOverlay(term: string) {
-    if (!this.results() || this.results().length === 0) {
-      this.overlayService.closeOne(this.searchOverlayRef?.overlayRef);
-      this.searchOverlayRef = null;
-      this.searchResultsExisting = false;
-      this.searchService.overlaySearchResultsOpen = false;
-      return;
-    }
 
     // Overlay schon offen → nur die Daten aktualisieren
     if (this.searchOverlayRef) {
