@@ -16,6 +16,8 @@ import {
   FlexibleConnectedPositionStrategy,
   ConnectedPosition,
   ScrollStrategyOptions,
+  PositionStrategy,
+  OverlayConfig,
 } from '@angular/cdk/overlay';
 import { ComponentPortal, TemplatePortal } from '@angular/cdk/portal';
 import { ChannelInterface } from '../shared/models/channel.interface';
@@ -101,7 +103,7 @@ export class OverlayService {
    *   - `origin`: The HTML element the overlay is connected to (optional).
    *   - `originPosition`: Preferred position relative to the origin (optional).
    *   - `originPositionFallback`: Fallback position if the preferred one is not possible (optional).
-   *   - `globalPosition`: Global positioning when not connected to an element (`center` or `bottom`).
+   *   - `globalPosition`: Global positioning when not connected to an element (`center` or `bottom`) (optional).
    * @param data - Optional partial data object to assign to the component instance.
    * @returns An `OpenComponentResult` containing the component reference, overlay reference,
    *          and observables for closure and backdrop clicks, or `undefined` if opening failed.
@@ -121,105 +123,185 @@ export class OverlayService {
     data?: Partial<T>
   ): OpenComponentResult<T> | undefined {
     const destroy$ = new Subject<void>();
-    const backdropClickSubject = new Subject<void>();
-
-    let positionStrategy;
-
-    // Determine position strategy based on whether the overlay is connected to an element or is global.
-    if (position.origin) {
-      positionStrategy = this.overlay
-        .position()
-        .flexibleConnectedTo(position.origin)
-        .withPositions([
-          position.originPosition!,
-          position.originPositionFallback || position.originPosition!,
-        ]);
-    } else if (position.globalPosition === 'bottom') {
-      positionStrategy = this.overlay
-        .position()
-        .global()
-        .centerHorizontally()
-        .bottom('0px');
-    } else {
-      positionStrategy = this.overlay
-        .position()
-        .global()
-        .centerHorizontally()
-        .centerVertically();
-    }
-
-    // Create the overlay with or without a backdrop depending on the backdropType.
-    if (backdropType === null) {
-      this.overlayRef = this.overlay.create({
-        positionStrategy,
-        hasBackdrop: false,
-      });
-    } else if (backdropType === 'close-on-scroll') {
-      this.overlayRef = this.overlay.create({
-        positionStrategy,
-        hasBackdrop: false,
-        scrollStrategy: this.scrollStrategies.close(),
-      });
-    } else {
-      this.overlayRef = this.overlay.create({
-        positionStrategy,
-        hasBackdrop: true,
-        backdropClass: backdropType,
-      });
-    }
-
-    // Store the reference of the open overlay.
-    this.overlayRefs.push(this.overlayRef!);
-    if (this.overlayRefs.length > 0) {
-      const scrollbarWidth =
-        window.innerWidth - document.documentElement.clientWidth;
-      document.body.style.paddingRight = `${scrollbarWidth}px`;
-      document.body.style.overflow = 'hidden';
-    }
-
-    // Close the overlay when the backdrop is clicked.
-    this.overlayRef
-      .backdropClick()
-      .pipe(takeUntil(destroy$))
-      .subscribe(() => {
-        backdropClickSubject.next();
-        this.closeAll();
-      });
-
-    // Create a portal for the component to be rendered in the overlay.
-    const portal = new ComponentPortal(component, null, this.injector);
-    const componentRef = this.overlayRef?.attach(portal)!;
-
-    // Pass any data to the component if provided.
-    if (data) Object.assign(componentRef.instance, data);
-
+    const backdropClick$ = new Subject<void>();
     const afterClosed$ = new Subject<void>();
 
-    // Clean up the overlay after it is closed.
-    this.overlayRef
-      ?.detachments()
-      .pipe(takeUntil(destroy$))
-      .subscribe(() => {
-        this.overlayRefs = this.overlayRefs.filter(
-          (ref) => ref !== this.overlayRef
-        );
-        if (this.overlayRefs.length === 0) {
-          document.body.style.paddingRight = '';
-          document.body.style.overflow = '';
-        }
-        afterClosed$.next();
-        afterClosed$.complete();
-        backdropClickSubject.complete();
-        destroy$.next();
-        destroy$.complete();
-      });
+    this.overlayRef = this.overlay.create(
+      this.getOverlayConfig(backdropType, this.getPositionStrategy(position))
+    );
 
+    this.overlayRefs.push(this.overlayRef!);
+    if (this.overlayRefs.length > 0) this.toggleBodyScroll(true);
+
+    this.handleBackdropClick(this.overlayRef, destroy$, backdropClick$);
+    const portal = new ComponentPortal(component, null, this.injector);
+    const componentRef = this.overlayRef?.attach(portal)!;
+    if (data) Object.assign(componentRef.instance, data);
+    
+    this.handleDetach(this.overlayRef, destroy$, afterClosed$, backdropClick$);
     return {
       ref: componentRef,
       overlayRef: this.overlayRef,
       afterClosed$,
-      backdropClick$: backdropClickSubject.asObservable(),
+      backdropClick$: backdropClick$.asObservable(),
     };
+  }
+
+  /**
+   * This function determines the position strategy of the overlay based on whether it is connected to an element or is at the bottom or global.
+   *
+   * @param position - Configuration for overlay placement
+   */
+  private getPositionStrategy(position: {
+    origin?: HTMLElement;
+    originPosition?: ConnectedPosition;
+    originPositionFallback?: ConnectedPosition;
+    globalPosition?: 'center' | 'bottom';
+  }) {
+    if (position.origin) {
+      return this.getOriginPositionStrategy(
+        position.origin,
+        position.originPosition!,
+        position.originPositionFallback
+      );
+    } else if (position.globalPosition === 'bottom') {
+      return this.getBottomPositionStrategy();
+    } else return this.getCenterPositionStrategy();
+  }
+
+  /**
+   * This function sets the positionStrategy for an overlay that is connected to an origin.
+   *
+   * @param origin - The HTML element the overlay is connected to
+   * @param originPosition - Preferred position relative to the origin
+   * @param originPositionFallback -  Fallback position if the preferred one is not possible (optional)
+   */
+  private getOriginPositionStrategy(
+    origin: HTMLElement,
+    originPosition: ConnectedPosition,
+    originPositionFallback?: ConnectedPosition
+  ) {
+    return this.overlay
+      .position()
+      .flexibleConnectedTo(origin)
+      .withPositions([
+        originPosition,
+        originPositionFallback || originPosition,
+      ]);
+  }
+
+  /**
+   * This function sets the positionStrategy for an overlay that is placed at the bottom of the page.
+   */
+  private getBottomPositionStrategy() {
+    return this.overlay.position().global().centerHorizontally().bottom('0px');
+  }
+
+  /**
+   * This function sets the positionStrategy for an overlay that is centered.
+   */
+  private getCenterPositionStrategy() {
+    return this.overlay
+      .position()
+      .global()
+      .centerHorizontally()
+      .centerVertically();
+  }
+
+  /**
+   * This function sets the overlayRefs configuration (backdrop and positionStrategy).
+   * The overlay can either have a backdrop (dark or transparent) or not (with or without close-on-scroll).
+   *
+   * @param backdropType - Defines the backdrop style (`dark`, `transparent`) or disables it (`null`).
+   * @param positionStrategy - the positionStrategy returned from the getPositionStrategy()-function
+   */ 
+  private getOverlayConfig(
+    backdropType: string | null,
+    positionStrategy: PositionStrategy
+  ): OverlayConfig {
+    if (backdropType === null) {
+      return { positionStrategy, hasBackdrop: false };
+    } else if (backdropType === 'close-on-scroll') {
+      return {
+        positionStrategy,
+        hasBackdrop: false,
+        scrollStrategy: this.scrollStrategies.close(),
+      };
+    } else {
+      return {
+        positionStrategy,
+        hasBackdrop: true,
+        backdropClass: backdropType,
+      };
+    }
+  }
+
+  /**
+   * This function locks the body-scroll, when an overlay is open and adjusts the body-style accordingly.
+   *
+   * @param lock - whether the body scroll should be locked or not
+   */
+  private toggleBodyScroll(lock: boolean) {
+    if (lock) {
+      const scrollbarWidth =
+        window.innerWidth - document.documentElement.clientWidth;
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.paddingRight = '';
+      document.body.style.overflow = '';
+    }
+  }
+
+  /**
+   * This function closes all overlays, when the backdrop is clicked.
+   *
+   * @param overlayRef - the overlay reference that was created
+   * @param destroy$ - the subject that triggers cleanup and unsubscribes from observables
+   * @param backdropClick$ - the subject that handles backdrop-clicks
+   */
+  private handleBackdropClick(
+    overlayRef: OverlayRef,
+    destroy$: Subject<void>,
+    backdropClick$: Subject<void>
+  ) {
+    overlayRef
+      .backdropClick()
+      .pipe(takeUntil(destroy$))
+      .subscribe(() => {
+        backdropClick$.next();
+        this.closeAll();
+      });
+  }
+
+  /**
+   * This function handles the cleanup when an overlay is detached.
+   * It removes the overlay from the internal list and restores body scroll styles if no overlays are left
+   * It completes all related subjects to avoid memory leaks.
+   *
+   * @param overlayRef - the overlay reference that was created and may be detached
+   * @param destroy$ - the subject that triggers cleanup and unsubscribes from observables
+   * @param afterClosed$ - the subject that emits when the overlay has been fully closed
+   * @param backdropClick$ - the subject that handles backdrop clicks
+   */
+  private handleDetach(
+    overlayRef: OverlayRef | undefined,
+    destroy$: Subject<void>,
+    afterClosed$: Subject<void>,
+    backdropClick$: Subject<void>
+  ) {
+    overlayRef
+      ?.detachments()
+      .pipe(takeUntil(destroy$))
+      .subscribe(() => {
+        this.overlayRefs = this.overlayRefs.filter((ref) => ref !== overlayRef);
+        if (this.overlayRefs.length === 0) this.toggleBodyScroll(false);
+        afterClosed$.next();
+        afterClosed$.complete();
+        backdropClick$.complete();
+        destroy$.next();
+        destroy$.complete();
+      });
   }
 
   /**
@@ -235,7 +317,7 @@ export class OverlayService {
    * Closes a specific overlay by its reference.
    * @param ref The reference to the overlay to be closed.
    */
-  closeOne(ref: OverlayRef): void {    
+  closeOne(ref: OverlayRef): void {
     const index = this.overlayRefs.indexOf(ref);
     if (index !== -1) {
       ref.dispose();
