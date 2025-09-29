@@ -67,7 +67,7 @@ export class ConfirmPasswordComponent implements OnInit {
     const uid = await this.userService.checkMailAndUid(inputEmail);
 
     if (uid) {
-      this.authService.sendPasswordRessetEmail(inputEmail).then(() => {
+      this.authService.sendPasswordResetEmail(inputEmail).then(() => {
         this.showToast = true;
         setTimeout(() => {
           this.backToLogin();
@@ -101,7 +101,7 @@ export class ConfirmPasswordComponent implements OnInit {
    */
   sendPasswortResset(email: string) {
     this.authService
-      .sendPasswordRessetEmail(email)
+      .sendPasswordResetEmail(email)
       .then(() => {
         // this.waveFlag();
         this.showToast = true;

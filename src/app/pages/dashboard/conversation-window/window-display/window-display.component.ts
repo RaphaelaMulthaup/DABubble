@@ -139,7 +139,7 @@ export class WindowDisplayComponent {
         this.currentConversationId, // new chat ID
         data // new messages
       );
-      setTimeout(() => this.scrollToLastMessage(), 0);
+      setTimeout(() => this.scrollToLastMessage());
     });
 
     // Subscribe to scroll requests from PostService

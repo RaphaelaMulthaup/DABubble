@@ -81,22 +81,23 @@ export class UserService {
     return !querySnapshot.empty; // Returns true when the inputEmail already exists in Firestore
   }
 
-  /**
-   * Get all email addresses from the 'users' collection.
-   * Creates an Observable of objects containing the 'uid' and 'email' fields.
-   * This can be subscribed to in components like "confirm-password.ts".
-   */
-  getAllUserEmails(): Observable<{ uid: string; email: string }[]> {
-    const userColl = collection(this.firestore, 'users');
-    return collectionData(userColl).pipe(
-      map((users: any[]) =>
-        users.map((user) => ({
-          uid: user.uid,
-          email: user.email,
-        }))
-      )
-    );
-  }
+  //wird nicht genutzt
+  // /**
+  //  * Get all email addresses from the 'users' collection.
+  //  * Creates an Observable of objects containing the 'uid' and 'email' fields.
+  //  * This can be subscribed to in components like "confirm-password.ts".
+  //  */
+  // getAllUserEmails(): Observable<{ uid: string; email: string }[]> {
+  //   const userColl = collection(this.firestore, 'users');
+  //   return collectionData(userColl).pipe(
+  //     map((users: any[]) =>
+  //       users.map((user) => ({
+  //         uid: user.uid,
+  //         email: user.email,
+  //       }))
+  //     )
+  //   );
+  // }
 
   /**
    * Fetches users based on an array of member IDs.

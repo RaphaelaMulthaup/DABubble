@@ -8,14 +8,20 @@ import {
   orderBy,
   query,
 } from '@angular/fire/firestore';
-import { Observable, of, map } from 'rxjs';
+import { Observable, of, map, shareReplay, catchError } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
 import { PostInterface } from '../shared/models/post.interface';
+import { ChannelInterface } from '../shared/models/channel.interface';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ConversationActiveRouterService {
+  private readonly basePathMap: Record<string, string> = {
+    channel: 'channels',
+    chat: 'chats',
+  };
+
   constructor(private firestore: Firestore) {}
 
   // expui un observable pentru id
@@ -25,7 +31,9 @@ export class ConversationActiveRouterService {
 
   // expui un observable pentru type
   getConversationType$(route: ActivatedRoute): Observable<string> {
-    return route.paramMap.pipe(map((params) => params.get('conversationType')!));
+    return route.paramMap.pipe(
+      map((params) => params.get('conversationType')!)
+    );
   }
 
   // expui un observable pentru type
@@ -33,31 +41,27 @@ export class ConversationActiveRouterService {
     return route.paramMap.pipe(map((params) => params.get('messageId')!));
   }
 
-  getParams$(route: ActivatedRoute): Observable<{ conversationType: string; conversationId: string }> {
+  getParams$(
+    route: ActivatedRoute
+  ): Observable<{ conversationType: string; conversationId: string }> {
     return route.paramMap.pipe(
       map((params) => ({
         conversationType: params.get('conversationType')!,
-        conversationId: params.get('conversationId')!
+        conversationId: params.get('conversationId')!,
       }))
     );
   }
 
-  getMessages(conversationType: string, conversationId: string): Observable<PostInterface[]> {
-    // den Pfad dynamisch je nach type bauen
-    let path: string | null = null;
+  getMessages(
+    conversationType: string,
+    conversationId: string
+  ): Observable<PostInterface[]> {
+    const basePath = this.basePathMap[conversationType];
+    if (!basePath) return of([]);
 
-    if (conversationType === 'channel') {
-      path = `channels/${conversationId}/messages`;
-    } else if (conversationType === 'chat') {
-      path = `chats/${conversationId}/messages`;
-    }
-
-    if (!path) {
-      return of([]); // fallback, falls type nicht passt
-    }
-
+    const path = `${basePath}/${conversationId}/messages`;
     const ref = collection(this.firestore, path);
-    const q = query(ref, orderBy('createdAt', 'asc')); // immer sortieren
+    const q = query(ref, orderBy('createdAt', 'asc'));
 
     return collectionData(q, { idField: 'id' }).pipe(
       map((docs) =>
@@ -65,11 +69,13 @@ export class ConversationActiveRouterService {
           (doc) =>
             ({
               ...doc,
-              channelId: conversationType === 'channel' ? conversationId : undefined,
+              channelId:
+                conversationType === 'channel' ? conversationId : undefined,
               chatId: conversationType === 'chat' ? conversationId : undefined,
             } as PostInterface)
         )
-      )
+      ),
+      shareReplay({ bufferSize: 1, refCount: true })
     );
   }
 
@@ -78,35 +84,30 @@ export class ConversationActiveRouterService {
     conversationId: string,
     messageId: string
   ): Observable<PostInterface[]> {
-    let ref;
-    let q;
-    if (conversationType === 'channel') {
-      ref = collection(
-        this.firestore,
-        `channels/${conversationId}/messages/${messageId}/answers`
-      );
-      q = query(ref, orderBy('createdAt', 'asc'));
-      return collectionData(q, { idField: 'id' }) as Observable<
-        PostInterface[]
-      >;
-    } else if (conversationType === 'chat') {
-      ref = collection(
-        this.firestore,
-        `chats/${conversationId}/messages/${messageId}/answers`
-      );
-      q = query(ref, orderBy('createdAt', 'asc'));
-      return collectionData(q, { idField: 'id' }) as Observable<
-        PostInterface[]
-      >;
-    }
-    return of([]);
+    const basePath = this.basePathMap[conversationType];
+    if (!basePath) return of([]);
+
+    const path = `${basePath}/${conversationId}/messages/${messageId}/answers`;
+    const ref = collection(this.firestore, path);
+    const q = query(ref, orderBy('createdAt', 'asc'));
+
+    return collectionData(q, { idField: 'id' }).pipe(
+      map((docs) => docs.map(doc => ({ ...(doc as PostInterface) }))),
+      shareReplay({ bufferSize: 1, refCount: true }),
+      catchError(() => of([]))
+    );
   }
 
-  getChannelInfo(conversationType: string, conversationId: string): Observable<any> {
-    if (conversationType === 'channel') {
-      const channelRef = doc(this.firestore, `channels/${conversationId}`);
-      return docData(channelRef);
-    }
-    return of([]);
+  getChannelInfo(
+    conversationType: string,
+    conversationId: string
+  ): Observable<ChannelInterface | null> {
+    if (conversationType !== 'channel') return of(null);
+    const channelRef = doc(this.firestore, `channels/${conversationId}`);
+    return docData(channelRef).pipe(
+       map(data => data ? (data as ChannelInterface) : null),
+      shareReplay({ bufferSize: 1, refCount: true }),
+      catchError(() => of(null))
+    );
   }
 }

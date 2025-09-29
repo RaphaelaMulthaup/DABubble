@@ -11,6 +11,7 @@ import { OverlayService } from '../../../../services/overlay.service';
 import { ChannelListItemComponent } from '../../../../shared/components/channel-list-item/channel-list-item.component';
 import { MobileService } from '../../../../services/mobile.service';
 import { MobileDashboardState } from '../../../../shared/types/mobile-dashboard-state.type';
+import { SearchService } from '../../../../services/search.service';
 
 @Component({
   selector: 'app-channel-list',
@@ -38,11 +39,12 @@ export class ChannelListComponent {
     private channnelsService: ChannelsService,
     private authService: AuthService,
     private overlayService: OverlayService,
+    private searchService: SearchService,
     public mobileService: MobileService
   ) {
     this.mobileDashboardState = this.mobileService.mobileDashboardState;
     this.currentUserId = this.authService.getCurrentUserId();
-    this.channels$ = this.channnelsService.getCurrentUserChannels();
+    this.channels$ = this.searchService.getUserChannels$();
   }
 
   openCreateChannelFormOverlay() {

@@ -65,22 +65,23 @@ export class ChannelsService {
     return channel$;
   }
 
-  /**
-   * Retrieves channels that the current user is a member of and not deleted
-   * @returns Observable list of the current user's channels
-   */
-  getCurrentUserChannels(): Observable<ChannelInterface[]> {
-    const channelCollection = collection(this.firestore, 'channels');
-    return collectionData(channelCollection, { idField: 'id' }).pipe(
-      map((channels) =>
-        channels.filter(
-          (channel) =>
-            !channel['deleted'] &&
-            channel['memberIds']?.includes(this.authService.getCurrentUserId())
-        )
-      )
-    ) as Observable<ChannelInterface[]>;
-  }
+  //diese Funktion existiert schon im search-service in verbessert.
+  // /**
+  //  * Retrieves channels that the current user is a member of and not deleted
+  //  * @returns Observable list of the current user's channels
+  //  */
+  // getCurrentUserChannels(): Observable<ChannelInterface[]> {
+  //   const channelCollection = collection(this.firestore, 'channels');
+  //   return collectionData(channelCollection, { idField: 'id' }).pipe(
+  //     map((channels) =>
+  //       channels.filter(
+  //         (channel) =>
+  //           !channel['deleted'] &&
+  //           channel['memberIds']?.includes(this.authService.getCurrentUserId())
+  //       )
+  //     )
+  //   ) as Observable<ChannelInterface[]>;
+  // }
 
   /**
    * Creates a new channel with the current user as the creator and first member

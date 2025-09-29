@@ -350,21 +350,17 @@ export class PostService {
       .replaceAll('</div>', '');
     const parser = new DOMParser();
     const doc = parser.parseFromString(postHtml, 'text/html');
-
     doc.querySelectorAll('img.emoji').forEach((img) => {
       const src = img.getAttribute('src');
       const emoji = this.emojis.find((e) => e.src === src);
-
       if (emoji) {
         const textNode = doc.createTextNode(emoji.token);
         img.replaceWith(textNode);
       }
     });
-
     doc.querySelectorAll('.mark').forEach((mark) => {
       const img = mark.querySelector('img');
       const span = mark.querySelector('span');
-
       if (img && span) {
         const name = span.textContent;
         const alt = img.getAttribute('alt');
@@ -373,7 +369,6 @@ export class PostService {
         mark.replaceWith(textNode);
       }
     });
-
     const postText = doc.body.innerText;
     return postText;
   }
@@ -388,28 +383,22 @@ export class PostService {
   textToHtml(text: string): string {
     if (!text) return '';
     let result = text.replaceAll('\n', '</div><div>');
-
     this.emojis.forEach((e) => {
       const imgTag = `&nbsp;<img src="${e.src}" alt="${e.token}" class="emoji">&nbsp;`;
       result = result.replaceAll(e.token, imgTag);
     });
-
-    result = result.replace(/\{@([^}]+)\}/g, (_, name:string) => {
+    result = result.replace(/\{@([^}]+)\}/g, (_, name: string) => {
       return `<mark class="mark flex" contenteditable="false">
                 <img src="/assets/img/alternate-email-purple.svg" alt="mark">
                 <span>${name}</span>
               </mark>`;
     });
-
-    result = result.replace(/\{#([^}]+)\}/g, (_, name:string) => {
+    result = result.replace(/\{#([^}]+)\}/g, (_, name: string) => {
       return `<mark class="mark flex" contenteditable="false">
                 <img src="/assets/img/tag-blue.svg" alt="mark">
                 <span>${name}</span>
               </mark>`;
     });
-
-    
-
     return result;
   }
 

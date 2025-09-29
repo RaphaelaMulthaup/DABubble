@@ -37,7 +37,6 @@ import { ChatService } from './chat.service';
 })
 export class AuthService {
   private provider = new GoogleAuthProvider(); // Google Auth provider
-
   //the data of the user in the registration-process
   userToRegister = {
     displayName: '',
@@ -46,10 +45,8 @@ export class AuthService {
     policyAccepted: false,
     photoURL: '',
   };
-
   // Reaktives Observable für den aktuellen Firestore User
   currentUser$: Observable<UserInterface | null>;
-
   // Optional synchroner Zugriff
   private currentUserSnapshot: UserInterface | null = null;
 
@@ -72,7 +69,7 @@ export class AuthService {
         }
       }),
       tap((user) => (this.currentUserSnapshot = user)), // Snapshot für synchronen Zugriff speichern
-      shareReplay(1) // Letzten Wert für neue Subscribers zwischenspeichern
+       shareReplay({ bufferSize: 1, refCount: true }) // Letzten Wert für neue Subscribers zwischenspeichern
     );
   }
 
@@ -83,8 +80,7 @@ export class AuthService {
 
   /*** Get current Firebase Auth user ID or null ***/
   getCurrentUserId(): string | null {
-    const user = this.auth.currentUser;
-    return user ? user.uid : null;
+    return this.currentUserSnapshot?.uid ?? null;
   }
 
   /*** Create or update Firestore user document ***/
@@ -242,7 +238,7 @@ export class AuthService {
    * Sends link to firesore mail reset url
    *
    */
-  sendPasswordRessetEmail(email: string): Promise<void> {
+  sendPasswordResetEmail(email: string): Promise<void> {
     const auth = getAuth();
     return sendPasswordResetEmail(auth, email);
   }
