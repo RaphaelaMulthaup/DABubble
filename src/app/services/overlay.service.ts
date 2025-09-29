@@ -1,77 +1,61 @@
-import {
-  inject,
-  Injectable,
-  Type,
-  TemplateRef,
-  ViewContainerRef,
-  Injector,
-  ComponentRef,
-  signal,
-} from '@angular/core';
-import { Router } from '@angular/router';
+import { Injectable, Type, Injector, signal } from '@angular/core';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 import {
   Overlay,
   OverlayRef,
-  FlexibleConnectedPositionStrategy,
   ConnectedPosition,
   ScrollStrategyOptions,
   PositionStrategy,
   OverlayConfig,
 } from '@angular/cdk/overlay';
-import { ComponentPortal, TemplatePortal } from '@angular/cdk/portal';
-import { ChannelInterface } from '../shared/models/channel.interface';
-import { Observable, of, Subject, takeUntil } from 'rxjs';
+import { ComponentPortal } from '@angular/cdk/portal';
 import { UserInterface } from '../shared/models/user.interface';
+import { OpenComponentResult } from '../shared/models/component.result.interface';
+import { OverlayData } from '../shared/models/overlay.data.interface';
+import { Subject, takeUntil } from 'rxjs';
 
-// Interface to allow sending data when the overlay is opened.
-export interface OverlayData {
-  channel?: Observable<ChannelInterface | undefined>;
-}
-// Represents the result of opening an component in an overlay, including its reference, overlay, and observables for closing and backdrop clicks.
-export interface OpenComponentResult<T> {
-  ref: ComponentRef<T>;
-  overlayRef: OverlayRef;
-  afterClosed$: Observable<void>;
-  backdropClick$: Observable<void>;
-}
-
-/**
- * OverlayService is responsible for controlling the visibility and content of an overlay.
- * It provides methods to display and hide overlays, and to manage the overlay component.
- */
 @Injectable({
   providedIn: 'root',
 })
 export class OverlayService {
-  // The component to be displayed in the overlay, can be set dynamically.
-  // Initially null, meaning no component is displayed.
-  overlayComponent: Type<any> | null = null;
+  // // The component to be displayed in the overlay, can be set dynamically.
+  // overlayComponent: Type<any> | null = null;
+  // // Object to store inputs for the overlay component (currently not used in this code).
+  // overlayInputs: Record<string, any> = {};
+  // private overlayRef!: OverlayRef;
+  // // Reactive signal to store the ID of the post currently being edited.
+  // public editingPostId = signal<string | null>(null);
+  // // Subject to handle overlay input data.
+  // private overlayInputSubject = new BehaviorSubject<OverlayData | null>(null);
+  // overlayInput = this.overlayInputSubject.asObservable();
+  // // Store references to all open overlays.
+  // overlayRefs: OverlayRef[] = [];
+  // // Test signals for sending user data between overlays.
+  // users = signal<UserInterface[]>([]);
+  // searchReset = signal(false);
 
-  // Object to store inputs for the overlay component (currently not used in this code).
-  overlayInputs: Record<string, any> = {};
+  public overlayComponent: Type<any> | null = null;
+  public overlayInputs: Record<string, any> = {};
+  public editingPostId = signal<string | null>(null);
+  public users = signal<UserInterface[]>([]);
+  public searchReset = signal(false);
+
+  private overlayInputSubject = new BehaviorSubject<OverlayData | null>(null);
+  public overlayInput = this.overlayInputSubject.asObservable();
 
   private overlayRef!: OverlayRef;
-
-  // Reactive signal to store the ID of the post currently being edited.
-  public editingPostId = signal<string | null>(null);
-
-  // Subject to handle overlay input data.
-  private overlayInputSubject = new BehaviorSubject<OverlayData | null>(null);
-  overlayInput = this.overlayInputSubject.asObservable();
-
-  // Store references to all open overlays.
-  overlayRefs: OverlayRef[] = [];
-
-  // Test signals for sending user data between overlays.
-  users = signal<UserInterface[]>([]);
-  searchReset = signal(false);
+  private overlayRefs: OverlayRef[] = [];
 
   constructor(
-    private overlay: Overlay,
     private injector: Injector,
+    private overlay: Overlay,
     private scrollStrategies: ScrollStrategyOptions
   ) {}
+
+  // Sets the users in the service (used for updating the users signal).
+  setUsers(users: UserInterface[]): void {
+    this.users.set(users);
+  }
 
   // Method to add a user to the users signal (used for tracking users).
   addUser(user: UserInterface) {
@@ -94,6 +78,23 @@ export class OverlayService {
   }
 
   /**
+   * This function locks the body-scroll, when an overlay is open and adjusts the body-style accordingly.
+   *
+   * @param lock - whether the body scroll should be locked or not
+   */
+  private toggleBodyScroll(lock: boolean) {
+    if (lock) {
+      const scrollbarWidth =
+        window.innerWidth - document.documentElement.clientWidth;
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.paddingRight = '';
+      document.body.style.overflow = '';
+    }
+  }
+
+  /**
    * Opens a component inside an overlay with configurable backdrop and positioning options.
    *
    * @template T - The component type to be opened.
@@ -107,7 +108,8 @@ export class OverlayService {
    * @param data - Optional partial data object to assign to the component instance.
    * @returns An `OpenComponentResult` containing the component reference, overlay reference,
    *          and observables for closure and backdrop clicks, or `undefined` if opening failed.
-   */ openComponent<T extends Object>(
+   */
+  openComponent<T extends Object>(
     component: Type<T>,
     backdropType:
       | 'cdk-overlay-dark-backdrop'
@@ -125,19 +127,15 @@ export class OverlayService {
     const destroy$ = new Subject<void>();
     const backdropClick$ = new Subject<void>();
     const afterClosed$ = new Subject<void>();
-
     this.overlayRef = this.overlay.create(
       this.getOverlayConfig(backdropType, this.getPositionStrategy(position))
     );
-
     this.overlayRefs.push(this.overlayRef!);
     if (this.overlayRefs.length > 0) this.toggleBodyScroll(true);
-
     this.handleBackdropClick(this.overlayRef, destroy$, backdropClick$);
     const portal = new ComponentPortal(component, null, this.injector);
     const componentRef = this.overlayRef?.attach(portal)!;
     if (data) Object.assign(componentRef.instance, data);
-    
     this.handleDetach(this.overlayRef, destroy$, afterClosed$, backdropClick$);
     return {
       ref: componentRef,
@@ -214,7 +212,7 @@ export class OverlayService {
    *
    * @param backdropType - Defines the backdrop style (`dark`, `transparent`) or disables it (`null`).
    * @param positionStrategy - the positionStrategy returned from the getPositionStrategy()-function
-   */ 
+   */
   private getOverlayConfig(
     backdropType: string | null,
     positionStrategy: PositionStrategy
@@ -233,23 +231,6 @@ export class OverlayService {
         hasBackdrop: true,
         backdropClass: backdropType,
       };
-    }
-  }
-
-  /**
-   * This function locks the body-scroll, when an overlay is open and adjusts the body-style accordingly.
-   *
-   * @param lock - whether the body scroll should be locked or not
-   */
-  private toggleBodyScroll(lock: boolean) {
-    if (lock) {
-      const scrollbarWidth =
-        window.innerWidth - document.documentElement.clientWidth;
-      document.body.style.paddingRight = `${scrollbarWidth}px`;
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.paddingRight = '';
-      document.body.style.overflow = '';
     }
   }
 
@@ -310,7 +291,7 @@ export class OverlayService {
   closeAll(): void {
     this.overlayRefs.forEach((ref) => ref.dispose());
     this.overlayRefs = [];
-    document.body.style.overflow = '';
+    this.toggleBodyScroll(false);
   }
 
   /**
@@ -323,14 +304,6 @@ export class OverlayService {
       ref.dispose();
       this.overlayRefs.splice(index, 1);
     }
-
-    if (this.overlayRefs.length === 0) {
-      document.body.style.overflow = '';
-    }
-  }
-
-  // Sets the users in the service (used for updating the users signal).
-  setUsers(users: UserInterface[]): void {
-    this.users.set(users);
+    if (this.overlayRefs.length === 0) this.toggleBodyScroll(false);
   }
 }

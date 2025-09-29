@@ -27,14 +27,15 @@ export class ChatService {
    * Private BehaviorSubject to hold the current other user in the chat.
    * It is exposed as an observable for other components to subscribe to.
    */
-  private _otherUser$ = new BehaviorSubject<UserInterface | null>(null);
   private chatsCache = new Map<string, Observable<ChatInterface[]>>();
-  otherUser$ = this._otherUser$.asObservable(); // Public observable for other user
+
+  private _otherUser$ = new BehaviorSubject<UserInterface | null>(null);
+  public otherUser$ = this._otherUser$.asObservable(); // Public observable for other user
 
   constructor(
-    private router: Router, // Inject Router to handle navigation
     private firestore: Firestore, // Inject Firestore for database interaction
-    private mobileService: MobileService // Inject MobileService to manage mobile dashboard state
+    private mobileService: MobileService, // Inject MobileService to manage mobile dashboard state
+    private router: Router // Inject Router to handle navigation
   ) {}
 
   /**

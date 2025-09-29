@@ -1,7 +1,6 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import {
   Firestore,
-  collectionData,
   collection,
   doc,
   updateDoc,
@@ -10,13 +9,11 @@ import {
   query,
   where,
   arrayRemove,
-  getDoc,
   getDocs,
-  QuerySnapshot,
   arrayUnion,
   deleteDoc,
 } from '@angular/fire/firestore';
-import { from, map, Observable, of, shareReplay, switchMap, tap } from 'rxjs';
+import { from, map, Observable, shareReplay, switchMap } from 'rxjs';
 import { AuthService } from './auth.service';
 import { ChannelInterface } from '../shared/models/channel.interface';
 import { Router } from '@angular/router';
@@ -41,11 +38,11 @@ export class ChannelsService {
   >();
 
   constructor(
-    private firestore: Firestore,
     private authService: AuthService,
-    private router: Router,
+    private firestore: Firestore,
+    private mobileService: MobileService,
     private overlayService: OverlayService,
-    private mobileService: MobileService
+    private router: Router
   ) {}
 
   getCurrentChannel(
@@ -221,8 +218,6 @@ export class ChannelsService {
   checkNameTacken(name: string): Observable<boolean> {
     let channelRef = collection(this.firestore, 'channels');
     let q = query(channelRef, where('name', '==', name));
-    return from(getDocs(q)).pipe(
-      map((snapshot) => snapshot.empty)
-    );
+    return from(getDocs(q)).pipe(map((snapshot) => snapshot.empty));
   }
 }

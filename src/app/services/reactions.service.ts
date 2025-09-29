@@ -1,5 +1,16 @@
 import { Injectable } from '@angular/core';
-import { arrayRemove, arrayUnion, collection, collectionData, doc, Firestore, getDoc, getDocs, setDoc, updateDoc } from '@angular/fire/firestore';
+import {
+  arrayRemove,
+  arrayUnion,
+  collection,
+  collectionData,
+  doc,
+  Firestore,
+  getDoc,
+  getDocs,
+  setDoc,
+  updateDoc,
+} from '@angular/fire/firestore';
 import { AuthService } from './auth.service';
 import { Observable, shareReplay } from 'rxjs';
 import { ReactionInterface } from '../shared/models/reaction.interface';
@@ -10,10 +21,8 @@ import { ReactionInterface } from '../shared/models/reaction.interface';
 export class ReactionsService {
   private reactionCache = new Map<string, Observable<ReactionInterface[]>>();
 
-  constructor(
-    private firestore: Firestore,
-    private authService: AuthService,
-  ) {}
+  constructor(private authService: AuthService, private firestore: Firestore) {}
+
   /**
    * Toggles a reaction for a given post.
    *

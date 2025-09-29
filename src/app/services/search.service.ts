@@ -13,11 +13,9 @@ import {
   shareReplay,
   switchMap,
   filter,
-  Subject,
   distinctUntilChanged,
   BehaviorSubject,
   of,
-  debounceTime,
   throttleTime,
 } from 'rxjs';
 import { SearchResult } from '../shared/types/search-result.type';
@@ -36,13 +34,14 @@ export class SearchService {
   public readonly chatPosts$: Observable<PostInterface[]>; // Observable for posts in the user's chats
   public readonly channelPosts$: Observable<PostInterface[]>; // Observable for posts in the user's channels
   public readonly results$ = new BehaviorSubject<SearchResult[]>([]);
+
   overlaySearchResultsOpen = false;
   overlaySearchResultsNewMessageOpen = false;
 
   constructor(
-    private firestore: Firestore, // Firestore service to interact with the database
     private authService: AuthService, // AuthService to manage authentication
-    private chatService: ChatService // ChatService to manage chat-related logic
+    private chatService: ChatService, // ChatService to manage chat-related logic
+    private firestore: Firestore, // Firestore service to interact with the database
   ) {
     // Initialize all data streams (Observables)
     this.users$ = this.getUsers$(); // Fetch users

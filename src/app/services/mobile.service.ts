@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
   providedIn: 'root',
 })
 export class MobileService {
-  mobileDashboardState = signal<MobileDashboardState>('sidenav');
+  public mobileDashboardState = signal<MobileDashboardState>('sidenav');
 
   constructor(private router: Router) {}
 

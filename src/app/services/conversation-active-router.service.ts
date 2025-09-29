@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import {
   Firestore,
   collection,
@@ -92,7 +92,7 @@ export class ConversationActiveRouterService {
     const q = query(ref, orderBy('createdAt', 'asc'));
 
     return collectionData(q, { idField: 'id' }).pipe(
-      map((docs) => docs.map(doc => ({ ...(doc as PostInterface) }))),
+      map((docs) => docs.map((doc) => ({ ...(doc as PostInterface) }))),
       shareReplay({ bufferSize: 1, refCount: true }),
       catchError(() => of([]))
     );
@@ -105,7 +105,7 @@ export class ConversationActiveRouterService {
     if (conversationType !== 'channel') return of(null);
     const channelRef = doc(this.firestore, `channels/${conversationId}`);
     return docData(channelRef).pipe(
-       map(data => data ? (data as ChannelInterface) : null),
+      map((data) => (data ? (data as ChannelInterface) : null)),
       shareReplay({ bufferSize: 1, refCount: true }),
       catchError(() => of(null))
     );

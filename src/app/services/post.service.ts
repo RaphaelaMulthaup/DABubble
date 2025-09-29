@@ -24,7 +24,7 @@ import { EMOJIS } from '../shared/constants/emojis';
   providedIn: 'root', // Service is available globally in the application
 })
 export class PostService {
-  emojis = EMOJIS;
+  private emojis = EMOJIS;
   private postCache = new Map<string, Observable<PostInterface>>();
 
   constructor(

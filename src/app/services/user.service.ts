@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import {
   Firestore,
   collectionData,
@@ -48,7 +48,6 @@ export class UserService {
 
   getUserById(uid: string): Observable<UserInterface> {
     if (!this.userCache.has(uid)) {
-      // folosește Firestore din constructor
       const userDocRef = doc(this.firestore, `users/${uid}`);
       const user$ = docData(userDocRef, { idField: 'uid' }).pipe(
         map((doc) => doc as UserInterface),
