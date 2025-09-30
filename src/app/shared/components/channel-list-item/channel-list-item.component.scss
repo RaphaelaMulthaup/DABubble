@@ -1,7 +1,4 @@
 @import "./../../../../styles.scss";
-:host{
-  max-width: 100%
-}
 .channel-list-item {
   gap: 10px !important;
   border-radius: 20px;
@@ -12,7 +9,7 @@
     background-position: center;
     background-size: auto;
   }
-  .arrow{
+  .arrow {
     width: 30px;
     height: 30px;
     background-image: url("../../../../assets/img/keyboard-arrow-down-black.svg");
@@ -27,7 +24,7 @@
     .arrow {
       background-image: url("../../../../assets/img/keyboard-arrow-down-blue.svg");
     }
-    h2{
+    h2 {
       color: var(--color-purple-medium);
     }
   }

@@ -1,7 +1,7 @@
 <div
   #searchbar
   class="input-wrapper"
-  [ngClass]="{ 'z-index-1001': searchService.overlaySearchResultsOpen }"
+  [ngClass]="{ 'z-index-1001': searchService.overlaySearchResultsOpen && (screenSize$|async) === 'handset' }"
 >
   <input
     type="text"
