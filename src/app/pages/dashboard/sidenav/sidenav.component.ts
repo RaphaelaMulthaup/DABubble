@@ -10,6 +10,7 @@ import { CommonModule } from '@angular/common';
 import { SearchService } from '../../../services/search.service';
 import { ScreenService } from '../../../services/screen.service';
 import { ScreenSize } from '../../../shared/types/screen-size.type';
+import { OverlayService } from '../../../services/overlay.service';
 
 /**
  * The SidenavComponent is responsible for rendering the sidebar of the application,
@@ -52,7 +53,8 @@ export class SidenavComponent {
     public screenService: ScreenService,
     private authService: AuthService, // AuthService to manage user authentication
     public mobileService: MobileService, // MobileService to manage mobile-specific functionality
-    public searchService: SearchService // SearchService to manage searching
+    public searchService: SearchService, // SearchService to manage searching
+    public overlayService: OverlayService
   ) {
     // Injecting the mobileDashboardState from the mobile service to track mobile state
     this.mobileDashboardState = this.mobileService.mobileDashboardState;
