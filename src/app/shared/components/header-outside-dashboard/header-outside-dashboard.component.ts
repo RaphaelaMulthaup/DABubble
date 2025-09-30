@@ -15,8 +15,8 @@ export class HeaderOutsideDashboardComponent {
   ngOnInit(): void {
     if (this.context === 'non-auth') {
       setTimeout(() => {
-        this.showFinalLogo();
-      }, 5600);
+        //this.showFinalLogo();
+      }, 3200);
     } else {
       this.showFinalLogo();
     }

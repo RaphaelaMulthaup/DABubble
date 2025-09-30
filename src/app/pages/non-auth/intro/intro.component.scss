@@ -5,7 +5,8 @@
     width: 100vw;
     height: 100vh;
     z-index: 100;
-    transition: background-color 1s ease-out;
+    padding: 74px 0px 0px 0px;
+    transition: background-color 0.5s ease-out;
 
     .solo-logo{
         position: relative;
@@ -20,22 +21,27 @@
     }
 }
 
+.logo-container-final{
+    width: unset;
+    height: 20%;
+    position: absolute;
+}
+
 .span-box{
     overflow: hidden;
 }
 
 .animat-name{
     display: none;
-    font-size: 32px;
+    font-size: 33px;
     font-weight: 656;
     color: white;
-    margin: 0px 0px 0px 12px;
-    animation: slideFromLeft 1s ease-in;
-    width: 152px;
+    margin: 0px 2px 0px 12px;
+    animation: slideFromLeft 0.5s ease-in;
+    width: 160px;
 
     @include respond-to(xxxs) {
         margin: 0px 0px 0px 12px !important;
-        width: 156px;
     }
 }
 
@@ -44,18 +50,19 @@
 }
 
 .animated-logo{
-    transition: width 2s, height 1.3s, margin 0.7s;
-    width: 100px;
+    transition: width 1s, height 0.7s, margin 0.4s;
+    width: auto;
     height: 70px;
 
     @include respond-to(xxxs) {
         height: 65px;
-        width: 259px;
+        width: 100px;
     }
 }
 
 .animat-logo{
     width: 243px;
+    
 }
 
 .expand{
@@ -77,10 +84,10 @@
 }
 
 .addMargin{
-    margin: 309px 74px 154px 74px;
+    margin: 0px 74px 0px 74px;
 
     @include respond-to(xxxs) {
-        margin: 304px 74px 154px 74px;
+        margin: 0px 74px 0px 74px;
     }
 }
 

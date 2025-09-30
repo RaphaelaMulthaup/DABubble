@@ -22,8 +22,8 @@ export class IntroComponent implements OnInit {
     setTimeout(() => {
       logoContainer?.classList.add("container-transperent");
       this.moveUp();
-      this.getRid();
-    }, 4000);
+      this.getFinalForm();
+    }, 2500);
   }
 
   /**
@@ -35,7 +35,7 @@ export class IntroComponent implements OnInit {
       setTimeout(() => {
         animatedLogo?.classList.add("expand");
         this.moveSpan();
-      }, 1000);
+      }, 500);
   }
 
   /**
@@ -46,7 +46,7 @@ export class IntroComponent implements OnInit {
 
        setTimeout(() => {
         animatName?.classList.add("show");
-       }, 1700);
+       }, 1000);
   }
 
   /**
@@ -68,7 +68,15 @@ export class IntroComponent implements OnInit {
 
     setTimeout(() => {
       logoContainer?.classList.add("getRid");
-    }, 1600);
+    }, 700);
+  }
+
+  getFinalForm() {
+    let logoContainer = document.querySelector('.logo-container');
+
+    setTimeout(() => {
+      logoContainer?.classList.add('logo-container-final');
+    }, 1000);
   }
 
   /**
