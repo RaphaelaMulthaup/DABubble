@@ -1,5 +1,11 @@
 @import "./../../../styles.scss";
 
+:host {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+}
+
 .list-item {
   @include dFlex($jc: flex-start);
   padding-left: 20px;

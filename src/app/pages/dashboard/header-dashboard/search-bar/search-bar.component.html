@@ -1,7 +1,7 @@
 <div
   #searchbar
   class="input-wrapper"
-  [ngClass]="{ 'z-index-1001': searchService.overlaySearchResultsOpen }"
+  [ngClass]="{ 'z-index-1001': searchService.overlaySearchResultsOpen && (screenSize$|async) === 'handset' }"
 >
   <input
     type="text"
@@ -14,7 +14,7 @@
     (focus)="onFocus()"
   />
   @if ( searchResultsExisting ) {
-  <div class="close" (click)="closeOverlayAndEmptyInput()"></div>
+  <div class="close z-index-1001" (click)="closeOverlayAndEmptyInput()"></div>
   } @else {<img
     class="search-icon"
     src="./assets/img/search.svg"

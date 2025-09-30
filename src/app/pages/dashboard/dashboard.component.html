@@ -8,54 +8,73 @@
   }"
 >
   <app-header-dashboard />
-  @if (mobileDashboardState() === 'new-message-view') {
-  <app-header-searchbar></app-header-searchbar>
-  <div class="below-from-header-searchbar"></div>
-  } @if((screenSize$|async) === 'web'){
-  <div class="dashboard-web-components flex h-full">
-    @if(webNavigationVisible) {
-    <app-sidenav class="relative"></app-sidenav>
-    }
-    <app-conversation-window
-      [data$]="messages$"
-      [conversationWindowState]="'conversation'"
-    ></app-conversation-window>
-    @if (mobileDashboardState()==='thread-window'){
-    <app-conversation-window
-      class="thread-window"
-      [data$]="answers$"
-      [conversationWindowState]="'thread'"
-    ></app-conversation-window>
-    }
-  </div>
-  } @else {
-  <div class="w-full h-full">
-    @switch (mobileDashboardState()) { @case ('sidenav') {
-    <app-sidenav></app-sidenav>
-    } @case ('message-window') {
-    <div>
-      <app-conversation-window [data$]="messages$" [conversationWindowState]="'conversation'"></app-conversation-window>
+  @if((screenSize$|async) === 'web'){
+    <div class="dashboard-web-components flex h-full">
+      @if(webNavigationVisible) {
+        <app-sidenav class="relative"></app-sidenav>
+      }
+      @if (mobileDashboardState() === 'new-message-view') {
+        <app-header-searchbar></app-header-searchbar>
+        <div class="below-from-header-searchbar"></div>
+      }
+      @else {
+        <app-conversation-window
+          [data$]="messages$"
+          [conversationWindowState]="'conversation'"
+        ></app-conversation-window>
+        @if (mobileDashboardState()==='thread-window'){
+          <app-conversation-window
+            class="thread-window"
+            [data$]="answers$"
+            [conversationWindowState]="'thread'"
+          ></app-conversation-window>
+        }
+      }
     </div>
-    } @case ('thread-window') {
-    <app-conversation-window [data$]="answers$" [conversationWindowState]="'thread'"></app-conversation-window>
-    } @case ('new-message-view') {
-    <app-conversation-window [conversationWindowState]="'conversation'"></app-conversation-window>
-    } }
-  </div>
+  }
+  @else {
+    <div class="w-full h-full">
+      @switch (mobileDashboardState()) {
+        @case ('sidenav') {
+          <app-sidenav></app-sidenav>
+        }
+        @case ('message-window') {
+          <div>
+            <app-conversation-window
+              [data$]="messages$"
+              [conversationWindowState]="'conversation'"
+            ></app-conversation-window>
+          </div>
+        }
+        @case ('thread-window') {
+          <app-conversation-window
+            [data$]="answers$"
+            [conversationWindowState]="'thread'"
+          ></app-conversation-window>
+        }
+        @case ('new-message-view') {
+          <app-header-searchbar></app-header-searchbar>
+          <div class="below-from-header-searchbar"></div>
+          <!-- <app-conversation-window
+            [conversationWindowState]="'conversation'"
+          ></app-conversation-window> -->
+        }
+      }
+    </div>
   }
 </section>
 
 @if((screenSize$|async) === 'web') {
-<section
-  (click)="webNavigationVisible = !webNavigationVisible"
-  class="collapsible"
->
-  <p>Workspace-Menü {{ webNavigationVisible ? "schließen" : "öffnen" }}</p>
-  <div
-    class="toggle-navigation-img"
-    [ngClass]="webNavigationVisible ? 'hide-navigation' : 'show-navigation'"
-  ></div>
-</section>
+  <section
+    (click)="webNavigationVisible = !webNavigationVisible"
+    class="collapsible"
+  >
+    <p>Workspace-Menü {{ webNavigationVisible ? "schließen" : "öffnen" }}</p>
+    <div
+      class="toggle-navigation-img"
+      [ngClass]="webNavigationVisible ? 'hide-navigation' : 'show-navigation'"
+    ></div>
+  </section>
 }
 
 <!-- <section class="dashboard flex w-full justify-around h-[calc(100vh-120px)] gap-[24px]">
@@ -82,5 +101,5 @@
 </section> -->
 
 @if(overlayService.editingPostId() !== null) {
-<div (click)="endEditingPost()" class="editing-post-backdrop"></div>
+  <div (click)="endEditingPost()" class="editing-post-backdrop"></div>
 }

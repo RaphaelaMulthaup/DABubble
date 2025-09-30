@@ -8,7 +8,7 @@
 >
   <app-conversation-header [conversationWindowState]="conversationWindowState"></app-conversation-header>
   @if (data$) {
-  <app-window-display [messages$]="data$" [conversationWindowState]="conversationWindowState"></app-window-display>
-  <app-current-post-input [conversationWindowState]="conversationWindowState"></app-current-post-input>
+    <app-window-display [messages$]="data$" [conversationWindowState]="conversationWindowState"></app-window-display>
+    <app-current-post-input [conversationWindowState]="conversationWindowState"></app-current-post-input>
   }
 </section>

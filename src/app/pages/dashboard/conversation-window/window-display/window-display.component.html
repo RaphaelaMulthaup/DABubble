@@ -10,55 +10,71 @@
     <app-empty-thread-view [post]="postAnswered"></app-empty-thread-view>
   }
 
-  @if ((messages$ | async); as messages) { @for (message of messages; track
-  $index) { @if (shouldShowDate($index)) {
-  <div class="seperator-container flex flex-row place-items-center">
-    <div class="seperator"></div>
-    <p class="date">
-      @if(postService.isPostCreatedToday(postInfo[$index].createdAt)) { Heute }
-      @else {
-      {{ days[message.createdAt.toDate().getDay()] }},
-      {{ message.createdAt.toDate().getDate().toString().padStart(2, "0") }}.
-      {{
-      message.createdAt.toDate().toLocaleString("de-DE", { month: "long" })
-      }}
+  @if ((messages$ | async); as messages) {
+    @if (messages.length > 0) {
+      @for (message of messages; track $index) { 
+        @if (shouldShowDate($index)) {
+          <div class="seperator-container flex flex-row place-items-center">
+            <div class="seperator"></div>
+            <p class="date">
+              @if(postService.isPostCreatedToday(postInfo[$index].createdAt))
+                { Heute }
+              @else {
+                {{ days[message.createdAt.toDate().getDay()] }},
+                {{ message.createdAt.toDate().getDate().toString().padStart(2, "0") }}.
+                {{
+                message.createdAt.toDate().toLocaleString("de-DE", { month: "long" })
+                }}
+              }
+            </p>
+            <div class="seperator"></div>
+          </div>
+        }
+        @if (postAnswered && $index === 0 && conversationWindowState === 'thread') {
+          <app-displayed-post
+            [post]="postAnswered"
+            [conversationWindowState]="conversationWindowState"
+          ></app-displayed-post>
+          @if ((messages$|async)!) {
+            <div class="seperator-container flex flex-row place-items-center">
+              <span>{{ (messages$ | async)!.length }} Antworten</span>
+              <div class="seperator"></div>
+            </div>
+          }
+        }
+        <app-displayed-post
+          #messageElement
+          [post]="message"
+          [id]="message.id"
+          [conversationWindowState]="conversationWindowState"
+        ></app-displayed-post>
+      } 
+    }
+    @else {
+      @if (mobileDashboardState()!=='thread-window') { 
+        @switch (channelTyp$ | async) {
+          @case ('chat') {
+            @if (currentConversationId) {
+              <app-empty-chat-view
+                class="empty-consersation-view" [ngClass]="
+                (screenSize$ | async) === 'web'
+                  ? 'empty-consersation-view-web'
+                  : 'empty-consersation-view-handset-tablet'
+                " [currentChatId]="currentConversationId"></app-empty-chat-view>
+              }
+            }
+          @case ('channel') {
+            <app-empty-channel-view
+              class="empty-consersation-view"
+              [ngClass]="
+                (screenSize$ | async) === 'web'
+                  ? 'empty-consersation-view-web'
+                  : 'empty-consersation-view-handset-tablet'
+              "
+            ></app-empty-channel-view>
+          } 
+        }
       }
-    </p>
-    <div class="seperator"></div>
-  </div>
-  } @if (postAnswered && $index === 0 && conversationWindowState === 'thread') {
-  <app-displayed-post
-    [post]="postAnswered"
-    [conversationWindowState]="conversationWindowState"
-  ></app-displayed-post>
-  @if ((messages$|async)!) {
-  <div class="seperator-container flex flex-row place-items-center">
-    <span>{{ (messages$ | async)!.length }} Antworten</span>
-    <div class="seperator"></div>
-  </div>
-  } }
-
-  <app-displayed-post
-    #messageElement
-    [post]="message"
-    [id]="message.id"
-    [conversationWindowState]="conversationWindowState"
-  ></app-displayed-post>
-  } } @else { @if (mobileDashboardState()!=='thread-window') { @switch
-  (channelTyp$ | async) { @case ('chat') { @if (currentConversationId) {
-  <app-empty-chat-view class="empty-consersation-view" [ngClass]="
-      (screenSize$ | async) === 'web'
-        ? 'empty-consersation-view-web'
-        : 'empty-consersation-view-handset-tablet'
-    " [currentChatId]="currentConversationId"></app-empty-chat-view>
-  } } @case ('channel') {
-  <app-empty-channel-view
-    class="empty-consersation-view"
-    [ngClass]="
-      (screenSize$ | async) === 'web'
-        ? 'empty-consersation-view-web'
-        : 'empty-consersation-view-handset-tablet'
-    "
-  ></app-empty-channel-view>
-  } } } }
+    }
+  }
 </section>

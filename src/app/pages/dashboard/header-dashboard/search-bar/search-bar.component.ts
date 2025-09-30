@@ -5,7 +5,7 @@ import {
   Signal,
   ViewChild,
   OnInit,
-  OnDestroy,
+  OnDestroy
 } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import {
@@ -28,6 +28,7 @@ import { UserInterface } from '../../../../shared/models/user.interface';
 import { ChannelInterface } from '../../../../shared/models/channel.interface';
 import { ScreenSize } from '../../../../shared/types/screen-size.type';
 import { ScreenService } from '../../../../services/screen.service';
+import { ConnectedPosition } from '@angular/cdk/overlay';
 
 @Component({
   selector: 'app-search-bar',
@@ -44,67 +45,67 @@ import { ScreenService } from '../../../../services/screen.service';
   styleUrls: ['./search-bar.component.scss'],
 })
 export class SearchBarComponent implements OnInit, OnDestroy {
+  // Reactive form control for the search input
   searchControl = new FormControl<string>('', { nonNullable: true });
-  firstFocusHappened = false;
-  private destroy$ = new Subject<void>(); // Subject to handle unsubscription
+  firstFocusHappened = false; // Tracks if input was focused for the first time
+  private destroy$ = new Subject<void>(); // Used to clean up subscriptions
 
   @ViewChild('searchbar', { static: true }) searchbar!: ElementRef<HTMLElement>;
 
-  results: Signal<SearchResult[]>; // Signal for template binding
-  screenSize$!: Observable<ScreenSize>;
-  searchResultsExisting = false;
-  private searchOverlayRef: any;
+  results: Signal<SearchResult[]>; // Reactive signal of search results
+  screenSize$!: Observable<ScreenSize>; // Observable for screen size detection
+  searchResultsExisting = false; // Flag to check if results exist
+  private searchOverlayRef: any; // Reference to the overlay component
+
   constructor(
     public screenService: ScreenService,
     private overlayService: OverlayService,
     public searchService: SearchService
   ) {
     this.screenSize$ = this.screenService.screenSize$;
-    // Initialize the results signal with an empty array
+    // Initialize results as an empty array
     this.results = toSignal(this.searchService.results$, { initialValue: [] });
   }
 
   /**
    * Lifecycle hook called after component initialization.
-   * Sets mobile detection and adds focus listener to search input.
+   * Adds a focus listener to open the overlay when the input is focused.
    */
   ngOnInit() {
-    // Overlay focus logic
     this.searchbar.nativeElement.addEventListener('focus', () => {
       const term = this.searchControl.value.trim();
-      if (
-        term.length > 0
-        //  && this.searchResultsExisting
-      ) {
+      if (term.length > 0) {
         this.openOverlay(term);
       }
     });
   }
 
   /**
-   * Initializes the input observable and handles the search logic.
-   * Runs only on the first focus event to avoid multiple subscriptions.
+   * Called when the search bar gains focus for the first time.
+   * Sets up a debounced observable stream of input changes and updates results.
+   * Also handles showing/hiding the overlay based on search input.
    */
   onFocus() {
     if (!this.firstFocusHappened) {
       this.firstFocusHappened = true;
 
-      // Observable for input changes
+      // Stream of search terms
       const term$ = this.searchControl.valueChanges.pipe(
         startWith(this.searchControl.value),
         map((v) => v.trim())
       );
 
+      // Pass search term stream to the search service
       this.searchService.updateResults(term$);
 
-      // Subscribe to search terms to open or close overlay accordingly
+      // Subscribe to search terms to manage overlay visibility
       term$.pipe(takeUntil(this.destroy$)).subscribe((term) => {
         if (term.length > 0) {
           this.searchResultsExisting = true;
           this.searchService.overlaySearchResultsOpen = true;
-          this.openOverlay(term); // Overlay wiederverwenden oder neu öffnen
+          this.openOverlay(term);
         } else {
-          // this.searchOverlayRef?.close();
+          // Close overlay when input is cleared
           this.overlayService.closeOne(this.searchOverlayRef?.overlayRef);
           this.searchOverlayRef = null;
           this.searchResultsExisting = false;
@@ -115,67 +116,83 @@ export class SearchBarComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Opens the search results overlay positioned relative to the search bar.
-   * Handles backdrop clicks to close overlay and reset input.
+   * Opens the search results overlay below the search bar.
+   * If overlay already exists, it updates its data instead of reopening.
+   * Closes overlay on backdrop click and clears the input.
    */
   private openOverlay(term: string) {
-    if (!this.results() || this.results().length === 0) {
-      this.overlayService.closeOne(this.searchOverlayRef?.overlayRef);
-      this.searchOverlayRef = null;
-      this.searchResultsExisting = false;
-      this.searchService.overlaySearchResultsOpen = false;
-      return;
-    }
-
-    // Overlay schon offen → nur die Daten aktualisieren
+    // If overlay is already open, update its inputs
     if (this.searchOverlayRef) {
       this.searchOverlayRef.ref.instance.results$ = this.groupedResults;
       this.searchOverlayRef.ref.instance.searchTerm = term;
       return;
     }
 
-    // Overlay neu öffnen
-    this.searchOverlayRef = this.overlayService.openComponent(
-      SearchResultsComponent,
-      'cdk-overlay-transparent-backdrop',
-      {
-        origin: this.searchbar.nativeElement,
-        originPosition: {
-          originX: 'center',
-          originY: 'bottom',
-          overlayX: 'center',
-          overlayY: 'bottom',
-        },
-        originPositionFallback: {
-          originX: 'center',
-          originY: 'bottom',
-          overlayX: 'center',
-          overlayY: 'top',
-        },
-      },
-      {
-        results$: this.groupedResults,
-        searchTerm: term,
-      }
-    );
+    // Determine overlay position based on screen size (mobile or desktop)
+    let positionOverlay: {
+      origin: HTMLElement;
+      originPosition: ConnectedPosition;
+      originPositionFallback?: ConnectedPosition;
+    };
 
-    if (!this.searchOverlayRef) return;
+    this.screenSize$.subscribe((screenSize) => {
+      positionOverlay =
+        screenSize === 'handset'
+          ? {
+              origin: this.searchbar.nativeElement,
+              originPosition: {
+                originX: 'center',
+                originY: 'bottom',
+                overlayX: 'center',
+                overlayY: 'bottom',
+              },
+              originPositionFallback: {
+                originX: 'center',
+                originY: 'bottom',
+                overlayX: 'center',
+                overlayY: 'top',
+              },
+            }
+          : {
+              origin: this.searchbar.nativeElement,
+              originPosition: {
+                originX: 'start',
+                originY: 'bottom',
+                overlayX: 'start',
+                overlayY: 'top',
+              },
+            };
 
-    // BackdropClick → Overlay schließen und Input leeren
-    this.searchOverlayRef.backdropClick$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(() => {
-        this.searchControl.setValue('');
-        this.searchResultsExisting = false;
-        this.searchService.overlaySearchResultsOpen = false;
-        this.overlayService.closeOne(this.searchOverlayRef?.overlayRef);
-        this.searchOverlayRef = null;
-      });
+      // Open overlay with initial data
+      this.searchOverlayRef = this.overlayService.openComponent(
+        SearchResultsComponent,
+        'cdk-overlay-transparent-backdrop',
+        positionOverlay,
+        {
+          results$: this.groupedResults,
+          searchTerm: term,
+        }
+      );
+
+      if (!this.searchOverlayRef) return;
+
+      // Close overlay on backdrop click
+      this.searchOverlayRef.backdropClick$
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(() => {
+          this.searchControl.setValue('');
+          this.searchResultsExisting = false;
+          this.searchService.overlaySearchResultsOpen = false;
+          this.overlayService.closeOne(this.searchOverlayRef?.overlayRef);
+          this.searchOverlayRef = null;
+        });
+    });
   }
 
   /**
-   * Computes and groups search results by user and channel.
-   * Returns an array of grouped and ungrouped results for display.
+   * Computes grouped search results for easier rendering.
+   * Groups chat messages by user and channel messages by channel.
+   * Returns both grouped and ungrouped results.
    */
   groupedResults = computed(() => {
     const res = this.results();
@@ -189,19 +206,23 @@ export class SearchBarComponent implements OnInit, OnDestroy {
 
     for (const item of res) {
       if (item.type === 'chatMessage' && item.user) {
+        // Group chat messages by user
         if (!chatMap.has(item.user.uid))
           chatMap.set(item.user.uid, { user: item.user, posts: [] });
         chatMap.get(item.user.uid)!.posts.push(item);
       } else if (item.type === 'channelMessage') {
+        // Group channel messages by channel
         const channelId = item.channelId!;
         if (!channelMap.has(channelId))
           channelMap.set(channelId, { channel: item.channel, posts: [] });
         channelMap.get(channelId)!.posts.push(item);
       } else {
-        grouped.push(item); // Other types remain ungrouped
+        // Keep other types ungrouped
+        grouped.push(item);
       }
     }
 
+    // Add grouped chat and channel results to the output
     chatMap.forEach((value) =>
       grouped.push({ type: 'chatGroup', user: value.user, posts: value.posts })
     );
@@ -217,8 +238,8 @@ export class SearchBarComponent implements OnInit, OnDestroy {
   });
 
   /**
-   * Lifecycle hook called before component destruction.
-   * Completes the destroy$ subject to unsubscribe all active observables.
+   * Lifecycle hook called before component is destroyed.
+   * Completes the `destroy$` subject to unsubscribe from all observables.
    */
   ngOnDestroy() {
     this.destroy$.next();
@@ -226,7 +247,7 @@ export class SearchBarComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Closes the overlay and clears the search input.
+   * Closes the search overlay and clears the search input.
    */
   closeOverlayAndEmptyInput() {
     this.searchControl.setValue('');

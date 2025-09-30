@@ -7,7 +7,7 @@
 @if ((screenSize$|async) === 'handset') {
 <button
   class="new-message"
-  (click)="openNewMessageView()"
+  (click)="openNewMessageView(); overlayService.closeAll()"
   [ngClass]="{ 'z-index-1001': searchService.overlaySearchResultsOpen }"
 ></button>
 }

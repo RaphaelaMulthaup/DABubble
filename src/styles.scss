@@ -249,6 +249,8 @@ h4 {
   padding: 40px 20px;
 }
 
+
+
 //i use this to style name from edit channel btn
 .nameTag {
   font-weight: 600;
@@ -340,19 +342,18 @@ h4 {
   cursor: pointer;
 }
 
-.overlay-search-results-mobile {
-  overflow-y: scroll;
-}
-
 .results-list {
   width: 100vw;
-  padding: 24px 61px;
   @include dFlex($jc: flex-start, $ai: flex-start, $g: 13px);
   flex-direction: column;
   overflow-x: hidden;
   li {
     width: 100%;
   }
+}
+
+.results-list-handset {
+  padding: 24px 61px;
 }
 
 .no-hits {
@@ -380,7 +381,7 @@ h4 {
   cursor: grab;
 }
 
-::-webkit-scrollbar-thumb:active{
+::-webkit-scrollbar-thumb:active {
   cursor: grabbing;
 }
 
