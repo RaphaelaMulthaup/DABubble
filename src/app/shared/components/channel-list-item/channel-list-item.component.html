@@ -1,19 +1,16 @@
-<li
-  class="list-item channel-list-item"
-  (click)="
+<li class="list-item channel-list-item" (click)="
     !isInSearchResultsCurrentPostInput
       ? screenService.setMobileDashboardState('message-window')
       : emitChannel()
-  "
-  [routerLink]="
+  " [routerLink]="
     !isInSearchResultsCurrentPostInput
       ? ['/dashboard', 'channel', channel.id]
       : null
-  "
-  [ngClass]="{ 'related-to-search-result-post': relatedToSearchResultPost }"
->
-  <div class="tag"></div>
-  @if(isInChannelHeader){ @if((screenSize$|async) === 'handset'){
+  " [ngClass]="{ 'related-to-search-result-post': relatedToSearchResultPost }">
+
+  @if(isInChannelHeader){
+    <div class="tag"></div>
+  @if((screenSize$|async) === 'handset'){
   <h2>{{ truncate(channel.name, 15) }}</h2>
   }@else {
   <h2>{{ channel.name }}</h2>
