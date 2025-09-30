@@ -16,8 +16,8 @@ import {
   shareReplay,
 } from 'rxjs';
 import { Router } from '@angular/router'; // Router to navigate within the app
-import { MobileService } from './mobile.service'; // Service for handling mobile dashboard state
 import { UserInterface } from '../shared/models/user.interface'; // Interface for user data
+import { ScreenService } from './screen.service';
 
 @Injectable({
   providedIn: 'root', // The service is provided in the root module
@@ -34,8 +34,8 @@ export class ChatService {
 
   constructor(
     private firestore: Firestore, // Inject Firestore for database interaction
-    private mobileService: MobileService, // Inject MobileService to manage mobile dashboard state
-    private router: Router // Inject Router to handle navigation
+    private router: Router, // Inject Router to handle navigation
+    public screenService: ScreenService
   ) {}
 
   /**
@@ -152,7 +152,7 @@ export class ChatService {
     const chatId = await this.getChatId(currentUserId, otherUser.uid); // Get the unique chat ID
     await this.createChat(currentUserId, otherUser.uid); // Create the chat if it doesn't exist
     this.setOtherUser(otherUser); // Set the other user in the service
-    this.mobileService.setMobileDashboardState('message-window'); // Update the mobile dashboard state
+    this.screenService.setMobileDashboardState('message-window'); // Update the mobile dashboard state
     this.router.navigate(['/dashboard', 'chat', chatId]); // Navigate to the chat screen
   }
 

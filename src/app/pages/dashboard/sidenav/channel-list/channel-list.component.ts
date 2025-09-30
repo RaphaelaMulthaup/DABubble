@@ -9,9 +9,9 @@ import { RouterLink } from '@angular/router';
 import { UserService } from '../../../../services/user.service';
 import { OverlayService } from '../../../../services/overlay.service';
 import { ChannelListItemComponent } from '../../../../shared/components/channel-list-item/channel-list-item.component';
-import { MobileService } from '../../../../services/mobile.service';
 import { MobileDashboardState } from '../../../../shared/types/mobile-dashboard-state.type';
 import { SearchService } from '../../../../services/search.service';
+import { ScreenService } from '../../../../services/screen.service';
 
 @Component({
   selector: 'app-channel-list',
@@ -36,13 +36,12 @@ export class ChannelListComponent {
   mobileDashboardState: WritableSignal<MobileDashboardState>;
 
   constructor(
-    private channnelsService: ChannelsService,
     private authService: AuthService,
     private overlayService: OverlayService,
     private searchService: SearchService,
-    public mobileService: MobileService
+    public screenService: ScreenService,
   ) {
-    this.mobileDashboardState = this.mobileService.mobileDashboardState;
+    this.mobileDashboardState = this.screenService.mobileDashboardState;
     this.currentUserId = this.authService.getCurrentUserId();
     this.channels$ = this.searchService.getUserChannels$();
   }

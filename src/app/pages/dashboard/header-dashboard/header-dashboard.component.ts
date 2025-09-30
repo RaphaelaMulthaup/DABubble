@@ -48,7 +48,7 @@ export class HeaderDashboardComponent {
     public mobileService: MobileService // Inject the MobileService to determine mobile state.
   ) {
     // Initialize the mobile dashboard state.
-    this.mobileDashboardState = this.mobileService.mobileDashboardState;
+    this.mobileDashboardState = this.screenService.mobileDashboardState;
 
     // Initialize the current user observable from AuthService.
     this.currentUser$ = this.authService.currentUser$;

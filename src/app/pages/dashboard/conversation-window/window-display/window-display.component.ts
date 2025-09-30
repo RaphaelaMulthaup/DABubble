@@ -85,7 +85,7 @@ export class WindowDisplayComponent {
     public screenService: ScreenService,
     private conversationActiveRouterService: ConversationActiveRouterService
   ) {
-    this.mobileDashboardState = this.mobileService.mobileDashboardState;
+    this.mobileDashboardState = this.screenService.mobileDashboardState;
     this.screenSize$ = this.screenService.screenSize$;
   }
 

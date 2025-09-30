@@ -1,37 +1,51 @@
-import { Injectable } from '@angular/core';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
-import { map, Observable, shareReplay } from 'rxjs';
+import { Injectable, signal } from '@angular/core';
+import { BreakpointObserver } from '@angular/cdk/layout';
+import { firstValueFrom, map, Observable, shareReplay } from 'rxjs';
 import { ScreenSize } from '../shared/types/screen-size.type';
 import { BREAKPOINTS } from '../shared/constants/breakpoints';
+import { MobileDashboardState } from '../shared/types/mobile-dashboard-state.type';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ScreenService {
-  screenSize$: Observable<ScreenSize>;
-  breakpoints = BREAKPOINTS;
+  public screenSize$: Observable<ScreenSize>;
+  public breakpoints = BREAKPOINTS;
+  public mobileDashboardState = signal<MobileDashboardState>('sidenav');
 
-  constructor(private breakpointObserver: BreakpointObserver) {
+  constructor(
+    private breakpointObserver: BreakpointObserver,
+    private router: Router
+  ) {
     this.screenSize$ = this.breakpointObserver
-      .observe([this.breakpoints.Handset, this.breakpoints.Tablet, this.breakpoints.Web])
+      .observe([
+        this.breakpoints.Handset,
+        this.breakpoints.Tablet,
+        this.breakpoints.Web,
+      ])
       .pipe(
         map((result) => {
-          if (result.breakpoints[this.breakpoints.Handset]) {
-            //console.log('handset', result.breakpoints);
-            return 'handset';
-          }
-          if (result.breakpoints[this.breakpoints.Tablet]) {
-            //console.log('tablet', result.breakpoints);
-            return 'tablet';
-          }
-          if (result.breakpoints[this.breakpoints.Web]) {
-            //console.log('web', result.breakpoints);
-            return 'web';
-          }
-          //console.log('???', result.breakpoints);
+          if (result.breakpoints[this.breakpoints.Handset]) return 'handset';
+          if (result.breakpoints[this.breakpoints.Tablet]) return 'tablet';
+          if (result.breakpoints[this.breakpoints.Web]) return 'web';
           return 'web';
         }),
         shareReplay(1)
       );
+
+    setTimeout(async () => {
+      const initialScreenSize = await firstValueFrom(this.screenSize$);
+      if (initialScreenSize === 'web') {
+        this.setMobileDashboardState('new-message-view');
+      }
+    });
+  }
+
+  setMobileDashboardState(state: MobileDashboardState) {
+    this.mobileDashboardState.set(state);
+    if (state === 'sidenav') {
+      this.router.navigate(['/dashboard']);
+    }
   }
 }

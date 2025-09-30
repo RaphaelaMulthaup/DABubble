@@ -1,4 +1,4 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { MobileDashboardState } from '../shared/types/mobile-dashboard-state.type';
 import { Router } from '@angular/router';
 
@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
   providedIn: 'root',
 })
 export class MobileService {
-  public mobileDashboardState = signal<MobileDashboardState>('sidenav');
+  public mobileDashboardState = signal<MobileDashboardState>('new-message-view');
 
   constructor(private router: Router) {}
 

@@ -18,8 +18,8 @@ import {
 } from 'rxjs';
 import { UserInterface } from '../../../../shared/models/user.interface';
 import { UserListItemComponent } from '../../../../shared/components/user-list-item/user-list-item.component';
-import { MobileService } from '../../../../services/mobile.service';
 import { MobileDashboardState } from '../../../../shared/types/mobile-dashboard-state.type';
+import { ScreenService } from '../../../../services/screen.service';
 
 @Component({
   selector: 'app-contacts-list',
@@ -38,12 +38,12 @@ export class ContactsListComponent implements OnInit {
     private userService: UserService,
     private authService: AuthService,
     private chatService: ChatService,
-    public mobileService: MobileService
+    public screenService: ScreenService
   ) {
     // Subscribe to current user observable from AuthService
     this.currentUser$ = this.authService.currentUser$;
     // Initialize mobile dashboard state signal
-    this.mobileDashboardState = this.mobileService.mobileDashboardState;
+    this.mobileDashboardState = this.screenService.mobileDashboardState;
   }
 
   /*** Initialize contacts observable on component init ***/

@@ -40,7 +40,7 @@ export class ConversationHeaderComponent {
     private router: Router, // Angular router service to navigate between routes
     private conversationActiveRouterService: ConversationActiveRouterService // Custom service for handling active chat/router state
   ) {
-    this.mobileDashboardState = this.mobileService.mobileDashboardState; // Inject the mobile state from the service
+    this.mobileDashboardState = this.screenService.mobileDashboardState; // Inject the mobile state from the service
     this.screenSize$ = this.screenService.screenSize$;
   }
 

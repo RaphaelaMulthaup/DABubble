@@ -68,7 +68,7 @@ export class DashboardComponent {
     private route: ActivatedRoute, // To access route parameters for conversation information
     private mobileService: MobileService // Service to manage mobile dashboard state
   ) {
-    this.mobileDashboardState = this.mobileService.mobileDashboardState;
+    this.mobileDashboardState = this.screenService.mobileDashboardState;
     this.screenSize$ = this.screenService.screenSize$;
   }
 

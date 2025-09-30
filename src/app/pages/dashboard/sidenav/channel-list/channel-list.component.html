@@ -22,7 +22,7 @@
 @if (channelsVisible) {
 <div class="channel-list">
   @for (channel of channels$ | async; track $index) {
-  <app-channel-list-item [channel]="channel" (click)="mobileService.mobileDashboardState.set('message-window')"></app-channel-list-item>
+  <app-channel-list-item [channel]="channel" (click)="screenService.mobileDashboardState.set('message-window')"></app-channel-list-item>
   }
   <button
     (click)="openCreateChannelFormOverlay()"

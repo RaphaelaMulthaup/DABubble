@@ -61,7 +61,7 @@ export class ConversationWindowComponent {
   @Input() conversationWindowState?: 'conversation' | 'thread';
 
   constructor(public screenService: ScreenService) {
-    this.mobileDashboardState = this.mobileService.mobileDashboardState;
+    this.mobileDashboardState = this.screenService.mobileDashboardState;
     this.screenSize$ = this.screenService.screenSize$;   
   }
 }

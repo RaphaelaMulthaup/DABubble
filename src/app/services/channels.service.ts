@@ -18,7 +18,7 @@ import { AuthService } from './auth.service';
 import { ChannelInterface } from '../shared/models/channel.interface';
 import { Router } from '@angular/router';
 import { OverlayService } from './overlay.service';
-import { MobileService } from './mobile.service';
+import { ScreenService } from './screen.service';
 
 @Injectable({
   providedIn: 'root',
@@ -40,9 +40,9 @@ export class ChannelsService {
   constructor(
     private authService: AuthService,
     private firestore: Firestore,
-    private mobileService: MobileService,
     private overlayService: OverlayService,
-    private router: Router
+    private router: Router,
+    public screenService: ScreenService
   ) {}
 
   getCurrentChannel(
@@ -124,7 +124,7 @@ export class ChannelsService {
     this.channelCache.delete(channelId);
 
     this.router.navigate(['/dashboard']);
-    this.mobileService.setMobileDashboardState('sidenav');
+    this.screenService.setMobileDashboardState('sidenav');
     this.overlayService.closeAll();
 
     return from(promise);
@@ -151,7 +151,7 @@ export class ChannelsService {
     const channelDocRef = doc(this.firestore, `channels/${channelId}`);
     await updateDoc(channelDocRef, { memberIds: arrayRemove(currentUserId) });
     this.overlayService.closeAll();
-    this.mobileService.setMobileDashboardState('sidenav');
+    this.screenService.setMobileDashboardState('sidenav');
     this.router.navigate(['/dashboard']);
   }
 

@@ -16,9 +16,9 @@ import {
   Subject,
 } from 'rxjs';
 import { PostInterface } from '../shared/models/post.interface';
-import { MobileService } from './mobile.service';
 import { Router } from '@angular/router';
 import { EMOJIS } from '../shared/constants/emojis';
+import { ScreenService } from './screen.service';
 
 @Injectable({
   providedIn: 'root', // Service is available globally in the application
@@ -29,8 +29,8 @@ export class PostService {
 
   constructor(
     private firestore: Firestore,
-    private mobileService: MobileService,
-    private router: Router
+    private router: Router,
+    public screenService: ScreenService
   ) {}
 
   // Holds the current list of messages for the displayed conversation
@@ -207,7 +207,7 @@ export class PostService {
     conversationType: 'channel' | 'chat',
     conversationId: string
   ) {
-    this.mobileService.setMobileDashboardState('thread-window');
+    this.screenService.setMobileDashboardState('thread-window');
     this.router.navigate([
       '/dashboard',
       conversationType,

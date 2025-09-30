@@ -2,7 +2,7 @@
   class="list-item channel-list-item"
   (click)="
     !isInSearchResultsCurrentPostInput
-      ? mobileService.setMobileDashboardState('message-window')
+      ? screenService.setMobileDashboardState('message-window')
       : emitChannel()
   "
   [routerLink]="
