@@ -63,14 +63,17 @@ export class IntroComponent implements OnInit {
   /**
    * removes the animated logo and makes way for the actual logo
    */
-  getRid() {
-    let logoContainer = document.querySelector(".logo-container");
+  // getRid() {
+  //   let logoContainer = document.querySelector(".logo-container");
 
-    setTimeout(() => {
-      logoContainer?.classList.add("getRid");
-    }, 700);
-  }
+  //   setTimeout(() => {
+  //     logoContainer?.classList.add("getRid");
+  //   }, 700);
+  // }
 
+  /**
+   * Let logo stay in final position. 
+   */
   getFinalForm() {
     let logoContainer = document.querySelector('.logo-container');
 
