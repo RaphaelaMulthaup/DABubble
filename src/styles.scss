@@ -43,6 +43,23 @@ $breakpoints: (
   font-family: "Nunito";
 }
 
+@include respond-to(xs) {
+  button:hover, .btn-dropdown, .btn-dropdown div {
+    color: inherit !important;
+    background-color: inherit !important;
+    background-image: inherit !important;
+    filter: brightness(0) !important;
+  }
+}
+
+@media (hover: none) {
+  button:hover, .btn-dropdown, .btn-dropdown div {
+    color: inherit !important;
+    background-color: inherit !important;
+    background-image: inherit !important;
+  }
+}
+
 // html.overlay-active,
 // body.overlay-active {
 //   margin: 0;

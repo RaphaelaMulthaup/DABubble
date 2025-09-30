@@ -95,9 +95,7 @@ export class NonAuthComponent {
    */
   showLogo() {
     let shownLogo = document.querySelector('.logo');
-    setTimeout(() => {
-      shownLogo?.classList.add('show-logo');
-    }, 5600);
+    shownLogo?.classList.add('show-logo');
   }
 
   onForgotPassword() {
