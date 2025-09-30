@@ -9,14 +9,11 @@ import {
 } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import {
-  debounceTime,
   map,
   startWith,
   Observable,
   Subject,
-  EMPTY,
-  takeUntil,
-  of,
+  takeUntil
 } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { SearchService } from '../../../../services/search.service';
@@ -26,7 +23,6 @@ import { SearchResultsComponent } from '../../../../overlay/search-results/searc
 import { UserListItemComponent } from '../../../../shared/components/user-list-item/user-list-item.component';
 import { ChannelListItemComponent } from '../../../../shared/components/channel-list-item/channel-list-item.component';
 import { PostListItemComponent } from '../../../../shared/components/post-list-item/post-list-item.component';
-import { MobileService } from '../../../../services/mobile.service';
 import { SearchResult } from '../../../../shared/types/search-result.type';
 import { UserInterface } from '../../../../shared/models/user.interface';
 import { ChannelInterface } from '../../../../shared/models/channel.interface';
@@ -61,8 +57,7 @@ export class SearchBarComponent implements OnInit, OnDestroy {
   constructor(
     public screenService: ScreenService,
     private overlayService: OverlayService,
-    public searchService: SearchService,
-    public mobileService: MobileService
+    public searchService: SearchService
   ) {
     this.screenSize$ = this.screenService.screenSize$;
     // Initialize the results signal with an empty array
@@ -94,10 +89,9 @@ export class SearchBarComponent implements OnInit, OnDestroy {
     if (!this.firstFocusHappened) {
       this.firstFocusHappened = true;
 
-      // Observable for input changes with debounce
+      // Observable for input changes
       const term$ = this.searchControl.valueChanges.pipe(
         startWith(this.searchControl.value),
-        debounceTime(300),
         map((v) => v.trim())
       );
 

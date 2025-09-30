@@ -10,7 +10,6 @@ import { ChannelsService } from '../../../../../services/channels.service';
 import { ChannelMembersLengthComponent } from './channel-members-length/channel-members-length.component';
 import { ChannelMembersComponent } from '../../../../../shared/components/channel-members/channel-members.component';
 import { AddMemberToChannelComponent } from '../../../../../overlay/add-member-to-channel/add-member-to-channel.component';
-import { MobileService } from '../../../../../services/mobile.service';
 import { ChannelListItemComponent } from '../../../../../shared/components/channel-list-item/channel-list-item.component';
 import { ScreenSize } from '../../../../../shared/types/screen-size.type';
 import { ScreenService } from '../../../../../services/screen.service';
@@ -36,8 +35,7 @@ export class HeaderChannelComponent {
     private overlayService: OverlayService,
     private conversationActiveRouterService: ConversationActiveRouterService,
     private route: ActivatedRoute,
-    private channelService: ChannelsService,
-    private mobileService: MobileService,
+    private channelService: ChannelsService
   ) {
     this.screenSize$ = this.screenService.screenSize$;
   }

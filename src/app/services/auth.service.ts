@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import {
   Auth,
   createUserWithEmailAndPassword,
@@ -27,7 +27,6 @@ import {
 } from 'firebase/auth';
 
 import { from, Observable, of, shareReplay, switchMap, tap } from 'rxjs';
-import { BehaviorSubject } from 'rxjs';
 import { UserInterface } from '../shared/models/user.interface';
 import { UserService } from './user.service';
 import { ChatService } from './chat.service';
@@ -37,7 +36,6 @@ import { ChatService } from './chat.service';
 })
 export class AuthService {
   private provider = new GoogleAuthProvider(); // Google Auth provider
-
   //the data of the user in the registration-process
   userToRegister = {
     displayName: '',
@@ -46,18 +44,16 @@ export class AuthService {
     policyAccepted: false,
     photoURL: '',
   };
-
   // Reaktives Observable für den aktuellen Firestore User
-  currentUser$: Observable<UserInterface | null>;
-
+  public currentUser$: Observable<UserInterface | null>;
   // Optional synchroner Zugriff
   private currentUserSnapshot: UserInterface | null = null;
 
   constructor(
     private auth: Auth,
+    private chatService: ChatService,
     private firestore: Firestore,
-    private userService: UserService,
-    private chatService: ChatService
+    private userService: UserService
   ) {
     // Voll reaktives Observable, das automatisch auf AuthStateChanges reagiert
     this.currentUser$ = new Observable<User | null>((subscriber) =>
@@ -72,7 +68,7 @@ export class AuthService {
         }
       }),
       tap((user) => (this.currentUserSnapshot = user)), // Snapshot für synchronen Zugriff speichern
-      shareReplay(1) // Letzten Wert für neue Subscribers zwischenspeichern
+      shareReplay({ bufferSize: 1, refCount: true }) // Letzten Wert für neue Subscribers zwischenspeichern
     );
   }
 
@@ -83,8 +79,7 @@ export class AuthService {
 
   /*** Get current Firebase Auth user ID or null ***/
   getCurrentUserId(): string | null {
-    const user = this.auth.currentUser;
-    return user ? user.uid : null;
+    return this.currentUserSnapshot?.uid ?? null;
   }
 
   /*** Create or update Firestore user document ***/
@@ -242,7 +237,7 @@ export class AuthService {
    * Sends link to firesore mail reset url
    *
    */
-  sendPasswordRessetEmail(email: string): Promise<void> {
+  sendPasswordResetEmail(email: string): Promise<void> {
     const auth = getAuth();
     return sendPasswordResetEmail(auth, email);
   }

@@ -13,7 +13,6 @@ import { CommonModule } from '@angular/common';
 import { SearchService } from '../../services/search.service';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import {
-  debounceTime,
   startWith,
   map,
   Observable,
@@ -59,10 +58,9 @@ export class AddMemberToChannelComponent {
   // Reactive form control for the search input
   searchControl = new FormControl<string>('', { nonNullable: true });
 
-  // Observable stream for the search term (debounced for performance)
+  // Observable stream for the search term
   private term$: Observable<string> = this.searchControl.valueChanges.pipe(
     startWith(this.searchControl.value),
-    debounceTime(300),
     map((v) => v.trim().toLowerCase()) // Normalize the search term for matching
   );
 

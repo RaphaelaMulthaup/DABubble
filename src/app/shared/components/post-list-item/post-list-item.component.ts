@@ -2,7 +2,7 @@ import { Component, inject, Input } from '@angular/core';
 import { PostInterface } from '../../models/post.interface';
 import { Router } from '@angular/router';
 import { PostService } from '../../../services/post.service';
-import { MobileService } from '../../../services/mobile.service';
+import { ScreenService } from '../../../services/screen.service';
 
 @Component({
   selector: 'app-post-list-item',
@@ -19,7 +19,7 @@ export class PostListItemComponent {
   constructor(
     private router: Router, // Router for navigating to different views
     private postService: PostService, // Service for handling post-related logic
-    private mobileService: MobileService // Service for managing mobile dashboard state
+    public screenService: ScreenService // Service for managing mobile dashboard state
   ) {}
 
   /**
@@ -40,7 +40,7 @@ export class PostListItemComponent {
 
       // If the post has an answer, navigate to the thread window with the parent message ID
       if (this.post.answer) {
-        this.mobileService.setMobileDashboardState('thread-window'); // Set the mobile dashboard state for thread view
+        this.screenService.setMobileDashboardState('thread-window'); // Set the mobile dashboard state for thread view
         this.router.navigate(
           [
             '/dashboard', // Base route
@@ -55,7 +55,7 @@ export class PostListItemComponent {
         );
       } else {
         // Otherwise, navigate to the message window view
-        this.mobileService.setMobileDashboardState('message-window'); // Set the mobile dashboard state for message view
+        this.screenService.setMobileDashboardState('message-window'); // Set the mobile dashboard state for message view
         this.router.navigate(['/dashboard', conversationType, conversationId], {
           queryParams: { scrollTo: postId }, // Scroll to the specific post
         });

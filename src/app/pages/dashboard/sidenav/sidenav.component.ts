@@ -1,10 +1,9 @@
-import { Component, inject, WritableSignal } from '@angular/core';
+import { Component, WritableSignal } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
 import { ChannelListComponent } from './channel-list/channel-list.component';
 import { ContactsListComponent } from './contacts-list/contacts-list.component';
 import { Observable, Subject, takeUntil } from 'rxjs';
 import { UserInterface } from '../../../shared/models/user.interface';
-import { MobileService } from '../../../services/mobile.service';
 import { MobileDashboardState } from '../../../shared/types/mobile-dashboard-state.type';
 import { CommonModule } from '@angular/common';
 import { SearchService } from '../../../services/search.service';
@@ -49,13 +48,12 @@ export class SidenavComponent {
   mobileDashboardState: WritableSignal<MobileDashboardState>;
 
   constructor(
-    public screenService: ScreenService,
     private authService: AuthService, // AuthService to manage user authentication
-    public mobileService: MobileService, // MobileService to manage mobile-specific functionality
+    public screenService: ScreenService,
     public searchService: SearchService // SearchService to manage searching
   ) {
     // Injecting the mobileDashboardState from the mobile service to track mobile state
-    this.mobileDashboardState = this.mobileService.mobileDashboardState;
+    this.mobileDashboardState = this.screenService.mobileDashboardState;
 
     // Fetching the current user observable from the AuthService
     this.user$ = this.authService.currentUser$;
@@ -88,6 +86,6 @@ export class SidenavComponent {
    * It updates the mobile dashboard state to show the new message view.
    */
   openNewMessageView() {
-    this.mobileService.setMobileDashboardState('new-message-view');
+    this.screenService.setMobileDashboardState('new-message-view');
   }
 }

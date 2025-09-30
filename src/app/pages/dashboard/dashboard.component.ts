@@ -16,7 +16,6 @@ import { ConversationActiveRouterService } from '../../services/conversation-act
 import { ActivatedRoute } from '@angular/router';
 import { Observable, throwError, EMPTY } from 'rxjs';
 import { MobileDashboardState } from '../../shared/types/mobile-dashboard-state.type';
-import { MobileService } from '../../services/mobile.service';
 import { PostInterface } from '../../shared/models/post.interface';
 import { ScreenService } from '../../services/screen.service';
 import { ScreenSize } from '../../shared/types/screen-size.type';
@@ -34,8 +33,8 @@ import { HeaderSearchbarComponent } from './header-searchbar/header-searchbar.co
     SidenavComponent, // Sidebar component
     ConversationWindowComponent, // Component to display the conversation
     CommonModule, // Angular common module for essential directives and pipes
-    HeaderDashboardComponent,
     HeaderSearchbarComponent,
+    HeaderDashboardComponent
   ],
   templateUrl: './dashboard.component.html', // HTML template for the dashboard
   styleUrl: './dashboard.component.scss', // Styles for the dashboard
@@ -65,10 +64,9 @@ export class DashboardComponent {
     public screenService: ScreenService,
     private authService: AuthService, // Service for authentication management
     private conversationActiveRouterService: ConversationActiveRouterService, // Service for managing active chats
-    private route: ActivatedRoute, // To access route parameters for conversation information
-    private mobileService: MobileService // Service to manage mobile dashboard state
+    private route: ActivatedRoute // To access route parameters for conversation information
   ) {
-    this.mobileDashboardState = this.mobileService.mobileDashboardState;
+    this.mobileDashboardState = this.screenService.mobileDashboardState;
     this.screenSize$ = this.screenService.screenSize$;
   }
 

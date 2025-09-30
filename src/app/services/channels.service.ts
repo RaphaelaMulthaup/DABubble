@@ -1,7 +1,6 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import {
   Firestore,
-  collectionData,
   collection,
   doc,
   updateDoc,
@@ -10,18 +9,16 @@ import {
   query,
   where,
   arrayRemove,
-  getDoc,
   getDocs,
-  QuerySnapshot,
   arrayUnion,
   deleteDoc,
 } from '@angular/fire/firestore';
-import { from, map, Observable, of, shareReplay, switchMap, tap } from 'rxjs';
+import { from, map, Observable, shareReplay, switchMap } from 'rxjs';
 import { AuthService } from './auth.service';
 import { ChannelInterface } from '../shared/models/channel.interface';
 import { Router } from '@angular/router';
 import { OverlayService } from './overlay.service';
-import { MobileService } from './mobile.service';
+import { ScreenService } from './screen.service';
 
 @Injectable({
   providedIn: 'root',
@@ -41,11 +38,11 @@ export class ChannelsService {
   >();
 
   constructor(
-    private firestore: Firestore,
     private authService: AuthService,
-    private router: Router,
+    private firestore: Firestore,
     private overlayService: OverlayService,
-    private mobileService: MobileService
+    private router: Router,
+    public screenService: ScreenService
   ) {}
 
   getCurrentChannel(
@@ -65,22 +62,23 @@ export class ChannelsService {
     return channel$;
   }
 
-  /**
-   * Retrieves channels that the current user is a member of and not deleted
-   * @returns Observable list of the current user's channels
-   */
-  getCurrentUserChannels(): Observable<ChannelInterface[]> {
-    const channelCollection = collection(this.firestore, 'channels');
-    return collectionData(channelCollection, { idField: 'id' }).pipe(
-      map((channels) =>
-        channels.filter(
-          (channel) =>
-            !channel['deleted'] &&
-            channel['memberIds']?.includes(this.authService.getCurrentUserId())
-        )
-      )
-    ) as Observable<ChannelInterface[]>;
-  }
+  //diese Funktion existiert schon im search-service in verbessert.
+  // /**
+  //  * Retrieves channels that the current user is a member of and not deleted
+  //  * @returns Observable list of the current user's channels
+  //  */
+  // getCurrentUserChannels(): Observable<ChannelInterface[]> {
+  //   const channelCollection = collection(this.firestore, 'channels');
+  //   return collectionData(channelCollection, { idField: 'id' }).pipe(
+  //     map((channels) =>
+  //       channels.filter(
+  //         (channel) =>
+  //           !channel['deleted'] &&
+  //           channel['memberIds']?.includes(this.authService.getCurrentUserId())
+  //       )
+  //     )
+  //   ) as Observable<ChannelInterface[]>;
+  // }
 
   /**
    * Creates a new channel with the current user as the creator and first member
@@ -130,7 +128,7 @@ export class ChannelsService {
     this.channelCache.delete(channelId);
 
     this.router.navigate(['/dashboard']);
-    this.mobileService.setMobileDashboardState('sidenav');
+    this.screenService.setMobileDashboardState('sidenav');
     this.overlayService.closeAll();
 
     return from(promise);
@@ -157,7 +155,7 @@ export class ChannelsService {
     const channelDocRef = doc(this.firestore, `channels/${channelId}`);
     await updateDoc(channelDocRef, { memberIds: arrayRemove(currentUserId) });
     this.overlayService.closeAll();
-    this.mobileService.setMobileDashboardState('sidenav');
+    this.screenService.setMobileDashboardState('sidenav');
     this.router.navigate(['/dashboard']);
   }
 

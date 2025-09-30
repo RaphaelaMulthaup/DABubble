@@ -26,6 +26,8 @@
 
   .textarea-wrapper {
     width: 100%;
+    max-height: 108px;
+    overflow-x: auto;
 
     .post-text-input {
       width: 100%;
@@ -84,6 +86,5 @@
 }
 
 .web-current-post-input {
-  height: 145px;
   margin: 8px 24px 24px 24px;
 }

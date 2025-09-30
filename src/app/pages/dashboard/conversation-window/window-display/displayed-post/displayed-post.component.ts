@@ -1,10 +1,7 @@
 import {
   Component,
-  HostListener,
   Input,
   Output,
-  WritableSignal,
-  inject,
 } from '@angular/core';
 import { PostInterface } from '../../../../../shared/models/post.interface';
 import { AuthService } from '../../../../../services/auth.service';
@@ -12,13 +9,10 @@ import { UserService } from '../../../../../services/user.service';
 import {
   distinctUntilChanged,
   filter,
-  firstValueFrom,
   map,
   of,
   shareReplay,
   Subject,
-  Subscribable,
-  Subscription,
   switchMap,
   take,
   takeUntil,
@@ -36,11 +30,11 @@ import { PostService } from '../../../../../services/post.service';
 import { EmojiPickerComponent } from '../../../../../overlay/emoji-picker/emoji-picker.component';
 import { ReactedUsersComponent } from '../../../../../overlay/reacted-users/reacted-users.component';
 import { PostInteractionOverlayComponent } from '../../../../../overlay/post-interaction-overlay/post-interaction-overlay.component';
-import { MobileService } from '../../../../../services/mobile.service';
 import { EditDisplayedPostComponent } from './edit-displayed-post/edit-displayed-post.component';
 import { EMOJIS } from '../../../../../shared/constants/emojis';
 import { ScreenSize } from '../../../../../shared/types/screen-size.type';
 import { ScreenService } from '../../../../../services/screen.service';
+import { ReactionsService } from '../../../../../services/reactions.service';
 
 @Component({
   selector: 'app-displayed-post', // Component to display a single message in the conversation
@@ -74,10 +68,10 @@ export class DisplayedPostComponent {
     private userService: UserService,
     private route: ActivatedRoute,
     private conversationActiveRouterService: ConversationActiveRouterService,
+    private reactionsService: ReactionsService,
     public overlayService: OverlayService,
     public postService: PostService,
-    public screenService: ScreenService,
-    public mobileService: MobileService
+    public screenService: ScreenService
   ) {
     this.screenSize$ = this.screenService.screenSize$;
   }
@@ -107,12 +101,12 @@ export class DisplayedPostComponent {
       filter((post) => post.hasReactions === true),
       switchMap((post) =>
         this.parentMessageId
-          ? this.postService.getReactions(
+          ? this.reactionsService.getReactions(
               `/${this.currentConversationType}s/${this.currentConversationId}/messages/${this.parentMessageId}`,
               'answers',
               post.id!
             )
-          : this.postService.getReactions(
+          : this.reactionsService.getReactions(
               `/${this.currentConversationType}s/${this.currentConversationId}`,
               'messages',
               post.id!
@@ -207,7 +201,7 @@ export class DisplayedPostComponent {
       .pipe(take(1))
       .subscribe((emoji: { token: string; src: string }) => {
         if (this.parentMessageId) {
-          this.postService.toggleReaction(
+          this.reactionsService.toggleReaction(
             '/' +
               this.currentConversationType +
               's/' +
@@ -219,7 +213,7 @@ export class DisplayedPostComponent {
             emoji!
           );
         } else {
-          this.postService.toggleReaction(
+          this.reactionsService.toggleReaction(
             '/' +
               this.currentConversationType +
               's/' +
@@ -310,7 +304,7 @@ export class DisplayedPostComponent {
    */
   toggleExistingReaction(emoji: { token: string; src: string }) {
     if (this.parentMessageId) {
-      this.postService.toggleReaction(
+      this.reactionsService.toggleReaction(
         '/' +
           this.currentConversationType +
           's/' +
@@ -322,7 +316,7 @@ export class DisplayedPostComponent {
         emoji!
       );
     } else {
-      this.postService.toggleReaction(
+      this.reactionsService.toggleReaction(
         '/' + this.currentConversationType + 's/' + this.currentConversationId,
         'messages',
         this.post.id!,

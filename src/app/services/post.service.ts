@@ -1,54 +1,36 @@
-import { ElementRef, inject, Injectable } from '@angular/core';
+import { ElementRef, Injectable } from '@angular/core';
 import {
-  addDoc,
-  arrayRemove,
-  arrayUnion,
   collection,
-  collectionData,
-  deleteDoc,
   doc,
   docData,
   Firestore,
-  getCountFromServer,
-  getDoc,
-  getDocs,
   increment,
-  orderBy,
-  query,
   serverTimestamp,
   setDoc,
   updateDoc,
 } from '@angular/fire/firestore';
 import {
-  BehaviorSubject,
-  filter,
   Observable,
   of,
   shareReplay,
   Subject,
-  switchMap,
 } from 'rxjs';
 import { PostInterface } from '../shared/models/post.interface';
-import { ReactionInterface } from '../shared/models/reaction.interface';
-import { ChatInterface } from '../shared/models/chat.interface';
-import { AuthService } from './auth.service';
-import { MobileService } from './mobile.service';
 import { Router } from '@angular/router';
 import { EMOJIS } from '../shared/constants/emojis';
+import { ScreenService } from './screen.service';
 
 @Injectable({
   providedIn: 'root', // Service is available globally in the application
 })
 export class PostService {
-  emojis = EMOJIS;
-  private reactionCache = new Map<string, Observable<ReactionInterface[]>>();
+  private emojis = EMOJIS;
   private postCache = new Map<string, Observable<PostInterface>>();
 
   constructor(
     private firestore: Firestore,
-    private authService: AuthService,
-    private mobileService: MobileService,
-    private router: Router
+    private router: Router,
+    public screenService: ScreenService
   ) {}
 
   // Holds the current list of messages for the displayed conversation
@@ -91,108 +73,6 @@ export class PostService {
     });
 
     return newDocRef.id; // Return the ID of the created document (optional)
-  }
-
-  /**
-   * Toggles a reaction for a given post.
-   *
-   * - If the user has already reacted with the emoji, their ID will be removed.
-   * - Otherwise, their ID will be added.
-   * - If the emoji does not exist yet, a new reaction document is created.
-   *
-   * @param parentPath - Path to the parent document (e.g. "chats/{chatId}").
-   * @param subcollectionName - Name of the subcollection (e.g. "messages").
-   * @param postId - ID of the post being reacted to.
-   * @param emojiToken - The token of the chosen emoji.
-   * @returns A Promise that resolves once the reaction update has been applied.
-   */
-  async toggleReaction(
-    parentPath: string,
-    subcollectionName: string,
-    postId: string,
-    emoji: { token: string; src: string }
-  ) {
-    let userId = this.authService.currentUser?.uid ?? null;
-    const postPath = `${parentPath}/${subcollectionName}/${postId}`;
-    const postRef = doc(this.firestore, postPath);
-    const reactionRef = doc(
-      this.firestore,
-      `${postPath}/reactions/${emoji.token}`
-    );
-    const reactionSnap = await getDoc(reactionRef);
-    if (reactionSnap.exists()) {
-      const data = reactionSnap.data();
-      const users: string[] = data['users'] || [];
-
-      if (userId && users.includes(userId)) {
-        // User already reacted → remove their reaction
-        await updateDoc(reactionRef, {
-          users: arrayRemove(userId),
-        });
-        const postHasReactions = await this.checkForPostReactions(postPath);
-        await updateDoc(postRef, { hasReactions: postHasReactions });
-      } else {
-        // User has not reacted → add their reaction
-        await updateDoc(reactionRef, {
-          users: arrayUnion(userId),
-        });
-        await updateDoc(postRef, { hasReactions: true });
-      }
-    } else {
-      // First reaction with this emoji → create a new reaction document
-      await setDoc(reactionRef, {
-        emoji,
-        users: [userId],
-      });
-      await updateDoc(postRef, { hasReactions: true });
-    }
-  }
-
-  /**
-   * This function checks for each reaction of a post, if its user-array contains any users.
-   * If an array contains users, the function returns true.
-   * If no reactions-array contains users, the function returns false.
-   *
-   * @param postPath - the path to the post in firebase.
-   */
-  async checkForPostReactions(postPath: string): Promise<boolean> {
-    const reactionsColRef = collection(this.firestore, `${postPath}/reactions`);
-    const reactionsSnap = await getDocs(reactionsColRef);
-
-    return reactionsSnap.docs.some((docSnap) => {
-      const users: string[] = docSnap.data()?.['users'] || [];
-      return users.length > 0;
-    });
-  }
-
-  /**
-   * Fetches all reactions of a post in real-time.
-   *
-   * @param parentPath - Path to the parent document (e.g. "chats/{chatId}").
-   * @param subcollectionName - Name of the subcollection (e.g. "messages").
-   * @param postId - ID of the post whose reactions should be fetched.
-   * @returns Observable that emits the list of reactions (with emoji name and user IDs).
-   */
-  getReactions(
-    parentPath: string,
-    subcollectionName: string,
-    postId: string
-  ): Observable<ReactionInterface[]> {
-    const cacheKey = `${parentPath}/${subcollectionName}/${postId}`;
-    if (!this.reactionCache.has(cacheKey)) {
-      const reactionsRef = collection(
-        this.firestore,
-        `${parentPath}/${subcollectionName}/${postId}/reactions`
-      );
-      const reactions$ = collectionData(reactionsRef, { idField: 'id' }).pipe(
-        shareReplay({ bufferSize: 1, refCount: true })
-      );
-      this.reactionCache.set(
-        cacheKey,
-        reactions$ as Observable<ReactionInterface[]>
-      );
-    }
-    return this.reactionCache.get(cacheKey)!;
   }
 
   /**
@@ -327,7 +207,7 @@ export class PostService {
     conversationType: 'channel' | 'chat',
     conversationId: string
   ) {
-    this.mobileService.setMobileDashboardState('thread-window');
+    this.screenService.setMobileDashboardState('thread-window');
     this.router.navigate([
       '/dashboard',
       conversationType,
@@ -350,21 +230,17 @@ export class PostService {
       .replaceAll('</div>', '');
     const parser = new DOMParser();
     const doc = parser.parseFromString(postHtml, 'text/html');
-
     doc.querySelectorAll('img.emoji').forEach((img) => {
       const src = img.getAttribute('src');
       const emoji = this.emojis.find((e) => e.src === src);
-
       if (emoji) {
         const textNode = doc.createTextNode(emoji.token);
         img.replaceWith(textNode);
       }
     });
-
     doc.querySelectorAll('.mark').forEach((mark) => {
       const img = mark.querySelector('img');
       const span = mark.querySelector('span');
-
       if (img && span) {
         const name = span.textContent;
         const alt = img.getAttribute('alt');
@@ -373,7 +249,6 @@ export class PostService {
         mark.replaceWith(textNode);
       }
     });
-
     const postText = doc.body.innerText;
     return postText;
   }
@@ -388,28 +263,22 @@ export class PostService {
   textToHtml(text: string): string {
     if (!text) return '';
     let result = text.replaceAll('\n', '</div><div>');
-
     this.emojis.forEach((e) => {
       const imgTag = `&nbsp;<img src="${e.src}" alt="${e.token}" class="emoji">&nbsp;`;
       result = result.replaceAll(e.token, imgTag);
     });
-
-    result = result.replace(/\{@([^}]+)\}/g, (_, name:string) => {
+    result = result.replace(/\{@([^}]+)\}/g, (_, name: string) => {
       return `<mark class="mark flex" contenteditable="false">
                 <img src="/assets/img/alternate-email-purple.svg" alt="mark">
                 <span>${name}</span>
-              </mark>&nbsp;`;
+              </mark>`;
     });
-
-    result = result.replace(/\{#([^}]+)\}/g, (_, name:string) => {
+    result = result.replace(/\{#([^}]+)\}/g, (_, name: string) => {
       return `<mark class="mark flex" contenteditable="false">
                 <img src="/assets/img/tag-blue.svg" alt="mark">
                 <span>${name}</span>
-              </mark>&nbsp;`;
+              </mark>`;
     });
-
-    
-
     return result;
   }
 

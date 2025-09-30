@@ -12,7 +12,6 @@ import { ChatInterface } from '../../shared/models/chat.interface';
 import { UserInterface } from '../../shared/models/user.interface';
 import { AuthService } from '../../services/auth.service';
 import { ChannelsService } from '../../services/channels.service';
-import { MobileService } from '../../services/mobile.service';
 import { ScreenService } from '../../services/screen.service';
 import { ScreenSize } from '../../shared/types/screen-size.type';
 
@@ -46,7 +45,6 @@ export class EditChannelComponent {
   constructor(
     private userService: UserService,
     private authService: AuthService,
-    private mobileService: MobileService,
     public channelService: ChannelsService,
     public overlayService: OverlayService,
     public screenService: ScreenService

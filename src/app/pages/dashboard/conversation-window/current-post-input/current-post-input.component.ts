@@ -15,7 +15,6 @@ import { ConversationActiveRouterService } from '../../../../services/conversati
 import { PostService } from '../../../../services/post.service';
 import {
   startWith,
-  debounceTime,
   filter,
   switchMap,
   Subject,
@@ -151,12 +150,12 @@ export class CurrentPostInput implements OnInit, OnDestroy {
         this.conversationId,
         this.authService.getCurrentUserId()!
       );
-        this.userService
-          .getUserById(otherUserId)
-          .pipe(takeUntil(this.destroy$))
-          .subscribe((user) => {
-            this.conversationName = '@' + user!.name || '';
-          });
+      this.userService
+        .getUserById(otherUserId)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((user) => {
+          this.conversationName = '@' + user!.name || '';
+        });
     } else {
       this.conversationName = null;
     }
@@ -208,7 +207,7 @@ export class CurrentPostInput implements OnInit, OnDestroy {
       }
     }
 
-    if (this.postTextInput.nativeElement.innerText.trim() === '') {
+    if (this.postTextInput.nativeElement.innerHTML.trim() === '<br>') {
       this.postTextInput.nativeElement.innerText = '';
     }
   }
@@ -251,7 +250,7 @@ export class CurrentPostInput implements OnInit, OnDestroy {
   addEmoji(emoji: { token: string; src: string }) {
     const selection = window.getSelection();
     if (!selection || !selection.rangeCount) return;
-    const img = `&nbsp;<img src="${emoji.src}" alt="${emoji.token}" class='emoji'>&nbsp;`;
+    const img = `<img src="${emoji.src}" alt="${emoji.token}" class='emoji'>`;
     document.execCommand('insertHTML', false, img);
   }
 
@@ -404,12 +403,12 @@ export class CurrentPostInput implements OnInit, OnDestroy {
    * @param typeOfResult whether the result is of type user or channel
    */
   getMarkTemplate(name: string, typeOfResult?: 'user' | 'channel'): string {
-    return `&nbsp;<mark class="mark" contenteditable="false">
+    return `<mark class="mark" contenteditable="false">
               <img src="/assets/img/${
                 typeOfResult == 'user' ? 'alternate-email-purple' : 'tag-blue'
               }.svg" alt="mark-${typeOfResult}">
               <span>${name}</span>
-            </mark>&nbsp;`;
+            </mark>`;
   }
 
   /**

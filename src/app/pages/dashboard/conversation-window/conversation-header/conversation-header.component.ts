@@ -1,11 +1,10 @@
-import { Component, inject, Input, WritableSignal } from '@angular/core';
+import { Component, Input, WritableSignal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ConversationActiveRouterService } from '../../../../services/conversation-active-router.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HeaderChannelComponent } from './header-channel/header-channel.component';
 import { HeaderSearchbarComponent } from '../../header-searchbar/header-searchbar.component';
 import { HeaderChatComponent } from './header-chat/header-chat.component';
-import { MobileService } from '../../../../services/mobile.service';
 import { MobileDashboardState } from '../../../../shared/types/mobile-dashboard-state.type';
 import { HeaderThreadComponent } from './header-thread/header-thread.component';
 import { Observable, Subject, takeUntil } from 'rxjs';
@@ -35,12 +34,11 @@ export class ConversationHeaderComponent {
 
   constructor(
     public screenService: ScreenService,
-    private mobileService: MobileService, // Service for managing mobile state
     private route: ActivatedRoute, // Angular route service to access route parameters
     private router: Router, // Angular router service to navigate between routes
     private conversationActiveRouterService: ConversationActiveRouterService // Custom service for handling active chat/router state
   ) {
-    this.mobileDashboardState = this.mobileService.mobileDashboardState; // Inject the mobile state from the service
+    this.mobileDashboardState = this.screenService.mobileDashboardState; // Inject the mobile state from the service
     this.screenSize$ = this.screenService.screenSize$;
   }
 

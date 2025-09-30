@@ -16,8 +16,8 @@ import {
   shareReplay,
 } from 'rxjs';
 import { Router } from '@angular/router'; // Router to navigate within the app
-import { MobileService } from './mobile.service'; // Service for handling mobile dashboard state
 import { UserInterface } from '../shared/models/user.interface'; // Interface for user data
+import { ScreenService } from './screen.service';
 
 @Injectable({
   providedIn: 'root', // The service is provided in the root module
@@ -27,14 +27,15 @@ export class ChatService {
    * Private BehaviorSubject to hold the current other user in the chat.
    * It is exposed as an observable for other components to subscribe to.
    */
-  private _otherUser$ = new BehaviorSubject<UserInterface | null>(null);
   private chatsCache = new Map<string, Observable<ChatInterface[]>>();
-  otherUser$ = this._otherUser$.asObservable(); // Public observable for other user
+
+  private _otherUser$ = new BehaviorSubject<UserInterface | null>(null);
+  public otherUser$ = this._otherUser$.asObservable(); // Public observable for other user
 
   constructor(
-    private router: Router, // Inject Router to handle navigation
     private firestore: Firestore, // Inject Firestore for database interaction
-    private mobileService: MobileService // Inject MobileService to manage mobile dashboard state
+    private router: Router, // Inject Router to handle navigation
+    public screenService: ScreenService
   ) {}
 
   /**
@@ -151,7 +152,7 @@ export class ChatService {
     const chatId = await this.getChatId(currentUserId, otherUser.uid); // Get the unique chat ID
     await this.createChat(currentUserId, otherUser.uid); // Create the chat if it doesn't exist
     this.setOtherUser(otherUser); // Set the other user in the service
-    this.mobileService.setMobileDashboardState('message-window'); // Update the mobile dashboard state
+    this.screenService.setMobileDashboardState('message-window'); // Update the mobile dashboard state
     this.router.navigate(['/dashboard', 'chat', chatId]); // Navigate to the chat screen
   }
 

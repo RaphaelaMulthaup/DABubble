@@ -14,9 +14,8 @@ import { PostService } from '../../services/post.service';
 import { PostInterface } from '../../shared/models/post.interface';
 import { AuthService } from '../../services/auth.service';
 import { EditPostBtnComponent } from '../edit-post-btn/edit-post-btn.component';
-import { MobileService } from '../../services/mobile.service';
-import { OverlayRef } from '@angular/cdk/overlay';
 import { EMOJIS } from '../../shared/constants/emojis';
+import { ReactionsService } from '../../services/reactions.service';
 
 @Component({
   selector: 'app-post-interaction-overlay',
@@ -35,9 +34,9 @@ export class PostInteractionOverlayComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
+    private reactionsService: ReactionsService,
     public overlayService: OverlayService,
-    public postService: PostService,
-    public mobileService: MobileService
+    public postService: PostService
   ) {}
 
   ngOnInit() {
@@ -56,7 +55,7 @@ export class PostInteractionOverlayComponent implements OnInit {
     let emoji = this.emojis.find((e) => e.token == emojiToken);
 
     if (this.parentMessageId) {
-      this.postService.toggleReaction(
+      this.reactionsService.toggleReaction(
         '/' +
           this.currentConversationType +
           's/' +
@@ -68,7 +67,7 @@ export class PostInteractionOverlayComponent implements OnInit {
         emoji!
       );
     } else {
-      this.postService.toggleReaction(
+      this.reactionsService.toggleReaction(
         '/' + this.currentConversationType + 's/' + this.currentConversationId,
         'messages',
         this.post.id!,
@@ -112,7 +111,7 @@ export class PostInteractionOverlayComponent implements OnInit {
       .pipe(take(1))
       .subscribe((emoji: { token: string; src: string }) => {
         if (this.parentMessageId) {
-          this.postService.toggleReaction(
+          this.reactionsService.toggleReaction(
             '/' +
               this.currentConversationType +
               's/' +
@@ -124,7 +123,7 @@ export class PostInteractionOverlayComponent implements OnInit {
             emoji
           );
         } else {
-          this.postService.toggleReaction(
+          this.reactionsService.toggleReaction(
             '/' +
               this.currentConversationType +
               's/' +
