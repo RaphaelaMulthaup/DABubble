@@ -12,7 +12,6 @@ import {
 import { ChannelInterface } from '../../../../../../shared/models/channel.interface';
 import { UserInterface } from '../../../../../../shared/models/user.interface';
 import { UserService } from '../../../../../../services/user.service';
-import { MobileService } from '../../../../../../services/mobile.service';
 import { ScreenService } from '../../../../../../services/screen.service';
 import { ScreenSize } from '../../../../../../shared/types/screen-size.type';
 
@@ -37,8 +36,7 @@ export class ChannelMembersLengthComponent {
 
   constructor(
     public screenService: ScreenService,
-    private userService: UserService,
-    private mobileService: MobileService
+    private userService: UserService
   ) {
     this.screenSize$ = this.screenService.screenSize$;
   }

@@ -6,7 +6,6 @@ import { ScreenSize } from '../../../../../shared/types/screen-size.type';
 import { Router } from '@angular/router';
 import { ChannelsService } from '../../../../../services/channels.service';
 import { ChannelInterface } from '../../../../../shared/models/channel.interface';
-import { MobileService } from '../../../../../services/mobile.service';
 
 @Component({
   selector: 'app-header-thread',
@@ -24,8 +23,7 @@ export class HeaderThreadComponent {
   constructor(
     private screenService: ScreenService,
     private router: Router, // Angular router service to navigate between routes
-    private channelService: ChannelsService,
-    private mobileService: MobileService // Service to manage mobile dashboard state
+    private channelService: ChannelsService
   ) {
     this.screenSize$ = this.screenService.screenSize$;
   }

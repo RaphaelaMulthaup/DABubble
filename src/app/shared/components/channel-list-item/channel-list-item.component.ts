@@ -2,7 +2,6 @@ import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { ChannelInterface } from '../../models/channel.interface'; // Importing the ChannelInterface for type safety
 import { RouterLink } from '@angular/router'; // Importing Angular's Router and RouterLink for navigation
 import { CommonModule } from '@angular/common'; // Importing Angular's CommonModule for basic Angular functionality
-import { MobileService } from '../../../services/mobile.service'; // Importing the MobileService to handle mobile-specific logic
 import { ScreenService } from '../../../services/screen.service';
 import { ScreenSize } from '../../types/screen-size.type';
 import { Observable } from 'rxjs';
@@ -19,10 +18,7 @@ import { Observable } from 'rxjs';
 export class ChannelListItemComponent {
   screenSize$!: Observable<ScreenSize>;
 
-  constructor(
-    public mobileService: MobileService, // Injecting MobileService for handling mobile-specific state\
-    public screenService: ScreenService
-  ) {
+  constructor(public screenService: ScreenService) {
     this.screenSize$ = this.screenService.screenSize$;
   }
 

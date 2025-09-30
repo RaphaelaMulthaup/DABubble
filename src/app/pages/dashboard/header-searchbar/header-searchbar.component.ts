@@ -1,17 +1,16 @@
 import {
   Component,
   ElementRef,
-  inject,
   Signal,
   ViewChild,
 } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import {
   debounceTime,
   startWith,
   map,
   Observable,
-  Subscription,
   takeUntil,
   Subject,
   take,
@@ -24,7 +23,6 @@ import { UserListItemComponent } from '../../../shared/components/user-list-item
 import { ChannelListItemComponent } from '../../../shared/components/channel-list-item/channel-list-item.component'; // Component to display channel results
 import { OverlayService } from '../../../services/overlay.service'; // Service to manage overlays
 import { SearchResultsNewMessageComponent } from '../../../overlay/search-results-new-message/search-results-new-message.component';
-import { CommonModule } from '@angular/common'; // Component for displaying new search results in overlay
 
 @Component({
   selector: 'app-header-searchbar', // The component selector

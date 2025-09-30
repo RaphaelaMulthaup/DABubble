@@ -13,7 +13,6 @@ import { CurrentPostInput } from './current-post-input/current-post-input.compon
 import { Observable } from 'rxjs';
 import { PostInterface } from '../../../shared/models/post.interface';
 import { MobileDashboardState } from '../../../shared/types/mobile-dashboard-state.type';
-import { MobileService } from '../../../services/mobile.service';
 import { ScreenSize } from '../../../shared/types/screen-size.type';
 import { ScreenService } from '../../../services/screen.service';
 
@@ -46,11 +45,6 @@ export class ConversationWindowComponent {
    */
   @Output() changeMobileDashboardState =
     new EventEmitter<MobileDashboardState>();
-
-  /**
-   * Instance of `MobileService`, injected to access mobile dashboard state.
-   */
-  mobileService = inject(MobileService);
 
   /**
    * WritableSignal representing the mobile dashboard state.

@@ -14,8 +14,6 @@ import { PostService } from '../../services/post.service';
 import { PostInterface } from '../../shared/models/post.interface';
 import { AuthService } from '../../services/auth.service';
 import { EditPostBtnComponent } from '../edit-post-btn/edit-post-btn.component';
-import { MobileService } from '../../services/mobile.service';
-import { OverlayRef } from '@angular/cdk/overlay';
 import { EMOJIS } from '../../shared/constants/emojis';
 import { ReactionsService } from '../../services/reactions.service';
 
@@ -38,8 +36,7 @@ export class PostInteractionOverlayComponent implements OnInit {
     private authService: AuthService,
     private reactionsService: ReactionsService,
     public overlayService: OverlayService,
-    public postService: PostService,
-    public mobileService: MobileService,
+    public postService: PostService
   ) {}
 
   ngOnInit() {

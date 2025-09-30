@@ -7,7 +7,6 @@ import { ChannelInterface } from '../../models/channel.interface';
 import { UserListItemComponent } from '../user-list-item/user-list-item.component';
 import { OverlayService } from '../../../services/overlay.service';
 import { AddMemberToChannelComponent } from '../../../overlay/add-member-to-channel/add-member-to-channel.component';
-import { MobileService } from '../../../services/mobile.service';
 import { OverlayRef } from '@angular/cdk/overlay';
 import { ScreenSize } from '../../types/screen-size.type';
 import { ScreenService } from '../../../services/screen.service';
@@ -35,7 +34,6 @@ export class ChannelMembersComponent implements OnDestroy, OnInit {
 
   constructor(
     public screenService: ScreenService,
-    private mobileService: MobileService,
     private userService: UserService, 
     private overlayService: OverlayService
   ) {

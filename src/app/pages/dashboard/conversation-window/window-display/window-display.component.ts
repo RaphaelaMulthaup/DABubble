@@ -1,7 +1,6 @@
 import {
   Component,
   ElementRef,
-  inject,
   Input,
   QueryList,
   ViewChild,
@@ -12,22 +11,18 @@ import { CommonModule } from '@angular/common';
 import { PostService } from '../../../../services/post.service';
 import { DisplayedPostComponent } from './displayed-post/displayed-post.component';
 import { PostInterface } from '../../../../shared/models/post.interface';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import {
   distinctUntilChanged,
   map,
   Observable,
   Subject,
-  Subscription,
-  switchMap,
   takeUntil,
 } from 'rxjs';
 import { ConversationActiveRouterService } from '../../../../services/conversation-active-router.service';
-import { tap } from 'rxjs';
 import { ChatService } from '../../../../services/chat.service';
 import { EmptyChatViewComponent } from './empty-chat-view/empty-chat-view.component';
 import { MobileDashboardState } from '../../../../shared/types/mobile-dashboard-state.type';
-import { MobileService } from '../../../../services/mobile.service';
 import { EmptyChannelViewComponent } from './empty-channel-view/empty-channel-view.component';
 import { ScreenSize } from '../../../../shared/types/screen-size.type';
 import { ScreenService } from '../../../../services/screen.service';
@@ -81,7 +76,6 @@ export class WindowDisplayComponent {
     private router: Router,
     public postService: PostService,
     private chatService: ChatService,
-    public mobileService: MobileService,
     public screenService: ScreenService,
     private conversationActiveRouterService: ConversationActiveRouterService
   ) {

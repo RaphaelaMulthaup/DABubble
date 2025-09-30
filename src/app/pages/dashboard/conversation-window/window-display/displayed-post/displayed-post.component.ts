@@ -1,10 +1,7 @@
 import {
   Component,
-  HostListener,
   Input,
   Output,
-  WritableSignal,
-  inject,
 } from '@angular/core';
 import { PostInterface } from '../../../../../shared/models/post.interface';
 import { AuthService } from '../../../../../services/auth.service';
@@ -12,13 +9,10 @@ import { UserService } from '../../../../../services/user.service';
 import {
   distinctUntilChanged,
   filter,
-  firstValueFrom,
   map,
   of,
   shareReplay,
   Subject,
-  Subscribable,
-  Subscription,
   switchMap,
   take,
   takeUntil,
@@ -36,7 +30,6 @@ import { PostService } from '../../../../../services/post.service';
 import { EmojiPickerComponent } from '../../../../../overlay/emoji-picker/emoji-picker.component';
 import { ReactedUsersComponent } from '../../../../../overlay/reacted-users/reacted-users.component';
 import { PostInteractionOverlayComponent } from '../../../../../overlay/post-interaction-overlay/post-interaction-overlay.component';
-import { MobileService } from '../../../../../services/mobile.service';
 import { EditDisplayedPostComponent } from './edit-displayed-post/edit-displayed-post.component';
 import { EMOJIS } from '../../../../../shared/constants/emojis';
 import { ScreenSize } from '../../../../../shared/types/screen-size.type';
@@ -78,8 +71,7 @@ export class DisplayedPostComponent {
     private reactionsService: ReactionsService,
     public overlayService: OverlayService,
     public postService: PostService,
-    public screenService: ScreenService,
-    public mobileService: MobileService
+    public screenService: ScreenService
   ) {
     this.screenSize$ = this.screenService.screenSize$;
   }

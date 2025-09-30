@@ -49,7 +49,7 @@ export class SidenavComponent {
 
   constructor(
     private authService: AuthService, // AuthService to manage user authentication
-    public screenService: ScreenService, // MobileService to manage mobile-specific functionality
+    public screenService: ScreenService,
     public searchService: SearchService // SearchService to manage searching
   ) {
     // Injecting the mobileDashboardState from the mobile service to track mobile state

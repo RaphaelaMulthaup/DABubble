@@ -36,9 +36,8 @@ export class ScreenService {
 
     setTimeout(async () => {
       const initialScreenSize = await firstValueFrom(this.screenSize$);
-      if (initialScreenSize === 'web') {
+      if (initialScreenSize === 'web')
         this.setMobileDashboardState('new-message-view');
-      }
     });
   }
 
