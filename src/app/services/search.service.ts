@@ -28,12 +28,12 @@ import { ChatService } from './chat.service';
 @Injectable({ providedIn: 'root' })
 export class SearchService {
   // Public Observables for Components
-  public readonly users$: Observable<UserInterface[]>; // Observable for user data
-  public readonly allChannels$: Observable<ChannelInterface[]>; // Observable for all available channels
-  public readonly userChannels$: Observable<ChannelInterface[]>; // Observable for channels the current user is a member of
-  public readonly chatPosts$: Observable<PostInterface[]>; // Observable for posts in the user's chats
-  public readonly channelPosts$: Observable<PostInterface[]>; // Observable for posts in the user's channels
-  public readonly results$ = new BehaviorSubject<SearchResult[]>([]);
+  public users$: Observable<UserInterface[]>; // Observable for user data
+  public allChannels$: Observable<ChannelInterface[]>; // Observable for all available channels
+  public userChannels$: Observable<ChannelInterface[]>; // Observable for channels the current user is a member of
+  public chatPosts$: Observable<PostInterface[]>; // Observable for posts in the user's chats
+  public channelPosts$: Observable<PostInterface[]>; // Observable for posts in the user's channels
+  public results$ = new BehaviorSubject<SearchResult[]>([]);
 
   overlaySearchResultsOpen = false;
   overlaySearchResultsNewMessageOpen = false;
@@ -41,7 +41,7 @@ export class SearchService {
   constructor(
     private authService: AuthService, // AuthService to manage authentication
     private chatService: ChatService, // ChatService to manage chat-related logic
-    private firestore: Firestore, // Firestore service to interact with the database
+    private firestore: Firestore // Firestore service to interact with the database
   ) {
     // Initialize all data streams (Observables)
     this.users$ = this.getUsers$(); // Fetch users
@@ -94,22 +94,6 @@ export class SearchService {
    * @returns An observable array of ChannelInterface objects.
    */
   getUserChannels$(): Observable<ChannelInterface[]> {
-    // return this.authService.currentUser$.pipe(
-    //   filter((user): user is UserInterface => !!user), // Only proceed if user exists
-    //   switchMap((user) => {
-    //     const channelsCol = collection(this.firestore, 'channels'); // Reference to "channels" collection
-    //     return collectionData(channelsCol, { idField: 'id' }).pipe(
-    //       map(
-    //         (data: any[]) =>
-    //           data.filter((channel) =>
-    //             channel.memberIds?.includes(user.uid)
-    //           ) as ChannelInterface[]
-    //       )
-    //     );
-    //   }),
-    //   shareReplay({ bufferSize: 1, refCount: true }) // Share the subscription for multiple consumers
-    // );
-
     return this.authService.currentUser$.pipe(
       filter((user): user is UserInterface => !!user),
       distinctUntilChanged((a, b) => a.uid === b.uid),
@@ -252,90 +236,13 @@ export class SearchService {
     );
   }
 
-  ///*** Perform search across users, channels, chat messages, and channel messages ***/
-  // search(
-  //   term$: Observable<string>,
-  //   opts?: { includeAllChannels?: boolean }
-  // ): Observable<SearchResult[]> {
-  //   const channels$ = opts?.includeAllChannels
-  //     ? this.allChannels$
-  //     : this.userChannels$;
-  //   return combineLatest([
-  //     term$,
-  //     this.users$,
-  //     channels$,
-  //     this.chatPosts$,
-  //     this.channelPosts$,
-  //   ]).pipe(
-  //     switchMap(([term, users, channels, chatMessages, channelMessages]) =>
-  //       this.authService.currentUser$.pipe(
-  //         filter((user): user is UserInterface => !!user),
-  //         map((user) => {
-  //           const t = (term ?? '').trim().toLowerCase();
-  //           if (!t) return [] as SearchResult[];
-  //           if (t === '@')
-  //             return users.map((u) => ({ type: 'user' as const, ...u }));
-  //           if (t === '#')
-  //             return channels.map((c) => ({ type: 'channel' as const, ...c }));
-
-  //           if (t.startsWith('@')) {
-  //             const query = t.slice(1);
-  //             return users
-  //               .filter((u) => u.name?.toLowerCase().includes(query))
-  //               .map((u) => ({ type: 'user' as const, ...u }));
-  //           }
-
-  //           if (t.startsWith('#')) {
-  //             const query = t.slice(1);
-  //             return channels
-  //               .filter((c) => c.name?.toLowerCase().includes(query))
-  //               .map((c) => ({ type: 'channel' as const, ...c }));
-  //           }
-
-  //           return [
-  //             ...users
-  //               .filter((u) => u.name?.toLowerCase().includes(t))
-  //               .map((u) => ({ type: 'user' as const, ...u })),
-  //             ...channels
-  //               .filter((c) => c.name?.toLowerCase().includes(t))
-  //               .map((c) => ({ type: 'channel' as const, ...c })),
-  //             ...chatMessages
-  //               .filter(
-  //                 (m): m is PostInterface & { chatId: string } =>
-  //                   !!m.chatId && m.text?.toLowerCase().includes(t)
-  //               )
-  //               .map((m) => {
-  //                 const otherUserId = this.chatService.getOtherUserId(
-  //                   m.chatId,
-  //                   user.uid
-  //                 );
-  //                 const otherUser = users.find((u) => u.uid === otherUserId)!;
-  //                 return {
-  //                   type: 'chatMessage' as const,
-  //                   ...m,
-  //                   user: otherUser,
-  //                 };
-  //               }),
-  //             ...channelMessages
-  //               .filter((m) => m.text?.toLowerCase().includes(t))
-  //               .map((m) => {
-  //                 const channel = channels.find((c) => c.id === m.channelId)!;
-  //                 return { type: 'channelMessage' as const, ...m, channel };
-  //               }),
-  //           ];
-  //         })
-  //       )
-  //     )
-  //   );
-  // }
-
   search(
     term$: Observable<string>,
     opts?: { includeAllChannels?: boolean }
   ): Observable<SearchResult[]> {
     return combineLatest([
       term$.pipe(
-        throttleTime(50, undefined, { leading: true, trailing: true }),
+        throttleTime(300, undefined, { leading: true, trailing: true }),
         distinctUntilChanged()
       ),
       this.users$,
@@ -409,7 +316,10 @@ export class SearchService {
    */
   searchHeaderSearch(term$: Observable<string>): Observable<SearchResult[]> {
     return combineLatest([
-      term$,
+      term$.pipe(
+        throttleTime(300, undefined, { leading: true, trailing: true }),
+        distinctUntilChanged()
+      ),
       this.users$,
       this.userChannels$,
     ]).pipe(

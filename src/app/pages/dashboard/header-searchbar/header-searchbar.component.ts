@@ -7,7 +7,6 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import {
-  debounceTime,
   startWith,
   map,
   Observable,
@@ -65,10 +64,9 @@ export class HeaderSearchbarComponent {
     public searchService: SearchService, // Inject SearchService for handling search logic
     private overlayService: OverlayService // Inject OverlayService to manage overlays
   ) {
-    // Set up the observable for the search term input with debounce and trim
+    // Set up the observable for the search term input with trim
     this.term$ = this.searchControl.valueChanges.pipe(
       startWith(this.searchControl.value), // Start with the current value
-      debounceTime(300), // Wait 300ms after user stops typing
       map((v) => v.trim()) // Remove any leading/trailing spaces from the input
     );
 

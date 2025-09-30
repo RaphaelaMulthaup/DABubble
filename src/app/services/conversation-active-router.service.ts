@@ -17,7 +17,7 @@ import { ChannelInterface } from '../shared/models/channel.interface';
   providedIn: 'root',
 })
 export class ConversationActiveRouterService {
-  private readonly basePathMap: Record<string, string> = {
+  private basePathMap: Record<string, string> = {
     channel: 'channels',
     chat: 'chats',
   };

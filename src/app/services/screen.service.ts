@@ -10,9 +10,9 @@ import { Router } from '@angular/router';
   providedIn: 'root',
 })
 export class ScreenService {
-  public screenSize$: Observable<ScreenSize>;
-  public breakpoints = BREAKPOINTS;
-  public mobileDashboardState = signal<MobileDashboardState>('sidenav');
+  screenSize$: Observable<ScreenSize>;
+  breakpoints = BREAKPOINTS;
+  mobileDashboardState = signal<MobileDashboardState>('sidenav');
 
   constructor(
     private breakpointObserver: BreakpointObserver,
@@ -31,7 +31,7 @@ export class ScreenService {
           if (result.breakpoints[this.breakpoints.Web]) return 'web';
           return 'web';
         }),
-        shareReplay(1)
+        shareReplay({ bufferSize: 1, refCount: true })
       );
 
     setTimeout(async () => {

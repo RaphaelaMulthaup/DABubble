@@ -15,7 +15,6 @@ import { ConversationActiveRouterService } from '../../../../services/conversati
 import { PostService } from '../../../../services/post.service';
 import {
   startWith,
-  debounceTime,
   filter,
   switchMap,
   Subject,

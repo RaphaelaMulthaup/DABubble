@@ -9,7 +9,6 @@ import {
 } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import {
-  debounceTime,
   map,
   startWith,
   Observable,
@@ -90,10 +89,9 @@ export class SearchBarComponent implements OnInit, OnDestroy {
     if (!this.firstFocusHappened) {
       this.firstFocusHappened = true;
 
-      // Observable for input changes with debounce
+      // Observable for input changes
       const term$ = this.searchControl.valueChanges.pipe(
         startWith(this.searchControl.value),
-        debounceTime(300),
         map((v) => v.trim())
       );
 

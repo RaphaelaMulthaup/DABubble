@@ -21,31 +21,11 @@ export class UserService {
 
   constructor(private firestore: Firestore) {}
 
-  // /**
-  //  * Fetch all users from the 'users' collection
-  //  * Returns an Observable of an array of UserInterface
-  //  */
-  // getAllUsers(): Observable<UserInterface[]> {
-  //   const usersCollection = collection(this.firestore, 'users'); // Reference to 'users' collection
-  //   return collectionData(usersCollection, { idField: 'uid' }) as Observable<
-  //     UserInterface[]
-  //   >;
-  // }
-
   /**
    * Fetch a single user by UID.
    * @param uid - User ID.
    * Returns an Observable of UserInterface.
    */
-  // getUserById(uid: string): Observable<UserInterface> {
-  //   if (!this.userCache.has(uid)) {
-  //     const userDocRef = doc(this.firestore, `users/${uid}`);
-  //     const user$ = docData(userDocRef).pipe(shareReplay(1));
-  //     this.userCache.set(uid, user$ as Observable<UserInterface>);
-  //   }
-  //   return this.userCache.get(uid)!;
-  // }
-
   getUserById(uid: string): Observable<UserInterface> {
     if (!this.userCache.has(uid)) {
       const userDocRef = doc(this.firestore, `users/${uid}`);
