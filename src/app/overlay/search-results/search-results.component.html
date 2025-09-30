@@ -1,9 +1,10 @@
+
 <div>
   @if (results$().length > 0) {
   <ul class="results-list" [ngClass]="(screenSize$|async) === 'handset' ? 'results-list-handset' : 'results-list-web'">
-   @for (item of results$(); track $index; let i = $index) { @if (i > 0 &&
-    item.type !== results$()[i - 1].type) {
-    <span class="separable"></span>
+   @for (item of results$(); track $index; let i = $index) { 
+    @if (i > 0 && item.type !== results$()[i - 1].type) {
+      <span class="separable"></span>
     }
     <li>
       @switch (item.type) { @case ('user') {

@@ -14,7 +14,7 @@
     (focus)="onFocus()"
   />
   @if ( searchResultsExisting ) {
-  <div class="close" (click)="closeOverlayAndEmptyInput()"></div>
+  <div class="close z-index-1001" (click)="closeOverlayAndEmptyInput()"></div>
   } @else {<img
     class="search-icon"
     src="./assets/img/search.svg"
