@@ -12,9 +12,8 @@
   "
   [ngClass]="{ 'related-to-search-result-post': relatedToSearchResultPost }"
 >
-  @if(isInChannelHeader){
   <div class="tag"></div>
-  @if((screenSize$|async) === 'handset'){
+  @if(isInChannelHeader){ @if((screenSize$|async) === 'handset'){
   <h2>{{ truncate(channel.name, 15) }}</h2>
   }@else {
   <h2>{{ channel.name }}</h2>
