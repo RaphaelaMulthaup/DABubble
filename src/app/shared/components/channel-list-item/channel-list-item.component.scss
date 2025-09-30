@@ -1,4 +1,5 @@
 @import "./../../../../styles.scss";
+
 .channel-list-item {
   gap: 10px !important;
   border-radius: 20px;
@@ -35,4 +36,14 @@
       }
     }
   }
+}
+
+.channel-is-active {
+  color: var(--color-purple-medium);
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 18px;
+}
+.tag-is-active {
+  background-image: url("./../../../../assets/img/tag-blue.svg") !important;
 }
