@@ -22,6 +22,14 @@
         border-top-left-radius: 35px;
         border-top-right-radius: 35px;
     }
+
+    .rectangle{
+        display: none;
+
+        @include respond-to(xs) {
+            display: flex;
+        }
+    }
 }
 
 .btn-area{
@@ -37,17 +45,17 @@
     font-size: 24px;
     font-weight: 600;
     height: 48px;
+    width: 100%;
     border-radius: 35px;
 
-    &:hover{
-        cursor: pointer;
-        color: var(--color-blue);
-        background-color: var(--color-purple-white);
+    @include respond-to(xs) {
+        justify-content: start;
     }
 
         &:hover{
-            color: black;
-            background-color: white;
+            cursor: pointer;
+            color: var(--color-blue);
+            background-color: var(--color-purple-white);
         }
     }
 
