@@ -218,9 +218,13 @@ h2 {
   margin-block-end: 0;
 }
 
+
 h3 {
-  font-size: 20px;
-  font-weight: 700;
+    font-weight: 700;
+    font-size: 24px;
+  @include respond-to(xl) {
+    font-size: 20px;
+  }
 }
 
 h4 {

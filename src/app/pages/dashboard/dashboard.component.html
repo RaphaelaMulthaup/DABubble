@@ -14,8 +14,10 @@
         <app-sidenav class="relative"></app-sidenav>
       }
       @if (dashboardState() === 'new-message-view') {
-        <app-header-searchbar></app-header-searchbar>
-        <div class="below-from-header-searchbar"></div>
+        <div class="new-message-view flex flex-col h-full">
+          <app-header-searchbar [ngClass]="(screenSize$|async) === 'web' ? 'app-header-searchbar-web' : ''"></app-header-searchbar>
+          <div class="below-from-header-searchbar-web-tablet"></div>
+        </div>
       }
       @else {
         <app-conversation-window
@@ -54,7 +56,7 @@
         }
         @case ('new-message-view') {
           <app-header-searchbar></app-header-searchbar>
-          <div class="below-from-header-searchbar"></div>
+          <div class="below-from-header-searchbar-handset"></div>
           <!-- <app-conversation-window
             [conversationWindowState]="'conversation'"
           ></app-conversation-window> -->

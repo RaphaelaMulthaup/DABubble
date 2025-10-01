@@ -1,19 +1,7 @@
-import {
-  Component,
-  ElementRef,
-  Signal,
-  ViewChild,
-} from '@angular/core';
+import { Component, ElementRef, Signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import {
-  startWith,
-  map,
-  Observable,
-  takeUntil,
-  Subject,
-  take,
-} from 'rxjs';
+import { startWith, map, Observable, takeUntil, Subject, take } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { SearchService } from '../../../services/search.service'; // Service for search functionality
 import { JsonPipe } from '@angular/common'; // Pipe for converting objects to JSON
@@ -22,6 +10,8 @@ import { UserListItemComponent } from '../../../shared/components/user-list-item
 import { ChannelListItemComponent } from '../../../shared/components/channel-list-item/channel-list-item.component'; // Component to display channel results
 import { OverlayService } from '../../../services/overlay.service'; // Service to manage overlays
 import { SearchResultsNewMessageComponent } from '../../../overlay/search-results-new-message/search-results-new-message.component';
+import { ScreenSize } from '../../../shared/types/screen-size.type';
+import { ScreenService } from '../../../services/screen.service';
 
 @Component({
   selector: 'app-header-searchbar', // The component selector
@@ -50,6 +40,7 @@ export class HeaderSearchbarComponent {
    * It is a reactive representation of the search results.
    */
   results: Signal<SearchResult[]>;
+  screenSize$!: Observable<ScreenSize>;
   private searchOverlayRef: any;
   /**
    * ViewChild for accessing the HTML element of the search bar.
@@ -62,8 +53,10 @@ export class HeaderSearchbarComponent {
 
   constructor(
     public searchService: SearchService, // Inject SearchService for handling search logic
-    private overlayService: OverlayService // Inject OverlayService to manage overlays
+    private overlayService: OverlayService, // Inject OverlayService to manage overlays
+    public screenService: ScreenService
   ) {
+    this.screenSize$ = this.screenService.screenSize$;
     // Set up the observable for the search term input with trim
     this.term$ = this.searchControl.valueChanges.pipe(
       startWith(this.searchControl.value), // Start with the current value
@@ -85,8 +78,7 @@ export class HeaderSearchbarComponent {
     this.term$.pipe(takeUntil(this.destroy$)).subscribe((term) => {
       if (term.length > 0) {
         this.openOverlay(); // Overlay wiederverwenden oder neu öffnen
-      }
-       else {
+      } else {
         this.overlayService.closeOne(this.searchOverlayRef?.overlayRef);
         this.searchOverlayRef = null;
       }
@@ -113,7 +105,6 @@ export class HeaderSearchbarComponent {
    * passes the current results as input, and clears the search field when the backdrop is clicked.
    */
   private openOverlay() {
-
     // Wenn Overlay schon offen ist, nur die Daten aktualisieren
     if (this.searchOverlayRef) {
       this.searchOverlayRef.ref.instance.results = this.results;

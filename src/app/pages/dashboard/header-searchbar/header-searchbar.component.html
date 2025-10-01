@@ -1,4 +1,4 @@
-<section #headerSearchbar>
+<section #headerSearchbar [ngClass]="(screenSize$|async) === 'web' ? 'header-searchbar-web' : 'header-searchbar-handset'">
   <h3>Neue Nachricht</h3>
   <input
     type="text"
