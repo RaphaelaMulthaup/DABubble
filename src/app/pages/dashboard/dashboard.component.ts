@@ -61,7 +61,7 @@ export class DashboardComponent {
    */
   answers$!: Observable<PostInterface[]>;
   screenSize$!: Observable<ScreenSize>;
-  webNavigationVisible: boolean = true;
+  sidenavVisible: boolean = true;
   results$ = new BehaviorSubject<SearchResult[]>([]);
   resultsSignal = toSignal(this.results$.asObservable(), { initialValue: [] });
   hasInput: boolean = false;

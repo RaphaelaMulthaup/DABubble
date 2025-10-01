@@ -1,52 +1,37 @@
-<header
-  [ngClass]="
-    (screenSize$ | async) === 'web'
+<header [ngClass]="
+    (screenSize$ | async) !== 'handset'
       ? 'header-web flex place-content-between'
       : 'header-mobile'
-  "
->
-  @if ((screenSize$|async) !== 'web') {
+  ">
+  @if ((screenSize$|async) === 'handset') {
   <div class="header-mobile-upper-area">
     <div class="logo-box flex items-center">
       @if (dashboardState() == 'sidenav') {
       <img class="logo-final" src="assets/img/logo.png" alt="Logo DABubble" />
       } @else {
       <div class="logo-channel flex items-center">
-        <button
-          (click)="screenService.setDashboardState('sidenav')"
-          class="arrow-btn arrow-back"
-        ></button>
+        <button (click)="screenService.setDashboardState('sidenav')" class="arrow-btn arrow-back"></button>
         <img src="assets/img/logo-solo.png" alt="Logo Channel" />
       </div>
       }
     </div>
     <div class="current-user">
-      <img
-        class="profil-img"
-        [src]="(currentUser$ | async)?.photoUrl"
-        alt="Profilbild"
-        (click)="showSettings()"
-      />
+      <img class="profil-img" [src]="(currentUser$ | async)?.photoUrl" alt="Profilbild" (click)="showSettings()" />
     </div>
   </div>
+
   @if ((authService.currentUser$ | async) && dashboardState() ==
   'sidenav') { <app-search-bar></app-search-bar>} } @else if
-  ((screenSize$|async) === 'web') {
+  ((screenSize$|async) !== 'handset') {
   <div class="logo-box flex items-center" [ngStyle]="{ 'width.px': 336 }">
     <img class="logo-final" src="assets/img/logo.png" alt="Logo DABubble" />
   </div>
 
-  @if ((authService.currentUser$ | async)) { <app-search-bar></app-search-bar>
-  }
+  @if ((authService.currentUser$ | async)) { <app-search-bar></app-search-bar>}
 
   <div class="current-user" [ngStyle]="{ 'width.px': 475 }">
     <h1>{{ (currentUser$ | async)?.name }}</h1>
-    <img
-      class="profil-img"
-      [src]="(currentUser$ | async)?.photoUrl"
-      alt="Profilbild"
-      (click)="showSettings()"
-    />
+    <img class="profil-img" [src]="(currentUser$ | async)?.photoUrl" alt="Profilbild" (click)="showSettings()" />
     <button class="arrow-btn" (click)="showSettings()"></button>
     <app-profile-view-main class="profile-view"></app-profile-view-main>
   </div>
