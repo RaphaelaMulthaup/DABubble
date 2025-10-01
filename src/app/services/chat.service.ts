@@ -152,7 +152,7 @@ export class ChatService {
     const chatId = await this.getChatId(currentUserId, otherUser.uid); // Get the unique chat ID
     await this.createChat(currentUserId, otherUser.uid); // Create the chat if it doesn't exist
     this.setOtherUser(otherUser); // Set the other user in the service
-    this.screenService.setMobileDashboardState('message-window'); // Update the mobile dashboard state
+    this.screenService.setDashboardState('message-window'); // Update the mobile dashboard state
     this.router.navigate(['/dashboard', 'chat', chatId]); // Navigate to the chat screen
   }
 

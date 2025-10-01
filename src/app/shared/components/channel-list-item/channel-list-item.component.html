@@ -1,6 +1,6 @@
 <li class="list-item channel-list-item" (click)="
     !isInSearchResultsCurrentPostInput
-      ? screenService.setMobileDashboardState('message-window')
+      ? screenService.setDashboardState('message-window')
       : emitChannel()
   " [routerLink]="
     !isInSearchResultsCurrentPostInput

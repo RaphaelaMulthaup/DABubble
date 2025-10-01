@@ -12,7 +12,7 @@ import { WindowDisplayComponent } from './window-display/window-display.componen
 import { CurrentPostInput } from './current-post-input/current-post-input.component';
 import { Observable } from 'rxjs';
 import { PostInterface } from '../../../shared/models/post.interface';
-import { MobileDashboardState } from '../../../shared/types/mobile-dashboard-state.type';
+import { DashboardState } from '../../../shared/types/dashboard-state.type';
 import { ScreenSize } from '../../../shared/types/screen-size.type';
 import { ScreenService } from '../../../services/screen.service';
 
@@ -43,19 +43,19 @@ export class ConversationWindowComponent {
    * EventEmitter that emits the change in mobile dashboard state.
    * The parent component can listen to this event to track changes in the state.
    */
-  @Output() changeMobileDashboardState =
-    new EventEmitter<MobileDashboardState>();
+  @Output() changeDashboardState =
+    new EventEmitter<DashboardState>();
 
   /**
    * WritableSignal representing the mobile dashboard state.
    * The state can be modified and communicated to other parts of the app.
    */
-  mobileDashboardState!: WritableSignal<MobileDashboardState>;
+  dashboardState!: WritableSignal<DashboardState>;
   screenSize$!: Observable<ScreenSize>;
   @Input() conversationWindowState?: 'conversation' | 'thread';
 
   constructor(public screenService: ScreenService) {
-    this.mobileDashboardState = this.screenService.mobileDashboardState;
+    this.dashboardState = this.screenService.dashboardState;
     this.screenSize$ = this.screenService.screenSize$;   
   }
 }

@@ -3,7 +3,7 @@
   [class.dashboard-web]="(screenSize$ | async) === 'web'"
   [ngClass]="{
     'new-message-view-mobile':
-      mobileDashboardState() === 'new-message-view' &&
+      dashboardState() === 'new-message-view' &&
       (screenSize$ | async) === 'handset'
   }"
 >
@@ -13,7 +13,7 @@
       @if(webNavigationVisible) {
         <app-sidenav class="relative"></app-sidenav>
       }
-      @if (mobileDashboardState() === 'new-message-view') {
+      @if (dashboardState() === 'new-message-view') {
         <app-header-searchbar></app-header-searchbar>
         <div class="below-from-header-searchbar"></div>
       }
@@ -22,7 +22,7 @@
           [data$]="messages$"
           [conversationWindowState]="'conversation'"
         ></app-conversation-window>
-        @if (mobileDashboardState()==='thread-window'){
+        @if (dashboardState()==='thread-window'){
           <app-conversation-window
             class="thread-window"
             [data$]="answers$"
@@ -34,7 +34,7 @@
   }
   @else {
     <div class="w-full h-full">
-      @switch (mobileDashboardState()) {
+      @switch (dashboardState()) {
         @case ('sidenav') {
           <app-sidenav></app-sidenav>
         }

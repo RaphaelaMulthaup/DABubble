@@ -18,7 +18,7 @@ import {
 } from 'rxjs';
 import { UserInterface } from '../../../../shared/models/user.interface';
 import { UserListItemComponent } from '../../../../shared/components/user-list-item/user-list-item.component';
-import { MobileDashboardState } from '../../../../shared/types/mobile-dashboard-state.type';
+import { DashboardState } from '../../../../shared/types/dashboard-state.type';
 import { ScreenService } from '../../../../services/screen.service';
 
 @Component({
@@ -33,7 +33,7 @@ export class ContactsListComponent implements OnInit {
   currentUser$!: Observable<UserInterface | null>; // Observable of the current logged-in user
   currentUser!: UserInterface; // hier speichern wir den User
 
-  mobileDashboardState!: WritableSignal<MobileDashboardState>; // Signal to track mobile dashboard state
+  dashboardState!: WritableSignal<DashboardState>; // Signal to track mobile dashboard state
   constructor(
     private userService: UserService,
     private authService: AuthService,
@@ -43,7 +43,7 @@ export class ContactsListComponent implements OnInit {
     // Subscribe to current user observable from AuthService
     this.currentUser$ = this.authService.currentUser$;
     // Initialize mobile dashboard state signal
-    this.mobileDashboardState = this.screenService.mobileDashboardState;
+    this.dashboardState = this.screenService.dashboardState;
   }
 
   /*** Initialize contacts observable on component init ***/

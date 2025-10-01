@@ -22,7 +22,7 @@ import {
 import { ConversationActiveRouterService } from '../../../../services/conversation-active-router.service';
 import { ChatService } from '../../../../services/chat.service';
 import { EmptyChatViewComponent } from './empty-chat-view/empty-chat-view.component';
-import { MobileDashboardState } from '../../../../shared/types/mobile-dashboard-state.type';
+import { DashboardState } from '../../../../shared/types/dashboard-state.type';
 import { EmptyChannelViewComponent } from './empty-channel-view/empty-channel-view.component';
 import { ScreenSize } from '../../../../shared/types/screen-size.type';
 import { ScreenService } from '../../../../services/screen.service';
@@ -47,7 +47,7 @@ export class WindowDisplayComponent {
   currentConversationType?: 'channel' | 'chat';
   postAnsweredId!: string | null;
   postAnswered!: PostInterface | null;
-  mobileDashboardState: WritableSignal<MobileDashboardState>;
+  dashboardState: WritableSignal<DashboardState>;
   // Observable stream of all posts in the current conversation
 
   postInfo: PostInterface[] = []; // Cached list of posts
@@ -79,7 +79,7 @@ export class WindowDisplayComponent {
     public screenService: ScreenService,
     private conversationActiveRouterService: ConversationActiveRouterService
   ) {
-    this.mobileDashboardState = this.screenService.mobileDashboardState;
+    this.dashboardState = this.screenService.dashboardState;
     this.screenSize$ = this.screenService.screenSize$;
   }
 

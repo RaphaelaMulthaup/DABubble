@@ -8,12 +8,12 @@
   @if ((screenSize$|async) !== 'web') {
   <div class="header-mobile-upper-area">
     <div class="logo-box flex items-center">
-      @if (mobileDashboardState() == 'sidenav') {
+      @if (dashboardState() == 'sidenav') {
       <img class="logo-final" src="assets/img/logo.png" alt="Logo DABubble" />
       } @else {
       <div class="logo-channel flex items-center">
         <button
-          (click)="screenService.setMobileDashboardState('sidenav')"
+          (click)="screenService.setDashboardState('sidenav')"
           class="arrow-btn arrow-back"
         ></button>
         <img src="assets/img/logo-solo.png" alt="Logo Channel" />
@@ -29,7 +29,7 @@
       />
     </div>
   </div>
-  @if ((authService.currentUser$ | async) && mobileDashboardState() ==
+  @if ((authService.currentUser$ | async) && dashboardState() ==
   'sidenav') { <app-search-bar></app-search-bar>} } @else if
   ((screenSize$|async) === 'web') {
   <div class="logo-box flex items-center" [ngStyle]="{ 'width.px': 336 }">

@@ -11,7 +11,7 @@
         }
     }
 } @else {
-    @switch (mobileDashboardState()) { 
+    @switch (dashboardState()) { 
         @case ('message-window') {
              @if(conversationType === 'channel') {
                 <app-header-channel class="flex" />

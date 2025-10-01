@@ -35,7 +35,7 @@ export class HeaderThreadComponent {
   }
 
   redirectTo(conversationType: string, id: string) {
-    this.screenService.setMobileDashboardState('message-window');
+    this.screenService.setDashboardState('message-window');
     this.router.navigate(['/dashboard', conversationType, id]); // Navigate to the specified conversation
   }
 }

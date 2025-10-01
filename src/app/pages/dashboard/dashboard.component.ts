@@ -15,7 +15,7 @@ import { HeaderDashboardComponent } from './header-dashboard/header-dashboard.co
 import { ConversationActiveRouterService } from '../../services/conversation-active-router.service';
 import { ActivatedRoute } from '@angular/router';
 import { Observable, throwError, EMPTY } from 'rxjs';
-import { MobileDashboardState } from '../../shared/types/mobile-dashboard-state.type';
+import { DashboardState } from '../../shared/types/dashboard-state.type';
 import { PostInterface } from '../../shared/models/post.interface';
 import { ScreenService } from '../../services/screen.service';
 import { ScreenSize } from '../../shared/types/screen-size.type';
@@ -44,7 +44,7 @@ export class DashboardComponent {
    * A signal representing the state of the mobile dashboard.
    * This will allow updating and reflecting the dashboard's mobile state.
    */
-  mobileDashboardState!: WritableSignal<MobileDashboardState>;
+  dashboardState!: WritableSignal<DashboardState>;
   /**
    * Observable that holds the messages in the active conversation.
    * The messages are fetched based on the `conversationType` and `conversationId`.
@@ -66,18 +66,18 @@ export class DashboardComponent {
     private conversationActiveRouterService: ConversationActiveRouterService, // Service for managing active chats
     private route: ActivatedRoute // To access route parameters for conversation information
   ) {
-    this.mobileDashboardState = this.screenService.mobileDashboardState;
+    this.dashboardState = this.screenService.dashboardState;
     this.screenSize$ = this.screenService.screenSize$;
   }
 
   /**
    * Initializes the component by setting up observables for messages and answers
    * based on route parameters such as `conversationType` and `conversationId`.
-   * It also initializes the `mobileDashboardState` to track the mobile dashboard's state.
+   * It also initializes the `dashboardState` to track the mobile dashboard's state.
    */
   ngOnInit() {
-    // Initialize mobileDashboardState with the value from the MobileService
-    // if (this.mobileDashboardState() === 'message-window') {
+    // Initialize dashboardState with the value from the MobileService
+    // if (this.dashboardState() === 'message-window') {
       // Set up the observable for fetching messages from the active conversation
       this.messages$ = this.route.paramMap.pipe(
         map((params) => ({
@@ -105,7 +105,7 @@ export class DashboardComponent {
         // Share the last value and maintain a reference count to avoid multiple fetches
         shareReplay({ bufferSize: 1, refCount: true })
       );
-    // } else if (this.mobileDashboardState() === 'thread-window') {
+    // } else if (this.dashboardState() === 'thread-window') {
       // Set up the observable for fetching answers to a particular message in the conversation
       this.answers$ = this.route.paramMap.pipe(
         map((params) => ({

@@ -1,4 +1,4 @@
-export type MobileDashboardState =
+export type DashboardState =
   | 'sidenav'
   | 'message-window'
   | 'thread-window'

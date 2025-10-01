@@ -5,7 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { HeaderChannelComponent } from './header-channel/header-channel.component';
 import { HeaderSearchbarComponent } from '../../header-searchbar/header-searchbar.component';
 import { HeaderChatComponent } from './header-chat/header-chat.component';
-import { MobileDashboardState } from '../../../../shared/types/mobile-dashboard-state.type';
+import { DashboardState } from '../../../../shared/types/dashboard-state.type';
 import { HeaderThreadComponent } from './header-thread/header-thread.component';
 import { Observable, Subject, takeUntil } from 'rxjs';
 import { ScreenSize } from '../../../../shared/types/screen-size.type';
@@ -24,7 +24,7 @@ import { ScreenService } from '../../../../services/screen.service';
   styleUrl: './conversation-header.component.scss',
 })
 export class ConversationHeaderComponent {
-  mobileDashboardState: WritableSignal<MobileDashboardState>; // Holds the state for mobile dashboard
+  dashboardState: WritableSignal<DashboardState>; // Holds the state for mobile dashboard
   conversationType!: string; // Holds the type of conversation (e.g., chat, channel)
   conversationId!: string; // Holds the ID of the current conversation
   messageToReplyId: string | null = null; // Holds the ID of the message to reply to (if any)
@@ -38,7 +38,7 @@ export class ConversationHeaderComponent {
     private router: Router, // Angular router service to navigate between routes
     private conversationActiveRouterService: ConversationActiveRouterService // Custom service for handling active chat/router state
   ) {
-    this.mobileDashboardState = this.screenService.mobileDashboardState; // Inject the mobile state from the service
+    this.dashboardState = this.screenService.dashboardState; // Inject the mobile state from the service
     this.screenSize$ = this.screenService.screenSize$;
   }
 
