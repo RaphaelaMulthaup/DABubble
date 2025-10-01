@@ -1,9 +1,18 @@
-<section #headerSearchbar [ngClass]="(screenSize$|async) === 'web' ? 'header-searchbar-web' : 'header-searchbar-handset'">
+<section
+  #headerSearchbar
+  [ngClass]="
+    (screenSize$ | async) === 'web'
+      ? 'header-searchbar-web'
+      : 'header-searchbar-handset'
+  "
+>
   <h3>Neue Nachricht</h3>
   <input
     type="text"
     class="input-secondary"
     placeholder="An: #channel, @jemand oder E-Mail-Adresse"
+    autocomplete="new-message"
+    name="new-message"
     [formControl]="searchControl"
     [ngClass]="{
       'z-index-1001': searchService.overlaySearchResultsNewMessageOpen
