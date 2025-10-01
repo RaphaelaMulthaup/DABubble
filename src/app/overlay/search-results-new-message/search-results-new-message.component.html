@@ -1,6 +1,6 @@
-<div class="overlay-search-results-mobile">
+<div class="search-results-web">
   @if (results().length > 0) {
-  <ul class="results-list results-list-handset">
+  <ul class="results-list" [ngClass]="(screenSize$|async) === 'handset' ? 'results-list-handset' : 'results-list-web'">
     @for (item of results(); track $index) {
     <li>
       @switch (item.type) { @case ('user') {
@@ -14,6 +14,6 @@
     }
   </ul>
   } @else {
-  <div class="results-list results-list-handset no-hits">Keine Treffer</div>
+  <div class="results-list no-hits" [ngClass]="(screenSize$|async) === 'handset' ? 'results-list-handset' : 'results-list-web'">Keine Treffer</div>
   }
 </div>

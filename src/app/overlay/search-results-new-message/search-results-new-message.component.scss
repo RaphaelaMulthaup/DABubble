@@ -1,7 +1,12 @@
-.overlay-search-results-mobile {
-    background-color: white;
+
+.results-list-handset {
+  height: calc(100vh - 235px);
 }
 
-.results-list {
-  height: calc(100vh - 235px);
+.results-list-web {
+  height: 100%;
+}
+
+.search-results-web {
+  height: 100%;
 }

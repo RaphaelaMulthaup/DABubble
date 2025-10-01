@@ -365,7 +365,7 @@ h4 {
 }
 
 .results-list {
-  width: 100vw;
+  
   @include dFlex($jc: flex-start, $ai: flex-start, $g: 13px);
   flex-direction: column;
   overflow-x: hidden;
@@ -374,8 +374,13 @@ h4 {
   }
 }
 
+.results-list-web {
+  padding: 20px 54px;
+}
+
 .results-list-handset {
   padding: 24px 61px;
+  width: 100vw;
 }
 
 .no-hits {

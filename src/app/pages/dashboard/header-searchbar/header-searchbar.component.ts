@@ -1,4 +1,12 @@
-import { Component, ElementRef, Signal, ViewChild } from '@angular/core';
+import {
+  Component,
+  effect,
+  ElementRef,
+  EventEmitter,
+  Output,
+  Signal,
+  ViewChild,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { startWith, map, Observable, takeUntil, Subject, take } from 'rxjs';
@@ -40,6 +48,8 @@ export class HeaderSearchbarComponent {
    * It is a reactive representation of the search results.
    */
   results: Signal<SearchResult[]>;
+  @Output() resultsChange = new EventEmitter<SearchResult[]>();
+  @Output() hasInputChange = new EventEmitter<boolean>();
   screenSize$!: Observable<ScreenSize>;
   private searchOverlayRef: any;
   /**
@@ -67,6 +77,10 @@ export class HeaderSearchbarComponent {
     this.results = toSignal(this.searchService.searchHeaderSearch(this.term$), {
       initialValue: [], // Initial value for the results is an empty array
     });
+
+    effect(() => {
+      this.resultsChange.emit(this.results());
+    });
   }
   /**
    * Lifecycle hook that runs after component initialization.
@@ -76,7 +90,9 @@ export class HeaderSearchbarComponent {
   ngOnInit() {
     // Subscribe to the search term observable
     this.term$.pipe(takeUntil(this.destroy$)).subscribe((term) => {
-      if (term.length > 0) {
+      const hasInput = term.length > 0;
+      this.hasInputChange.emit(hasInput);
+      if (hasInput) {
         this.openOverlay(); // Overlay wiederverwenden oder neu öffnen
       } else {
         this.overlayService.closeOne(this.searchOverlayRef?.overlayRef);
@@ -105,44 +121,47 @@ export class HeaderSearchbarComponent {
    * passes the current results as input, and clears the search field when the backdrop is clicked.
    */
   private openOverlay() {
-    // Wenn Overlay schon offen ist, nur die Daten aktualisieren
-    if (this.searchOverlayRef) {
-      this.searchOverlayRef.ref.instance.results = this.results;
-      return;
-    }
+    this.screenSize$.pipe(take(1)).subscribe((size) => {
+      if (size !== 'handset') return; // ❗ Nur bei 'handset' ausführen
 
-    // Overlay neu öffnen
-    this.searchOverlayRef = this.overlayService.openComponent(
-      SearchResultsNewMessageComponent,
-      'cdk-overlay-transparent-backdrop',
-      {
-        origin: this.headerSearchbar.nativeElement,
-        originPosition: {
-          originX: 'center',
-          originY: 'bottom',
-          overlayX: 'center',
-          overlayY: 'bottom',
-        },
-        originPositionFallback: {
-          originX: 'center',
-          originY: 'bottom',
-          overlayX: 'center',
-          overlayY: 'top',
-        },
-      },
-      {
-        results: this.results, // Pass the search term to the overlay
+      // Wenn Overlay schon offen ist, nur die Daten aktualisieren
+      if (this.searchOverlayRef) {
+        this.searchOverlayRef.ref.instance.results = this.results;
+        return;
       }
-    );
-    if (!this.searchOverlayRef) return;
+      // Overlay neu öffnen
+      this.searchOverlayRef = this.overlayService.openComponent(
+        SearchResultsNewMessageComponent,
+        'cdk-overlay-transparent-backdrop',
+        {
+          origin: this.headerSearchbar.nativeElement,
+          originPosition: {
+            originX: 'center',
+            originY: 'bottom',
+            overlayX: 'center',
+            overlayY: 'bottom',
+          },
+          originPositionFallback: {
+            originX: 'center',
+            originY: 'bottom',
+            overlayX: 'center',
+            overlayY: 'top',
+          },
+        },
+        {
+          results: this.results, // Pass the search term to the overlay
+        }
+      );
+      if (!this.searchOverlayRef) return;
 
-    // BackdropClick schließen
-    this.searchOverlayRef.backdropClick$
-      .pipe(take(1), takeUntil(this.destroy$))
-      .subscribe(() => {
-        this.searchControl.setValue(''); // Feld leeren
-        this.overlayService.closeOne(this.searchOverlayRef?.overlayRef);
-        this.searchOverlayRef = null;
-      });
+      // BackdropClick schließen
+      this.searchOverlayRef.backdropClick$
+        .pipe(take(1), takeUntil(this.destroy$))
+        .subscribe(() => {
+          this.searchControl.setValue(''); // Feld leeren
+          this.overlayService.closeOne(this.searchOverlayRef?.overlayRef);
+          this.searchOverlayRef = null;
+        });
+    });
   }
 }

@@ -15,8 +15,18 @@
       }
       @if (dashboardState() === 'new-message-view') {
         <div class="new-message-view flex flex-col h-full">
-          <app-header-searchbar [ngClass]="(screenSize$|async) === 'web' ? 'app-header-searchbar-web' : ''"></app-header-searchbar>
-          <div class="below-from-header-searchbar-web-tablet"></div>
+          <app-header-searchbar
+            (resultsChange)="onResultsChanged($event)"
+            (hasInputChange)="onHasInputChange($event)"
+            [ngClass]="(screenSize$|async) === 'web' 
+              ? 'app-header-searchbar-web' 
+              : ''"
+          ></app-header-searchbar>
+          <div class="below-from-header-searchbar-web-tablet">
+            @if (hasInput) {
+              <app-search-results-new-message [results]="resultsSignal"></app-search-results-new-message>
+            }
+          </div>
         </div>
       }
       @else {

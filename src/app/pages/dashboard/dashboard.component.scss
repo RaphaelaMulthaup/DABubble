@@ -40,11 +40,19 @@ app-header {
 }
 
 .below-from-header-searchbar-web-tablet {
+  padding-top: 8px;
+  padding-bottom: 32px;
   height: 100%;
   border-radius: 0 0 30px 30px;
   background-color: var(--color-white);
+  overflow-y: scroll;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer / Edge */
 }
 
+.below-from-header-searchbar-web-tablet::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
 .dashboard-web {
   background-color: var(--color-purple-white);
 }
