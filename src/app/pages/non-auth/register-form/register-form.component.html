@@ -16,8 +16,15 @@
             <div>
                 <div class="flex items-center relative">
                     <img class="input-icon absolute" src="./assets/img/person.svg" alt="person">
-                    <input class="input-primary" id="displayName" type="text" placeholder="Name und Nachname"
-                        formControlName="displayName" name="displayName" required>
+                    <input
+                        class="input-primary"
+                        id="displayName"
+                        type="text"
+                        maxlength="24"
+                        placeholder="Name und Nachname"
+                        formControlName="displayName"
+                        name="displayName"
+                        required>
                 </div>
                 <p class="error-message">@if (registerForm.get('displayName')?.invalid &&
                     registerForm.get('displayName')?.touched)
