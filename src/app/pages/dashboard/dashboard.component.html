@@ -1,70 +1,3 @@
-<!-- <section class="dashboard w-full" [class.dashboard-web]="(screenSize$ | async) === 'web'" [ngClass]="{
-    'new-message-view-mobile':
-      dashboardState() === 'new-message-view' &&
-      (screenSize$ | async) === 'handset'
-  }">
-  <app-header-dashboard />
-  @if((screenSize$|async) === 'web'){
-  <div class="dashboard-web-components flex h-full">
-    @if(sidenavVisible) {
-    <app-sidenav class="relative"></app-sidenav>
-    }
-    @if (dashboardState() === 'new-message-view') {
-    <div class="new-message-view flex flex-col h-full">
-      <app-header-searchbar (resultsChange)="onResultsChanged($event)" (hasInputChange)="onHasInputChange($event)"
-        [ngClass]="(screenSize$|async) === 'web' 
-              ? 'app-header-searchbar-web' 
-              : ''"></app-header-searchbar>
-      <div class="below-from-header-searchbar-web-tablet">
-        @if (hasInput) {
-        <app-search-results-new-message [results]="resultsSignal"></app-search-results-new-message>
-        }
-      </div>
-    </div>
-    }
-    @else {
-    <app-conversation-window [data$]="messages$" [conversationWindowState]="'conversation'"></app-conversation-window>
-    @if (dashboardState()==='thread-window'){
-    <app-conversation-window class="thread-window" [data$]="answers$"
-      [conversationWindowState]="'thread'"></app-conversation-window>
-    }
-    }
-  </div>
-  }
-  @else {
-  <div class="w-full h-full">
-    @switch (dashboardState()) {
-    @case ('sidenav') {
-    <app-sidenav></app-sidenav>
-    }
-    @case ('message-window') {
-    <div>
-      <app-conversation-window [data$]="messages$" [conversationWindowState]="'conversation'"></app-conversation-window>
-    </div>
-    }
-    @case ('thread-window') {
-    <app-conversation-window [data$]="answers$" [conversationWindowState]="'thread'"></app-conversation-window>
-    }
-    @case ('new-message-view') {
-    <app-header-searchbar></app-header-searchbar>
-    <div class="below-from-header-searchbar-handset"></div>
-    }
-    }
-  </div>
-  }
-</section>
-
-@if((screenSize$|async) === 'web') {
-<section (click)="sidenavVisible = !sidenavVisible" class="collapsible">
-  <p>Workspace-Menü {{ sidenavVisible ? "schließen" : "öffnen" }}</p>
-  <div class="toggle-navigation-img" [ngClass]="sidenavVisible ? 'hide-navigation' : 'show-navigation'"></div>
-</section>
-}
-
-@if(overlayService.editingPostId() !== null) {
-<div (click)="endEditingPost()" class="editing-post-backdrop"></div>
-} -->
-
 <section class="dashboard w-full" [ngClass]="{
     'new-message-view-mobile':
       dashboardState() === 'new-message-view' &&
@@ -74,7 +7,7 @@
   @switch ((screenSize$|async)) {
     @case ('web') {
       <div class="dashboard-web flex h-full">
-        @if(sidenavVisible) {
+        @if(screenService.sidenavVisible) {
           <app-sidenav class="relative"></app-sidenav>
         }
         @if (dashboardState() === 'new-message-view') {
@@ -99,16 +32,13 @@
 
     @case ('tablet') {
       <div class="dashboard-tablet flex h-full">
-        @if(sidenavVisible) {
+        @if(screenService.sidenavVisible) {
           <app-sidenav class="relative"></app-sidenav>
         }
         @switch (dashboardState()) {
           @case ('new-message-view') {
             <div class="new-message-view flex flex-col h-full">
-              <app-header-searchbar (resultsChange)="onResultsChanged($event)" (hasInputChange)="onHasInputChange($event)"
-                [ngClass]="(screenSize$|async) === 'web' 
-                      ? 'app-header-searchbar-web' 
-                      : ''"></app-header-searchbar>
+              <app-header-searchbar (resultsChange)="onResultsChanged($event)" (hasInputChange)="onHasInputChange($event)"></app-header-searchbar>
               <div class="empty-window-web-tablet">
                 @if (hasInput) {
                 <app-search-results-new-message [results]="resultsSignal"></app-search-results-new-message>
@@ -152,9 +82,9 @@
 </section>
 
 @if ((screenSize$ | async) !== 'handset') {
-  <section (click)="sidenavVisible = !sidenavVisible" class="collapsible">
-    <p>Workspace-Menü {{ sidenavVisible ? "schließen" : "öffnen" }}</p>
-    <div class="toggle-navigation-img" [ngClass]="sidenavVisible ? 'hide-navigation' : 'show-navigation'"></div>
+  <section (click)="screenService.sidenavVisible = !screenService.sidenavVisible" class="collapsible">
+    <p>Workspace-Menü {{ screenService.sidenavVisible ? "schließen" : "öffnen" }}</p>
+    <div class="toggle-navigation-img" [ngClass]="screenService.sidenavVisible ? 'hide-navigation' : 'show-navigation'"></div>
   </section>
 }
 

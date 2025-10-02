@@ -61,10 +61,10 @@ export class DashboardComponent {
    */
   answers$!: Observable<PostInterface[]>;
   screenSize$!: Observable<ScreenSize>;
-  sidenavVisible: boolean = true;
   results$ = new BehaviorSubject<SearchResult[]>([]);
   resultsSignal = toSignal(this.results$.asObservable(), { initialValue: [] });
   hasInput: boolean = false;
+
   constructor(
     public overlayService: OverlayService, // Service to handle overlay state
     public screenService: ScreenService,

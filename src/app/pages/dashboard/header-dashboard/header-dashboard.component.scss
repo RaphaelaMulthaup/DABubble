@@ -1,104 +1,125 @@
 @import "./../../../../styles.scss";
 
-header {
-  .logo-box {
-    .logo-final {
-      // width: 242px;
-      // height: 70px;
-      width: 162px;
-      height: 45px;
-    }
+// header {
+//   .logo-box {
+//     .logo-final {
+//       // width: 242px;
+//       // height: 70px;
+//       width: 162px;
+//       height: 45px;
+//     }
 
-    .logo-channel {
-      gap: 4px;
+//     .logo-channel {
+//       gap: 4px;
 
-      img {
-        height: 50px;
-        aspect-ratio: 1;
-        border-radius: 50%;
-      }
+//       img {
+//         height: 50px;
+//         aspect-ratio: 1;
+//         border-radius: 50%;
+//       }
 
-      p {
-        padding-left: 4px;
-        font-size: 20px;
-        font-weight: 700;
-      }
-    }
-  }
-}
+//       p {
+//         padding-left: 4px;
+//         font-size: 20px;
+//         font-weight: 700;
+//       }
+//     }
+//   }
+// }
 
-app-search-bar {
-  flex: 1;
-}
+// app-search-bar {
+//   flex: 1;
+// }
 
-.current-user {
-  @include dFlex($jc: flex-end, $g: 20px);
-}
-
-h1{
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-h1 {
-  white-space: nowrap;
-  color: var(--color-black);
-  display: block;
-}
-
-.profil-img {
-  // height: 70px;
-  height: 50px;
-  aspect-ratio: 1;
-  border-radius: 50%;
-
-  &:hover {
-    cursor: pointer;
-  }
-}
-
-.arrow-btn {
-  height: 30px;
-  aspect-ratio: 1;
-  background-image: url("./../../../../assets/img/keyboard-arrow-down-black.svg");
-
-  &:hover {
-    background-image: url("./../../../../assets/img/keyboard-arrow-down-blue.svg");
-  }
-}
+// .current-user {
+//   @include dFlex($jc: flex-end, $g: 20px);
+// }
 
 .arrow-back {
   rotate: 90deg;
 }
 
-.profile-view {
-  display: none;
-  position: absolute;
-  top: 60px;
-  z-index: 10;
+// .header-web {
+//   background-color: var(--color-purple-white);
+//   @include dFlex($g: 20px);
+//   padding: 25px 34px 20px 50px;
+// }
+
+// .header-mobile {
+//   background-color: var(--color-white);
+//   app-search-bar {
+//     margin: 32px 16px 0 16px;
+//     display: block;
+//   }
+// }
+
+// .header-mobile-upper-area {
+//   width: 100%;
+//   @include dFlex($jc: space-between);
+//   background-color: var(--color-purple-white);
+//   padding: 16px;
+// }
+
+app-search-bar {
+  flex: 1 !important;
+  padding: 0 20px;
 }
 
-.showProfile {
-  display: flex;
-}
-
-.header-web {
+header {
+  height: 115px;
+  padding: 25px 34px 20px 20px;
   background-color: var(--color-purple-white);
-  @include dFlex($g: 20px);
-  padding: 25px 34px 20px 50px;
-}
 
-.header-mobile {
-  background-color: var(--color-white);
-  app-search-bar {
-    margin: 32px 16px 0 16px;
-    display: block;
+  .logo-box {
+    width: 366px;
+    .logo-final {
+      width: 242px;
+      height: 70px;
+      margin-left: -60px;
+    }
+  }
+
+  .current-user {
+    width: 475px;
+    gap: 20px;
+
+    h1 {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: var(--color-black);
+      display: block;
+    }
+
+    .profil-img {
+      height: 70px;
+      // width: 50px;
+      // height: 50px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+
+    .arrow-btn {
+      height: 30px;
+      aspect-ratio: 1;
+      background-image: url("./../../../../assets/img/keyboard-arrow-down-black.svg");
+
+      &:hover {
+        background-image: url("./../../../../assets/img/keyboard-arrow-down-blue.svg");
+      }
+    }
   }
 }
 
-.header-mobile-upper-area {
-  width: 100%;
-  @include dFlex($jc: space-between);
-  background-color: var(--color-purple-white);
-  padding: 16px;
+.header-handset {
+}
+
+.header-tablet {
+}
+
+.header-web {
 }

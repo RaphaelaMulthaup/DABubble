@@ -13,6 +13,7 @@ export class ScreenService {
   screenSize$: Observable<ScreenSize>;
   breakpoints = BREAKPOINTS;
   dashboardState = signal<DashboardState>('sidenav');
+  sidenavVisible: boolean = true;
 
   constructor(
     private breakpointObserver: BreakpointObserver,
@@ -36,7 +37,7 @@ export class ScreenService {
 
     setTimeout(async () => {
       const initialScreenSize = await firstValueFrom(this.screenSize$);
-      if (initialScreenSize === 'web')
+      if (initialScreenSize !== 'handset')
         this.setDashboardState('new-message-view');
     });
   }
