@@ -5,7 +5,7 @@ import { Auth } from '@angular/fire/auth';
 import { onAuthStateChanged } from 'firebase/auth';
 import { LoginFormComponent } from './login-form/login-form.component';
 import { collection, collectionData, Firestore } from '@angular/fire/firestore';
-import { flatMap, map } from 'rxjs';
+import { flatMap, map, Observable } from 'rxjs';
 import { RegisterFormComponent } from './register-form/register-form.component';
 
 import { AuthService } from '../../services/auth.service';
@@ -19,6 +19,8 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { CreateAccountBtnComponent } from '../../shared/components/create-account-btn/create-account-btn.component';
 import { HeaderOutsideDashboardComponent } from '../../shared/components/header-outside-dashboard/header-outside-dashboard.component';
 import { doc } from '@firebase/firestore';
+import { ScreenSize } from '../../shared/types/screen-size.type';
+import { ScreenService } from '../../services/screen.service';
 
 @Component({
   selector: 'app-non-auth',
@@ -43,14 +45,16 @@ export class NonAuthComponent {
   showConfirm: boolean = false;
   showLogin: boolean = true;
   showIntro: any;
-
+  screenSize$!: Observable<ScreenSize>;
   constructor(
     private auth: Auth,
     private router: Router,
     private route: ActivatedRoute,
     private firestore: Firestore,
-    private authService: AuthService
+    private authService: AuthService,
+    public screenService: ScreenService
   ) {
+    this.screenSize$ = this.screenService.screenSize$;
     const navaigation = this.router.getCurrentNavigation();
     const uid = navaigation?.extras.state?.['uid'];
     // Listen for authentication state changes
@@ -84,10 +88,9 @@ export class NonAuthComponent {
       }
     });
 
-    collectionData(usersRef).pipe(
-      map((users: any[]) => users.map(user => user.name))
-    ).subscribe(userNames => {
-    });
+    collectionData(usersRef)
+      .pipe(map((users: any[]) => users.map((user) => user.name)))
+      .subscribe((userNames) => {});
   }
 
   /**
@@ -114,7 +117,7 @@ export class NonAuthComponent {
    * shows intro animation only if currentState is "login"
    */
   handleIntroState() {
-    if (this.currentState = 'login') {
+    if ((this.currentState = 'login')) {
       this.showLogo();
     } else {
       this.noIntro();

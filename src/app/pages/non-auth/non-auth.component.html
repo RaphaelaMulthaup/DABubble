@@ -1,5 +1,5 @@
 <body>
-  <app-header-outside-dashboard [context]="'non-auth'"></app-header-outside-dashboard>
+  <app-header-outside-dashboard [currentState]="currentState" [context]="'non-auth'"></app-header-outside-dashboard>
 
   <app-intro class="intro" #introRef></app-intro>
 
@@ -20,9 +20,8 @@
       }
     </section>
 
-    @if (currentState == 'login') {
-    <!-- this is here only for mobile-->
-    <app-create-account-btn (changeAuthState)="currentState = $event" />
+    @if (currentState === 'login' && ((screenSize$|async) === 'handset')) {
+      <app-create-account-btn (changeAuthState)="currentState = $event" />
     }
   </main>
 

@@ -1,14 +1,24 @@
 import { Component, Input } from '@angular/core';
+import { Observable } from 'rxjs';
+import { ScreenSize } from '../../types/screen-size.type';
+import { ScreenService } from '../../../services/screen.service';
+import { AsyncPipe } from '@angular/common';
+import { CreateAccountBtnComponent } from "../create-account-btn/create-account-btn.component";
 
 @Component({
   selector: 'app-header-outside-dashboard',
-  imports: [],
+  imports: [AsyncPipe, CreateAccountBtnComponent],
   templateUrl: './header-outside-dashboard.component.html',
-  styleUrl: './header-outside-dashboard.component.scss'
+  styleUrl: './header-outside-dashboard.component.scss',
 })
-export class HeaderOutsideDashboardComponent {  
+export class HeaderOutsideDashboardComponent {
   @Input() context!: string;
-
+  @Input() currentState!: string;
+  screenSize$!: Observable<ScreenSize>;
+  
+  constructor(public screenService: ScreenService) {
+    this.screenSize$ = this.screenService.screenSize$;
+  }
   /**
    * Detects context and shows logo matching to intro animation in "non-auth"
    */
