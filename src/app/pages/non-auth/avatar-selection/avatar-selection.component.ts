@@ -23,7 +23,7 @@ export class AvatarSelectionComponent implements OnInit {
   showToast: boolean = false;
   @Output() changeAuthState = new EventEmitter<AuthState>();
 
-  constructor(private authService: AuthService) {}
+  constructor(public authService: AuthService) {}
 
   /**
    * This function checks the userToRegister in the authService for an already chosen option and selects it.
