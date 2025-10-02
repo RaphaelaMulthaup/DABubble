@@ -1,39 +1,50 @@
 @import "../../../styles.scss";
 
-.input-gap{
+.input-gap {
   display: flex;
   padding-left: 58px;
   padding: 20px 20px 20px 58px;
 }
 
-span{
+span {
   color: var(--color-gray);
+  font-size: 18px;
+}
+
+input {
+  font-size: 18px;
+  ::placeholder {
+    font-size: 18px;
+  }
+}
+
+p {
+  font-size: 18px;
 }
 
 .input-wrapper {
-    display: flex;
-    align-items: center; /* centrează pe verticală */
+  display: flex;
+  align-items: center; /* centrează pe verticală */
   position: relative;
 }
 
 .prefix {
   position: absolute;
-  color: gray;
-  padding-left: 20px;
-  font-size: 16px;
+  left: 20px;
+  top: 21px;
   pointer-events: none; /* prevents blocking typing */
 }
 
 .error-massage {
-    color: red;
-    height: 16px;
-    padding-top: 4px;
-    padding-left: 12px;
-    font-size: 16px;
-    color: var(--color-pink);
-    line-height: 1;
+  color: red;
+  height: 16px;
+  padding-top: 4px;
+  padding-left: 12px;
+  font-size: 16px;
+  color: var(--color-pink);
+  line-height: 1;
 }
 
-.inputAndErrorMessage{
+.inputAndErrorMessage {
   height: 88px;
 }

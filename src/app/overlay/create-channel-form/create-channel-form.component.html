@@ -5,14 +5,15 @@
     <div class="form-group flex flex-col max-w-[872px] mt-[20px] gap-[20px]">
       <p>
         Channels dienen deinem Team zur Kommunikation. Am besten sollten sie
-        themenbezogen sein #marketing zum Beispiel.
+        themenbezogen sein, #marketing zum Beispiel.
       </p>
       <div class="flex flex-col gap-[20px]">
         <label for="nameId">
           <h4>Channel-Name</h4>
         </label>
         <div class="input-wrapper">
-          <span class="prefix">#</span>
+          <img class="prefix" src="../../../assets/img/tag-gray.svg" alt="">
+          <!-- <span >#</span> -->
           <div class="inputAndErrorMessage flex flex-col w-full">
             <input
               id="nameId"
@@ -24,15 +25,18 @@
               required
               (input)="onNameInput()"
             />
-            <p *ngIf="showErrorMessage" class="error-massage">
-              Channel-Name bereits vergeben.
-            </p>
+            @if (showErrorMessage) {            
+              <p class="error-massage">
+                Channel-Name bereits vergeben.
+              </p>
+            }
           </div>
         </div>
       </div>
       <div class="flex flex-col gap-[20px]">
         <label for="descriptionId" class="flex">
           <h4>Beschreibung</h4>
+          &nbsp;
           <span class="">(optional)</span>
         </label>
         <input
