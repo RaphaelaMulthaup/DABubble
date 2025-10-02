@@ -29,6 +29,7 @@ import { ChannelInterface } from '../../../../shared/models/channel.interface';
 import { ScreenSize } from '../../../../shared/types/screen-size.type';
 import { ScreenService } from '../../../../services/screen.service';
 import { ConnectedPosition } from '@angular/cdk/overlay';
+import { BaseSearchDirective } from '../../../../shared/directives/base-search.directive'; // passe Pfad ggf. an
 
 @Component({
   selector: 'app-search-bar',
@@ -44,11 +45,10 @@ import { ConnectedPosition } from '@angular/cdk/overlay';
   templateUrl: './search-bar.component.html',
   styleUrls: ['./search-bar.component.scss'],
 })
-export class SearchBarComponent implements OnInit, OnDestroy {
-  // Reactive form control for the search input
-  searchControl = new FormControl<string>('', { nonNullable: true });
+export class SearchBarComponent extends BaseSearchDirective implements OnInit, OnDestroy {
+  // Reactive form control ist bereits in BaseSearchDirective vorhanden
   firstFocusHappened = false; // Tracks if input was focused for the first time
-  private destroy$ = new Subject<void>(); // Used to clean up subscriptions
+  override destroy$ = new Subject<void>(); // für lokale subscriptions (zusätzlich zur base destroy$)
 
   @ViewChild('searchbar', { static: true }) searchbar!: ElementRef<HTMLElement>;
 
@@ -62,17 +62,15 @@ export class SearchBarComponent implements OnInit, OnDestroy {
     private overlayService: OverlayService,
     public searchService: SearchService
   ) {
+    super();
     this.screenSize$ = this.screenService.screenSize$;
-    // Initialize results as an empty array
+    // Initialize results as an empty array (Service liefert die BehaviorSubject-Quelle)
     this.results = toSignal(this.searchService.results$, { initialValue: [] });
   }
 
-  /**
-   * Lifecycle hook called after component initialization.
-   * Adds a focus listener to open the overlay when the input is focused.
-   */
-  ngOnInit() {
-    this.searchbar.nativeElement.addEventListener('focus', () => {
+  ngOnInit(): void {
+    // Fokuslistener via Base helper; öffnet Overlay nur wenn Feld Inhalt hat.
+    this.setupFocusListener(this.searchbar, () => {
       const term = this.searchControl.value.trim();
       if (term.length > 0) {
         this.openOverlay(term);
@@ -81,25 +79,21 @@ export class SearchBarComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Called when the search bar gains focus for the first time.
-   * Sets up a debounced observable stream of input changes and updates results.
-   * Also handles showing/hiding the overlay based on search input.
+   * Wird beim ersten Focus aufgerufen (wie vorher in deinem Code - onFocus).
+   * Legt term$ an, startet updateResults und subscribes zur Steuerung des Overlays.
    */
   onFocus() {
     if (!this.firstFocusHappened) {
       this.firstFocusHappened = true;
 
-      // Stream of search terms
-      const term$ = this.searchControl.valueChanges.pipe(
-        startWith(this.searchControl.value),
-        map((v) => v.trim())
-      );
+      // Stream of search terms (Base bietet createTerm$)
+      const term$ = this.createTerm$();
 
       // Pass search term stream to the search service
       this.searchService.updateResults(term$);
 
       // Subscribe to search terms to manage overlay visibility
-      term$.pipe(takeUntil(this.destroy$)).subscribe((term) => {
+      this.subscribeToTermChanges((term) => {
         if (term.length > 0) {
           this.searchResultsExisting = true;
           this.searchService.overlaySearchResultsOpen = true;
@@ -116,12 +110,10 @@ export class SearchBarComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Opens the search results overlay below the search bar.
-   * If overlay already exists, it updates its data instead of reopening.
-   * Closes overlay on backdrop click and clears the input.
+   * Öffnet das Overlay — Overlay-Logik bleibt in der concrete Komponente.
    */
   private openOverlay(term: string) {
-    // If overlay is already open, update its inputs
+    // Wenn overlay bereits offen, aktualisiere Inputs
     if (this.searchOverlayRef) {
       this.searchOverlayRef.ref.instance.results$ = this.groupedResults;
       this.searchOverlayRef.ref.instance.searchTerm = term;
@@ -135,7 +127,7 @@ export class SearchBarComponent implements OnInit, OnDestroy {
       originPositionFallback?: ConnectedPosition;
     };
 
-    this.screenSize$.subscribe((screenSize) => {
+    this.screenSize$.pipe(takeUntil(this.destroy$)).subscribe((screenSize) => {
       positionOverlay =
         screenSize === 'handset'
           ? {
@@ -190,60 +182,45 @@ export class SearchBarComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Computes grouped search results for easier rendering.
-   * Groups chat messages by user and channel messages by channel.
-   * Returns both grouped and ungrouped results.
+   * Gruppiert chat- / channel messages wie vorher für die Darstellung im Overlay.
    */
   groupedResults = computed(() => {
     const res = this.results();
     const grouped: any[] = [];
 
     const chatMap = new Map<string, { user: UserInterface; posts: any[] }>();
-    const channelMap = new Map<
-      string,
-      { channel: ChannelInterface; posts: any[] }
-    >();
+    const channelMap = new Map<string, { channel: ChannelInterface; posts: any[] }>();
 
     for (const item of res) {
       if (item.type === 'chatMessage' && item.user) {
-        // Group chat messages by user
         if (!chatMap.has(item.user.uid))
           chatMap.set(item.user.uid, { user: item.user, posts: [] });
         chatMap.get(item.user.uid)!.posts.push(item);
       } else if (item.type === 'channelMessage') {
-        // Group channel messages by channel
         const channelId = item.channelId!;
         if (!channelMap.has(channelId))
           channelMap.set(channelId, { channel: item.channel, posts: [] });
         channelMap.get(channelId)!.posts.push(item);
       } else {
-        // Keep other types ungrouped
         grouped.push(item);
       }
     }
 
-    // Add grouped chat and channel results to the output
     chatMap.forEach((value) =>
       grouped.push({ type: 'chatGroup', user: value.user, posts: value.posts })
     );
     channelMap.forEach((value) =>
-      grouped.push({
-        type: 'channelGroup',
-        channel: value.channel,
-        posts: value.posts,
-      })
+      grouped.push({ type: 'channelGroup', channel: value.channel, posts: value.posts })
     );
 
     return grouped;
   });
 
-  /**
-   * Lifecycle hook called before component is destroyed.
-   * Completes the `destroy$` subject to unsubscribe from all observables.
-   */
-  ngOnDestroy() {
+  override ngOnDestroy(): void {
+    // lokale und Basisklassen Aufräumarbeiten
     this.destroy$.next();
     this.destroy$.complete();
+    super.ngOnDestroy();
   }
 
   /**

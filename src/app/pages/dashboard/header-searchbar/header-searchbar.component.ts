@@ -6,129 +6,110 @@ import {
   Output,
   Signal,
   ViewChild,
+  OnInit,
+  OnDestroy
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { startWith, map, Observable, takeUntil, Subject, take } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { SearchService } from '../../../services/search.service'; // Service for search functionality
-import { JsonPipe } from '@angular/common'; // Pipe for converting objects to JSON
-import { SearchResult } from '../../../shared/types/search-result.type'; // Type definition for search results
-import { UserListItemComponent } from '../../../shared/components/user-list-item/user-list-item.component'; // Component to display user results
-import { ChannelListItemComponent } from '../../../shared/components/channel-list-item/channel-list-item.component'; // Component to display channel results
-import { OverlayService } from '../../../services/overlay.service'; // Service to manage overlays
+import { SearchService } from '../../../services/search.service';
+import { JsonPipe } from '@angular/common';
+import { SearchResult } from '../../../shared/types/search-result.type';
+import { UserListItemComponent } from '../../../shared/components/user-list-item/user-list-item.component';
+import { ChannelListItemComponent } from '../../../shared/components/channel-list-item/channel-list-item.component';
+import { OverlayService } from '../../../services/overlay.service';
 import { SearchResultsNewMessageComponent } from '../../../overlay/search-results-new-message/search-results-new-message.component';
 import { ScreenSize } from '../../../shared/types/screen-size.type';
 import { ScreenService } from '../../../services/screen.service';
+import { BaseSearchDirective } from '../../../shared/directives/base-search.directive'; // passe Pfad ggf. an
 
 @Component({
-  selector: 'app-header-searchbar', // The component selector
+  selector: 'app-header-searchbar',
   standalone: true,
   imports: [
-    ReactiveFormsModule, // Import ReactiveFormsModule for handling form controls
-    JsonPipe, // Import JsonPipe to convert objects to JSON strings if needed
-    UserListItemComponent, // Import user list component
+    ReactiveFormsModule,
+    JsonPipe,
+    UserListItemComponent,
     ChannelListItemComponent,
     CommonModule,
   ],
-  templateUrl: './header-searchbar.component.html', // The template for this component
-  styleUrls: ['./header-searchbar.component.scss'], // Styles for this component
+  templateUrl: './header-searchbar.component.html',
+  styleUrls: ['./header-searchbar.component.scss'],
 })
-export class HeaderSearchbarComponent {
-  /**
-   * Form control for the search input field.
-   * It is initialized with an empty string and has the nonNullable option set to true.
-   */
-  searchControl = new FormControl<string>('', { nonNullable: true });
-  // Subject used to signal component/service destruction for unsubscribing from observables
-  private destroy$ = new Subject<void>();
+export class HeaderSearchbarComponent extends BaseSearchDirective implements OnInit, OnDestroy {
+  // FormControl ist bereits in BaseSearchDirective
+  override destroy$ = new Subject<void>();
 
-  /**
-   * Signal that holds the search results fetched from the search service.
-   * It is a reactive representation of the search results.
-   */
   results: Signal<SearchResult[]>;
   @Output() resultsChange = new EventEmitter<SearchResult[]>();
   @Output() hasInputChange = new EventEmitter<boolean>();
   screenSize$!: Observable<ScreenSize>;
   private searchOverlayRef: any;
-  /**
-   * ViewChild for accessing the HTML element of the search bar.
-   * This is used to manage position of the overlay.
-   */
+
   @ViewChild('headerSearchbar', { static: true })
   headerSearchbar!: ElementRef<HTMLElement>;
-  // Observable that emits the current search term as a string
-  term$: Observable<string>;
+
+  override term$: Observable<string>;
 
   constructor(
-    public searchService: SearchService, // Inject SearchService for handling search logic
-    private overlayService: OverlayService, // Inject OverlayService to manage overlays
+    public searchService: SearchService,
+    private overlayService: OverlayService,
     public screenService: ScreenService
   ) {
+    super();
     this.screenSize$ = this.screenService.screenSize$;
-    // Set up the observable for the search term input with trim
-    this.term$ = this.searchControl.valueChanges.pipe(
-      startWith(this.searchControl.value), // Start with the current value
-      map((v) => v.trim()) // Remove any leading/trailing spaces from the input
-    );
 
-    // Convert the observable of search results into a signal (reactive state)
+    // Erzeuge term$ (Base helper) und hole die initialen Ergebnisse via searchHeaderSearch
+    this.term$ = this.createTerm$();
+
     this.results = toSignal(this.searchService.searchHeaderSearch(this.term$), {
-      initialValue: [], // Initial value for the results is an empty array
+      initialValue: [],
     });
 
     effect(() => {
       this.resultsChange.emit(this.results());
     });
   }
-  /**
-   * Lifecycle hook that runs after component initialization.
-   * Subscribes to the search term observable and dynamically opens or closes
-   * the search results overlay depending on whether the user has entered text.
-   */
-  ngOnInit() {
-    // Subscribe to the search term observable
-    this.term$.pipe(takeUntil(this.destroy$)).subscribe((term) => {
-      const hasInput = term.length > 0;
-      this.hasInputChange.emit(hasInput);
-      if (hasInput) {
-        this.openOverlay(); // Overlay wiederverwenden oder neu öffnen
-      } else {
-        this.overlayService.closeOne(this.searchOverlayRef?.overlayRef);
-        this.searchOverlayRef = null;
-      }
-    });
-    this.headerSearchbar.nativeElement.addEventListener('focus', () => {
+
+  ngOnInit(): void {
+    // Setze Fokuslistener (Base helper)
+    this.setupFocusListener(this.headerSearchbar, () => {
       const term = this.searchControl.value.trim();
       if (term.length > 0) {
         this.openOverlay();
       }
     });
+
+    // Term-Subscription: öffne/close overlay je nach Eingabe
+    this.subscribeToTermChanges((term) => {
+      const hasInput = term.length > 0;
+      this.hasInputChange.emit(hasInput);
+      if (hasInput) {
+        this.openOverlay();
+      } else {
+        this.overlayService.closeOne(this.searchOverlayRef?.overlayRef);
+        this.searchOverlayRef = null;
+      }
+    });
   }
 
-  /**
-   * Lifecycle hook to clean up subscriptions when the component is destroyed.
-   * This helps prevent memory leaks.
-   */
-  ngOnDestroy(): void {
+  override ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+    super.ngOnDestroy();
   }
 
-  /**
-   * Opens a search results overlay positioned relative to the header search bar,
-   * passes the current results as input, and clears the search field when the backdrop is clicked.
-   */
   private openOverlay() {
     this.screenSize$.pipe(take(1)).subscribe((size) => {
-      if (size !== 'handset') return; // ❗ Nur bei 'handset' ausführen
+      if (size !== 'handset') return; // only handset
 
-      // Wenn Overlay schon offen ist, nur die Daten aktualisieren
+      // Wenn Overlay schon offen ist, nur Daten aktualisieren
       if (this.searchOverlayRef) {
         this.searchOverlayRef.ref.instance.results = this.results;
         return;
       }
+
       // Overlay neu öffnen
       this.searchOverlayRef = this.overlayService.openComponent(
         SearchResultsNewMessageComponent,
@@ -149,7 +130,7 @@ export class HeaderSearchbarComponent {
           },
         },
         {
-          results: this.results, // Pass the search term to the overlay
+          results: this.results,
         }
       );
       if (!this.searchOverlayRef) return;
@@ -158,7 +139,7 @@ export class HeaderSearchbarComponent {
       this.searchOverlayRef.backdropClick$
         .pipe(take(1), takeUntil(this.destroy$))
         .subscribe(() => {
-          this.searchControl.setValue(''); // Feld leeren
+          this.searchControl.setValue('');
           this.overlayService.closeOne(this.searchOverlayRef?.overlayRef);
           this.searchOverlayRef = null;
         });
