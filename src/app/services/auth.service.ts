@@ -30,6 +30,7 @@ import { from, Observable, of, shareReplay, switchMap, tap } from 'rxjs';
 import { UserInterface } from '../shared/models/user.interface';
 import { UserService } from './user.service';
 import { ChatService } from './chat.service';
+import { ScreenService } from './screen.service';
 
 @Injectable({
   providedIn: 'root',
@@ -53,7 +54,8 @@ export class AuthService {
     private auth: Auth,
     private chatService: ChatService,
     private firestore: Firestore,
-    private userService: UserService
+    private userService: UserService,
+    private screenService: ScreenService
   ) {
     // Voll reaktives Observable, das automatisch auf AuthStateChanges reagiert
     this.currentUser$ = new Observable<User | null>((subscriber) =>
@@ -155,6 +157,7 @@ export class AuthService {
   login(email: string, password: string): Observable<void> {
     const promise = signInWithEmailAndPassword(this.auth, email, password).then(
       async (response) => {
+        await this.screenService.setDashboardStateAfterLogin();
         await this.createOrUpdateUserInFirestore(response.user, 'password');
       }
     );
@@ -164,6 +167,7 @@ export class AuthService {
   loginAsGuest(): Observable<void> {
     const promise = signInAnonymously(this.auth)
       .then(async (credential) => {
+        await this.screenService.setDashboardStateAfterLogin();
         const user = credential.user;
         const avatar = this.getRandomAvatar();
         await this.createOrUpdateUserInFirestore(user, 'anonymous', 'Guest');
@@ -198,6 +202,7 @@ export class AuthService {
     const auth = getAuth();
     const promise = signInWithPopup(auth, this.provider)
       .then(async (response) => {
+        await this.screenService.setDashboardStateAfterLogin();
         const user = response.user;
         await this.createOrUpdateUserInFirestore(user, 'google.com');
       })

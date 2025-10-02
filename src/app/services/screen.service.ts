@@ -34,17 +34,24 @@ export class ScreenService {
         shareReplay({ bufferSize: 1, refCount: true })
       );
 
-    setTimeout(async () => {
-      const initialScreenSize = await firstValueFrom(this.screenSize$);
-      if (initialScreenSize === 'web')
-        this.setDashboardState('new-message-view');
-    });
+    // setTimeout(async () => {
+    //   const initialScreenSize = await firstValueFrom(this.screenSize$);
+    //   if (initialScreenSize === 'web')
+    //     this.setDashboardState('new-message-view');
+    // });
   }
 
   setDashboardState(state: DashboardState) {
     this.dashboardState.set(state);
     if (state === 'sidenav') {
       this.router.navigate(['/dashboard']);
+    }
+  }
+
+  async setDashboardStateAfterLogin() {
+    const currentScreenSize = await firstValueFrom(this.screenSize$);
+    if (currentScreenSize === 'web') {
+      this.setDashboardState('new-message-view');
     }
   }
 }
