@@ -11,6 +11,8 @@ export class CreateAccountBtnComponent {
   @Output()changeAuthState = new EventEmitter<AuthState>();
 
   emitStateChange() {
+    console.log('IN DER FNKTION');
+    
     this.changeAuthState.emit('registration-form');
   }
 }

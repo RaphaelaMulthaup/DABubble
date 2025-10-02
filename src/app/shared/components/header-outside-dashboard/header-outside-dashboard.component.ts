@@ -1,9 +1,10 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ScreenSize } from '../../types/screen-size.type';
 import { ScreenService } from '../../../services/screen.service';
 import { AsyncPipe } from '@angular/common';
 import { CreateAccountBtnComponent } from "../create-account-btn/create-account-btn.component";
+import { AuthState } from '../../types/auth-state.type';
 
 @Component({
   selector: 'app-header-outside-dashboard',
@@ -13,7 +14,8 @@ import { CreateAccountBtnComponent } from "../create-account-btn/create-account-
 })
 export class HeaderOutsideDashboardComponent {
   @Input() context!: string;
-  @Input() currentState!: string;
+  @Input() currentState!: AuthState;
+  @Output() changeAuthState = new EventEmitter<AuthState>();
   screenSize$!: Observable<ScreenSize>;
   
   constructor(public screenService: ScreenService) {
@@ -38,5 +40,11 @@ export class HeaderOutsideDashboardComponent {
   showFinalLogo() {
     let finalLogo = document.querySelector('.logo-final');
     finalLogo?.classList.add('showLogo');
+  }
+
+  onChildStateChange(newState: AuthState) {
+    console.log('NEWSTATE', newState);
+    
+    this.changeAuthState.emit(newState);
   }
 }
