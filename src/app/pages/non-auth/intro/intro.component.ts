@@ -30,23 +30,22 @@ export class IntroComponent implements OnInit {
    * Moves logo to the left and calls function "moveSpan"
    */
   moveLogo() {
-      let animatedLogo = document.querySelector(".animated-logo");
-
-      setTimeout(() => {
-        animatedLogo?.classList.add("expand");
-        this.moveSpan();
-      }, 500);
+    let animatedLogo = document.querySelector(".animated-logo");
+    setTimeout(() => {
+      animatedLogo?.classList.add("expand");
+      this.moveSpan();
+    }, 500);
   }
 
   /**
    * Name span appers from the left side
    */
   moveSpan() {
-       let animatName = document.querySelector(".animat-name");
+    let animatName = document.querySelector(".animat-name");
 
-       setTimeout(() => {
-        animatName?.classList.add("show");
-       }, 1000);
+    setTimeout(() => {
+      animatName?.classList.add("show");
+    }, 1000);
   }
 
   /**

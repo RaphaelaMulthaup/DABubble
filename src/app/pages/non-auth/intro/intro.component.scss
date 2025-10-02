@@ -1,7 +1,7 @@
 @import './../../../../styles.scss';
 
 .logo-container{
-    background-color:var(--color-purple-dark);
+    background: linear-gradient(to top, var(--color-purple-dark), var(--color-purple-medium), var(--color-purple-light));
     width: 100vw;
     height: 100vh;
     z-index: 100;
@@ -50,8 +50,8 @@
 }
 
 .animated-logo{
-    transition: width 1s, height 0.7s, margin 0.4s;
-    width: auto;
+    transition: width 1.5s ease, height 1s ease, margin 0.4s ease;
+    width: 100px;
     height: 70px;
 
     @include respond-to(xxxs) {
@@ -61,12 +61,11 @@
 }
 
 .animat-logo{
-    width: 248px;
-    
+    width: auto;
 }
 
 .expand{
-    width: 238px;
+    width: 20%;
 }
 
 .show{
@@ -96,7 +95,7 @@
 }
 
 .container-transperent{
-    background-color: transparent !important;
+    background: transparent !important;
 }
 
 @keyframes slideFromLeft{
