@@ -62,7 +62,7 @@ export class AuthService {
       onAuthStateChanged(this.auth, subscriber.next.bind(subscriber))
     ).pipe(
       switchMap((firebaseUser) => {
-        this.emptyUserObject(); // Registrierung zurücksetzen
+        // this.emptyUserObject(); // Registrierung zurücksetzen
         if (firebaseUser) {
           return this.userService.getUserById(firebaseUser.uid); // Firestore User laden
         } else {
@@ -125,12 +125,13 @@ export class AuthService {
       await this.createOrUpdateUserInFirestore(
         user,
         'password',
-        this.userToRegister.password
+        this.userToRegister.displayName,
       );
       await this.userService.updateUser(user.uid, {
         name: this.userToRegister.displayName,
         photoUrl: this.userToRegister.photoURL,
       });
+      this.emptyUserObject();
     });
     return from(promise);
   }

@@ -90,13 +90,14 @@ export class RegisterFormComponent {
     this.changeAuthState.emit('registration-avatar');
   }
 
-  registerUser() {
-    this.authService.register().subscribe(() => {
-      const user = this.authService.currentUser;
-      if (user) {
-        const email = user.email;
-        const name = this.registerForm.get('displayName')?.value;
-      }
-    });
-  }
+  // Diese Funktion wird nicht genutzt
+  // registerUser() {
+  //   this.authService.register().subscribe(() => {
+  //     const user = this.authService.currentUser;
+  //     if (user) {
+  //       const email = user.email;
+  //       const name = this.registerForm.get('displayName')?.value;
+  //     }
+  //   });
+  // }
 }
