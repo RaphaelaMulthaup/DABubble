@@ -1,88 +1,12 @@
-@import "./../../../../styles.scss";
-
-// header {
-//   .logo-box {
-//     .logo-final {
-//       // width: 242px;
-//       // height: 70px;
-//       width: 162px;
-//       height: 45px;
-//     }
-
-//     .logo-channel {
-//       gap: 4px;
-
-//       img {
-//         height: 50px;
-//         aspect-ratio: 1;
-//         border-radius: 50%;
-//       }
-
-//       p {
-//         padding-left: 4px;
-//         font-size: 20px;
-//         font-weight: 700;
-//       }
-//     }
-//   }
-// }
-
-// app-search-bar {
-//   flex: 1;
-// }
-
-// .current-user {
-//   @include dFlex($jc: flex-end, $g: 20px);
-// }
-
-.arrow-back {
-  rotate: 90deg;
-}
-
-// .header-web {
-//   background-color: var(--color-purple-white);
-//   @include dFlex($g: 20px);
-//   padding: 25px 34px 20px 50px;
-// }
-
-// .header-mobile {
-//   background-color: var(--color-white);
-//   app-search-bar {
-//     margin: 32px 16px 0 16px;
-//     display: block;
-//   }
-// }
-
-// .header-mobile-upper-area {
-//   width: 100%;
-//   @include dFlex($jc: space-between);
-//   background-color: var(--color-purple-white);
-//   padding: 16px;
-// }
-
-app-search-bar {
-  flex: 1 !important;
-  padding: 0 20px;
-}
-
 header {
-  height: 115px;
-  padding: 25px 34px 20px 20px;
   background-color: var(--color-purple-white);
 
-  .logo-box {
-    width: 366px;
-    .logo-final {
-      width: 242px;
-      height: 70px;
-      margin-left: -60px;
-    }
+  app-search-bar {
+    flex: 1;
+    padding: 0 20px;
   }
 
   .current-user {
-    width: 475px;
-    gap: 20px;
-
     h1 {
       overflow: hidden;
       text-overflow: ellipsis;
@@ -92,9 +16,6 @@ header {
     }
 
     .profil-img {
-      height: 70px;
-      // width: 50px;
-      // height: 50px;
       aspect-ratio: 1;
       border-radius: 50%;
 
@@ -102,24 +23,91 @@ header {
         cursor: pointer;
       }
     }
+  }
 
-    .arrow-btn {
-      height: 30px;
-      aspect-ratio: 1;
-      background-image: url("./../../../../assets/img/keyboard-arrow-down-black.svg");
+  .arrow-btn {
+    width: 30px;
+    aspect-ratio: 1;
+    background-image: url("./../../../../assets/img/keyboard-arrow-down-black.svg");
 
-      &:hover {
-        background-image: url("./../../../../assets/img/keyboard-arrow-down-blue.svg");
-      }
+    &:hover {
+      background-image: url("./../../../../assets/img/keyboard-arrow-down-blue.svg");
     }
   }
 }
 
 .header-handset {
+  height: 80px;
+  padding: 15px 16px;
+  justify-content: space-between;
+
+  .logo-box {
+    gap: 2px;
+
+    .arrow-back {
+      rotate: 90deg;
+    }
+    
+    .logo-final {
+      width: 162px;
+      height: 45px;
+    }
+  }
+
+  .current-user {
+    .profil-img {
+      height: 50px;
+    }
+  }
 }
 
 .header-tablet {
+  height: 115px;
+  padding: 25px 34px 20px 20px;
+
+  .logo-box {
+    min-width: 366px;
+    .logo-final {
+      width: 242px;
+      height: 70px;
+      margin-left: -60px;
+    }
+  }
+
+  .current-user {
+    width: fit-content;
+    padding-left: 64px;
+    gap: 12px;
+
+    .profil-img {
+      height: 70px;
+    }
+  }
 }
 
 .header-web {
+  height: 115px;
+  padding: 25px 34px 20px 20px;
+
+  .logo-box {
+    min-width: 366px;
+    .logo-final {
+      width: 242px;
+      height: 70px;
+      margin-left: -60px;
+    }
+  }
+
+  app-search-bar {
+    min-width: 556px !important;
+  }
+
+  .current-user {
+    width: 475px;
+    gap: 20px;
+
+    .profil-img {
+      height: 70px;
+    }
+  }
 }

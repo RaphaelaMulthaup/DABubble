@@ -1,80 +1,17 @@
-<!-- <header [ngClass]="
-    (screenSize$ | async) !== 'handset'
-      ? 'header-web flex place-content-between'
-      : 'header-mobile'
-  ">
+<header class="flex items-center w-full" [class.header-handset]="(screenSize$ | async) === 'handset'"
+  [class.header-tablet]="(screenSize$ | async) === 'tablet'" [class.header-web]="(screenSize$ | async) === 'web'">
 
-  @if ((screenSize$|async) === 'handset') {
-    <div class="header-mobile-upper-area">
-      <div class="logo-box flex items-center">
-        @if (dashboardState() == 'sidenav') {
-          <img class="logo-final" src="assets/img/logo.png" alt="Logo DABubble" />
-        } @else {
-          <div class="logo-channel flex items-center">
-            <button (click)="screenService.setDashboardState('sidenav')" class="arrow-btn arrow-back"></button>
-            <img src="assets/img/logo-solo.png" alt="Logo Channel" />
-          </div>
-        }
-      </div>
-      <div class="current-user">
-        <img class="profil-img" [src]="(currentUser$ | async)?.photoUrl" alt="Profilbild" (click)="showSettings()" />
-      </div>
-    </div>
+  <div class="logo-box flex place-content-center">
+    @if((screenSize$|async) === 'handset'){<button (click)="screenService.setDashboardState('sidenav')" class="arrow-btn arrow-back"></button>}
+    <img class="logo-final" src="assets/img/logo.png" alt="Logo DABubble" />
+  </div>
 
-    @if ((authService.currentUser$ | async) && dashboardState() === 'sidenav') {
-      <app-search-bar></app-search-bar>
-    }
+  @if ((authService.currentUser$ | async) && (screenSize$|async) !== 'handset') { <app-search-bar></app-search-bar>}
 
-  } @else {
-    <div class="logo-box flex items-center" [ngStyle]="{ 'width.px': 336 }">
-      <img class="logo-final" src="assets/img/logo.png" alt="Logo DABubble" />
-    </div>
+  <div class="current-user flex justify-end items-center h-full">
+    @if((screenSize$|async) === 'web'){<h1>{{ (currentUser$ | async)?.name }}</h1>}
+    <img class="profil-img" [src]="(currentUser$ | async)?.photoUrl" alt="Profilbild" (click)="showSettings()" />
+    @if((screenSize$|async) !== 'handset'){<button class="arrow-btn" (click)="showSettings()"></button>}
+  </div>
 
-    @if ((authService.currentUser$ | async)) { <app-search-bar></app-search-bar>}
-
-    <div class="current-user" [ngStyle]="{ 'width.px': 475 }">
-      @if((screenSize$|async) === 'web'){<h1>{{ (currentUser$ | async)?.name }}</h1>}
-      <img class="profil-img" [src]="(currentUser$ | async)?.photoUrl" alt="Profilbild" (click)="showSettings()" />
-      <button class="arrow-btn" (click)="showSettings()"></button>
-      <app-profile-view-main class="profile-view"></app-profile-view-main>
-    </div>
-  }
-</header> -->
-
-<header class="flex items-center w-full"
-  [class.header-handset]="(screenSize$ | async) === 'handset'"
-  [class.header-tablet]="(screenSize$ | async) === 'tablet'"
-  [class.header-web]="(screenSize$ | async) === 'web'">
-
-    <!-- <div class="header-mobile-upper-area">
-      <div class="logo-box flex items-center">
-        @if (dashboardState() == 'sidenav') {
-          <img class="logo-final" src="assets/img/logo.png" alt="Logo DABubble" />
-        } @else {
-          <div class="logo-channel flex items-center">
-            <button (click)="screenService.setDashboardState('sidenav')" class="arrow-btn arrow-back"></button>
-            <img src="assets/img/logo-solo.png" alt="Logo Channel" />
-          </div>
-        }
-      </div>
-      <div class="current-user">
-        <img class="profil-img" [src]="(currentUser$ | async)?.photoUrl" alt="Profilbild" (click)="showSettings()" />
-      </div>
-    </div>
-
-    @if ((authService.currentUser$ | async) && dashboardState() === 'sidenav') {
-      <app-search-bar></app-search-bar>
-    } -->
-
-    <div class="logo-box flex place-content-center">
-      <img class="logo-final" src="assets/img/logo.png" alt="Logo DABubble" />
-    </div>
-
-    @if ((authService.currentUser$ | async)) { <app-search-bar></app-search-bar>}
-
-    <div class="current-user flex justify-end items-center h-full">
-      @if((screenSize$|async) === 'web'){<h1>{{ (currentUser$ | async)?.name }}</h1>}
-      <img class="profil-img" [src]="(currentUser$ | async)?.photoUrl" alt="Profilbild" (click)="showSettings()" />
-      <button class="arrow-btn" (click)="showSettings()"></button>
-    </div>
 </header>
