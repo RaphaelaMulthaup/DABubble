@@ -1,6 +1,14 @@
-import { Component, EventEmitter, inject, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
 import { AuthState } from '../../../shared/types/auth-state.type';
+import { UserToRegisterInterface } from '../../../shared/models/user.to.register.interface';
 
 @Component({
   selector: 'app-avatar-selection',
@@ -21,6 +29,7 @@ export class AvatarSelectionComponent implements OnInit {
   //the number of the chosen avata-option or 0 for the no-avatar-image
   selectedAvatar: number = 0;
   showToast: boolean = false;
+  @Input() userToRegister!: UserToRegisterInterface;
   @Output() changeAuthState = new EventEmitter<AuthState>();
 
   constructor(private authService: AuthService) {}
@@ -30,7 +39,7 @@ export class AvatarSelectionComponent implements OnInit {
    */
   ngOnInit() {
     this.selectedAvatar =
-      this.avatarOptions.indexOf(this.authService.userToRegister.photoURL) + 1;
+      this.avatarOptions.indexOf(this.userToRegister.photoURL) + 1;
   }
 
   /**
@@ -45,15 +54,15 @@ export class AvatarSelectionComponent implements OnInit {
    */
   selectAvatar(avatarOption: number) {
     this.selectedAvatar = avatarOption;
-    this.authService.userToRegister.photoURL =
-      this.avatarOptions[avatarOption - 1];
+    this.userToRegister.photoURL = this.avatarOptions[avatarOption - 1];
   }
 
   submitRegistration() {
     this.showToast = true;
     setTimeout(() => {
-      this.authService.register();
-      this.changeAuthState.emit('login');
+      this.authService.register(this.userToRegister).subscribe(() => {
+        this.changeAuthState.emit('login');
+      });
     }, 1000);
   }
 }

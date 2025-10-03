@@ -2,7 +2,7 @@
   [class.header-tablet]="(screenSize$ | async) === 'tablet'" [class.header-web]="(screenSize$ | async) === 'web'">
 
   <div class="logo-box flex place-content-center">
-    @if((screenSize$|async) === 'handset'){<button (click)="screenService.setDashboardState('sidenav')" class="arrow-btn arrow-back"></button>}
+    @if((screenSize$|async) === 'handset' && dashboardState() !== 'sidenav'){<button (click)="screenService.setDashboardState('sidenav')" class="arrow-btn arrow-back"></button>}
     <img class="logo-final" src="assets/img/logo.png" alt="Logo DABubble" />
   </div>
 

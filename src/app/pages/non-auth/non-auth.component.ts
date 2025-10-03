@@ -19,6 +19,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { CreateAccountBtnComponent } from '../../shared/components/create-account-btn/create-account-btn.component';
 import { HeaderOutsideDashboardComponent } from '../../shared/components/header-outside-dashboard/header-outside-dashboard.component';
 import { doc } from '@firebase/firestore';
+import { UserToRegisterInterface } from '../../shared/models/user.to.register.interface';
 
 @Component({
   selector: 'app-non-auth',
@@ -38,8 +39,15 @@ import { doc } from '@firebase/firestore';
   styleUrl: './non-auth.component.scss',
 })
 export class NonAuthComponent {
-  // the currently shown non-auth-component
   currentState: AuthState = 'login';
+  userToRegister: UserToRegisterInterface = {
+    displayName: '',
+    email: '',
+    password: '',
+    policyAccepted: false,
+    photoURL: '',
+  };
+
   showConfirm: boolean = false;
   showLogin: boolean = true;
   showIntro: any;
@@ -84,10 +92,9 @@ export class NonAuthComponent {
       }
     });
 
-    collectionData(usersRef).pipe(
-      map((users: any[]) => users.map(user => user.name))
-    ).subscribe(userNames => {
-    });
+    collectionData(usersRef)
+      .pipe(map((users: any[]) => users.map((user) => user.name)))
+      .subscribe((userNames) => {});
   }
 
   /**
@@ -114,7 +121,7 @@ export class NonAuthComponent {
    * shows intro animation only if currentState is "login"
    */
   handleIntroState() {
-    if (this.currentState = 'login') {
+    if ((this.currentState = 'login')) {
       this.showLogo();
     } else {
       this.noIntro();

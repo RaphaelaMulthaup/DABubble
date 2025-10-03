@@ -86,7 +86,6 @@ export class ConfirmPasswordComponent implements OnInit {
    */
   backToLogin() {
     this.changeAuthState.emit('login');
-    this.authService.emptyUserObject();
   }
 
   /**
