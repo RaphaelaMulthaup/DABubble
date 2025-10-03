@@ -1,21 +1,27 @@
 import { Injectable } from '@angular/core';
 import {
   collection,
+  collectionData,
   collectionSnapshots,
   deleteDoc,
   doc,
   Firestore,
+  limit,
+  query,
   setDoc,
 } from '@angular/fire/firestore';
 import { ChatInterface } from '../shared/models/chat.interface'; // Interface for chat data
 import {
   BehaviorSubject,
   distinctUntilChanged,
+  filter,
   map,
   Observable,
+  of,
   shareReplay,
+  take,
 } from 'rxjs';
-import { Router } from '@angular/router'; // Router to navigate within the app
+import { NavigationEnd, Router } from '@angular/router'; // Router to navigate within the app
 import { UserInterface } from '../shared/models/user.interface'; // Interface for user data
 import { ScreenService } from './screen.service';
 
@@ -31,12 +37,24 @@ export class ChatService {
 
   private _otherUser$ = new BehaviorSubject<UserInterface | null>(null);
   public otherUser$ = this._otherUser$.asObservable(); // Public observable for other user
+  previousUrl = '';
 
   constructor(
-    private firestore: Firestore, // Inject Firestore for database interaction
-    private router: Router, // Inject Router to handle navigation
+    private firestore: Firestore,
+    private router: Router,
     public screenService: ScreenService
-  ) {}
+  ) {
+    this.router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe((event: NavigationEnd) => {
+        const newUrl = event.urlAfterRedirects;
+        const wasChatRoute = this.previousUrl.startsWith('/dashboard/chat');
+        if (this.previousUrl !== newUrl && wasChatRoute) {
+          this.deleteEmptyChat(this.previousUrl);
+        }
+        this.previousUrl = newUrl;
+      });
+  }
 
   /**
    * Creates (or merges) a new chat document between two users in Firestore.
@@ -137,6 +155,31 @@ export class ChatService {
   deleteChat(chatId: string): Promise<void> {
     const chatRef = doc(this.firestore, 'chats', chatId); // Reference to the Firestore chat document
     return deleteDoc(chatRef); // Delete the chat document from Firestore
+  }
+
+  deleteEmptyChat(url: string) {
+    const segments = url.split('/');
+    const chatId = segments[3];
+    const parts = chatId.split('_');
+    if (parts[0] === parts[1]) {
+      return;
+    } else {
+      this.emptyChat(chatId)
+        .pipe(take(1))
+        .subscribe((isEmpty) => {
+          if (isEmpty) {
+            this.deleteChat(chatId);
+          }
+        });
+    }
+  }
+
+  emptyChat(chatId: string): Observable<boolean> {
+    const path = `/chats/${chatId}/messages`;
+    const ref = collection(this.firestore, path);
+    const q = query(ref, limit(1));
+
+    return collectionData(q).pipe(map((docs) => docs.length === 0));
   }
 
   /**
