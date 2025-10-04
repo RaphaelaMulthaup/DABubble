@@ -78,7 +78,7 @@ export class ConversationActiveRouterService {
   private getRecentMessages(
     conversationType: string,
     conversationId: string,
-    pageSize = 5
+    pageSize: number
   ): Observable<PostInterface[]> {
     const basePath = this.basePathMap[conversationType];
     if (!basePath) return of([]);
@@ -109,7 +109,7 @@ export class ConversationActiveRouterService {
   getMessages(
     conversationType: string,
     conversationId: string,
-    pageSize = 5
+    pageSize: number
   ): Observable<PostInterface[]> {
     const recent$ = this.getRecentMessages(
       conversationType,

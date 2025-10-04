@@ -107,12 +107,13 @@ export class DashboardComponent {
         this.conversationActiveRouterService.loadNextPage(
           conversationType!,
           conversationId!,
-          3
+          20
         );
 
         return this.conversationActiveRouterService.getMessages(
           conversationType!,
-          conversationId!
+          conversationId!,
+          10
         );
       }),
       // Share the last value and maintain a reference count to avoid multiple fetches

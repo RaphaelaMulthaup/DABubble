@@ -416,7 +416,7 @@ export class WindowDisplayComponent {
         .loadNextPage(
           this.currentConversationType!,
           this.currentConversationId!,
-          3
+          20
         )
         .then(() => {
           // păstrăm scroll-ul la aceeași poziție relativă
