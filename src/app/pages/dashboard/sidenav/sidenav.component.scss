@@ -9,7 +9,7 @@ nav {
   gap: 28px;
   border-radius: 30px;
 
-  height: 100dvh !important;
+  height: 80dvh !important;
 }
 
 .nav-content {
@@ -38,5 +38,31 @@ app-contacts-list {
   &:active {
     background-color: var(--color-purple-light);
   }
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-purple-light-lines);
+  border-radius: 10px;
+  height: 64px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-purple-light);
+  cursor: grab;
+}
+
+::-webkit-scrollbar-thumb:active {
+  cursor: grabbing;
+}
+
+::-webkit-scrollbar-track {
+  height: 36px;
+  background-color: var(--color-white) !important;
+  border-radius: 5px;
 }
 

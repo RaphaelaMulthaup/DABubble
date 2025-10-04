@@ -65,7 +65,9 @@ export class LoginFormComponent {
       },
       error: () => {
         // Sets the errorMessage to the returned error code
-        this.showErrorMessage = true;
+        setTimeout(() => {
+          this.showErrorMessage = true;
+        }, 500);
       },
     });
   }
@@ -86,7 +88,11 @@ export class LoginFormComponent {
     });
   }
 
+  /**
+   * Login with guest-account. 
+   */
   loginGuest() {
+    this.showErrorMessage = false;
     this.authService.loginAsGuest();
   }
 }
