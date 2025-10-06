@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { AuthService } from '../../../services/auth.service';
 import {
   FormControl,
   FormsModule,
@@ -18,22 +17,26 @@ import { UserToRegisterInterface } from '../../../shared/models/user.to.register
   styleUrl: './register-form.component.scss',
 })
 export class RegisterFormComponent {
-  // whether the entered emai-exists or not (checked onblur of the mail input)
-  emailExists: boolean = false;
-  // Defines the registration form with validators for email, password, and display name
-  registerForm: FormGroup;
   @Input() userToRegister!: UserToRegisterInterface;
   @Output() changeAuthState = new EventEmitter<AuthState>();
+  emailExists: boolean = false;
+  registerForm!: FormGroup; // Defines the registration form with validators for email, password, and display name
 
-  constructor(
-    private authService: AuthService,
-    private userService: UserService
-  ) {
+  constructor(private userService: UserService) {}
+
+  ngOnInit() {
+    this.initForm();
+  }
+
+  ngOnChanges() {
+    if (this.userToRegister) this.initForm();
+  }
+
+  initForm() {
     this.registerForm = new FormGroup({
-      displayName: new FormControl(
-        this.userToRegister.displayName,
-        [Validators.required]
-      ),
+      displayName: new FormControl(this.userToRegister.displayName, [
+        Validators.required,
+      ]),
       email: new FormControl(this.userToRegister.email, [
         Validators.required,
         Validators.email,
@@ -42,10 +45,9 @@ export class RegisterFormComponent {
         Validators.required,
         Validators.minLength(6),
       ]),
-      policyAccepted: new FormControl(
-        this.userToRegister.policyAccepted,
-        [Validators.required]
-      ),
+      policyAccepted: new FormControl(this.userToRegister.policyAccepted, [
+        Validators.required,
+      ]),
     });
   }
 
@@ -73,8 +75,10 @@ export class RegisterFormComponent {
       !this.registerForm.value.policyAccepted;
   }
 
-  // Handles form submission.
-  // On submit, the userToRegister-data is set to the input values.
+  /**
+   * Handles form submission.
+   * On submit, the userToRegister-data is set to the input values.
+   */
   onSubmit(): void {
     const thisForm = this.registerForm.value;
     this.userToRegister.displayName = thisForm.displayName;

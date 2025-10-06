@@ -1,52 +1,55 @@
-import { ChangeDetectorRef, Component, EventEmitter, inject, OnInit, Output } from '@angular/core';
-import { AuthService } from '../../../services/auth.service';
-
-import { FormControl, FormsModule, ReactiveFormsModule, FormGroup, Validators } from '@angular/forms';
-import { Firestore, collection, collectionData, query, where, getDocs, doc, getDoc } from '@angular/fire/firestore';
-import { Auth, user, getAuth, verifyPasswordResetCode, confirmPasswordReset } from '@angular/fire/auth';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import {
+  FormControl,
+  FormsModule,
+  ReactiveFormsModule,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
+import {
+  getAuth,
+  verifyPasswordResetCode,
+  confirmPasswordReset,
+} from '@angular/fire/auth';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthState } from '../../../shared/types/auth-state.type';
 
-
 @Component({
   selector: 'app-reset-password',
-  imports: [
-    FormsModule,
-    ReactiveFormsModule,
-    CommonModule,
-    
-  ],
+  imports: [FormsModule, ReactiveFormsModule, CommonModule],
   templateUrl: './reset-password.component.html',
-  styleUrls: ['./reset-password.component.scss']
+  styleUrls: ['./reset-password.component.scss'],
 })
-export class ResetPasswordComponent implements OnInit{
+export class ResetPasswordComponent implements OnInit {
   @Output() changeAuthState = new EventEmitter<AuthState>();
-  firestore: Firestore = inject(Firestore);
+
   registerForm!: FormGroup;
   showErrorMessage: boolean = false;
   uid!: string;
-  oobCode!: string; 
+  oobCode!: string;
   email: any;
   showToast: any;
 
-  constructor(
-    private route: ActivatedRoute,
-    private authService : AuthService,
-    private router: Router,
-  ) {
-      const navigation = this.router.getCurrentNavigation();
-      this.uid = navigation?.extras.state?.['uid'];
+  constructor(private route: ActivatedRoute, private router: Router) {
+    const navigation = this.router.getCurrentNavigation();
+    this.uid = navigation?.extras.state?.['uid'];
   }
 
   ngOnInit(): void {
     this.oobCode = this.route.snapshot.queryParams['oobCode'] ?? '';
 
-    this.registerForm = new FormGroup({ 
-      password: new FormControl('', [Validators.required, Validators.minLength(6)]),
-      passwordConfirm: new FormControl('', [Validators.required, Validators.minLength(6)])
-     });
-     this.verifyResetCode();
+    this.registerForm = new FormGroup({
+      password: new FormControl('', [
+        Validators.required,
+        Validators.minLength(6),
+      ]),
+      passwordConfirm: new FormControl('', [
+        Validators.required,
+        Validators.minLength(6),
+      ]),
+    });
+    this.verifyResetCode();
   }
 
   /**
@@ -61,17 +64,18 @@ export class ResetPasswordComponent implements OnInit{
    */
   verifyResetCode() {
     const auth = getAuth();
-    verifyPasswordResetCode(auth, this.oobCode).then((email) => {
-      this.email = email;
-    }).catch((error) => {
-      console.error('Ungültiger oder abgelaufener Aktionscode', error);
-      this.showErrorMessage = true;
-    })
+    verifyPasswordResetCode(auth, this.oobCode)
+      .then((email) => {
+        this.email = email;
+      })
+      .catch((error) => {
+        console.error('Ungültiger oder abgelaufener Aktionscode', error);
+        this.showErrorMessage = true;
+      });
   }
 
   onSubmit() {
     this.checkPasswords();
-
     if (!this.showErrorMessage) {
       this.resetPassword();
     }
@@ -94,15 +98,17 @@ export class ResetPasswordComponent implements OnInit{
     const auth = getAuth();
     const newPassword = this.registerForm.get('password')?.value;
 
-    confirmPasswordReset(auth, this.oobCode, newPassword).then(() => {
-      this.showToast = true;
-      setTimeout(() => {
-        this.backToLogin();
-      }, 1500);
-    }).catch((error) => {
-      console.error('Fehler beim Zurücksetzen des Passworts', error);
-      this.showErrorMessage = true;
-    })
+    confirmPasswordReset(auth, this.oobCode, newPassword)
+      .then(() => {
+        this.showToast = true;
+        setTimeout(() => {
+          this.backToLogin();
+        }, 1500);
+      })
+      .catch((error) => {
+        console.error('Fehler beim Zurücksetzen des Passworts', error);
+        this.showErrorMessage = true;
+      });
   }
 
   /**
@@ -112,5 +118,4 @@ export class ResetPasswordComponent implements OnInit{
     this.changeAuthState.emit('login');
     location.reload();
   }
-
 }

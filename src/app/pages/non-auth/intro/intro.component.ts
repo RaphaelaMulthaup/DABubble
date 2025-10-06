@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { doc } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-intro',
@@ -8,6 +7,8 @@ import { doc } from '@angular/fire/firestore';
   styleUrl: './intro.component.scss'
 })
 export class IntroComponent implements OnInit {
+  constructor(){}
+
   ngOnInit(): void {
       this.introAnimation();
   }

@@ -1,7 +1,6 @@
 import {
   Component,
   EventEmitter,
-  inject,
   Input,
   OnInit,
   Output,
@@ -9,6 +8,7 @@ import {
 import { AuthService } from '../../../services/auth.service';
 import { AuthState } from '../../../shared/types/auth-state.type';
 import { UserToRegisterInterface } from '../../../shared/models/user.to.register.interface';
+import { AVATAROPTIONS } from '../../../shared/constants/avatar-options';
 
 @Component({
   selector: 'app-avatar-selection',
@@ -17,20 +17,11 @@ import { UserToRegisterInterface } from '../../../shared/models/user.to.register
   styleUrl: './avatar-selection.component.scss',
 })
 export class AvatarSelectionComponent implements OnInit {
-  //an array with all the names of the available avatar-options
-  avatarOptions = [
-    './assets/img/avatar-option-1.svg',
-    './assets/img/avatar-option-2.svg',
-    './assets/img/avatar-option-3.svg',
-    './assets/img/avatar-option-4.svg',
-    './assets/img/avatar-option-5.svg',
-    './assets/img/avatar-option-6.svg',
-  ];
-  //the number of the chosen avata-option or 0 for the no-avatar-image
-  selectedAvatar: number = 0;
-  showToast: boolean = false;
   @Input() userToRegister!: UserToRegisterInterface;
   @Output() changeAuthState = new EventEmitter<AuthState>();
+  avatarOptions = AVATAROPTIONS;  //an array with all the names of the available avatar-options
+  selectedAvatar: number = 0;     //the number of the chosen avata-option or 0 for the no-avatar-image
+  showToast: boolean = false;
 
   constructor(private authService: AuthService) {}
 
