@@ -10,7 +10,8 @@ import { OverlayService } from '../../services/overlay.service';
   styleUrl: './emoji-picker.component.scss',
 })
 export class EmojiPickerComponent {
-  senderIsCurrentUser!: boolean;
+  rightAngleTopRight!: boolean;
+  rightAngleBottomLeft: boolean = false;
   emojis = EMOJIS;
   @Output() selectedEmoji = new EventEmitter<{ token: string; src: string; }>();
 

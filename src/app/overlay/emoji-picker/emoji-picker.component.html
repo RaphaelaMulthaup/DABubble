@@ -1,5 +1,6 @@
 <div #overlayTemplate (click)="$event.stopPropagation()" 
-[class.reaction-options-current-user]="senderIsCurrentUser" 
+[class.right-angle-top-right]="rightAngleTopRight" 
+[class.right-angle-bottom-left]="rightAngleBottomLeft" 
 class="reaction-options">
     @for (emoji of emojis; track $index) {
     <img (click)="reactToPost(emoji);" class="reaction-img" [src]="emojis[$index].src" [alt]="emojis[$index].token">

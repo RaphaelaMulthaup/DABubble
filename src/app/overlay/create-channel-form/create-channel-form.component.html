@@ -1,4 +1,4 @@
-<div class="overlay">
+<div class="overlay" [class.overlay-handset]="(screenSize$|async) === 'handset'">
   @if(!inviteMembers){
   <app-header-overlay [overlayHeadline]="'Channel erstellen'" />
   <form action="" [formGroup]="createChannel" (ngSubmit)="onSubmit()">
@@ -12,7 +12,7 @@
           <h4>Channel-Name</h4>
         </label>
         <div class="input-wrapper">
-          <span class="prefix">#</span>
+          <span class="prefix flex align-center">#</span>
           <div class="inputAndErrorMessage flex flex-col w-full">
             <input
               id="nameId"

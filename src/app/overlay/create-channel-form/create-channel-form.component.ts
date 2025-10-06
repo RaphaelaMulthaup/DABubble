@@ -14,6 +14,8 @@ import { AddMemberToChannelComponent } from '../add-member-to-channel/add-member
 import { ChannelInterface } from '../../shared/models/channel.interface';
 import { Observable, of } from 'rxjs';
 import { Router } from '@angular/router';
+import { ScreenSize } from '../../shared/types/screen-size.type';
+import { ScreenService } from '../../services/screen.service';
 
 @Component({
   selector: 'app-create-channel-form',
@@ -52,12 +54,16 @@ export class CreateChannelFormComponent {
   inviteMembers: boolean = false;
   channel: ChannelInterface | undefined;
   channel$!: Observable<ChannelInterface | undefined>;
+  screenSize$!: Observable<ScreenSize>;
 
   constructor(
     public overlayService: OverlayService,
     private channelService: ChannelsService,
-    private router: Router
-  ) {}
+    private router: Router,
+    public screenService: ScreenService
+  ) {
+    this.screenSize$ = this.screenService.screenSize$;
+  }
 
   /**
    * Handles form submission

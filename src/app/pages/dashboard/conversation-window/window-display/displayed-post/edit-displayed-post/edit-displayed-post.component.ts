@@ -111,7 +111,8 @@ export class EditDisplayedPostComponent implements OnInit {
           overlayX: 'start',
           overlayY: 'top',
         },
-      }
+      },
+      {rightAngleBottomLeft: true}
     );
 
     overlay!.ref.instance.selectedEmoji
