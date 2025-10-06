@@ -1,7 +1,7 @@
 <section
   class="conversation-window flex flex-col"
   [style.height]="
-    (screenSize$ | async) === 'web'
+    (screenSize$ | async) !== 'handset'
       ? '100%'
       : 'calc(100vh - 82px)'
   "

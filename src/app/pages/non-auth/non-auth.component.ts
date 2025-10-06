@@ -1,24 +1,21 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Auth } from '@angular/fire/auth';
 import { onAuthStateChanged } from 'firebase/auth';
 import { LoginFormComponent } from './login-form/login-form.component';
 import { collection, collectionData, Firestore } from '@angular/fire/firestore';
-import { flatMap, map } from 'rxjs';
+import { map } from 'rxjs';
 import { RegisterFormComponent } from './register-form/register-form.component';
-
-import { AuthService } from '../../services/auth.service';
 import { IntroComponent } from './intro/intro.component';
 import { AvatarSelectionComponent } from './avatar-selection/avatar-selection.component';
 import { AuthState } from '../../shared/types/auth-state.type';
 import { RouterLink } from '@angular/router';
 import { ConfirmPasswordComponent } from './confirm-password/confirm-password.component';
 import { ResetPasswordComponent } from './reset-password/reset-password.component';
-import { FormControl, FormGroup } from '@angular/forms';
 import { CreateAccountBtnComponent } from '../../shared/components/create-account-btn/create-account-btn.component';
 import { HeaderOutsideDashboardComponent } from '../../shared/components/header-outside-dashboard/header-outside-dashboard.component';
-import { doc } from '@firebase/firestore';
+import { UserToRegisterInterface } from '../../shared/models/user.to.register.interface';
 
 @Component({
   selector: 'app-non-auth',
@@ -38,18 +35,22 @@ import { doc } from '@firebase/firestore';
   styleUrl: './non-auth.component.scss',
 })
 export class NonAuthComponent {
-  // the currently shown non-auth-component
   currentState: AuthState = 'login';
+  userToRegister: UserToRegisterInterface = {
+    displayName: '',
+    email: '',
+    password: '',
+    policyAccepted: false,
+    photoURL: '',
+  };
   showConfirm: boolean = false;
   showLogin: boolean = true;
-  showIntro: any;
 
   constructor(
     private auth: Auth,
-    private router: Router,
-    private route: ActivatedRoute,
     private firestore: Firestore,
-    private authService: AuthService
+    private router: Router,
+    private route: ActivatedRoute
   ) {
     const navaigation = this.router.getCurrentNavigation();
     const uid = navaigation?.extras.state?.['uid'];
@@ -84,10 +85,8 @@ export class NonAuthComponent {
       }
     });
 
-    collectionData(usersRef).pipe(
-      map((users: any[]) => users.map(user => user.name))
-    ).subscribe(userNames => {
-    });
+    collectionData(usersRef)
+      .pipe(map((users: any[]) => users.map((user) => user.name)))
   }
 
   /**
@@ -114,7 +113,7 @@ export class NonAuthComponent {
    * shows intro animation only if currentState is "login"
    */
   handleIntroState() {
-    if (this.currentState = 'login') {
+    if ((this.currentState = 'login')) {
       this.showLogo();
     } else {
       this.noIntro();

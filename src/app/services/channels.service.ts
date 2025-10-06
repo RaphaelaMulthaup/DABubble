@@ -128,7 +128,7 @@ export class ChannelsService {
     this.channelCache.delete(channelId);
 
     this.router.navigate(['/dashboard']);
-    this.screenService.setMobileDashboardState('sidenav');
+    this.screenService.setDashboardState('sidenav');
     this.overlayService.closeAll();
 
     return from(promise);
@@ -155,7 +155,7 @@ export class ChannelsService {
     const channelDocRef = doc(this.firestore, `channels/${channelId}`);
     await updateDoc(channelDocRef, { memberIds: arrayRemove(currentUserId) });
     this.overlayService.closeAll();
-    this.screenService.setMobileDashboardState('sidenav');
+    this.screenService.setDashboardState('sidenav');
     this.router.navigate(['/dashboard']);
   }
 

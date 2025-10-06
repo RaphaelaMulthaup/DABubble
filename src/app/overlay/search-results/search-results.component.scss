@@ -24,7 +24,6 @@
 
 .results-list-web {
   max-height: calc(100vh - 300px);
-  padding: 20px 54px;
 }
 
 :host.overlay-web {
@@ -32,6 +31,7 @@
     width: fit-content;
   }
 }
+
 li {
   max-width: 100%;
   width: fit-content !important;

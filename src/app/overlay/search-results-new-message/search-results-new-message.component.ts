@@ -2,7 +2,10 @@ import { Component, Input, Signal } from '@angular/core';
 import { SearchResult } from '../../shared/types/search-result.type';
 import { UserListItemComponent } from '../../shared/components/user-list-item/user-list-item.component';
 import { ChannelListItemComponent } from '../../shared/components/channel-list-item/channel-list-item.component';
-import { JsonPipe } from '@angular/common';
+import { CommonModule, JsonPipe } from '@angular/common';
+import { Observable } from 'rxjs';
+import { ScreenService } from '../../services/screen.service';
+import { ScreenSize } from '../../shared/types/screen-size.type';
 
 /**
  * Component that displays the search results for new messages.
@@ -10,7 +13,12 @@ import { JsonPipe } from '@angular/common';
  */
 @Component({
   selector: 'app-search-results-new-message', // Defines the component selector for HTML usage
-  imports: [UserListItemComponent, ChannelListItemComponent, JsonPipe], // Imports components and pipes for rendering user and channel list items, and JSON formatting
+  imports: [
+    UserListItemComponent,
+    ChannelListItemComponent,
+    JsonPipe,
+    CommonModule,
+  ], // Imports components and pipes for rendering user and channel list items, and JSON formatting
   templateUrl: './search-results-new-message.component.html', // Path to the component's HTML template
   styleUrl: './search-results-new-message.component.scss', // Path to the component's styling file
 })
@@ -21,4 +29,8 @@ export class SearchResultsNewMessageComponent {
    * It is passed from the parent component via Angular's Input mechanism.
    */
   @Input() results!: Signal<SearchResult[]>;
+  screenSize$!: Observable<ScreenSize>;
+  constructor(public screenService: ScreenService) {
+    this.screenSize$ = this.screenService.screenSize$;
+  }
 }

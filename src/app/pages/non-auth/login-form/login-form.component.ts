@@ -1,4 +1,4 @@
-import { Component, inject, Output, EventEmitter } from '@angular/core';
+import { Component, Output, EventEmitter } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
 import {
   FormControl,
@@ -7,8 +7,8 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
-import { AuthState } from '../../../shared/types/auth-state.type';
 import { CommonModule } from '@angular/common';
+import { finalize, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-login-form',
@@ -18,81 +18,122 @@ import { CommonModule } from '@angular/common';
 })
 export class LoginFormComponent {
   @Output() forgotPassword = new EventEmitter<void>();
+
   showLogin: boolean = true;
-
-  // turns true, if loginWithGoogle() is executed and therefor disabling the error-message;
-  isSubmittingWithGoogle: boolean = false;
-
-  // Stores error messages during login
+  isSubmittingWithGoogleOrAsGuest: boolean = false; // turns true, if loginWithGoogle() or loginGuest() is executed and therefor disabling the error-message;
   showErrorMessage: boolean = false;
+  loginForm: FormGroup;                             
+  
+  constructor(private authService: AuthService) {
+    this.loginForm = new FormGroup({
+      // Email input with required and email validators
+      email: new FormControl('', [Validators.required, Validators.email]),
 
-  // Form group for login with email and password fields
-  loginForm: FormGroup = new FormGroup({
-    // Email input with required and email validators
-    email: new FormControl('', [Validators.required, Validators.email]),
+      // Password input with required and minimum length validators
+      password: new FormControl('', [
+        Validators.required,
+        Validators.minLength(6),
+      ]),
+    });
+  }
 
-    // Password input with required and minimum length validators
-    password: new FormControl('', [
-      Validators.required,
-      Validators.minLength(6),
-    ]),
-  });
-
-  constructor(private authService: AuthService) {}
-
+  /**
+   * This function navigates the user to the area, where they can set a new password.
+   */
   onForgotPassword() {
     this.showLogin = false;
     this.forgotPassword.emit();
   }
 
-  a(event: KeyboardEvent): boolean {
-    event.preventDefault();
-    event.stopPropagation();
-    return false;
-  }
-
   /**
-   * Handles form submission
-   * Retrieves email and password from the form and attempts login
-   * Displays an error message if login fails
+   * This function handles the login for users that use their DA-Bubble account.
    */
-  onSubmit(): void {
-    const email = this.loginForm.get('email')?.value;
-    const password = this.loginForm.get('password')?.value;
-    this.authService.login(email, password).subscribe({
-      next: () => {
-        console.log('Login successful');
-      },
-      error: () => {
-        // Sets the errorMessage to the returned error code
-        setTimeout(() => {
-          this.showErrorMessage = true;
-        }, 500);
-      },
-    });
+  onSubmit() {
+    if (this.loginForm.invalid) return;
+    const { email, password } = this.loginForm.value as {
+      email: string;
+      password: string;
+    };
+    this.handleLogin(this.authService.login(email, password));
   }
 
   /**
-   * Login using Google OAuth via AuthService
+   * This function handles the login for users that use their Google account.
    */
   loginWithGoogle() {
-    this.isSubmittingWithGoogle = true;
-    this.authService.loginWithGoogle().subscribe({
-      next: () => {
-        console.log('Login with Google successful');
-      },
-      error: (err) => {
-        console.error('Login with Google failed', err);
-        this.isSubmittingWithGoogle = false;
-      },
-    });
+    this.handleLogin(this.authService.loginWithGoogle());
   }
 
   /**
-   * Login with guest-account. 
+   * This function handles the login for guests.
    */
   loginGuest() {
-    this.showErrorMessage = false;
-    this.authService.loginAsGuest();
+    this.handleLogin(this.authService.loginAsGuest());
   }
+
+  /**
+   * This function handles the login for users and guests.
+   * When an error occurs in the login-process, the error-message is shown.
+   * When the login-process finished (success or error), the isSubmittingWithGoogleOrAsGuest is set back to false.
+   *
+   * @param login$ the login-operation as an observable
+   */
+  handleLogin(login$: Observable<any>) {
+    this.isSubmittingWithGoogleOrAsGuest = true;
+    login$
+      .pipe(finalize(() => (this.isSubmittingWithGoogleOrAsGuest = false)))
+      .subscribe({
+        error: () => {
+          this.showErrorMessage = true;
+        },
+      });
+  }
+
+  // /**
+  //  * Handles form submission
+  //  * Retrieves email and password from the form and attempts login
+  //  * Displays an error message if login fails
+  //  */
+  // onSubmit(): void {
+  //   const email = this.loginForm.get('email')?.value;
+  //   const password = this.loginForm.get('password')?.value;
+  //   this.authService.login(email, password).subscribe({
+  //     // next: () => {
+  //     //   console.log('Login successful');
+  //     // },
+  //     error: () => {
+  //       // Sets the errorMessage to the returned error code
+  //       this.showErrorMessage = true;
+  //     },
+  //   });
+  // }
+
+  // /**
+  //  * Login using Google OAuth via AuthService
+  //  */
+  // loginWithGoogle() {
+  //   this.isSubmittingWithGoogleOrAsGuest = true;
+  //   this.authService.loginWithGoogle().subscribe({
+  //     //   next: () => {
+  //     //     console.log('Login with Google successful');
+  //     //   },
+  //     error: (err) => {
+  //       // console.error('Login with Google failed', err);
+  //       this.isSubmittingWithGoogleOrAsGuest = false;
+  //     },
+  //   });
+  // }
+
+  // loginGuest() {
+  //   this.isSubmittingWithGoogleOrAsGuest = true;
+  //   this.authService.loginAsGuest().subscribe({
+  //     //   next: () => {
+  //     //     console.log('Login with Google successful');
+  //     //   },
+  //     error: (err) => {
+  //       // console.error('Login with Google failed', err);
+  //       this.isSubmittingWithGoogleOrAsGuest = false;
+  //     },
+  //   });
+  // }
 }

@@ -40,7 +40,7 @@ export class PostListItemComponent {
 
       // If the post has an answer, navigate to the thread window with the parent message ID
       if (this.post.answer) {
-        this.screenService.setMobileDashboardState('thread-window'); // Set the mobile dashboard state for thread view
+        this.screenService.setDashboardState('thread-window'); // Set the mobile dashboard state for thread view
         this.router.navigate(
           [
             '/dashboard', // Base route
@@ -55,7 +55,7 @@ export class PostListItemComponent {
         );
       } else {
         // Otherwise, navigate to the message window view
-        this.screenService.setMobileDashboardState('message-window'); // Set the mobile dashboard state for message view
+        this.screenService.setDashboardState('message-window'); // Set the mobile dashboard state for message view
         this.router.navigate(['/dashboard', conversationType, conversationId], {
           queryParams: { scrollTo: postId }, // Scroll to the specific post
         });

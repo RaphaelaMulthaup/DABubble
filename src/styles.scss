@@ -49,7 +49,9 @@ $breakpoints: (
 }
 
 @include respond-to(xs) {
-  button:hover, .btn-dropdown, .btn-dropdown div {
+  button:hover,
+  .btn-dropdown,
+  .btn-dropdown div {
     color: inherit !important;
     background-color: inherit !important;
     background-image: inherit !important;
@@ -58,7 +60,9 @@ $breakpoints: (
 }
 
 @media (hover: none) {
-  button:hover, .btn-dropdown, .btn-dropdown div {
+  button:hover,
+  .btn-dropdown,
+  .btn-dropdown div {
     color: inherit !important;
     background-color: inherit !important;
     background-image: inherit !important;
@@ -228,8 +232,11 @@ h2 {
 }
 
 h3 {
-  font-size: 20px;
   font-weight: 700;
+  font-size: 24px;
+  @include respond-to(xl) {
+    font-size: 20px;
+  }
 }
 
 h4 {
@@ -274,8 +281,6 @@ h4 {
   box-shadow: 0px 6px 10px 0px #00000033;
   padding: 40px 20px;
 }
-
-
 
 //i use this to style name from edit channel btn
 .nameTag {
@@ -369,7 +374,7 @@ h4 {
 }
 
 .results-list {
-  width: 100vw;
+  
   @include dFlex($jc: flex-start, $ai: flex-start, $g: 13px);
   flex-direction: column;
   overflow-x: hidden;
@@ -378,8 +383,13 @@ h4 {
   }
 }
 
+.results-list-web {
+  padding: 20px 54px;
+}
+
 .results-list-handset {
   padding: 24px 61px;
+  width: 100vw;
 }
 
 .no-hits {

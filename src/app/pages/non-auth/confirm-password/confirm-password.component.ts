@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
 import {
   FormControl,
@@ -7,16 +7,9 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
-
 import { UserService } from '../../../services/user.service';
-import { AngularFireFunctions } from '@angular/fire/compat/functions';
-
 import { CommonModule } from '@angular/common';
 import { AuthState } from '../../../shared/types/auth-state.type';
-import { user, getAuth, sendEmailVerification } from '@angular/fire/auth';
-import { flatMap } from 'rxjs';
-
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-confirm-password',
@@ -24,17 +17,15 @@ import { Router } from '@angular/router';
   templateUrl: './confirm-password.component.html',
   styleUrl: './confirm-password.component.scss',
 })
-export class ConfirmPasswordComponent implements OnInit {
-  @Output() changeAuthState = new EventEmitter<AuthState>();
+export class ConfirmPasswordComponent {
   @Input() oobCode!: string;
+  @Output() changeAuthState = new EventEmitter<AuthState>();
 
   showErrorMessage: boolean = false;
   showToast: boolean = false;
-
   emailList: string[] = [];
   emailExists: boolean = false;
   userColl: any;
-
   confirmForm: FormGroup = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
   });
@@ -42,17 +33,9 @@ export class ConfirmPasswordComponent implements OnInit {
   functions: any;
 
   constructor(
-    private userService: UserService,
-    private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private userService: UserService
   ) {}
-
-  /**
-   * Get on init list of all emails and UIDs from firestore
-   */
-  ngOnInit(): void {
- 
-  }
 
   veriyResetCode() {
     throw new Error('Method not implemented.');
@@ -67,15 +50,18 @@ export class ConfirmPasswordComponent implements OnInit {
     const uid = await this.userService.checkMailAndUid(inputEmail);
 
     if (uid) {
-      this.authService.sendPasswordResetEmail(inputEmail).then(() => {
-        this.showToast = true;
-        setTimeout(() => {
-          this.backToLogin();
-        }, 1500);
-      }).catch((error) => {
-        console.error('Reset-Mail konnte nicht versendet werden', error);
-        this.showErrorMessage = true;
-      });
+      this.authService
+        .sendPasswordResetEmail(inputEmail)
+        .then(() => {
+          this.showToast = true;
+          setTimeout(() => {
+            this.backToLogin();
+          }, 1500);
+        })
+        .catch((error) => {
+          console.error('Reset-Mail konnte nicht versendet werden', error);
+          this.showErrorMessage = true;
+        });
     } else {
       this.showErrorMessage = true;
     }
@@ -86,7 +72,6 @@ export class ConfirmPasswordComponent implements OnInit {
    */
   backToLogin() {
     this.changeAuthState.emit('login');
-    this.authService.emptyUserObject();
   }
 
   /**
@@ -103,7 +88,6 @@ export class ConfirmPasswordComponent implements OnInit {
     this.authService
       .sendPasswordResetEmail(email)
       .then(() => {
-        // this.waveFlag();
         this.showToast = true;
       })
       .catch((error) => {

@@ -3,7 +3,7 @@ import { BreakpointObserver } from '@angular/cdk/layout';
 import { firstValueFrom, map, Observable, shareReplay } from 'rxjs';
 import { ScreenSize } from '../shared/types/screen-size.type';
 import { BREAKPOINTS } from '../shared/constants/breakpoints';
-import { MobileDashboardState } from '../shared/types/mobile-dashboard-state.type';
+import { DashboardState } from '../shared/types/dashboard-state.type';
 import { Router } from '@angular/router';
 
 @Injectable({
@@ -12,7 +12,8 @@ import { Router } from '@angular/router';
 export class ScreenService {
   screenSize$: Observable<ScreenSize>;
   breakpoints = BREAKPOINTS;
-  mobileDashboardState = signal<MobileDashboardState>('sidenav');
+  dashboardState = signal<DashboardState>('sidenav');
+  sidenavVisible: boolean = true;
 
   constructor(
     private breakpointObserver: BreakpointObserver,
@@ -36,13 +37,13 @@ export class ScreenService {
 
     setTimeout(async () => {
       const initialScreenSize = await firstValueFrom(this.screenSize$);
-      if (initialScreenSize === 'web')
-        this.setMobileDashboardState('new-message-view');
+      if (initialScreenSize !== 'handset')
+        this.setDashboardState('new-message-view');
     });
   }
 
-  setMobileDashboardState(state: MobileDashboardState) {
-    this.mobileDashboardState.set(state);
+  setDashboardState(state: DashboardState) {
+    this.dashboardState.set(state);
     if (state === 'sidenav') {
       this.router.navigate(['/dashboard']);
     }

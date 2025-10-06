@@ -9,7 +9,7 @@ import { RouterLink } from '@angular/router';
 import { UserService } from '../../../../services/user.service';
 import { OverlayService } from '../../../../services/overlay.service';
 import { ChannelListItemComponent } from '../../../../shared/components/channel-list-item/channel-list-item.component';
-import { MobileDashboardState } from '../../../../shared/types/mobile-dashboard-state.type';
+import { DashboardState } from '../../../../shared/types/dashboard-state.type';
 import { SearchService } from '../../../../services/search.service';
 import { ScreenService } from '../../../../services/screen.service';
 
@@ -33,7 +33,7 @@ export class ChannelListComponent {
   // ID of the currently logged-in user
   currentUserId!: string | null;
   //the current State of the dashboard (for mobile)
-  mobileDashboardState: WritableSignal<MobileDashboardState>;
+  dashboardState: WritableSignal<DashboardState>;
 
   constructor(
     private authService: AuthService,
@@ -41,7 +41,7 @@ export class ChannelListComponent {
     private searchService: SearchService,
     public screenService: ScreenService,
   ) {
-    this.mobileDashboardState = this.screenService.mobileDashboardState;
+    this.dashboardState = this.screenService.dashboardState;
     this.currentUserId = this.authService.getCurrentUserId();
     this.channels$ = this.searchService.getUserChannels$();
   }

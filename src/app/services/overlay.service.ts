@@ -13,38 +13,24 @@ import { UserInterface } from '../shared/models/user.interface';
 import { OpenComponentResult } from '../shared/models/component.result.interface';
 import { OverlayData } from '../shared/models/overlay.data.interface';
 import { Subject, takeUntil } from 'rxjs';
+import { BackdropType } from '../shared/types/overlay-backdrop.type';
+import { OverlayPositionInterface } from '../shared/models/overlay.position.interface';
 
 @Injectable({
   providedIn: 'root',
 })
 export class OverlayService {
-  // // The component to be displayed in the overlay, can be set dynamically.
-  // overlayComponent: Type<any> | null = null;
-  // // Object to store inputs for the overlay component (currently not used in this code).
-  // overlayInputs: Record<string, any> = {};
-  // private overlayRef!: OverlayRef;
-  // // Reactive signal to store the ID of the post currently being edited.
-  // public editingPostId = signal<string | null>(null);
-  // // Subject to handle overlay input data.
-  // private overlayInputSubject = new BehaviorSubject<OverlayData | null>(null);
-  // overlayInput = this.overlayInputSubject.asObservable();
-  // // Store references to all open overlays.
-  // overlayRefs: OverlayRef[] = [];
-  // // Test signals for sending user data between overlays.
-  // users = signal<UserInterface[]>([]);
-  // searchReset = signal(false);
-
-  public overlayComponent: Type<any> | null = null;
-  public overlayInputs: Record<string, any> = {};
-  public editingPostId = signal<string | null>(null);
-  public users = signal<UserInterface[]>([]);
+  public overlayComponent: Type<any> | null = null; // The component to be displayed in the overlay, can be set dynamically.
+  public overlayInputs: Record<string, any> = {}; // Object to store inputs for the overlay component (currently not used in this code).
+  public editingPostId = signal<string | null>(null); // Reactive signal to store the ID of the post currently being edited.
+  public users = signal<UserInterface[]>([]); // Test signals for sending user data between overlays.
   public searchReset = signal(false);
 
-  private overlayInputSubject = new BehaviorSubject<OverlayData | null>(null);
+  private overlayInputSubject = new BehaviorSubject<OverlayData | null>(null); // Subject to handle overlay input data.
   public overlayInput = this.overlayInputSubject.asObservable();
 
-  private overlayRef!: OverlayRef;
-  private overlayRefs: OverlayRef[] = [];
+  private overlayRef!: OverlayRef; // A single overlay-reference.
+  private overlayRefs: OverlayRef[] = []; // Store references to all open overlays.
 
   constructor(
     private injector: Injector,
@@ -99,29 +85,16 @@ export class OverlayService {
    *
    * @template T - The component type to be opened.
    * @param component - The component class to render inside the overlay.
-   * @param backdropType - Defines the backdrop style (`dark`, `transparent`) or disables it (`null`).
-   * @param position - Configuration for overlay placement:
-   *   - `origin`: The HTML element the overlay is connected to (optional).
-   *   - `originPosition`: Preferred position relative to the origin (optional).
-   *   - `originPositionFallback`: Fallback position if the preferred one is not possible (optional).
-   *   - `globalPosition`: Global positioning when not connected to an element (`center` or `bottom`) (optional).
+   * @param backdropType - Defines the backdrop style: with backdrop (dark/transparent) or without (close-on-scroll/null).
+   * @param position - Configuration for overlay placement.
    * @param data - Optional partial data object to assign to the component instance.
    * @returns An `OpenComponentResult` containing the component reference, overlay reference,
    *          and observables for closure and backdrop clicks, or `undefined` if opening failed.
    */
   openComponent<T extends Object>(
     component: Type<T>,
-    backdropType:
-      | 'cdk-overlay-dark-backdrop'
-      | 'cdk-overlay-transparent-backdrop'
-      | 'close-on-scroll'
-      | null,
-    position: {
-      origin?: HTMLElement; // The element to which the overlay is connected (leave empty for global overlays).
-      originPosition?: ConnectedPosition; // The position of the overlay relative to the connected element.
-      originPositionFallback?: ConnectedPosition; // Fallback position if originPosition is not possible.
-      globalPosition?: 'center' | 'bottom'; // Position if the overlay is not connected to an element (center or bottom).
-    },
+    backdropType: BackdropType,
+    position: OverlayPositionInterface,
     data?: Partial<T>
   ): OpenComponentResult<T> | undefined {
     const destroy$ = new Subject<void>();
@@ -148,20 +121,11 @@ export class OverlayService {
   /**
    * This function determines the position strategy of the overlay based on whether it is connected to an element or is at the bottom or global.
    *
-   * @param position - Configuration for overlay placement
+   * @param position - Configuration for overlay placement.
    */
-  private getPositionStrategy(position: {
-    origin?: HTMLElement;
-    originPosition?: ConnectedPosition;
-    originPositionFallback?: ConnectedPosition;
-    globalPosition?: 'center' | 'bottom';
-  }) {
+  private getPositionStrategy(position: OverlayPositionInterface) {
     if (position.origin) {
-      return this.getOriginPositionStrategy(
-        position.origin,
-        position.originPosition!,
-        position.originPositionFallback
-      );
+      return this.getOriginPositionStrategy(position);
     } else if (position.globalPosition === 'bottom') {
       return this.getBottomPositionStrategy();
     } else return this.getCenterPositionStrategy();
@@ -170,21 +134,15 @@ export class OverlayService {
   /**
    * This function sets the positionStrategy for an overlay that is connected to an origin.
    *
-   * @param origin - The HTML element the overlay is connected to
-   * @param originPosition - Preferred position relative to the origin
-   * @param originPositionFallback -  Fallback position if the preferred one is not possible (optional)
+   * @param position - Configuration for overlay placement.
    */
-  private getOriginPositionStrategy(
-    origin: HTMLElement,
-    originPosition: ConnectedPosition,
-    originPositionFallback?: ConnectedPosition
-  ) {
+  private getOriginPositionStrategy(position: OverlayPositionInterface) {
     return this.overlay
       .position()
-      .flexibleConnectedTo(origin)
+      .flexibleConnectedTo(position.origin!)
       .withPositions([
-        originPosition,
-        originPositionFallback || originPosition,
+        position.originPosition!,
+        position.originPositionFallback || position.originPosition!,
       ]);
   }
 
@@ -214,7 +172,7 @@ export class OverlayService {
    * @param positionStrategy - the positionStrategy returned from the getPositionStrategy()-function
    */
   private getOverlayConfig(
-    backdropType: string | null,
+    backdropType: BackdropType,
     positionStrategy: PositionStrategy
   ): OverlayConfig {
     if (backdropType === null) {

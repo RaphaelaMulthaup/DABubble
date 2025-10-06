@@ -207,7 +207,7 @@ export class PostService {
     conversationType: 'channel' | 'chat',
     conversationId: string
   ) {
-    this.screenService.setMobileDashboardState('thread-window');
+    this.screenService.setDashboardState('thread-window');
     this.router.navigate([
       '/dashboard',
       conversationType,

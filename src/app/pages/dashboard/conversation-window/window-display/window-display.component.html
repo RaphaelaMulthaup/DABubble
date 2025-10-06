@@ -51,7 +51,7 @@
       } 
     }
     @else {
-      @if (mobileDashboardState()!=='thread-window') { 
+      @if (dashboardState()!=='thread-window') { 
         @switch (channelTyp$ | async) {
           @case ('chat') {
             @if (currentConversationId) {

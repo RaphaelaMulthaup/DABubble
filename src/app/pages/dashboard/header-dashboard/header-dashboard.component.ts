@@ -6,7 +6,7 @@ import { AuthService } from '../../../services/auth.service';
 import { Observable } from 'rxjs';
 import { UserInterface } from '../../../shared/models/user.interface';
 import { AsyncPipe, CommonModule } from '@angular/common';
-import { MobileDashboardState } from '../../../shared/types/mobile-dashboard-state.type';
+import { DashboardState } from '../../../shared/types/dashboard-state.type';
 import { SearchBarComponent } from './search-bar/search-bar.component';
 import { ProfileViewMainComponent } from '../../../overlay/profile-view-main/profile-view-main.component';
 import { OverlayService } from '../../../services/overlay.service';
@@ -31,7 +31,7 @@ export class HeaderDashboardComponent {
   currentUser$?: Observable<UserInterface | null>;
 
   // A writable signal to track the mobile dashboard state.
-  mobileDashboardState: WritableSignal<MobileDashboardState>;
+  dashboardState: WritableSignal<DashboardState>;
 
   screenSize$!: Observable<ScreenSize>;
 
@@ -41,7 +41,7 @@ export class HeaderDashboardComponent {
     public authService: AuthService // Inject the AuthService to manage authentication-related data.
   ) {
     // Initialize the mobile dashboard state.
-    this.mobileDashboardState = this.screenService.mobileDashboardState;
+    this.dashboardState = this.screenService.dashboardState;
 
     // Initialize the current user observable from AuthService.
     this.currentUser$ = this.authService.currentUser$;
