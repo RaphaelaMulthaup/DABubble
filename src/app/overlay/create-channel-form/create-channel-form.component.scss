@@ -16,12 +16,12 @@ span{
   position: relative;
 }
 
-.prefix {
+.tag {
   position: absolute;
-  color: gray;
-  padding-left: 20px;
-  font-size: 16px;
+  margin-left: 20px;
+  margin-bottom: 22px;
   pointer-events: none; /* prevents blocking typing */
+  filter: opacity(0.4)
 }
 
 .error-massage {
