@@ -18,7 +18,7 @@ export class PostListItemComponent {
 
   constructor(
     private router: Router, // Router for navigating to different views
-    private postService: PostService, // Service for handling post-related logic
+    public postService: PostService, // Service for handling post-related logic
     public screenService: ScreenService // Service for managing mobile dashboard state
   ) {}
 
