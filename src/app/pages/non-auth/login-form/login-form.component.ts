@@ -61,6 +61,7 @@ export class LoginFormComponent {
    * This function handles the login for users that use their Google account.
    */
   loginWithGoogle() {
+    this.isSubmittingWithGoogleOrAsGuest = true;
     this.handleLogin(this.authService.loginWithGoogle());
   }
 
@@ -68,6 +69,7 @@ export class LoginFormComponent {
    * This function handles the login for guests.
    */
   loginGuest() {
+    this.isSubmittingWithGoogleOrAsGuest = true;
     this.handleLogin(this.authService.loginAsGuest());
   }
 
@@ -79,7 +81,6 @@ export class LoginFormComponent {
    * @param login$ the login-operation as an observable
    */
   handleLogin(login$: Observable<any>) {
-    this.isSubmittingWithGoogleOrAsGuest = true;
     login$
       .pipe(finalize(() => (this.isSubmittingWithGoogleOrAsGuest = false)))
       .subscribe({
@@ -88,52 +89,4 @@ export class LoginFormComponent {
         },
       });
   }
-
-  // /**
-  //  * Handles form submission
-  //  * Retrieves email and password from the form and attempts login
-  //  * Displays an error message if login fails
-  //  */
-  // onSubmit(): void {
-  //   const email = this.loginForm.get('email')?.value;
-  //   const password = this.loginForm.get('password')?.value;
-  //   this.authService.login(email, password).subscribe({
-  //     // next: () => {
-  //     //   console.log('Login successful');
-  //     // },
-  //     error: () => {
-  //       // Sets the errorMessage to the returned error code
-  //       this.showErrorMessage = true;
-  //     },
-  //   });
-  // }
-
-  // /**
-  //  * Login using Google OAuth via AuthService
-  //  */
-  // loginWithGoogle() {
-  //   this.isSubmittingWithGoogleOrAsGuest = true;
-  //   this.authService.loginWithGoogle().subscribe({
-  //     //   next: () => {
-  //     //     console.log('Login with Google successful');
-  //     //   },
-  //     error: (err) => {
-  //       // console.error('Login with Google failed', err);
-  //       this.isSubmittingWithGoogleOrAsGuest = false;
-  //     },
-  //   });
-  // }
-
-  // loginGuest() {
-  //   this.isSubmittingWithGoogleOrAsGuest = true;
-  //   this.authService.loginAsGuest().subscribe({
-  //     //   next: () => {
-  //     //     console.log('Login with Google successful');
-  //     //   },
-  //     error: (err) => {
-  //       // console.error('Login with Google failed', err);
-  //       this.isSubmittingWithGoogleOrAsGuest = false;
-  //     },
-  //   });
-  // }
 }
