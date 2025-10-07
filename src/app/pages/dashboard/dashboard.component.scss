@@ -5,59 +5,11 @@
   justify-content: space-between;
   overflow: hidden;
   &.new-message-view-mobile {
-    background-color: white;
+    background-color: var(--color-white);
   }
 }
 
-.disabled {
-  pointer-events: none;
-  opacity: 0.6;
-}
-
-app-header {
-  width: 100%;
-}
-
-.editing-post-backdrop {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 2;
-  // background-color: rgba(0, 0, 0, 0.2);
-  background-color: transparent;
-}
-
-.below-from-header-searchbar-handset {
-  width: 100%;
-  height: calc(100vh - 205px);
-}
-
-.app-header-searchbar-web {
-  background-color: var(--color-white);
-  border-radius: 30px 30px 0 0;
-}
-
-.below-from-header-searchbar-web-tablet {
-  padding-top: 8px;
-  padding-bottom: 32px;
-  height: 100%;
-  border-radius: 0 0 30px 30px;
-  background-color: var(--color-white);
-  overflow-y: scroll;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* Internet Explorer / Edge */
-}
-
-.below-from-header-searchbar-web-tablet::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
-}
 .dashboard-web {
-  background-color: var(--color-purple-white);
-}
-
-.dashboard-web-components {
   height: calc(100vh - 115px);
   padding: 0 20px;
   gap: 20px;
@@ -68,6 +20,11 @@ app-header {
     padding-bottom: 20px;
   }
 
+  app-header-searchbar {
+    background-color: var(--color-white);
+    border-radius: 30px 30px 0 0;
+  }
+
   app-sidenav {
     max-width: 366px;
   }
@@ -75,6 +32,46 @@ app-header {
   .thread-window {
     width: 485px;
     max-width: 485px;
+  }
+}
+
+.dashboard-tablet {
+  height: calc(100vh - 115px);
+  padding: 0 20px;
+  gap: 20px;
+  background-color: var(--color-purple-white);
+
+  > * {
+    flex: 1;
+    padding-bottom: 20px;
+  }
+
+  app-header-searchbar {
+    background-color: var(--color-white);
+    border-radius: 30px 30px 0 0;
+  }
+
+  app-sidenav {
+    max-width: 366px;
+  }
+}
+
+.empty-window-handset {
+  width: 100%;
+  height: calc(100vh - 205px);
+}
+
+.empty-window-web-tablet {
+  padding-top: 8px;
+  padding-bottom: 32px;
+  height: 100%;
+  border-radius: 0 0 30px 30px;
+  background-color: var(--color-white);
+  overflow-y: scroll;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer / Edge */
+  &::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
   }
 }
 
@@ -107,4 +104,14 @@ app-header {
       background-image: url("../../../assets/img/show-navigation-hover.svg");
     }
   }
+}
+
+.editing-post-backdrop {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 2;
+  background-color: transparent;
 }

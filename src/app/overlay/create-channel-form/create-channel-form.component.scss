@@ -28,7 +28,7 @@ p {
   position: relative;
 }
 
-.prefix {
+.tag {
   position: absolute;
   left: 20px;
   top: 21px;
@@ -47,4 +47,10 @@ p {
 
 .inputAndErrorMessage {
   height: 88px;
+}
+
+.overlay-handset {
+  width: 100vw;
+  height: 100vh;
+  border-radius: 0;
 }

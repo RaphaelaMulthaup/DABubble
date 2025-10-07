@@ -14,7 +14,7 @@ import {
 import { HeaderDashboardComponent } from './header-dashboard/header-dashboard.component';
 import { ConversationActiveRouterService } from '../../services/conversation-active-router.service';
 import { ActivatedRoute } from '@angular/router';
-import { Observable, throwError, EMPTY, BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
 import { DashboardState } from '../../shared/types/dashboard-state.type';
 import { PostInterface } from '../../shared/models/post.interface';
 import { ScreenService } from '../../services/screen.service';
@@ -61,10 +61,10 @@ export class DashboardComponent {
    */
   answers$!: Observable<PostInterface[]>;
   screenSize$!: Observable<ScreenSize>;
-  webNavigationVisible: boolean = true;
   results$ = new BehaviorSubject<SearchResult[]>([]);
   resultsSignal = toSignal(this.results$.asObservable(), { initialValue: [] });
   hasInput: boolean = false;
+
   constructor(
     public overlayService: OverlayService, // Service to handle overlay state
     public screenService: ScreenService,

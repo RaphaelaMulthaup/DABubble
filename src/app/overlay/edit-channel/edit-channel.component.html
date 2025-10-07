@@ -1,5 +1,5 @@
 <div
-  class="flex max-w-[832px]"
+  class="flex"
   [ngClass]="
     (screenSize$ | async) === 'handset' ? 'mobile-overlay' : 'overlay-left'
   "
@@ -48,7 +48,7 @@
           class="btn-primary"
           (click)="channelService.deleteChannel(channelId!)"
         >
-          Channel loschen
+          Channel löschen
         </button>
         }@else {
         <button

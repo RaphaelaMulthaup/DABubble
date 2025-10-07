@@ -84,26 +84,22 @@ export class PostInteractionOverlayComponent implements OnInit {
    *
    * @param event the user-interaction with an object.
    */
-  openEmojiPickerOverlay(event: MouseEvent) {
+  async openEmojiPickerOverlay(event: MouseEvent) {
     const overlay = this.overlayService.openComponent(
       EmojiPickerComponent,
       'cdk-overlay-transparent-backdrop',
       {
         origin: event.currentTarget as HTMLElement,
-        originPosition: {
-          originX: 'center',
-          originY: 'bottom',
-          overlayX: 'start',
-          overlayY: 'top',
-        },
-        originPositionFallback: {
-          originX: 'center',
-          originY: 'bottom',
-          overlayX: 'end',
-          overlayY: 'top',
-        },
+        originPosition: await this.reactionsService.resolveEmojiPickerPosition(
+          this.senderIsCurrentUser
+        ),
       },
-      { senderIsCurrentUser: this.senderIsCurrentUser }
+      {
+        rightAngleTopRight:
+          await this.reactionsService.checkEmojiPickerPosition(
+            this.senderIsCurrentUser
+          ),
+      }
     );
 
     //das abonniert den event emitter vom emoji-picker component
@@ -151,15 +147,9 @@ export class PostInteractionOverlayComponent implements OnInit {
         originPosition: {
           originX: 'center',
           originY: 'bottom',
-          overlayX: 'start',
-          overlayY: 'top',
-        },
-        originPositionFallback: {
-          originX: 'center',
-          originY: 'bottom',
           overlayX: 'end',
           overlayY: 'top',
-        },
+        }
       },
       { post: this.post }
     );

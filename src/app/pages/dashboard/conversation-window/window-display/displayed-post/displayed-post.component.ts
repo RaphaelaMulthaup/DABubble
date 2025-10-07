@@ -1,8 +1,4 @@
-import {
-  Component,
-  Input,
-  Output,
-} from '@angular/core';
+import { Component, Input, Output, WritableSignal } from '@angular/core';
 import { PostInterface } from '../../../../../shared/models/post.interface';
 import { AuthService } from '../../../../../services/auth.service';
 import { UserService } from '../../../../../services/user.service';
@@ -35,6 +31,8 @@ import { EMOJIS } from '../../../../../shared/constants/emojis';
 import { ScreenSize } from '../../../../../shared/types/screen-size.type';
 import { ScreenService } from '../../../../../services/screen.service';
 import { ReactionsService } from '../../../../../services/reactions.service';
+import { DashboardState } from '../../../../../shared/types/dashboard-state.type';
+import { ConnectedPosition } from '@angular/cdk/overlay';
 
 @Component({
   selector: 'app-displayed-post', // Component to display a single message in the conversation
@@ -62,6 +60,7 @@ export class DisplayedPostComponent {
   @Input() conversationWindowState?: 'conversation' | 'thread';
   private destroy$ = new Subject<void>();
   chatActiveRouterService: any;
+  dashboardState!: WritableSignal<DashboardState>;
 
   constructor(
     private authService: AuthService,
@@ -74,6 +73,7 @@ export class DisplayedPostComponent {
     public screenService: ScreenService
   ) {
     this.screenSize$ = this.screenService.screenSize$;
+    this.dashboardState = this.screenService.dashboardState;
   }
 
   async ngOnChanges() {
@@ -174,26 +174,22 @@ export class DisplayedPostComponent {
    *
    * @param event the user-interaction with an object.
    */
-  openEmojiPickerOverlay(event: MouseEvent) {
+  async openEmojiPickerOverlay(event: MouseEvent) {
     const overlay = this.overlayService.openComponent(
       EmojiPickerComponent,
       'cdk-overlay-transparent-backdrop',
       {
         origin: event.currentTarget as HTMLElement,
-        originPosition: {
-          originX: 'end',
-          originY: 'top',
-          overlayX: 'start',
-          overlayY: 'top',
-        },
-        originPositionFallback: {
-          originX: 'start',
-          originY: 'top',
-          overlayX: 'end',
-          overlayY: 'top',
-        },
+        originPosition: await this.reactionsService.resolveEmojiPickerPosition(
+          this.senderIsCurrentUser
+        ),
       },
-      { senderIsCurrentUser: this.senderIsCurrentUser }
+      {
+        rightAngleTopRight:
+          await this.reactionsService.checkEmojiPickerPosition(
+            this.senderIsCurrentUser
+          ),
+      }
     );
 
     //das abonniert den event emitter vom emoji-picker component
@@ -270,18 +266,7 @@ export class DisplayedPostComponent {
       'cdk-overlay-transparent-backdrop',
       {
         origin: event.currentTarget as HTMLElement,
-        originPosition: {
-          originX: 'start',
-          originY: 'top',
-          overlayX: 'start',
-          overlayY: 'bottom',
-        },
-        originPositionFallback: {
-          originX: 'end',
-          originY: 'top',
-          overlayX: 'end',
-          overlayY: 'bottom',
-        },
+        originPosition: this.resolveInteractionOverlayPosition(),
       },
       {
         currentConversationType: this.currentConversationType,
@@ -295,6 +280,28 @@ export class DisplayedPostComponent {
       this.postClicked = false;
       // this.editingPost = this.overlayService.postToBeEdited;
     });
+  }
+
+  /**
+   * This function returns the connectedPosition for the post-interaction-overlay.
+   * That position depends on whether the sender is the current user or not.
+   */
+  resolveInteractionOverlayPosition(): ConnectedPosition {
+    if (this.senderIsCurrentUser) {
+      return {
+        originX: 'end',
+        originY: 'top',
+        overlayX: 'end',
+        overlayY: 'bottom',
+      };
+    } else {
+      return {
+        originX: 'start',
+        originY: 'top',
+        overlayX: 'start',
+        overlayY: 'bottom',
+      };
+    }
   }
 
   /**

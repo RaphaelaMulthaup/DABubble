@@ -12,16 +12,26 @@ import {
   updateDoc,
 } from '@angular/fire/firestore';
 import { AuthService } from './auth.service';
-import { Observable, shareReplay } from 'rxjs';
+import { Observable, shareReplay, take } from 'rxjs';
 import { ReactionInterface } from '../shared/models/reaction.interface';
+import { ScreenService } from './screen.service';
+import { ScreenSize } from '../shared/types/screen-size.type';
+import { ConnectedPosition } from '@angular/cdk/overlay';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ReactionsService {
   private reactionCache = new Map<string, Observable<ReactionInterface[]>>();
+  screenSize$!: Observable<ScreenSize>;
 
-  constructor(private authService: AuthService, private firestore: Firestore) {}
+  constructor(
+    private authService: AuthService,
+    private firestore: Firestore,
+    public screenService: ScreenService
+  ) {
+    this.screenSize$ = this.screenService.screenSize$;
+  }
 
   /**
    * Toggles a reaction for a given post.
@@ -123,5 +133,53 @@ export class ReactionsService {
       );
     }
     return this.reactionCache.get(cacheKey)!;
+  }
+
+  /**
+   * This function returns true or false depending on the screenSize and whether senderIsCurrentUser is true or false.
+   * It is used to place the right angle of the emoji-picker overlay in the correct corner and to place the emoji-picker overlay on the correct side of the cursor.
+   *
+   * @param senderIsCurrentUser whether the posts sender is the current user or not.
+   */
+  async checkEmojiPickerPosition(
+    senderIsCurrentUser: boolean
+  ): Promise<boolean> {
+    return new Promise((resolve) => {
+      this.screenSize$.pipe(take(1)).subscribe((size) => {
+        if (size !== 'handset') {
+          if (senderIsCurrentUser) {
+            resolve(true);
+          } else {
+            resolve(false);
+          }
+        } else {
+          resolve(senderIsCurrentUser);
+        }
+      });
+    });
+  }
+
+  /**
+   * This function returns the connectedPosition for an emoji-picker-overlay.
+   * That position depends on the return value of checkEmojiPickerPosition().
+   *
+   * @param senderIsCurrentUser whether the posts sender is the current user or not.
+   */
+  async resolveEmojiPickerPosition(senderIsCurrentUser: boolean): Promise<ConnectedPosition> {
+    if (await this.checkEmojiPickerPosition(senderIsCurrentUser)) {
+      return {
+        originX: 'start',
+        originY: 'top',
+        overlayX: 'end',
+        overlayY: 'top',
+      };
+    } else {
+      return {
+        originX: 'end',
+        originY: 'top',
+        overlayX: 'start',
+        overlayY: 'top',
+      };
+    }
   }
 }

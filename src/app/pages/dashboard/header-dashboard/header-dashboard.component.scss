@@ -1,104 +1,113 @@
-@import "./../../../../styles.scss";
-
 header {
+  background-color: var(--color-purple-white);
+
+  app-search-bar {
+    flex: 1;
+    padding: 0 20px;
+  }
+
+  .current-user {
+    h1 {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: var(--color-black);
+      display: block;
+    }
+
+    .profil-img {
+      aspect-ratio: 1;
+      border-radius: 50%;
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
+
+  .arrow-btn {
+    width: 30px;
+    aspect-ratio: 1;
+    background-image: url("./../../../../assets/img/keyboard-arrow-down-black.svg");
+
+    &:hover {
+      background-image: url("./../../../../assets/img/keyboard-arrow-down-blue.svg");
+    }
+  }
+}
+
+.header-handset {
+  height: 80px;
+  padding: 15px 16px;
+  justify-content: space-between;
+
   .logo-box {
+    gap: 2px;
+
+    .arrow-back {
+      rotate: 90deg;
+    }
+    
     .logo-final {
-      // width: 242px;
-      // height: 70px;
       width: 162px;
       height: 45px;
     }
+  }
 
-    .logo-channel {
-      gap: 4px;
-
-      img {
-        height: 50px;
-        aspect-ratio: 1;
-        border-radius: 50%;
-      }
-
-      p {
-        padding-left: 4px;
-        font-size: 20px;
-        font-weight: 700;
-      }
+  .current-user {
+    .profil-img {
+      height: 50px;
     }
   }
 }
 
-app-search-bar {
-  flex: 1;
-}
+.header-tablet {
+  height: 115px;
+  padding: 25px 34px 20px 20px;
 
-.current-user {
-  @include dFlex($jc: flex-end, $g: 20px);
-}
-
-h1{
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-h1 {
-  white-space: nowrap;
-  color: var(--color-black);
-  display: block;
-}
-
-.profil-img {
-  // height: 70px;
-  height: 50px;
-  aspect-ratio: 1;
-  border-radius: 50%;
-
-  &:hover {
-    cursor: pointer;
+  .logo-box {
+    min-width: 366px;
+    .logo-final {
+      width: 242px;
+      height: 70px;
+      margin-left: -60px;
+    }
   }
-}
 
-.arrow-btn {
-  height: 30px;
-  aspect-ratio: 1;
-  background-image: url("./../../../../assets/img/keyboard-arrow-down-black.svg");
+  .current-user {
+    width: fit-content;
+    padding-left: 64px;
+    gap: 12px;
 
-  &:hover {
-    background-image: url("./../../../../assets/img/keyboard-arrow-down-blue.svg");
+    .profil-img {
+      height: 70px;
+    }
   }
-}
-
-.arrow-back {
-  rotate: 90deg;
-}
-
-.profile-view {
-  display: none;
-  position: absolute;
-  top: 60px;
-  z-index: 10;
-}
-
-.showProfile {
-  display: flex;
 }
 
 .header-web {
-  background-color: var(--color-purple-white);
-  @include dFlex($g: 20px);
-  padding: 25px 34px 20px 50px;
-}
+  height: 115px;
+  padding: 25px 34px 20px 20px;
 
-.header-mobile {
-  background-color: var(--color-white);
-  app-search-bar {
-    margin: 32px 16px 0 16px;
-    display: block;
+  .logo-box {
+    min-width: 366px;
+    .logo-final {
+      width: 242px;
+      height: 70px;
+      margin-left: -60px;
+    }
   }
-}
 
-.header-mobile-upper-area {
-  width: 100%;
-  @include dFlex($jc: space-between);
-  background-color: var(--color-purple-white);
-  padding: 16px;
+  app-search-bar {
+    min-width: 556px !important;
+  }
+
+  .current-user {
+    width: 475px;
+    gap: 20px;
+
+    .profil-img {
+      height: 70px;
+    }
+  }
 }

@@ -278,7 +278,8 @@ export class CurrentPostInput implements OnInit, OnDestroy {
           overlayX: 'start',
           overlayY: 'top',
         },
-      }
+      },
+      { rightAngleBottomLeft: true }
     );
 
     overlay!.ref.instance.selectedEmoji.subscribe(

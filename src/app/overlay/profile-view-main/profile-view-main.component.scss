@@ -1,14 +1,8 @@
 @import './../../../styles.scss';
 
 .profil-view-main{
-    background-color: white;
     width: 500px;
     height: 600px;
-    top: 60px;
-    z-index: 10;
-    border-top-left-radius: 10px;
-    border-bottom-left-radius: 10px;
-    border-bottom-right-radius: 10px;
     padding: 38px;
 
     @include respond-to(xs) {
@@ -22,7 +16,7 @@
 }
 
 .user-name{
-    color: black;
+    color: var(--color-black);
     width: 300px;
     white-space: nowrap;
     overflow: hidden;

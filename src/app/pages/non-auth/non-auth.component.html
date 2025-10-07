@@ -8,9 +8,9 @@
       @if (currentState === 'login') {
       <app-login-form (forgotPassword)="onForgotPassword()"></app-login-form>
       } @else if (currentState === 'registration-form') {
-      <app-register-form (changeAuthState)="currentState = $event" />
+      <app-register-form [userToRegister]="userToRegister" (changeAuthState)="currentState = $event" />
       } @else if (currentState === 'registration-avatar') {
-      <app-avatar-selection (changeAuthState)="currentState = $event" />
+      <app-avatar-selection [userToRegister]="userToRegister" (changeAuthState)="currentState = $event" />
       } @else if (currentState === 'reset-password-init') {
       <app-confirm-password
         (changeAuthState)="currentState = $event"

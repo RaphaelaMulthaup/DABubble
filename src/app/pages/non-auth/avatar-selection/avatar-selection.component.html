@@ -11,7 +11,7 @@
 
     <div class="flex flex-col items-center">
         <img class="selected-avatar" [src]="selectedAvatar >0 ? avatarOptions[selectedAvatar-1]: './assets/img/no-avatar.svg'" alt="currently selected avatar">
-        <p class="user-name">{{authService.userToRegister.displayName}}</p>
+        <p class="user-name">{{userToRegister.displayName}}</p>
         <p class="choose-avatar-explanation w-full">Wähle einen Avatar aus der Liste</p>
         <div class="avatar-list flex items-center place-content-between w-full">
             @for (img of avatarOptions; track $index) {

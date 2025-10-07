@@ -26,25 +26,18 @@ import {
   sendPasswordResetEmail,
 } from 'firebase/auth';
 
-import { from, Observable, of, shareReplay, switchMap, tap } from 'rxjs';
+import { from, map, Observable, of, shareReplay, switchMap, tap } from 'rxjs';
 import { UserInterface } from '../shared/models/user.interface';
 import { UserService } from './user.service';
 import { ChatService } from './chat.service';
 import { ScreenService } from './screen.service';
+import { UserToRegisterInterface } from '../shared/models/user.to.register.interface';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   private provider = new GoogleAuthProvider(); // Google Auth provider
-  //the data of the user in the registration-process
-  userToRegister = {
-    displayName: '',
-    email: '',
-    password: '',
-    policyAccepted: false,
-    photoURL: '',
-  };
   // Reaktives Observable für den aktuellen Firestore User
   public currentUser$: Observable<UserInterface | null>;
   // Optional synchroner Zugriff
@@ -62,7 +55,6 @@ export class AuthService {
       onAuthStateChanged(this.auth, subscriber.next.bind(subscriber))
     ).pipe(
       switchMap((firebaseUser) => {
-        // this.emptyUserObject(); // Registrierung zurücksetzen
         if (firebaseUser) {
           return this.userService.getUserById(firebaseUser.uid); // Firestore User laden
         } else {
@@ -115,40 +107,35 @@ export class AuthService {
   /**
    * Registers a new user with name, email, password and avatar
    */
-  register(): Observable<void> {
-    const promise = createUserWithEmailAndPassword(
-      this.auth,
-      this.userToRegister.email,
-      this.userToRegister.password
-    ).then(async (response) => {
-      const user = response.user;
-      await this.createOrUpdateUserInFirestore(
-        user,
-        'password',
-        this.userToRegister.displayName,
-      );
-      console.log(this.userToRegister);
-      
-      await this.userService.updateUser(user.uid, {
-        name: this.userToRegister.displayName,
-        photoUrl: this.userToRegister.photoURL,
-      });
-      this.emptyUserObject();
-    });
-    return from(promise);
-  }
-
-  /**
-   * sets the userToRegister-Object to default.
-   */
-  emptyUserObject() {
-    this.userToRegister = {
-      displayName: '',
-      email: '',
-      password: '',
-      policyAccepted: false,
-      photoURL: '',
-    };
+  register(userData: UserToRegisterInterface): Observable<void> {
+    return from(
+      createUserWithEmailAndPassword(
+        this.auth,
+        userData.email,
+        userData.password
+      )
+    ).pipe(
+      switchMap((response) => {
+        const user = response.user;
+        return from(
+          this.createOrUpdateUserInFirestore(
+            user,
+            'password',
+            userData.displayName
+          )
+        ).pipe(
+          switchMap(() =>
+            from(
+              this.userService.updateUser(user.uid, {
+                name: userData.displayName,
+                photoUrl: userData.photoURL,
+              })
+            )
+          ),
+          map(() => void 0) // sorgt dafür, dass Observable<void> rauskommt
+        );
+      })
+    );
   }
 
   /**

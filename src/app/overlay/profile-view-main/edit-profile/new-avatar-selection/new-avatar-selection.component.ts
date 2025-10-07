@@ -43,8 +43,6 @@ export class NewAvatarSelectionComponent {
    */
   selectAvatar(avatarIdx: number): void {
     this.selectedAvatar = avatarIdx;
-    this.authService.userToRegister.photoURL =
-      this.avatarOptions[avatarIdx - 1];
   }
 
   /**
