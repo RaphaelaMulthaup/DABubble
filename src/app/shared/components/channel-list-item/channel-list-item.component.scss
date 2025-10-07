@@ -18,6 +18,15 @@
     background-position: center;
     background-size: auto;
   }
+
+  h2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
+    -webkit-box-orient: vertical;
+  }
+  
   &:hover {
     .tag {
       background-image: url("./../../../../assets/img/tag-blue.svg");
@@ -44,6 +53,7 @@
   font-style: Bold;
   font-size: 18px;
 }
+
 .tag-is-active {
   background-image: url("./../../../../assets/img/tag-blue.svg") !important;
 }
