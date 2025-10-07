@@ -5,7 +5,7 @@ import { ChatService } from '../../../services/chat.service'; // Importing ChatS
 import { OverlayService } from '../../../services/overlay.service'; // Importing OverlayService for managing overlays like profiles
 import { CommonModule } from '@angular/common'; // Importing CommonModule for basic Angular functionality
 import { ProfileViewOtherUsersComponent } from '../../../overlay/profile-view-other-users/profile-view-other-users.component'; // Importing the profile view component for users
-import { of } from 'rxjs'; // Importing `of` to create observables from static values
+import { of, Subscription } from 'rxjs'; // Importing `of` to create observables from static values
 import { ProfileViewMainComponent } from '../../../overlay/profile-view-main/profile-view-main.component';
 
 @Component({
@@ -44,14 +44,20 @@ export class UserListItemComponent {
 
   /** Stores the ID of the currently logged-in user */
   currentUserId: string | null = null;
-
+  private sub?: Subscription;
   constructor(
     private authService: AuthService, // Injecting AuthService to get the current user
     private chatService: ChatService, // Injecting ChatService to handle chat-related functions
-    private overlayService: OverlayService, // Injecting OverlayService to manage overlays like the profile view
-  ) {
-    // Initialize currentUserId with the logged-in user's ID from AuthService
-    this.currentUserId = this.authService.currentUser?.uid ?? null;
+    private overlayService: OverlayService // Injecting OverlayService to manage overlays like the profile view
+  ) {}
+  ngOnInit() {
+    this.sub = this.authService.currentUser$.subscribe((user) => {
+      this.currentUserId = user?.uid ?? null;
+    });
+  }
+
+  ngOnDestroy() {
+    this.sub?.unsubscribe();
   }
 
   /**

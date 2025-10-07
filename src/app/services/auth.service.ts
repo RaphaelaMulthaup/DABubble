@@ -127,6 +127,8 @@ export class AuthService {
         'password',
         this.userToRegister.displayName,
       );
+      console.log(this.userToRegister);
+      
       await this.userService.updateUser(user.uid, {
         name: this.userToRegister.displayName,
         photoUrl: this.userToRegister.photoURL,
