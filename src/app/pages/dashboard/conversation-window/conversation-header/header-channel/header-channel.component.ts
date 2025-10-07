@@ -46,7 +46,7 @@ export class HeaderChannelComponent {
       .pipe(
         switchMap((id) => {
           this.channelId = id;
-          return this.channelService.getCurrentChannel(this.channelId);
+          return this.channelService.getCurrentChannel(this.channelId, true);
         })
       );
   }
