@@ -10,7 +10,7 @@
 
     .solo-logo{
         position: relative;
-        width: 68px;
+        width: 80px;
         height: 68px;
         overflow: hidden;
 
@@ -36,9 +36,9 @@
     font-size: 34px;
     font-weight: 656;
     color: white;
-    margin: 0px 2px 0px 12px;
+    margin: 0px 2px 0px 24px;
     animation: slideFromLeft 0.5s ease-in;
-    width: 160px;
+    width: 164px;
 
     @include respond-to('624') {
         font-size: 28px !important;
@@ -69,38 +69,38 @@
 }
 
 .expand{
-    width: 20%;
+    width: 25%;
 
     @include respond-to(l) {
-        width: 30%;
-    }
-
-    @include respond-to('835') {
         width: 35%;
     }
 
-    @include respond-to(xs) {
+    @include respond-to('835') {
         width: 40%;
     }
 
-    @include respond-to('624') {
+    @include respond-to(xs) {
         width: 45%;
     }
 
-    @include respond-to('515') {
+    @include respond-to('624') {
         width: 50%;
     }
 
-    @include respond-to(xxs) {
+    @include respond-to('515') {
         width: 55%;
     }
 
-    @include respond-to('430') {
+    @include respond-to(xxs) {
         width: 60%;
     }
 
-    @include respond-to(xxxs) {
+    @include respond-to('430') {
         width: 65%;
+    }
+
+    @include respond-to(xxxs) {
+        width: 70%;
     }
 }
 
@@ -132,6 +132,16 @@
 
 .container-transperent{
     background: transparent !important;
+}
+
+.final-container{
+    position: absolute;
+    top: 0px;
+    width: 448px;
+
+    @include respond-to(sm) {
+        width: 100%;
+    }
 }
 
 @keyframes slideFromLeft{
