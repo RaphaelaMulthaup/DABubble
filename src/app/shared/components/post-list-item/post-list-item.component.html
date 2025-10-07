@@ -1,6 +1,4 @@
-<div class="list-item post-list-item"   (click)="navigateToConversation()"
->
+<div class="list-item post-list-item" (click)="navigateToConversation()">
   <div class="chat-bubble"></div>
   <span [innerHTML]="postService.textToHtml(post.text)"></span>
 </div>
-<!-- [routerLink]="['/dashboard', 'channel', channel.id]" -->
