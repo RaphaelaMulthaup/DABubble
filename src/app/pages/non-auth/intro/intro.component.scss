@@ -1,7 +1,7 @@
 @import './../../../../styles.scss';
 
 .logo-container{
-    background-color:var(--color-purple-dark);
+    background: linear-gradient(to top, var(--color-purple-dark), var(--color-purple-medium), var(--color-purple-light));
     width: 100vw;
     height: 100vh;
     z-index: 100;
@@ -10,13 +10,13 @@
 
     .solo-logo{
         position: relative;
-        width: 71px;
+        width: 68px;
         height: 68px;
         overflow: hidden;
 
-        @include respond-to(xxxs) {
-            width: 65px;
-            height: 65px;
+        @include respond-to('624') {
+            width: 60px;
+            height: 60px;
         }
     }
 }
@@ -33,12 +33,16 @@
 
 .animat-name{
     display: none;
-    font-size: 33px;
+    font-size: 34px;
     font-weight: 656;
     color: white;
     margin: 0px 2px 0px 12px;
     animation: slideFromLeft 0.5s ease-in;
     width: 160px;
+
+    @include respond-to('624') {
+        font-size: 28px !important;
+    }
 
     @include respond-to(xxxs) {
         margin: 0px 0px 0px 12px !important;
@@ -50,8 +54,8 @@
 }
 
 .animated-logo{
-    transition: width 1s, height 0.7s, margin 0.4s;
-    width: auto;
+    transition: width 1.5s ease, height 1s ease, margin 0.4s ease;
+    width: 100px;
     height: 70px;
 
     @include respond-to(xxxs) {
@@ -61,12 +65,43 @@
 }
 
 .animat-logo{
-    width: 248px;
-    
+    width: auto;
 }
 
 .expand{
-    width: 238px;
+    width: 20%;
+
+    @include respond-to(l) {
+        width: 30%;
+    }
+
+    @include respond-to('835') {
+        width: 35%;
+    }
+
+    @include respond-to(xs) {
+        width: 40%;
+    }
+
+    @include respond-to('624') {
+        width: 45%;
+    }
+
+    @include respond-to('515') {
+        width: 50%;
+    }
+
+    @include respond-to(xxs) {
+        width: 55%;
+    }
+
+    @include respond-to('430') {
+        width: 60%;
+    }
+
+    @include respond-to(xxxs) {
+        width: 65%;
+    }
 }
 
 .show{
@@ -96,7 +131,7 @@
 }
 
 .container-transperent{
-    background-color: transparent !important;
+    background: transparent !important;
 }
 
 @keyframes slideFromLeft{

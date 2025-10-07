@@ -22,6 +22,11 @@ $breakpoints: (
   m: 1023px,
   l: 1200px,
   xl: 1399px,
+
+  '835': 835px,
+  '624': 624px,
+  '515': 515px,
+  '430': 430px,
 );
 
 :root {
@@ -62,6 +67,10 @@ $breakpoints: (
     background-color: inherit !important;
     background-image: inherit !important;
   }
+}
+
+body{
+  height: 100dvh;
 }
 
 // html.overlay-active,
