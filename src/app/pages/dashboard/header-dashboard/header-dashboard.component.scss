@@ -1,11 +1,6 @@
 header {
   background-color: var(--color-purple-white);
 
-  app-search-bar {
-    flex: 1;
-    padding: 0 20px;
-  }
-
   .current-user {
     h1 {
       overflow: hidden;
@@ -38,8 +33,12 @@ header {
 
 .header-handset {
   height: 80px;
-  padding: 15px 16px;
-  justify-content: space-between;
+
+  .header-content {
+    height: 80px;
+    padding: 15px 16px;
+    justify-content: space-between;
+  }
 
   .logo-box {
     gap: 2px;
@@ -47,7 +46,7 @@ header {
     .arrow-back {
       rotate: 90deg;
     }
-    
+
     .logo-final {
       width: 162px;
       height: 45px;
@@ -58,6 +57,11 @@ header {
     .profil-img {
       height: 50px;
     }
+  }
+
+  .searchbar-handset {
+    padding: 0 16px;
+    background-color: var(--color-white);
   }
 }
 
@@ -72,6 +76,11 @@ header {
       height: 70px;
       margin-left: -60px;
     }
+  }
+
+  app-search-bar {
+    flex: 1;
+    padding: 0 20px;
   }
 
   .current-user {
@@ -100,6 +109,8 @@ header {
 
   app-search-bar {
     min-width: 556px !important;
+    flex: 1;
+    padding: 0 20px;
   }
 
   .current-user {
