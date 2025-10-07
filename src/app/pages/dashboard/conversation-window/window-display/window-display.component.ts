@@ -166,7 +166,7 @@ export class WindowDisplayComponent {
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
         if (!this.initialScrollDone) {
-          this.scrollToLastMessage();
+          // this.scrollToLastMessage();
         }
       });
 

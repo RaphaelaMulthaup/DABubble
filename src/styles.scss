@@ -437,16 +437,16 @@ h4 {
   scrollbar-color: var(--color-purple-light-lines) var(--color-white);
 }
 
-.empty-consersation-view {
+.empty-conversation-view {
   @include dFlex($jc: flex-start);
   width: 100%;
 }
 
-.empty-consersation-view-handset-tablet {
+.empty-conversation-view-handset-tablet {
   padding: 0 16px 45px;
 }
 
-.empty-consersation-view-web {
+.empty-conversation-view-web {
   padding: 0 45px 73px;
 }
 

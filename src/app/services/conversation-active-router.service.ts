@@ -184,17 +184,4 @@ export class ConversationActiveRouterService {
       catchError(() => of([]))
     );
   }
-
-  // getChannelInfo(
-  //   conversationType: string,
-  //   conversationId: string
-  // ): Observable<ChannelInterface | null> {
-  //   if (conversationType !== 'channel') return of(null);
-  //   const channelRef = doc(this.firestore, `channels/${conversationId}`);
-  //   return docData(channelRef).pipe(
-  //     map((data) => (data ? (data as ChannelInterface) : null)),
-  //     shareReplay({ bufferSize: 1, refCount: true }),
-  //     catchError(() => of(null))
-  //   );
-  // }
 }

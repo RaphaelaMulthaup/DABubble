@@ -58,20 +58,20 @@
           @case ('chat') {
             @if (currentConversationId) {
               <app-empty-chat-view
-                class="empty-consersation-view" [ngClass]="
+                class="empty-conversation-view" [ngClass]="
                 (screenSize$ | async) === 'web'
-                  ? 'empty-consersation-view-web'
-                  : 'empty-consersation-view-handset-tablet'
+                  ? 'empty-conversation-view-web'
+                  : 'empty-conversation-view-handset-tablet'
                 " [currentChatId]="currentConversationId"></app-empty-chat-view>
               }
             }
           @case ('channel') {
             <app-empty-channel-view
-              class="empty-consersation-view"
+              class="empty-conversation-view"
               [ngClass]="
                 (screenSize$ | async) === 'web'
-                  ? 'empty-consersation-view-web'
-                  : 'empty-consersation-view-handset-tablet'
+                  ? 'empty-conversation-view-web'
+                  : 'empty-conversation-view-handset-tablet'
               "
             ></app-empty-channel-view>
           } 

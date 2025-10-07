@@ -28,10 +28,10 @@ p {
   position: relative;
 }
 
-.tag {
+.prefix {
   position: absolute;
   left: 20px;
-  top: 21px;
+  top: 23px;
   pointer-events: none; /* prevents blocking typing */
 }
 

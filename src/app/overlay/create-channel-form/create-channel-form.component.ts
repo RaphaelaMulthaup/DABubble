@@ -1,4 +1,11 @@
-import { Component, EventEmitter, inject, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  inject,
+  OnInit,
+  Output,
+  WritableSignal,
+} from '@angular/core';
 import { ChannelsService } from '../../services/channels.service';
 import {
   FormControl,
@@ -16,6 +23,7 @@ import { Observable, of } from 'rxjs';
 import { Router } from '@angular/router';
 import { ScreenSize } from '../../shared/types/screen-size.type';
 import { ScreenService } from '../../services/screen.service';
+import { DashboardState } from '../../shared/types/dashboard-state.type';
 
 @Component({
   selector: 'app-create-channel-form',
@@ -36,6 +44,7 @@ export class CreateChannelFormComponent {
   // Event emitter to notify parent when the form is submitted
   @Output() submitForm = new EventEmitter<any>();
 
+  dashboardState!: WritableSignal<DashboardState>;
   // Stores an error message if form submission fails
   errorMessage: string | null = null;
 
@@ -62,6 +71,7 @@ export class CreateChannelFormComponent {
     private router: Router,
     public screenService: ScreenService
   ) {
+    this.dashboardState = this.screenService.dashboardState;
     this.screenSize$ = this.screenService.screenSize$;
   }
 
@@ -100,9 +110,9 @@ export class CreateChannelFormComponent {
         next: (channel) => {
           this.errorMessage = null;
           this.createChannel.reset();
-          // this.inviteMembers = true;
           this.channel = channel;
           this.router.navigate(['/dashboard', 'channel', channel?.id]);
+          this.screenService.setDashboardState('message-window');
           this.openAddMembersToChannel();
         },
         error: (err) => {

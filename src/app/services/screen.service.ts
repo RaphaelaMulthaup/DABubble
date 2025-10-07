@@ -47,6 +47,6 @@ export class ScreenService {
     const currentScreenSize = await firstValueFrom(this.screenSize$);
     if (currentScreenSize !== 'handset') {
       this.setDashboardState('new-message-view');
-    }
+    };
   }
 }
