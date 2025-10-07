@@ -12,8 +12,10 @@ import {
   getDocs,
   arrayUnion,
   deleteDoc,
+  limit,
+  getDoc,
 } from '@angular/fire/firestore';
-import { from, map, Observable, shareReplay, switchMap } from 'rxjs';
+import { from, map, Observable, share, shareReplay, switchMap } from 'rxjs';
 import { AuthService } from './auth.service';
 import { ChannelInterface } from '../shared/models/channel.interface';
 import { Router } from '@angular/router';
@@ -45,18 +47,31 @@ export class ChannelsService {
     public screenService: ScreenService
   ) {}
 
+  //realtime false = if u need only one time datas.  default
+  //realtime true = if u need live datas.
   getCurrentChannel(
-    channelId: string
+    channelId: string,
+    realtime: boolean = false
   ): Observable<ChannelInterface | undefined> {
     if (this.channelCache.has(channelId)) {
       return this.channelCache.get(channelId)!;
     }
 
     const channelRef = doc(this.firestore, `channels/${channelId}`);
-    const channel$ = docData(channelRef, { idField: 'id' }).pipe(
-      map((doc) => doc as ChannelInterface | undefined),
-      shareReplay({ bufferSize: 1, refCount: true })
-    );
+
+    const channel$ = realtime
+      ? docData(channelRef, { idField: 'id' }).pipe(
+          map((doc) => doc as ChannelInterface | undefined),
+          shareReplay({ bufferSize: 1, refCount: false })
+        )
+      : from(getDoc(channelRef)).pipe(
+          map((snap) =>
+            snap.exists()
+              ? ({ id: snap.id, ...snap.data() } as ChannelInterface)
+              : undefined
+          ),
+          shareReplay({ bufferSize: 1, refCount: false })
+        );
 
     this.channelCache.set(channelId, channel$);
     return channel$;
@@ -94,7 +109,7 @@ export class ChannelsService {
     if (!user) throw new Error('User not logged in');
 
     let channelRef = collection(this.firestore, 'channels');
-    let q = query(channelRef, where('name', '==', name));
+    let q = query(channelRef, where('name', '==', name), limit(1));
 
     return from(getDocs(q)).pipe(
       switchMap((querySnapshot) => {
@@ -221,7 +236,7 @@ export class ChannelsService {
 
   checkNameTacken(name: string): Observable<boolean> {
     let channelRef = collection(this.firestore, 'channels');
-    let q = query(channelRef, where('name', '==', name));
+    let q = query(channelRef, where('name', '==', name), limit(1));
     return from(getDocs(q)).pipe(map((snapshot) => snapshot.empty));
   }
 }

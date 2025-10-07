@@ -36,7 +36,7 @@ import { DAYS } from '../../../../shared/constants/days';
     CommonModule,
     EmptyChatViewComponent,
     EmptyChannelViewComponent,
-    EmptyThreadViewComponent
+    EmptyThreadViewComponent,
   ], // Child components needed in the template
   templateUrl: './window-display.component.html', // External HTML template
   styleUrl: './window-display.component.scss', // External SCSS styles
@@ -55,11 +55,12 @@ export class WindowDisplayComponent {
   @ViewChildren(DisplayedPostComponent, { read: ElementRef })
   postElements!: QueryList<ElementRef>; // References to all rendered posts
   channelTyp$?: Observable<string>; // Observable for channel type (chat or channel)
-
   @ViewChild('messagesContainer')
   messagesContainer!: ElementRef<HTMLDivElement>;
   @ViewChildren('messageElement', { read: ElementRef })
   messageElements!: QueryList<ElementRef>;
+
+  loadingOlderMessages = false;
 
   // Localized days of the week for displaying timestamps
   days = DAYS;
@@ -92,9 +93,7 @@ export class WindowDisplayComponent {
       this.conversationActiveRouterService.getConversationType$(this.route);
 
     // Subscribe to conversation ID from route params
-    this.route.params
-    .pipe(takeUntil(this.destroy$))
-    .subscribe((params) => {
+    this.route.params.pipe(takeUntil(this.destroy$)).subscribe((params) => {
       this.currentConversationId = params['conversationId'];
       this.currentConversationType = params['conversationType'];
 
@@ -103,29 +102,29 @@ export class WindowDisplayComponent {
     });
 
     this.route.params
-    .pipe(
-      map((params) => params['messageId'] ?? null),
-      distinctUntilChanged(),
-      takeUntil(this.destroy$)
-    )
-    .subscribe((messageId) => {
-      this.postAnsweredId = messageId;
+      .pipe(
+        map((params) => params['messageId'] ?? null),
+        distinctUntilChanged(),
+        takeUntil(this.destroy$)
+      )
+      .subscribe((messageId) => {
+        this.postAnsweredId = messageId;
 
-      if (this.postAnsweredId) {
-        this.postService
-          .getPostById(
-            this.currentConversationType!,
-            this.currentConversationId!,
-            this.postAnsweredId!
-          )
-          .pipe(takeUntil(this.destroy$))
-          .subscribe((post) => {
-            this.postAnswered = post;
-          });
-      } else {
-        this.postAnswered = null;
-      }
-    });
+        if (this.postAnsweredId) {
+          this.postService
+            .getPostById(
+              this.currentConversationType!,
+              this.currentConversationId!,
+              this.postAnsweredId!
+            )
+            .pipe(takeUntil(this.destroy$))
+            .subscribe((post) => {
+              this.postAnswered = post;
+            });
+        } else {
+          this.postAnswered = null;
+        }
+      });
 
     this.messages$.pipe(takeUntil(this.destroy$)).subscribe((data) => {
       // Update content when new messages are received
@@ -190,7 +189,7 @@ export class WindowDisplayComponent {
     const lastMessage = messagesArray[messagesArray.length - 1].nativeElement;
 
     lastMessage.scrollIntoView({
-      block: 'end', // aliniază mesajul la baza containerului
+      block: 'end', // align message on the end of container
       behavior: 'auto', // auto | smoth
     });
 
@@ -404,5 +403,30 @@ export class WindowDisplayComponent {
       return currentPostDate !== previousPostDate;
     }
     return true;
+  }
+
+  onScroll() {
+    const container = this.messagesContainer.nativeElement;
+    if (container.scrollTop <= 0 && !this.loadingOlderMessages) {
+      this.loadingOlderMessages = true;
+
+      const previousHeight = container.scrollHeight;
+
+      this.conversationActiveRouterService
+        .loadNextPage(
+          this.currentConversationType!,
+          this.currentConversationId!,
+          20
+        )
+        .then(() => {
+          // păstrăm scroll-ul la aceeași poziție relativă
+          setTimeout(() => {
+            container.scrollTop = container.scrollHeight - previousHeight;
+            this.loadingOlderMessages = false;
+            console.log('Scroll top reached', container.scrollTop);
+          });
+        })
+        .catch(() => (this.loadingOlderMessages = false));
+    }
   }
 }

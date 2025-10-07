@@ -83,7 +83,6 @@ export class DashboardComponent {
    */
   ngOnInit() {
     // Initialize dashboardState with the value from the MobileService
-    // if (this.dashboardState() === 'message-window') {
     // Set up the observable for fetching messages from the active conversation
     this.messages$ = this.route.paramMap.pipe(
       map((params) => ({
@@ -102,16 +101,30 @@ export class DashboardComponent {
           !!conversationType && !!conversationId
       ),
       // Fetch messages for the active conversation from the service
-      switchMap(({ conversationType, conversationId }) =>
-        this.conversationActiveRouterService.getMessages(
-          conversationType!,
+      switchMap(({ conversationType, conversationId }) => {
+        // resetează paginarea la schimbarea conversației
+        this.conversationActiveRouterService['pagedMessages$'].next([]);
+        this.conversationActiveRouterService['lastVisibleMap'].delete(
           conversationId!
-        )
-      ),
+        );
+
+        // încarcă prima pagină
+        this.conversationActiveRouterService.loadNextPage(
+          conversationType!,
+          conversationId!,
+          20
+        );
+
+        return this.conversationActiveRouterService.getMessages(
+          conversationType!,
+          conversationId!,
+          10
+        );
+      }),
       // Share the last value and maintain a reference count to avoid multiple fetches
       shareReplay({ bufferSize: 1, refCount: true })
     );
-    // } else if (this.dashboardState() === 'thread-window') {
+
     // Set up the observable for fetching answers to a particular message in the conversation
     this.answers$ = this.route.paramMap.pipe(
       map((params) => ({
@@ -142,7 +155,6 @@ export class DashboardComponent {
       // Share the last value and maintain a reference count to avoid multiple fetches
       shareReplay({ bufferSize: 1, refCount: true })
     );
-    // }
   }
 
   /**

@@ -1,6 +1,4 @@
 <div class="overlay" [class.overlay-handset]="(screenSize$|async) === 'handset'">
-  @if(!inviteMembers){
-  <app-header-overlay [overlayHeadline]="'Channel erstellen'" />
   <form action="" [formGroup]="createChannel" (ngSubmit)="onSubmit()">
     <div class="form-group flex flex-col max-w-[872px] mt-[20px] gap-[20px]">
       <p>
@@ -61,7 +59,4 @@
       </div>
     </div>
   </form>
-  }@else {
-  <app-add-member-to-channel [channelDetails$]="channelToObservable()" />
-  }
 </div>

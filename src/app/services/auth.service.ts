@@ -159,10 +159,9 @@ export class AuthService {
       .then(async (credential) => {
         await this.screenService.setDashboardStateAfterLogin();
         const user = credential.user;
-        const avatar = this.getRandomAvatar();
         await this.createOrUpdateUserInFirestore(user, 'anonymous', 'Guest');
         await this.userService.updateUser(user.uid, {
-          photoUrl: avatar,
+          photoUrl: `./assets/img/no-avatar.svg`,
         });
         await this.addDirectChatToTeam(user.uid);
       })
@@ -170,11 +169,6 @@ export class AuthService {
         console.error('Guest login error:', error);
       });
     return from(promise) as Observable<void>;
-  }
-
-  private getRandomAvatar(): string {
-    const random = Math.floor(Math.random() * 6); // 0–5
-    return `./assets/img/avatar-option-${random}.svg`;
   }
 
   async addDirectChatToTeam(userId: string) {
