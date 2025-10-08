@@ -26,7 +26,7 @@ import {
   sendPasswordResetEmail,
 } from 'firebase/auth';
 
-import { from, map, Observable, of, shareReplay, switchMap, tap } from 'rxjs';
+import { firstValueFrom, from, map, Observable, of, shareReplay, switchMap, tap } from 'rxjs';
 import { UserInterface } from '../shared/models/user.interface';
 import { UserService } from './user.service';
 import { ChatService } from './chat.service';
@@ -54,15 +54,27 @@ export class AuthService {
     this.currentUser$ = new Observable<User | null>((subscriber) =>
       onAuthStateChanged(this.auth, subscriber.next.bind(subscriber))
     ).pipe(
-      switchMap((firebaseUser) => {
-        if (firebaseUser) {
-          return this.userService.getUserById(firebaseUser.uid); // Firestore User laden
-        } else {
-          return of(null); // Kein User eingeloggt
+      switchMap(async (firebaseUser) => {
+        if (!firebaseUser) return null;
+
+        // 🧠 Schritt 1: Warten bis das Firestore-Doc existiert
+        let snap = await getDoc(
+          doc(this.firestore, `users/${firebaseUser.uid}`)
+        );
+
+        // Wenn es noch nicht existiert (z. B. direkt nach Registrierung), kurz warten und nochmal prüfen
+        let retries = 0;
+        while (!snap.exists() && retries < 10) {
+          await new Promise((res) => setTimeout(res, 100)); // 100ms warten
+          snap = await getDoc(doc(this.firestore, `users/${firebaseUser.uid}`));
+          retries++;
         }
+
+        // 🧠 Schritt 2: Daten zurückgeben
+        return snap.exists() ? (snap.data() as UserInterface) : null;
       }),
-      tap((user) => (this.currentUserSnapshot = user)), // Snapshot für synchronen Zugriff speichern
-      shareReplay({ bufferSize: 1, refCount: true }) // Letzten Wert für neue Subscribers zwischenspeichern
+      tap((user) => (this.currentUserSnapshot = user)),
+      shareReplay({ bufferSize: 1, refCount: true })
     );
   }
 
@@ -80,7 +92,8 @@ export class AuthService {
   private async createOrUpdateUserInFirestore(
     user: User,
     authProvider: 'google.com' | 'password' | 'anonymous',
-    displayName?: string
+    displayName?: string,
+    photoURL?: string
   ) {
     const userRef = doc(this.firestore, `users/${user.uid}`);
     const userSnap = await getDoc(userRef);
@@ -91,7 +104,7 @@ export class AuthService {
         uid: user.uid,
         name: displayName ?? user.displayName ?? '',
         email: user.email ?? '',
-        photoUrl: user.photoURL ?? '',
+        photoUrl: photoURL ?? user.photoURL ?? '',
         authProvider,
         contacts: {},
         active: true,
@@ -115,29 +128,24 @@ export class AuthService {
         userData.password
       )
     ).pipe(
-      switchMap((response) => {
+      switchMap(async (response) => {
         const user = response.user;
-        return from(
-          this.createOrUpdateUserInFirestore(
-            user,
-            'password',
-            userData.displayName
-          )
-        ).pipe(
-          switchMap(() =>
-            from(
-              this.userService.updateUser(user.uid, {
-                name: userData.displayName,
-                photoUrl: userData.photoURL,
-              })
-            )
-          ),
-          map(() => void 0) // sorgt dafür, dass Observable<void> rauskommt
+
+        // 🧠 hier photoURL mitgeben!
+        await this.createOrUpdateUserInFirestore(
+          user,
+          'password',
+          userData.displayName,
+          userData.photoURL || undefined
         );
-      })
+
+        this.currentUserSnapshot = await firstValueFrom(
+          this.userService.getUserById(user.uid)
+        );
+      }),
+      map(() => void 0)
     );
   }
-
   /**
    * Logs in a user with email and password
    * @param email User's email

@@ -50,8 +50,12 @@ export class UserListItemComponent {
     private userService: UserService
   ) {}
   ngOnInit() {
+    // Schnellstart: Sofortiger Snapshot-Zugriff
+    this.currentUserId = this.authService.currentUser?.uid ?? null;
+
+    // Sicherstellen, dass spätere Updates mitkommen
     this.sub = this.authService.currentUser$.subscribe((user) => {
-      this.currentUserId = user?.uid ?? null;
+      this.currentUserId = user?.uid ?? this.currentUserId;
     });
   }
 
