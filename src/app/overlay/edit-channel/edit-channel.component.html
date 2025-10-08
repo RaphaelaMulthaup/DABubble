@@ -11,7 +11,7 @@
     >
       <app-header-overlay
         class="flex items-end w-full"
-        [overlayHeadline]="channelName || ''"
+        [overlayHeadline]="(channelDetails$ | async)?.name ||''"
         [isChannelHeader]="true"
       />
     </div>

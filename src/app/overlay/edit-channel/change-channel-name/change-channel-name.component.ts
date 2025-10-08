@@ -48,6 +48,11 @@ export class ChangeChannelNameComponent {
 
     if (isAvailable) {
       await this.channelService.changeChannelName(this.channelId, newName);
+      
+      if (this.channel) {
+        this.channel.name = newName;
+      }
+      
       this.isEditActive = false;
       this.editActiveChange.emit(this.isEditActive);
       this.isNameTaken = false;
