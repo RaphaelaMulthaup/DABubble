@@ -10,7 +10,27 @@
         @if(screenService.sidenavVisible) {
           <app-sidenav class="relative"></app-sidenav>
         }
-        @if (dashboardState() === 'new-message-view') {
+        @if (dashboardState() != 'new-message-view' && dashboardState() != 'sidenav') {
+          <app-conversation-window [data$]="messages$" [conversationWindowState]="'conversation'"></app-conversation-window>
+          @if (dashboardState()==='thread-window'){
+            <app-conversation-window
+            class="thread-window"
+            [data$]="answers$"
+            [conversationWindowState]="'thread'">
+            </app-conversation-window>
+          }
+        }
+        @else {
+          <div class="new-message-view flex flex-col h-full">
+            <app-header-searchbar (resultsChange)="onResultsChanged($event)" (hasInputChange)="onHasInputChange($event)"></app-header-searchbar>
+            <div class="empty-window-web-tablet">
+              @if (hasInput) {
+                <app-search-results-new-message [results]="resultsSignal"></app-search-results-new-message>
+              }
+            </div>
+          </div>
+        }
+        <!-- @if (dashboardState() === 'new-message-view') {
         <div class="new-message-view flex flex-col h-full">
           <app-header-searchbar (resultsChange)="onResultsChanged($event)" (hasInputChange)="onHasInputChange($event)"></app-header-searchbar>
           <div class="empty-window-web-tablet">
@@ -26,7 +46,7 @@
           <app-conversation-window class="thread-window" [data$]="answers$"
             [conversationWindowState]="'thread'"></app-conversation-window>
           }
-        }
+        } -->
       </div>
     }
 

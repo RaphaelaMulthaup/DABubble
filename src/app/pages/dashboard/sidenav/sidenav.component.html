@@ -1,7 +1,7 @@
 <nav class="flex flex-col">
   <div class="nav-content flex flex-col">
     @if ((screenSize$|async) != 'handset') {
-      <div class="new-message" (click)="screenService.setDashboardState('new-message-view')">
+      <div class="new-message" (click)="openNewMessageView()">
         <button class="btn-tertiary new-message-tablet-web"></button>
         <span>Neue Nachricht</span>
       </div>
