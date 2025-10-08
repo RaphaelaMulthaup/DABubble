@@ -43,7 +43,8 @@ export class ScreenService {
     }
   }
 
-  async setDashboardStateAfterLogin() {
+  async setInitDashboardState() {
+    console.log(1)
     const currentScreenSize = await firstValueFrom(this.screenSize$);
     if (currentScreenSize !== 'handset') {
       this.setDashboardState('new-message-view');

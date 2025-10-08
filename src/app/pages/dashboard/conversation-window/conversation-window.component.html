@@ -1,14 +1,13 @@
-<section
-  class="conversation-window flex flex-col"
-  [style.height]="
+<section class="conversation-window flex flex-col" [style.height]="
     (screenSize$ | async) !== 'handset'
       ? '100%'
       : 'calc(100vh - 82px)'
-  "
->
+  ">
   <app-conversation-header [conversationWindowState]="conversationWindowState"></app-conversation-header>
   @if (data$) {
-    <app-window-display [messages$]="data$" [conversationWindowState]="conversationWindowState"></app-window-display>
-    <app-current-post-input [conversationWindowState]="conversationWindowState"></app-current-post-input>
+  <app-window-display [messages$]="data$" [conversationWindowState]="conversationWindowState" [style.margin-top.px]="(screenSize$ | async) !== 'handset'
+      ? '96'
+      : '0'"></app-window-display>
+  <app-current-post-input [conversationWindowState]="conversationWindowState"></app-current-post-input>
   }
 </section>

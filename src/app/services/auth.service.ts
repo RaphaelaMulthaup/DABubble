@@ -147,7 +147,7 @@ export class AuthService {
   login(email: string, password: string): Observable<void> {
     const promise = signInWithEmailAndPassword(this.auth, email, password).then(
       async (response) => {
-        await this.screenService.setDashboardStateAfterLogin();
+        await this.screenService.setInitDashboardState();
         await this.createOrUpdateUserInFirestore(response.user, 'password');
       }
     );
@@ -157,7 +157,7 @@ export class AuthService {
   loginAsGuest(): Observable<void> {
     const promise = signInAnonymously(this.auth)
       .then(async (credential) => {
-        await this.screenService.setDashboardStateAfterLogin();
+        await this.screenService.setInitDashboardState();
         const user = credential.user;
         await this.createOrUpdateUserInFirestore(user, 'anonymous', 'Guest');
         await this.userService.updateUser(user.uid, {
@@ -186,7 +186,7 @@ export class AuthService {
     const auth = getAuth();
     const promise = signInWithPopup(auth, this.provider)
       .then(async (response) => {
-        await this.screenService.setDashboardStateAfterLogin();
+        await this.screenService.setInitDashboardState();
         const user = response.user;
         await this.createOrUpdateUserInFirestore(user, 'google.com');
       })
