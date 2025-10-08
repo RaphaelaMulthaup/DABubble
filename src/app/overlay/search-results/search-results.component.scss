@@ -24,6 +24,7 @@
 
 .results-list-web {
   max-height: calc(100vh - 300px);
+  max-width: calc(100vw - 489px);
 }
 
 :host.overlay-web {
