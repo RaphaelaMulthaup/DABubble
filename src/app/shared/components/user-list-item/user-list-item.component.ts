@@ -4,9 +4,8 @@ import { AuthService } from '../../../services/auth.service'; // Importing AuthS
 import { ChatService } from '../../../services/chat.service'; // Importing ChatService to handle chat-related operations
 import { OverlayService } from '../../../services/overlay.service'; // Importing OverlayService for managing overlays like profiles
 import { CommonModule } from '@angular/common'; // Importing CommonModule for basic Angular functionality
-import { ProfileViewOtherUsersComponent } from '../../../overlay/profile-view-other-users/profile-view-other-users.component'; // Importing the profile view component for users
 import { of, Subscription } from 'rxjs'; // Importing `of` to create observables from static values
-import { ProfileViewMainComponent } from '../../../overlay/profile-view-main/profile-view-main.component';
+import { UserService } from '../../../services/user.service';
 
 @Component({
   selector: 'app-user-list-item', // Component selector used in parent templates
@@ -46,9 +45,9 @@ export class UserListItemComponent {
   currentUserId: string | null = null;
   private sub?: Subscription;
   constructor(
-    private authService: AuthService, // Injecting AuthService to get the current user
-    private chatService: ChatService, // Injecting ChatService to handle chat-related functions
-    private overlayService: OverlayService // Injecting OverlayService to manage overlays like the profile view
+    private authService: AuthService,
+    private chatService: ChatService,
+    private userService: UserService
   ) {}
   ngOnInit() {
     this.sub = this.authService.currentUser$.subscribe((user) => {
@@ -83,31 +82,10 @@ export class UserListItemComponent {
       this.userSelected.emit(this.user);
     } else if (this.showProfile || this.inHeaderChat) {
       // If the 'showProfile' flag is set or if it's in the header chat, show the profile overlay
-      this.openProfileOverlay();
+      this.userService.openProfileOverlay(this.user.uid, this.currentUserId);
     } else {
       // Otherwise, navigate to the chat
       this.pickOutAndNavigateToChat();
-    }
-  }
-
-  /**
-   * Opens the profile overlay for the selected user.
-   * This is done using the OverlayService, and the user information is passed as an observable.
-   */
-  openProfileOverlay() {
-    if (this.user.uid === this.currentUserId) {
-      this.overlayService.openComponent(
-        ProfileViewMainComponent, // The component to be displayed in the overlay.
-        'cdk-overlay-dark-backdrop', // Backdrop style for the overlay.
-        { globalPosition: 'center' } // Position of the overlay (centered globally).
-      );
-    } else {
-      this.overlayService.openComponent(
-        ProfileViewOtherUsersComponent, // The overlay component to open
-        'cdk-overlay-dark-backdrop', // The backdrop style for the overlay
-        { globalPosition: 'center' }, // Position the overlay in the center of the screen
-        { user$: of(this.user) } // Pass the selected user as an observable to the overlay
-      );
     }
   }
 }

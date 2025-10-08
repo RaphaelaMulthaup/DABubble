@@ -9,6 +9,7 @@
   }
 
   .profile-img {
+    border-radius: 50%;
     img {
       min-width: 50px;
       width: 50px;
@@ -224,7 +225,7 @@
 
   .interactions-container {
     margin-left: 144px;
-    
+
     .interactions {
       .reaction {
         width: max-content;

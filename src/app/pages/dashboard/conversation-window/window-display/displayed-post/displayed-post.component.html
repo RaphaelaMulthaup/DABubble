@@ -15,20 +15,18 @@
       (screenSize$ | async) === 'web'
     "
   >
-    <div class="profile-img">
+    <div class="profile-img" (click)="openUserProfileOverlay()">
       @if(senderPhotoUrl$ | async; as photoUrl) {
       <img
         class="profil-img"
         [src]="senderPhotoUrl$ | async"
         alt="Profilbild"
-        (click)="openUserProfileOverlay()"
       />
       } @else {
       <img
         class="profil-img"
         src="/assets/img/no-avatar.svg"
         alt="Profilbild"
-        (click)="openUserProfileOverlay()"
       />
       }
     </div>

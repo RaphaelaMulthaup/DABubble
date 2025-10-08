@@ -12,6 +12,9 @@ import {
 import { UserInterface } from '../shared/models/user.interface';
 import { combineLatest, map, Observable, of, shareReplay } from 'rxjs';
 import { docData } from '@angular/fire/firestore';
+import { OverlayService } from './overlay.service';
+import { ProfileViewOtherUsersComponent } from '../overlay/profile-view-other-users/profile-view-other-users.component'; // Importing the profile view component for users
+import { ProfileViewMainComponent } from '../overlay/profile-view-main/profile-view-main.component';
 
 @Injectable({
   providedIn: 'root',
@@ -19,7 +22,10 @@ import { docData } from '@angular/fire/firestore';
 export class UserService {
   public userCache = new Map<string, Observable<UserInterface>>();
 
-  constructor(private firestore: Firestore) {}
+  constructor(
+    private firestore: Firestore,
+    private overlayService: OverlayService,
+  ) {}
 
   /**
    * Fetch a single user by UID.
@@ -148,5 +154,26 @@ export class UserService {
       return userDoc.id;
     }
     return null;
+  }
+
+  /**
+   * Opens the profile overlay for the selected user.
+   * This is done using the OverlayService, and the user information is passed as an observable.
+   */
+  openProfileOverlay(userId: string, currentUserId: string) {
+    if (userId === currentUserId) {
+      this.overlayService.openComponent(
+        ProfileViewMainComponent, // The component to be displayed in the overlay.
+        'cdk-overlay-dark-backdrop', // Backdrop style for the overlay.
+        { globalPosition: 'center' } // Position of the overlay (centered globally).
+      );
+    } else {
+      this.overlayService.openComponent(
+        ProfileViewOtherUsersComponent, // The overlay component to open
+        'cdk-overlay-dark-backdrop', // The backdrop style for the overlay
+        { globalPosition: 'center' }, // Position the overlay in the center of the screen
+        { user$: this.getUserById(userId) } // Pass the selected user as an observable to the overlay
+      );
+    }
   }
 }

@@ -5,6 +5,7 @@ import { UserService } from '../../../../../services/user.service';
 import {
   distinctUntilChanged,
   filter,
+  firstValueFrom,
   map,
   of,
   shareReplay,
@@ -48,6 +49,7 @@ export class DisplayedPostComponent {
   currentConversationId!: string;
   senderName$!: Observable<string>;
   senderPhotoUrl$!: Observable<string | undefined>;
+  senderId$!: Observable<string>;
   senderIsCurrentUser!: boolean;
   createdAtTime$!: Observable<string>;
   reactions$!: Observable<ReactionInterface[]>;
@@ -131,6 +133,7 @@ export class DisplayedPostComponent {
       const user$ = this.userService.getUserById(this.post.senderId);
       this.senderName$ = user$.pipe(map((u) => u?.name ?? ''));
       this.senderPhotoUrl$ = user$.pipe(map((u) => u?.photoUrl ?? ''));
+      this.senderId$ = user$.pipe(map((u) => u?.uid ?? ''));
     });
 
     // Zeit formatieren
@@ -159,13 +162,13 @@ export class DisplayedPostComponent {
    * This method displays the profile view of another user.
    * It triggers the overlay service to open the ProfileViewOtherUsersComponent.
    */
-  openUserProfileOverlay() {
-    this.overlayService.openComponent(
-      ProfileViewOtherUsersComponent,
-      'cdk-overlay-dark-backdrop',
-      { globalPosition: 'center' },
-      { user$: this.userService.getUserById(this.post.senderId) }
-    );
+  async openUserProfileOverlay() {
+    const senderId = await firstValueFrom(this.senderId$);
+    const currentUserId = this.authService.currentUser?.uid;
+    if (!currentUserId) {
+      return;
+    }
+    this.userService.openProfileOverlay(senderId, currentUserId);
   }
 
   /**
