@@ -5,16 +5,10 @@ import {
   Signal,
   ViewChild,
   OnInit,
-  OnDestroy
+  OnDestroy,
 } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import {
-  map,
-  startWith,
-  Observable,
-  Subject,
-  takeUntil
-} from 'rxjs';
+import { map, startWith, Observable, Subject, takeUntil } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { SearchService } from '../../../../services/search.service';
 import { JsonPipe, CommonModule } from '@angular/common';
@@ -45,7 +39,10 @@ import { BaseSearchDirective } from '../../../../shared/directives/base-search.d
   templateUrl: './search-bar.component.html',
   styleUrls: ['./search-bar.component.scss'],
 })
-export class SearchBarComponent extends BaseSearchDirective implements OnInit, OnDestroy {
+export class SearchBarComponent
+  extends BaseSearchDirective
+  implements OnInit, OnDestroy
+{
   // Reactive form control ist bereits in BaseSearchDirective vorhanden
   firstFocusHappened = false; // Tracks if input was focused for the first time
   override destroy$ = new Subject<void>(); // für lokale subscriptions (zusätzlich zur base destroy$)
@@ -168,15 +165,22 @@ export class SearchBarComponent extends BaseSearchDirective implements OnInit, O
 
       if (!this.searchOverlayRef) return;
 
-      // Close overlay on backdrop click
-      this.searchOverlayRef.backdropClick$
+      // Allgemeines "afterClosed"-Abonnement
+      this.searchOverlayRef.overlayRef
+        .detachments() // detachments() feuert, wenn Overlay entfernt wird
         .pipe(takeUntil(this.destroy$))
         .subscribe(() => {
           this.searchControl.setValue('');
           this.searchResultsExisting = false;
           this.searchService.overlaySearchResultsOpen = false;
-          this.overlayService.closeOne(this.searchOverlayRef?.overlayRef);
           this.searchOverlayRef = null;
+        });
+
+      // Nur backdropClick zusätzlich, falls du spezielle Logik dafür willst
+      this.searchOverlayRef.backdropClick$
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(() => {
+          this.overlayService.closeOne(this.searchOverlayRef?.overlayRef);
         });
     });
   }
@@ -189,7 +193,10 @@ export class SearchBarComponent extends BaseSearchDirective implements OnInit, O
     const grouped: any[] = [];
 
     const chatMap = new Map<string, { user: UserInterface; posts: any[] }>();
-    const channelMap = new Map<string, { channel: ChannelInterface; posts: any[] }>();
+    const channelMap = new Map<
+      string,
+      { channel: ChannelInterface; posts: any[] }
+    >();
 
     for (const item of res) {
       if (item.type === 'chatMessage' && item.user) {
@@ -210,7 +217,11 @@ export class SearchBarComponent extends BaseSearchDirective implements OnInit, O
       grouped.push({ type: 'chatGroup', user: value.user, posts: value.posts })
     );
     channelMap.forEach((value) =>
-      grouped.push({ type: 'channelGroup', channel: value.channel, posts: value.posts })
+      grouped.push({
+        type: 'channelGroup',
+        channel: value.channel,
+        posts: value.posts,
+      })
     );
 
     return grouped;
