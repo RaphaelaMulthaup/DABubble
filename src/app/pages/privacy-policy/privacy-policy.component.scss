@@ -1,8 +1,14 @@
 @import './../../../styles.scss';
 @import "../../shared/styles/outside-dashboard.scss";
 
-.section{
-    width: 80%;
+.non-auth-form{
+    height: 75dvh;
+}
+
+.policeHeader{
+    @include respond-to(xxxs) {
+        flex-direction: column;
+    }
 }
 
 h1 {
@@ -11,10 +17,27 @@ h1 {
     @include respond-to(xs) {
         font-size: 24px;
     }
+
+    @include respond-to(xxxs) {
+        padding: 0px 0px 0px 12px;
+    }
 }
 
 .txt-area{
     padding: 0px 48px 0px 48px;
+    overflow-y: scroll;
+
+    @include respond-to('624') {
+        padding: 0px;
+    }
+
+    @include respond-to('515') {
+        width: 350px;
+    }
+
+    @include respond-to(xxs) {
+        width: 272px;
+    }
 }
 
 a{
