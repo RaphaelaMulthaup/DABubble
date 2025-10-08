@@ -19,13 +19,12 @@ import {
   combineLatest,
   takeUntil,
   Subject,
-  of,
   BehaviorSubject,
 } from 'rxjs';
-import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { UserInterface } from '../../shared/models/user.interface';
 import { ChannelsService } from '../../services/channels.service';
-import { Overlay, OverlayRef } from '@angular/cdk/overlay';
+import { OverlayRef } from '@angular/cdk/overlay';
 import { OverlayService } from '../../services/overlay.service';
 import { UserListItemToChannelComponent } from '../../shared/components/user-list-item-to-channel/user-list-item-to-channel.component';
 import { RectangleDragCloseDirective } from '../../shared/directives/rectangle-drag-close.directive';
@@ -178,13 +177,7 @@ export class AddMemberToChannelComponent {
           originY: 'bottom',
           overlayX: 'start',
           overlayY: 'top',
-        },
-        originPositionFallback: {
-          originX: 'start',
-          originY: 'top',
-          overlayX: 'start',
-          overlayY: 'bottom',
-        },
+        }
       },
       {
         results: this.results, // Pass filtered search results to the overlay component

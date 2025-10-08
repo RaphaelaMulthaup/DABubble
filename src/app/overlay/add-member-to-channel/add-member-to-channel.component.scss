@@ -1,15 +1,12 @@
-.mytest {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  gap: 20px;
-}
-
 .overlay,
 .overlay-bottom {
   transition: transform 0.5s ease, opacity 0.5s ease;
   transform: translateY(0);
   opacity: 1;
+}
+
+.overlay-right {
+  padding: 40px;
 }
 
 .closing {

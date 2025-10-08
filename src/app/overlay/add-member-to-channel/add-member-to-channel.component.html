@@ -3,11 +3,11 @@
     onBottom ? 'overlay-bottom' : overlay,
     isClosing ? 'closing' : ''
   ]"
-  [ngStyle]="!onBottom ? { 'max-width': '541px' } : {}"
+  [ngStyle]="onBottom ? {} : { 'width': '514px' }"
   class="flex"
 >
   @if(channelDetails$ | async; as channelDetails){
-  <div class="mytest">
+  <div class="flex flex-col gap-[16px] w-full">
     @if(onBottom){
     <div class="flex w-full justify-center">
       <span
@@ -19,11 +19,11 @@
     }
     <div class="flex flex-col gap-[5px]">
       <app-header-overlay
-        [overlayHeadline]="'Leute hinzufugen'"
+        [overlayHeadline]="'Mitglieder hinzufügen'"
         [overlayRef]="overlayRef"
       />
       <!-- @if(!onBottom){  here should check if is on mobile/desktop -->
-      <div class="flex gap-[15px]">
+      <div class="flex gap-[8px]">
         <span class="tag-color"> </span>
         <span class="flex w-full color">{{ channelDetails.name }}</span>
       </div>

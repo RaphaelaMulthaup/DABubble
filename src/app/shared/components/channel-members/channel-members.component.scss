@@ -1,3 +1,7 @@
+.overlay-right {
+  padding: 20px 16px;
+}
+
 .overflowYAuto {
   overflow-y: auto;
   overflow-x: hidden;
@@ -15,6 +19,13 @@
   border-radius: 35px;
   padding-top: 4px;
   padding-bottom: 4px;
+}
+
+.btn-container {
+  padding: 8px 0;
+  background-color: var(--color-white);
+  position: sticky;
+  bottom: -2px !important;
 }
 
 .btn {

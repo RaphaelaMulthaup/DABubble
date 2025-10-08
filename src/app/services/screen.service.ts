@@ -13,7 +13,7 @@ export class ScreenService {
   screenSize$: Observable<ScreenSize>;
   breakpoints = BREAKPOINTS;
   dashboardState = signal<DashboardState>('sidenav');
-  sidenavVisible: boolean = true;
+  sidenavVisible: boolean = true;                     //This can be toggled by clicking the collapsible in tablet- and webversion.
 
   constructor(
     private breakpointObserver: BreakpointObserver,
@@ -37,6 +37,12 @@ export class ScreenService {
       this.setInitDashboardState();
   }
 
+  /**
+   * This function sets a new dashboard-state.
+   * If the set state is 'sidenav' the active route is set to the default-state.
+   * 
+   * @param state - the dashboard-state-type
+   */
   setDashboardState(state: DashboardState) {
     this.dashboardState.set(state);
     if (state === 'sidenav') {
@@ -44,9 +50,15 @@ export class ScreenService {
     }
   }
 
+  /**
+   * This function sets the initial dashboard-state according to the screen size,
+   * which is 'sidenav' for handset and new-message-view for tablets and web.
+   */
   async setInitDashboardState() {
     const currentScreenSize = await firstValueFrom(this.screenSize$);
-    if (currentScreenSize !== 'handset') {
+    if (currentScreenSize === 'handset') {
+      this.setDashboardState('sidenav');
+    } else {
       this.setDashboardState('new-message-view');
     };
   }

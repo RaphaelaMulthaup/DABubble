@@ -1,4 +1,4 @@
-<section [ngClass]="overlay" class="flex w-full justify-center max-h-[411px]">
+<section [ngClass]="overlay" class="overlay-right flex w-full justify-center max-h-[411px]">
   @if(!clickedAddMember){
   <div
     class="flex flex-col items-start gap-[15px] overflowYAuto relative w-full"
@@ -15,13 +15,13 @@
       </div>
     </div>
 
-    <div class="flex sticky bottom-0 pt-[20px] w-full bg-white">
+    <div class="btn-container flex w-full">
       <button
         class="list-item user-list-item btn"
         (click)="choiseBetweenComponentAndHeader($event)"
       >
         <div class="add-person"></div>
-        <span> Mitglieder hinzufugen</span>
+        <span> Mitglieder hinzufügen</span>
       </button>
     </div>
   </div>
