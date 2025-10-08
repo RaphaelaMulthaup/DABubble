@@ -41,3 +41,12 @@ input {
     background-image: url(../../../../../assets/img/close-hover.svg);
   }
 }
+
+.searchbar-handset {
+  height: 100%;
+  background-color: var(--color-white);
+
+  input{
+    height: 48px;
+  }
+}
