@@ -5,8 +5,20 @@
   opacity: 1;
 }
 
+.overlay,
 .overlay-right {
   padding: 40px;
+}
+
+.overlay-bottom {
+  max-height: 280px;
+  padding: 40px 20px;
+}
+
+.overlay,
+.overlay-right,
+.overlay-left {
+  width: clamp(17.5rem, 6.3889rem + 55.5556vw, 23.75rem);
 }
 
 .closing {

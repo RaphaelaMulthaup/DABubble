@@ -3,7 +3,6 @@
     onBottom ? 'overlay-bottom' : overlay,
     isClosing ? 'closing' : ''
   ]"
-  [ngStyle]="onBottom ? {} : { 'width': '514px' }"
   class="flex"
 >
   @if(channelDetails$ | async; as channelDetails){

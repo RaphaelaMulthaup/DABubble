@@ -59,6 +59,12 @@
   display: none;
 }
 
+.overlay,
+.overlay-right,
+.overlay-left {
+  width: clamp(17.5rem, 6.3889rem + 55.5556vw, 23.75rem);
+}
+
 .overlay.show {
   opacity: 1;
   transform: translateY(0);

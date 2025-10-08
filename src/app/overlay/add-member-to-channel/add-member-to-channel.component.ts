@@ -177,6 +177,12 @@ export class AddMemberToChannelComponent {
           originY: 'bottom',
           overlayX: 'start',
           overlayY: 'top',
+        },
+        originPositionFallback: {
+          originX: 'start',
+          originY: 'top',
+          overlayX: 'start',
+          overlayY: 'bottom',
         }
       },
       {

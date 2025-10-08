@@ -1,5 +1,9 @@
 @import "../../../styles.scss";
 
+.overlay {
+  padding: 40px;
+}
+
 .input-gap {
   display: flex;
   padding-left: 58px;
@@ -53,6 +57,7 @@ p {
   width: 100vw;
   height: 100vh;
   border-radius: 0;
+  padding: 40px 20px;
 }
 
 .close {
