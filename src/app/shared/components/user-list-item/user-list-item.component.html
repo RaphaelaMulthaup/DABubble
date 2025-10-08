@@ -12,7 +12,9 @@
     <img
       class="status"
       [src]="
-        user?.active
+        currentUserId === user?.uid
+          ? 'assets/img/online-with-white-circle.svg'
+          : user?.active
           ? 'assets/img/online-with-white-circle.svg'
           : 'assets/img/offline-with-white-circle.svg'
       "
