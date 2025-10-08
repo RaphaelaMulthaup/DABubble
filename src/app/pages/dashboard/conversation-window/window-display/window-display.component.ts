@@ -13,9 +13,14 @@ import { DisplayedPostComponent } from './displayed-post/displayed-post.componen
 import { PostInterface } from '../../../../shared/models/post.interface';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
+  combineLatest,
+  defer,
   distinctUntilChanged,
   map,
   Observable,
+  of,
+  shareReplay,
+  startWith,
   Subject,
   takeUntil,
 } from 'rxjs';
@@ -49,7 +54,6 @@ export class WindowDisplayComponent {
   postAnswered!: PostInterface | null;
   dashboardState: WritableSignal<DashboardState>;
   // Observable stream of all posts in the current conversation
-
   postInfo: PostInterface[] = []; // Cached list of posts
   currentConversationId?: string; // Current conversation ID
   @ViewChildren(DisplayedPostComponent, { read: ElementRef })
@@ -59,17 +63,15 @@ export class WindowDisplayComponent {
   messagesContainer!: ElementRef<HTMLDivElement>;
   @ViewChildren('messageElement', { read: ElementRef })
   messageElements!: QueryList<ElementRef>;
-
   loadingOlderMessages = false;
-
   // Localized days of the week for displaying timestamps
   days = DAYS;
-
   @Input() conversationWindowState?: 'conversation' | 'thread';
   private pendingScrollTo?: string; // Stores a post ID to scroll to once available
   private destroy$ = new Subject<void>(); // Used to clean up subscriptions
   screenSize$!: Observable<ScreenSize>;
   private initialScrollDone = false;
+  isLoaded$: Observable<boolean>;
 
   constructor(
     private el: ElementRef,
@@ -82,6 +84,20 @@ export class WindowDisplayComponent {
   ) {
     this.dashboardState = this.screenService.dashboardState;
     this.screenSize$ = this.screenService.screenSize$;
+    this.isLoaded$ = defer(() => {
+      if (!this.messages$) return of(false);
+      return combineLatest([
+        this.messages$,
+        this.channelTyp$ ?? of(true),
+      ]).pipe(
+        map(
+          ([messages]) => !!messages?.length
+        ),
+        distinctUntilChanged(),
+        startWith(false),
+        shareReplay({ bufferSize: 1, refCount: true })
+      );
+    });
   }
 
   /**

@@ -126,7 +126,7 @@
       [class.fill-row]="((visibleReactions$ | async)?.length ?? 0) == 3"
       [style.gap]="(visibleReactions$ | async)?.length === 0 ? '0px' : null"
     >
-      @for (reaction of (visibleReactions$ | async); track $index) {
+      @for (reaction of (visibleReactions$ | async); track reaction.id) {
       @if(allReactionsVisible || $index <= 4) {
       <div
         (mouseenter)="openReactedUsersOverlay($event, reaction)"
