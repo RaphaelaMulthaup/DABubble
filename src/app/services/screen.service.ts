@@ -34,6 +34,7 @@ export class ScreenService {
         }),
         shareReplay({ bufferSize: 1, refCount: true })
       );
+      this.setInitDashboardState();
   }
 
   setDashboardState(state: DashboardState) {
@@ -44,7 +45,6 @@ export class ScreenService {
   }
 
   async setInitDashboardState() {
-    console.log(1)
     const currentScreenSize = await firstValueFrom(this.screenSize$);
     if (currentScreenSize !== 'handset') {
       this.setDashboardState('new-message-view');

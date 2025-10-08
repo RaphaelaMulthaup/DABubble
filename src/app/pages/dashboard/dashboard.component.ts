@@ -74,7 +74,6 @@ export class DashboardComponent {
   ) {
     this.dashboardState = this.screenService.dashboardState;
     this.screenSize$ = this.screenService.screenSize$;
-    this.screenService.setInitDashboardState();
   }
 
   /**
