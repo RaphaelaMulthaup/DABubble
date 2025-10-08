@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { ChannelInterface } from '../../../../../shared/models/channel.interface';
-import { filter, Observable, take } from 'rxjs';
+import { filter, Observable, Subject, take, takeUntil } from 'rxjs';
 import { ConversationActiveRouterService } from '../../../../../services/conversation-active-router.service';
 import { ActivatedRoute } from '@angular/router';
 import { ChannelsService } from '../../../../../services/channels.service';
@@ -18,6 +18,7 @@ export class EmptyChannelViewComponent {
 
   // The current channel ID resolved from the route
   channelId!: string;
+  private destroy$ = new Subject<void>();
 
   constructor(
     private conversationActiveRouterService: ConversationActiveRouterService, // Service for reading chat/channel routing info
@@ -34,11 +35,12 @@ export class EmptyChannelViewComponent {
   ngOnInit() {
     this.conversationActiveRouterService
       .getConversationId$(this.route)
-      .pipe(take(1)) // take only the first emitted value
+      .pipe(takeUntil(this.destroy$)) // reagiert dauerhaft auf Änderungen
       .subscribe((channelId: string) => {
+        if (!channelId) return;
+
         this.channelId = channelId;
 
-        // Fetch the channel based on channelId, ignore undefined results
         this.channel$ = this.channelService
           .getCurrentChannel(channelId)
           .pipe(
@@ -47,5 +49,10 @@ export class EmptyChannelViewComponent {
             )
           );
       });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }
