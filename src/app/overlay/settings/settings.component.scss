@@ -58,6 +58,23 @@
       background-color: var(--color-white);
     }
   }
+
+  .settings-icon{
+    width: 30px;
+    height: 30px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: auto;
+    margin: 0px 15px 0px 0px;
+  }
+}
+
+.profile{
+  background-image: url('./../../../assets/img/person-profile-view.svg');
+
+  &:hover{
+    background-image: url('./../../../assets/img/account-circle.svg');
+  }
 }
 
 .overlay-close {

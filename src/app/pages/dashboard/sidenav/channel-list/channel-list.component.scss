@@ -12,6 +12,10 @@
 
     &:hover {
         filter: brightness(1);
+
+        @include respond-to(xs) {
+            filter: brightness(0);
+        }
     }
 }
 
