@@ -7,14 +7,14 @@
   }"
 >
   <div class="profil-img-and-status">
-    <img class="profil-img" src="{{ user?.photoUrl }}" alt="Profilbild" />
+    <img class="profil-img" src="{{ (user$ | async)?.photoUrl }}" alt="Profilbild" />
     @if (!relatedToSearchResultPost) {
     <img
       class="status"
       [src]="
-        currentUserId === user?.uid
+        currentUserId === (user$ | async)?.uid
           ? 'assets/img/online-with-white-circle.svg'
-          : user?.active
+          : (user$ | async)?.active
           ? 'assets/img/online-with-white-circle.svg'
           : 'assets/img/offline-with-white-circle.svg'
       "
@@ -24,9 +24,9 @@
   </div>
   <div>
     <span [ngClass]="{ 'in-header-chat': inHeaderChat }">
-      {{ user?.name }}
+      {{ (user$ | async)?.name }}
     </span>
-    @if (currentUserId == user?.uid) {
+    @if (currentUserId == (user$ | async)?.uid) {
     <span [ngClass]="{ 'in-header-chat': inHeaderChat }">(Du)</span>
     }
   </div>

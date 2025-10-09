@@ -6,10 +6,15 @@ import {
   signOut,
   User,
 } from '@angular/fire/auth';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { signInAnonymously } from 'firebase/auth';
-import { deleteUser } from 'firebase/auth';
-
+import {
+  signInWithEmailAndPassword,
+  signInAnonymously,
+  deleteUser,
+  getAuth,
+  signInWithPopup,
+  GoogleAuthProvider,
+  sendPasswordResetEmail,
+} from 'firebase/auth';
 import {
   Firestore,
   deleteDoc,
@@ -18,15 +23,7 @@ import {
   setDoc,
   updateDoc,
 } from '@angular/fire/firestore';
-
-import {
-  getAuth,
-  signInWithPopup,
-  GoogleAuthProvider,
-  sendPasswordResetEmail,
-} from 'firebase/auth';
-
-import { firstValueFrom, from, map, Observable, of, shareReplay, switchMap, tap } from 'rxjs';
+import { from, map, Observable, of, shareReplay, switchMap, tap } from 'rxjs';
 import { UserInterface } from '../shared/models/user.interface';
 import { UserService } from './user.service';
 import { ChatService } from './chat.service';
@@ -37,10 +34,12 @@ import { UserToRegisterInterface } from '../shared/models/user.to.register.inter
   providedIn: 'root',
 })
 export class AuthService {
-  private provider = new GoogleAuthProvider(); // Google Auth provider
-  // Reaktives Observable für den aktuellen Firestore User
+  private provider = new GoogleAuthProvider();
+
+  /** Reaktives Observable für den aktuellen Firestore-User */
   public currentUser$: Observable<UserInterface | null>;
-  // Optional synchroner Zugriff
+
+  /** Optional synchroner Zugriff */
   private currentUserSnapshot: UserInterface | null = null;
 
   constructor(
@@ -50,45 +49,50 @@ export class AuthService {
     private userService: UserService,
     private screenService: ScreenService
   ) {
-    // Voll reaktives Observable, das automatisch auf AuthStateChanges reagiert
+    // 🔥 Reaktives Observable mit Absicherung, dass User-Dokument existiert
     this.currentUser$ = new Observable<User | null>((subscriber) =>
       onAuthStateChanged(this.auth, subscriber.next.bind(subscriber))
     ).pipe(
-      switchMap(async (firebaseUser) => {
-        if (!firebaseUser) return null;
+      switchMap((firebaseUser) => {
+        if (!firebaseUser) return of(null);
 
-        // 🧠 Schritt 1: Warten bis das Firestore-Doc existiert
-        let snap = await getDoc(
-          doc(this.firestore, `users/${firebaseUser.uid}`)
+        return from(this.ensureUserDocExists(firebaseUser)).pipe(
+          // Sobald das Doc existiert, reaktiv auf Änderungen hören
+          switchMap(() => this.userService.getUserById(firebaseUser.uid))
         );
-
-        // Wenn es noch nicht existiert (z. B. direkt nach Registrierung), kurz warten und nochmal prüfen
-        let retries = 0;
-        while (!snap.exists() && retries < 10) {
-          await new Promise((res) => setTimeout(res, 100)); // 100ms warten
-          snap = await getDoc(doc(this.firestore, `users/${firebaseUser.uid}`));
-          retries++;
-        }
-
-        // 🧠 Schritt 2: Daten zurückgeben
-        return snap.exists() ? (snap.data() as UserInterface) : null;
       }),
       tap((user) => (this.currentUserSnapshot = user)),
       shareReplay({ bufferSize: 1, refCount: true })
     );
   }
 
-  /*** Synchronously get the current Firestore User ***/
+  /** Synchronously get current Firestore User */
   get currentUser(): UserInterface | null {
     return this.currentUserSnapshot;
   }
 
-  /*** Get current Firebase Auth user ID or null ***/
+  /** Get current Firebase Auth user ID or null */
   getCurrentUserId(): string | null {
     return this.currentUserSnapshot?.uid ?? null;
   }
 
-  /*** Create or update Firestore user document ***/
+  /** Ensure Firestore document for user exists */
+  private async ensureUserDocExists(user: User): Promise<void> {
+    const userRef = doc(this.firestore, `users/${user.uid}`);
+    let snap = await getDoc(userRef);
+
+    if (!snap.exists()) {
+      await this.createOrUpdateUserInFirestore(
+        user,
+        (user.providerData[0]?.providerId as any) ?? 'password'
+      );
+
+      // Optional: kleine Verzögerung, um Firestore-Propagation abzuwarten
+      await new Promise((res) => setTimeout(res, 150));
+    }
+  }
+
+  /** Create or update Firestore user document */
   private async createOrUpdateUserInFirestore(
     user: User,
     authProvider: 'google.com' | 'password' | 'anonymous',
@@ -99,7 +103,6 @@ export class AuthService {
     const userSnap = await getDoc(userRef);
 
     if (!userSnap.exists()) {
-      // If user document doesn't exist, create it with default data
       const userData: UserInterface = {
         uid: user.uid,
         name: displayName ?? user.displayName ?? '',
@@ -112,46 +115,29 @@ export class AuthService {
       };
       await setDoc(userRef, userData);
     } else {
-      // If user exists, just update the active status
       await updateDoc(userRef, { active: true });
     }
   }
 
-  /**
-   * Registers a new user with name, email, password and avatar
-   */
+  /** Register new user */
   register(userData: UserToRegisterInterface): Observable<void> {
     return from(
-      createUserWithEmailAndPassword(
-        this.auth,
-        userData.email,
-        userData.password
-      )
+      createUserWithEmailAndPassword(this.auth, userData.email, userData.password)
     ).pipe(
       switchMap(async (response) => {
         const user = response.user;
-
-        // 🧠 hier photoURL mitgeben!
         await this.createOrUpdateUserInFirestore(
           user,
           'password',
           userData.displayName,
           userData.photoURL || undefined
         );
-
-        this.currentUserSnapshot = await firstValueFrom(
-          this.userService.getUserById(user.uid)
-        );
       }),
       map(() => void 0)
     );
   }
-  /**
-   * Logs in a user with email and password
-   * @param email User's email
-   * @param password User's password
-   * @returns Observable<void>
-   */
+
+  /** Login with email/password */
   login(email: string, password: string): Observable<void> {
     const promise = signInWithEmailAndPassword(this.auth, email, password).then(
       async (response) => {
@@ -162,6 +148,7 @@ export class AuthService {
     return from(promise);
   }
 
+  /** Login as guest */
   loginAsGuest(): Observable<void> {
     const promise = signInAnonymously(this.auth)
       .then(async (credential) => {
@@ -169,16 +156,15 @@ export class AuthService {
         const user = credential.user;
         await this.createOrUpdateUserInFirestore(user, 'anonymous', 'Guest');
         await this.userService.updateUser(user.uid, {
-          photoUrl: `./assets/img/no-avatar.svg`,
+          photoUrl: './assets/img/no-avatar.svg',
         });
         await this.addDirectChatToTeam(user.uid);
       })
-      .catch((error) => {
-        console.error('Guest login error:', error);
-      });
+      .catch((error) => console.error('Guest login error:', error));
     return from(promise) as Observable<void>;
   }
 
+  /** Add default chats for guest user */
   async addDirectChatToTeam(userId: string) {
     await this.chatService.createChat(userId, 'XbsVa8YOj8Nd9vztzX1kAQXrc7Z2');
     await this.chatService.createChat(userId, '5lntBSrRRUM9JB5AFE14z7lTE6n1');
@@ -186,10 +172,7 @@ export class AuthService {
     await this.chatService.createChat(userId, 'NxSyGPn1LkPV3bwLSeW94FPKRzm1');
   }
 
-  /**
-   * Logs in a user with Google authentication
-   * @returns Observable<void>
-   */
+  /** Login with Google */
   loginWithGoogle(): Observable<void> {
     const auth = getAuth();
     const promise = signInWithPopup(auth, this.provider)
@@ -198,29 +181,22 @@ export class AuthService {
         const user = response.user;
         await this.createOrUpdateUserInFirestore(user, 'google.com');
       })
-      .catch((error) => {
-        console.error('Google Login Error:', error);
-      });
+      .catch((error) => console.error('Google Login Error:', error));
     return from(promise) as Observable<void>;
   }
 
-  /**
-   * Logs out the current user and updates Firestore to mark the user as inactive
-   */
+  /** Logout and update Firestore */
   logout() {
     const user = this.auth.currentUser;
-    if (!user) {
-      return signOut(this.auth);
-    }
+    if (!user) return signOut(this.auth);
+
     const userRef = doc(this.firestore, `users/${user.uid}`);
     const isGuest = user.isAnonymous;
 
     if (isGuest) {
       return deleteDoc(userRef)
         .catch(() => {})
-        .then(() => {
-          return deleteUser(user);
-        })
+        .then(() => deleteUser(user))
         .catch((err) => console.error('Failed to delete guest user:', err));
     } else {
       return updateDoc(userRef, { active: false }).then(() =>
@@ -229,32 +205,20 @@ export class AuthService {
     }
   }
 
-  /**
-   *
-   * Sends link to firesore mail reset url
-   *
-   */
+  /** Send password reset email */
   sendPasswordResetEmail(email: string): Promise<void> {
     const auth = getAuth();
     return sendPasswordResetEmail(auth, email);
   }
 
-  /**
-   *
-   * funktion to save new user image
-   *
-   */
+  /** Update user profile picture */
   updateUserPhotoUrl(photoUrl: string): Promise<void> {
     const user = this.auth.currentUser;
     const userRef = doc(this.firestore, `users/${user?.uid}`);
     return updateDoc(userRef, { photoUrl });
   }
 
-  /**
-   *
-   * funstion to save new Username
-   *
-   */
+  /** Update user name */
   updateUserName(newName: string): Promise<void> {
     const user = this.auth.currentUser;
     const userRef = doc(this.firestore, `users/${user?.uid}`);
