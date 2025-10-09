@@ -10,6 +10,7 @@ import { SearchService } from '../../../services/search.service';
 import { ScreenService } from '../../../services/screen.service';
 import { ScreenSize } from '../../../shared/types/screen-size.type';
 import { OverlayService } from '../../../services/overlay.service';
+import { Router } from '@angular/router';
 
 /**
  * The SidenavComponent is responsible for rendering the sidebar of the application,
@@ -51,6 +52,7 @@ export class SidenavComponent {
 
   constructor(
     private authService: AuthService, // AuthService to manage user authentication
+    private router: Router,
     public screenService: ScreenService,
     public searchService: SearchService,
     public overlayService: OverlayService
@@ -90,5 +92,6 @@ export class SidenavComponent {
    */
   openNewMessageView() {
     this.screenService.setDashboardState('new-message-view');
+    this.router.navigate(['/dashboard', 'new-message']);
   }
 }

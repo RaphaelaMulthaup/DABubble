@@ -1,4 +1,8 @@
-import { ChangeDetectionStrategy, Component, WritableSignal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  WritableSignal,
+} from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { SidenavComponent } from './sidenav/sidenav.component';
 import { ConversationWindowComponent } from './conversation-window/conversation-window.component';
@@ -13,7 +17,7 @@ import {
 } from 'rxjs/operators';
 import { HeaderDashboardComponent } from './header-dashboard/header-dashboard.component';
 import { ConversationActiveRouterService } from '../../services/conversation-active-router.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterOutlet } from '@angular/router';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { DashboardState } from '../../shared/types/dashboard-state.type';
 import { PostInterface } from '../../shared/models/post.interface';
@@ -39,6 +43,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
     HeaderSearchbarComponent,
     HeaderDashboardComponent,
     SearchResultsNewMessageComponent,
+    RouterOutlet,
   ],
   templateUrl: './dashboard.component.html', // HTML template for the dashboard
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -156,6 +161,12 @@ export class DashboardComponent {
       // Share the last value and maintain a reference count to avoid multiple fetches
       shareReplay({ bufferSize: 1, refCount: true })
     );
+
+    // this.conversationActiveRouterService.threadMessages$ = this.answers$;
+
+    // // setTimeout(() => {
+    // //   console.log(this.conversationActiveRouterService.threadMessages$)
+    // // });
   }
 
   /**

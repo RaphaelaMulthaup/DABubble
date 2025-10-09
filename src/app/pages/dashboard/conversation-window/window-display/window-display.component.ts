@@ -2,6 +2,7 @@ import {
   Component,
   ElementRef,
   Input,
+  OnInit,
   QueryList,
   ViewChild,
   ViewChildren,
@@ -23,6 +24,7 @@ import {
   shareReplay,
   startWith,
   Subject,
+  take,
   takeUntil,
 } from 'rxjs';
 import { ConversationActiveRouterService } from '../../../../services/conversation-active-router.service';
@@ -47,7 +49,7 @@ import { DAYS } from '../../../../shared/constants/days';
   templateUrl: './window-display.component.html', // External HTML template
   styleUrl: './window-display.component.scss', // External SCSS styles
 })
-export class WindowDisplayComponent {
+export class WindowDisplayComponent implements OnInit {
   @Input() messages$!: import('rxjs').Observable<PostInterface[]>;
   // an array with all posts in this conversation
   currentConversationType?: 'channel' | 'chat';
@@ -68,7 +70,6 @@ export class WindowDisplayComponent {
   // Localized days of the week for displaying timestamps
   days = DAYS;
   @Input() conversationWindowState?: 'conversation' | 'thread';
-  private postLoadedStates$ = new BehaviorSubject<boolean[]>([]);
   private pendingScrollTo?: string; // Stores a post ID to scroll to once available
   private destroy$ = new Subject<void>(); // Used to clean up subscriptions
   screenSize$!: Observable<ScreenSize>;
@@ -86,6 +87,14 @@ export class WindowDisplayComponent {
   ) {
     this.dashboardState = this.screenService.dashboardState;
     this.screenSize$ = this.screenService.screenSize$;
+
+    // let screenSize;
+    // this.screenSize$.pipe(take(1)).subscribe((size) => (screenSize = size));
+    // if (screenSize === 'web' && this.dashboardState() === 'thread-window') {
+    //   this.conversationWindowState = 'thread';
+    //   this.messages$ = this.conversationActiveRouterService.threadMessages$;
+    //   this.messages$.pipe(take(1)).subscribe((m) => console.log(m));
+    // }
   }
 
   /**
@@ -96,13 +105,10 @@ export class WindowDisplayComponent {
     this.channelTyp$ =
       this.conversationActiveRouterService.getConversationType$(this.route);
 
-    // Subscribe to conversation ID from route params
+    // Parent-Route: conversationType und conversationId
     this.route.params.pipe(takeUntil(this.destroy$)).subscribe((params) => {
       this.currentConversationId = params['conversationId'];
       this.currentConversationType = params['conversationType'];
-
-      const id = params['scrollTo'];
-      if (id) this.handleScrollRequest(id);
     });
 
     this.route.params
@@ -113,7 +119,6 @@ export class WindowDisplayComponent {
       )
       .subscribe((messageId) => {
         this.postAnsweredId = messageId;
-
         if (this.postAnsweredId) {
           this.postService
             .getPostById(
@@ -122,31 +127,26 @@ export class WindowDisplayComponent {
               this.postAnsweredId!
             )
             .pipe(takeUntil(this.destroy$))
-            .subscribe((post) => {
-              this.postAnswered = post;
-            });
+            .subscribe((post) => (this.postAnswered = post));
         } else {
           this.postAnswered = null;
         }
       });
 
+    // Hauptmessages abonnieren
     this.messages$.pipe(takeUntil(this.destroy$)).subscribe((data) => {
-      // Update content when new messages are received
-      this.onContentChange(
-        this.currentConversationId, // new chat ID
-        data // new messages
-      );
+      this.onContentChange(this.currentConversationId, data);
       setTimeout(() => this.scrollToLastMessage());
     });
 
-    // Subscribe to scroll requests from PostService
+    // Scroll-Handling
     this.postService.selected$
       .pipe(takeUntil(this.destroy$))
       .subscribe((postId) => {
         this.handleScrollRequest(postId);
       });
 
-    // Handle scroll-to from query parameters
+    // Scroll-to QueryParams
     this.route.queryParams
       .pipe(takeUntil(this.destroy$))
       .subscribe((params) => {
@@ -154,8 +154,9 @@ export class WindowDisplayComponent {
         if (id) this.handleScrollRequest(id);
       });
 
+    // Loaded-Flag
     this.isLoaded$ = defer(() => {
-      if (!this.messages$) return of(false);
+      if (!this.messages$) return of(true);
       return combineLatest([this.messages$, this.channelTyp$ ?? of(true)]).pipe(
         map(([messages]) => !!messages?.length),
         distinctUntilChanged(),
@@ -164,21 +165,73 @@ export class WindowDisplayComponent {
       );
     });
 
-    // this.isLoaded$ = defer(() => {
-    //   const messages$ = this.messages$ ?? of([]);
-    //   const channelTyp$ = this.channelTyp$ ?? of(true);
-    //   const postLoadedStates$ = this.postLoadedStates$ ?? of([]);
+    // this.channelTyp$ =
+    //   this.conversationActiveRouterService.getConversationType$(this.route);
 
-    //   return combineLatest([messages$, channelTyp$, postLoadedStates$]).pipe(
-    //     map(([messages, , postLoadedStates]) => {
-    //       if (!messages?.length) return false;
-    //       const allPostsLoaded =
-    //         postLoadedStates.length >= messages.length &&
-    //         postLoadedStates.every((loaded) => loaded === true);
-    //       return allPostsLoaded;
-    //     }),
-    //     startWith(false),
+    // // Subscribe to conversation ID from route params
+    // this.route.parent?.params
+    //   .pipe(takeUntil(this.destroy$))
+    //   .subscribe((params) => {
+    //     this.currentConversationId = params['conversationId'];
+    //     this.currentConversationType = params['conversationType'];
+    //     const id = params['scrollTo'];
+    //     if (id) this.handleScrollRequest(id);
+    //   });
+
+    // this.route.params
+    //   .pipe(
+    //     map((params) => params['messageId'] ?? null),
     //     distinctUntilChanged(),
+    //     takeUntil(this.destroy$)
+    //   )
+    //   .subscribe((messageId) => {
+    //     this.postAnsweredId = messageId;
+    //     if (this.postAnsweredId) {
+    //       this.postService
+    //         .getPostById(
+    //           this.currentConversationType!,
+    //           this.currentConversationId!,
+    //           this.postAnsweredId!
+    //         )
+    //         .pipe(takeUntil(this.destroy$))
+    //         .subscribe((post) => {
+    //           this.postAnswered = post;
+    //         });
+    //     } else {
+    //       this.postAnswered = null;
+    //     }
+    //   });
+
+    // this.messages$.pipe(takeUntil(this.destroy$)).subscribe((data) => {
+    //   // Update content when new messages are received
+    //   this.onContentChange(
+    //     this.currentConversationId, // new chat ID
+    //     data // new messages
+    //   );
+    //   setTimeout(() => this.scrollToLastMessage());
+    // });
+
+    // // Subscribe to scroll requests from PostService
+    // this.postService.selected$
+    //   .pipe(takeUntil(this.destroy$))
+    //   .subscribe((postId) => {
+    //     this.handleScrollRequest(postId);
+    //   });
+
+    // // Handle scroll-to from query parameters
+    // this.route.queryParams
+    //   .pipe(takeUntil(this.destroy$))
+    //   .subscribe((params) => {
+    //     const id = params['scrollTo'];
+    //     if (id) this.handleScrollRequest(id);
+    //   });
+
+    // this.isLoaded$ = defer(() => {
+    //   if (!this.messages$) return of(false);
+    //   return combineLatest([this.messages$, this.channelTyp$ ?? of(true)]).pipe(
+    //     map(([messages]) => !!messages?.length),
+    //     distinctUntilChanged(),
+    //     startWith(false),
     //     shareReplay({ bufferSize: 1, refCount: true })
     //   );
     // });
@@ -213,11 +266,6 @@ export class WindowDisplayComponent {
     // Handle initial scrollTo param (on first load)
     const initial = this.route.snapshot.queryParams['scrollTo'];
     if (initial) this.handleScrollRequest(initial);
-  }
-
-  onPostLoaded(loaded: boolean) {
-    const current = this.postLoadedStates$.value;
-    this.postLoadedStates$.next([...current, loaded]);
   }
 
   private scrollToLastMessage() {

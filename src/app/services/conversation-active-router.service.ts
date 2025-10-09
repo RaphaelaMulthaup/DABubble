@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, WritableSignal } from '@angular/core';
 import {
   DocumentData,
   Firestore,
@@ -29,6 +29,7 @@ import {
 import { ActivatedRoute } from '@angular/router';
 import { PostInterface } from '../shared/models/post.interface';
 import { ChannelInterface } from '../shared/models/channel.interface';
+import { DashboardState } from '../shared/types/dashboard-state.type';
 
 @Injectable({
   providedIn: 'root',
@@ -47,6 +48,8 @@ export class ConversationActiveRouterService {
 
   private messagesCache = new Map<string, Observable<PostInterface[]>>();
   private answersCache = new Map<string, Observable<PostInterface[]>>();
+  
+  // public threadMessages$: Observable<PostInterface[]> = of([]);
 
   constructor(private firestore: Firestore) {}
 

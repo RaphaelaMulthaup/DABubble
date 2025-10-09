@@ -1,18 +1,6 @@
-import { Component, DOCUMENT, Inject, inject, Renderer2 } from '@angular/core';
+import { Component} from '@angular/core';
 import { RouterOutlet, Router, NavigationStart } from '@angular/router';
 import { AsyncPipe, CommonModule } from '@angular/common';
-import {
-  collection,
-  collectionData,
-  deleteDoc,
-  doc,
-  Firestore,
-  getDocs,
-  setDoc,
-} from '@angular/fire/firestore';
-import { map, Subscription } from 'rxjs';
-import { UserService } from './services/user.service';
-import { ChatService } from './services/chat.service';
 import { OverlayService } from './services/overlay.service';
 
 /**

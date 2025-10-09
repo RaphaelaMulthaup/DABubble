@@ -59,6 +59,7 @@ export class ScreenService {
     if (currentScreenSize === 'handset') {
       this.setDashboardState('sidenav');
     } else {
+      this.router.navigate(['/dashboard', 'new-message']);
       this.setDashboardState('new-message-view');
     };
   }

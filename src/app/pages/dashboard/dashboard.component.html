@@ -21,10 +21,9 @@
         </div>
         }
         @else {
-        <app-conversation-window [data$]="messages$" [conversationWindowState]="'conversation'"></app-conversation-window>
-          @if (dashboardState()==='thread-window'){
-          <app-conversation-window class="thread-window" [data$]="answers$"
-            [conversationWindowState]="'thread'"></app-conversation-window>
+          <app-conversation-window [data$]="messages$" [conversationWindowState]="'conversation'"></app-conversation-window>
+          @if (dashboardState()==='thread-window') {
+            <router-outlet></router-outlet>
           }
         }
       </div>
@@ -50,7 +49,7 @@
             <app-conversation-window [data$]="messages$" [conversationWindowState]="'conversation'"></app-conversation-window>
           }
           @case ('thread-window') {
-            <app-conversation-window class="thread-window" [data$]="answers$" [conversationWindowState]="'thread'"></app-conversation-window>
+            <router-outlet class="thread-window"></router-outlet>
           }
         }
       </div>
@@ -68,7 +67,7 @@
           </div>
           }
           @case ('thread-window') {
-          <app-conversation-window [data$]="answers$" [conversationWindowState]="'thread'"></app-conversation-window>
+          <router-outlet class="thread-window"></router-outlet>
           }
           @case ('new-message-view') {
           <app-header-searchbar></app-header-searchbar>

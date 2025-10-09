@@ -3,6 +3,7 @@ import {
   EventEmitter,
   inject,
   Input,
+  OnInit,
   Output,
   WritableSignal,
 } from '@angular/core';
@@ -10,11 +11,13 @@ import { CommonModule } from '@angular/common';
 import { ConversationHeaderComponent } from './conversation-header/conversation-header.component';
 import { WindowDisplayComponent } from './window-display/window-display.component';
 import { CurrentPostInput } from './current-post-input/current-post-input.component';
-import { Observable } from 'rxjs';
+import { distinctUntilChanged, map, Observable, take } from 'rxjs';
 import { PostInterface } from '../../../shared/models/post.interface';
 import { DashboardState } from '../../../shared/types/dashboard-state.type';
 import { ScreenSize } from '../../../shared/types/screen-size.type';
 import { ScreenService } from '../../../services/screen.service';
+import { ActivatedRoute } from '@angular/router';
+import { ConversationActiveRouterService } from '../../../services/conversation-active-router.service';
 
 /**
  * Component representing a conversation window.
@@ -43,8 +46,7 @@ export class ConversationWindowComponent {
    * EventEmitter that emits the change in mobile dashboard state.
    * The parent component can listen to this event to track changes in the state.
    */
-  @Output() changeDashboardState =
-    new EventEmitter<DashboardState>();
+  @Output() changeDashboardState = new EventEmitter<DashboardState>();
 
   /**
    * WritableSignal representing the mobile dashboard state.
@@ -54,8 +56,20 @@ export class ConversationWindowComponent {
   screenSize$!: Observable<ScreenSize>;
   @Input() conversationWindowState?: 'conversation' | 'thread';
 
-  constructor(public screenService: ScreenService) {
+  constructor(
+    private conversationActiveRouterService: ConversationActiveRouterService,
+    private route: ActivatedRoute,
+    public screenService: ScreenService
+  ) {
     this.dashboardState = this.screenService.dashboardState;
-    this.screenSize$ = this.screenService.screenSize$;   
+    this.screenSize$ = this.screenService.screenSize$;
+
+    // let screenSize;
+    // this.screenSize$.pipe((take(1))).subscribe((size) => screenSize = size);
+    // if (screenSize === 'web' && this.dashboardState() === 'thread-window') {
+    //   this.conversationWindowState = 'thread';
+    //   this.data$ = this.conversationActiveRouterService.threadMessages$;
+    //   this.data$.pipe(take(1)).subscribe((m) => console.log(m));
+    // }
   }
 }

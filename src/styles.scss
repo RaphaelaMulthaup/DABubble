@@ -257,16 +257,16 @@ h4 {
   box-shadow: 0px -4px 8px 0px var(--color-white), 0px 0px 4px 0px var(--color-white);
 }
 
-// .box-shadow-bottom {
-//   box-shadow: 0px 4px 8px 0px var(--color-white), 0px 0px 4px 0px var(--color-white);
-// }
+.box-shadow-bottom {
+  box-shadow: 0px 4px 8px 0px var(--color-white), 0px 0px 4px 0px var(--color-white);
+}
 
-// .box-shadow-inset {
-//   box-shadow: 
-//     0px 4px 8px 0px var(--color-black) inset, 
-//     0px 0px 4px 0px var(--color-black) inset,
-//     0px -4px 8px 0px var(--color-black) inset 
-// }
+.box-shadow-inset {
+  box-shadow: 
+    0px 4px 8px 0px var(--color-black) inset, 
+    0px 0px 4px 0px var(--color-black) inset,
+    0px -4px 8px 0px var(--color-black) inset 
+}
 
 .overlay {
   background-color: var(--color-white);

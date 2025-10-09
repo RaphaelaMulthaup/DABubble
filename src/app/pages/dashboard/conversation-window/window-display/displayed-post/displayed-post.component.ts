@@ -87,6 +87,10 @@ export class DisplayedPostComponent {
   ) {
     this.screenSize$ = this.screenService.screenSize$;
     this.dashboardState = this.screenService.dashboardState;
+
+    // setTimeout(() => {
+    //   console.log(this.post, this.editingPost, this.conversationWindowState)
+    // }, 1000);
   }
 
   ngOnChanges() {
