@@ -34,7 +34,7 @@
         @if(screenService.sidenavVisible) {
           <app-sidenav class="relative"></app-sidenav>
         }
-        @switch (dashboardState()) {
+        <!-- @switch (dashboardState()) {
           @case ('new-message-view') {
             <div class="new-message-view flex flex-col h-full">
               <app-header-searchbar (resultsChange)="onResultsChanged($event)" (hasInputChange)="onHasInputChange($event)"></app-header-searchbar>
@@ -51,13 +51,14 @@
           @case ('thread-window') {
             <router-outlet class="thread-window"></router-outlet>
           }
-        }
+        } -->
+        <router-outlet></router-outlet>
       </div>
     }
 
     @case ('handset') {
       <div class="w-full h-full">
-        @switch (dashboardState()) {
+        <!-- @switch (dashboardState()) {
           @case ('sidenav') {
           <app-sidenav></app-sidenav>
           }
@@ -73,6 +74,11 @@
           <app-header-searchbar></app-header-searchbar>
           <div class="empty-window-handset"></div>
           }
+        } -->
+        @if (dashboardState() === 'sidenav') {
+          <app-sidenav></app-sidenav>
+        } @else {
+          <router-outlet></router-outlet>
         }
       </div>
     }
