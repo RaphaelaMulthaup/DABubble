@@ -17,11 +17,17 @@ import {
 } from 'firebase/auth';
 import {
   Firestore,
+  addDoc,
+  collection,
   deleteDoc,
   doc,
   getDoc,
+  getDocs,
+  limit,
+  query,
   setDoc,
   updateDoc,
+  where,
 } from '@angular/fire/firestore';
 import { from, map, Observable, of, shareReplay, switchMap, tap } from 'rxjs';
 import { UserInterface } from '../shared/models/user.interface';
@@ -29,6 +35,8 @@ import { UserService } from './user.service';
 import { ChatService } from './chat.service';
 import { ScreenService } from './screen.service';
 import { UserToRegisterInterface } from '../shared/models/user.to.register.interface';
+import { PostService } from './post.service';
+import { ChannelInterface } from '../shared/models/channel.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -47,7 +55,8 @@ export class AuthService {
     private chatService: ChatService,
     private firestore: Firestore,
     private userService: UserService,
-    private screenService: ScreenService
+    private screenService: ScreenService,
+    private postService: PostService
   ) {
     // 🔥 Reaktives Observable mit Absicherung, dass User-Dokument existiert
     this.currentUser$ = new Observable<User | null>((subscriber) =>
@@ -122,7 +131,11 @@ export class AuthService {
   /** Register new user */
   register(userData: UserToRegisterInterface): Observable<void> {
     return from(
-      createUserWithEmailAndPassword(this.auth, userData.email, userData.password)
+      createUserWithEmailAndPassword(
+        this.auth,
+        userData.email,
+        userData.password
+      )
     ).pipe(
       switchMap(async (response) => {
         const user = response.user;
@@ -159,17 +172,156 @@ export class AuthService {
           photoUrl: './assets/img/no-avatar.svg',
         });
         await this.addDirectChatToTeam(user.uid);
+        await this.createDeveloperTeamChannel(user.uid);
       })
       .catch((error) => console.error('Guest login error:', error));
     return from(promise) as Observable<void>;
   }
 
-  /** Add default chats for guest user */
   async addDirectChatToTeam(userId: string) {
-    await this.chatService.createChat(userId, 'XbsVa8YOj8Nd9vztzX1kAQXrc7Z2');
-    await this.chatService.createChat(userId, '5lntBSrRRUM9JB5AFE14z7lTE6n1');
-    await this.chatService.createChat(userId, 'rUnD1S8sHOgwxvN55MtyuD9iwAD2');
-    await this.chatService.createChat(userId, 'NxSyGPn1LkPV3bwLSeW94FPKRzm1');
+    const devChats = [
+      'XbsVa8YOj8Nd9vztzX1kAQXrc7Z2',
+      '5lntBSrRRUM9JB5AFE14z7lTE6n1',
+      'rUnD1S8sHOgwxvN55MtyuD9iwAD2',
+      'NxSyGPn1LkPV3bwLSeW94FPKRzm1',
+    ];
+
+    for (const devId of devChats) {
+      // Chat erstellen (gibt keine chatId zurück)
+      await this.chatService.createChat(userId, devId);
+
+      // chatId erneut abrufen
+      const chatId = await this.chatService.getChatId(userId, devId);
+
+      // Beispielnachrichten vorbereiten
+      let messages: { senderId: string; text: string }[] = [];
+
+      switch (devId) {
+        case 'XbsVa8YOj8Nd9vztzX1kAQXrc7Z2':
+          messages = [
+            {
+              senderId: devId,
+              text: 'Hey! Schön, dass du unseren Chat ausprobierst 😊',
+            },
+            { senderId: userId, text: 'Hi! Sieht alles sehr gut aus!' },
+            {
+              senderId: devId,
+              text: 'Freut mich! Probier ruhig ein paar Funktionen aus.',
+            },
+          ];
+          break;
+
+        case '5lntBSrRRUM9JB5AFE14z7lTE6n1':
+          messages = [
+            {
+              senderId: devId,
+              text: 'Hallo! Schön, dass du dir unsere App anschaust.',
+            },
+            {
+              senderId: userId,
+              text: 'Hi! Ja, ich gucke mich gerade ein bisschen um. Was war dein Beitrag zur Chat-App?',
+            },
+            {
+              senderId: devId,
+              text: 'Ich habe zum Beispiel die Suchfunktion umgesetzt. Such doch mal nach dem Channel #Entwicklerteam. Du kannst ihn natürlich auch direkt in der Sidenav anklicken.',
+            },
+          ];
+          break;
+
+        case 'rUnD1S8sHOgwxvN55MtyuD9iwAD2':
+          messages = [
+            { senderId: devId, text: 'Hi! Willkommen im Demo-Chat 🎨' },
+            { senderId: userId, text: 'Danke! Alles wirkt sehr aufgeräumt.' },
+            {
+              senderId: devId,
+              text: 'Freut mich! Schau dich ruhig noch weiter um.',
+            },
+          ];
+          break;
+
+        case 'NxSyGPn1LkPV3bwLSeW94FPKRzm1':
+          messages = [
+            { senderId: devId, text: 'Hey! Schön, dass du hier bist 🧠' },
+            { senderId: userId, text: 'Hi! Die App reagiert richtig flüssig.' },
+            {
+              senderId: devId,
+              text: 'Super! Dann viel Spaß beim Ausprobieren 🚀',
+            },
+          ];
+          break;
+      }
+
+      // Nachrichten erstellen
+      for (const msg of messages) {
+        await this.postService.createMessage(
+          chatId,
+          msg.senderId,
+          msg.text,
+          'chat'
+        );
+      }
+    }
+  }
+
+  async createDeveloperTeamChannel(guestId: string) {    
+    const devIds = [
+      'XbsVa8YOj8Nd9vztzX1kAQXrc7Z2',
+      '5lntBSrRRUM9JB5AFE14z7lTE6n1',
+      'rUnD1S8sHOgwxvN55MtyuD9iwAD2',
+      'NxSyGPn1LkPV3bwLSeW94FPKRzm1',
+    ];
+    const channelRef = collection(this.firestore, 'channels');
+
+    // Channel existiert noch nicht, also erstellen
+    const channelData: ChannelInterface = {
+      name: 'Entwicklerteam',
+      description:
+        'Hier kannst du dich zusammen mit den EntwicklerInnen über die Chat-App austauschen.',
+      memberIds: [...devIds, guestId],
+      createdBy: guestId,
+      createdAt: new Date(),
+    };
+
+    // Channel anlegen
+    const channelDocRef = await addDoc(channelRef, channelData);
+
+    // Die gesamte Unterhaltung als Nachrichten im Channel einfügen
+    const messages = [
+      {
+        senderId: 'XbsVa8YOj8Nd9vztzX1kAQXrc7Z2',
+        text: 'Wie wäre es, wenn wir beim eigenen User-List-Item noch ein "(Du)" hinzufügen, um den aktuellen Nutzer zu kennzeichnen?',
+      },
+      {
+        senderId: guestId, // Beispiel-Entwickler-ID
+        text: 'Das fände ich super! So sieht man direkt, dass es der eigene Account ist. Besonders für neue Nutzer ist das eine tolle Orientierung.',
+      },
+      {
+        senderId: '5lntBSrRRUM9JB5AFE14z7lTE6n1', // Beispiel-Entwickler-ID
+        text: 'Wir könnten eine kleine Abfrage einbauen, um zu prüfen, ob der User, der angezeigt wird, der aktuelle Nutzer ist. In dem Fall fügen wir das "(Du)" hinzu.',
+      },
+      {
+        senderId: 'rUnD1S8sHOgwxvN55MtyuD9iwAD2', // Beispiel-Entwickler-ID
+        text: 'Ich kann das umsetzen! Wir schauen dann, ob der User in `currentUser$` dem angezeigten User entspricht. Wenn ja, fügen wir das "(Du)" hinzu.',
+      },
+      {
+        senderId: 'NxSyGPn1LkPV3bwLSeW94FPKRzm1', // Der vierte Entwickler
+        text: 'Ich würde noch vorschlagen, dass wir darauf achten, dass das "Du" auch bei einem gekürzten Namen in einem kleineren Layout sichtbar bleibt. Der Name kann sich den Platz nehmen, bis er mit "..." gekürzt wird, aber das "(Du)" sollte immer daneben erscheinen.',
+      },
+      {
+        senderId: guestId,
+        text: 'Super Idee! Dann ist es auch bei kleinen Bildschirmen klar, wer der eigene Account ist. Danke für den Vorschlag!',
+      },
+    ];
+
+    // Nachrichten im Channel erstellen
+    for (const msg of messages) {
+      await this.postService.createMessage(
+        channelDocRef.id,
+        msg.senderId,
+        msg.text,
+        'channel'
+      );
+    }
   }
 
   /** Login with Google */
