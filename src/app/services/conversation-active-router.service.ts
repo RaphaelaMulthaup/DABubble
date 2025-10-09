@@ -179,7 +179,7 @@ export class ConversationActiveRouterService {
     const ref = collection(this.firestore, path);
     const lastVisible = this.lastVisibleMap.get(conversationId);
     let q = query(ref, orderBy('createdAt', 'asc'), limit(pageSize));
-    console.log('Loading older messages for', conversationId);
+    // console.log('Loading older messages for', conversationId);
 
     if (lastVisible) {
       q = query(

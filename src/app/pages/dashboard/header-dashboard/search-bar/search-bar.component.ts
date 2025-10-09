@@ -5,7 +5,8 @@ import {
   Signal,
   ViewChild,
   OnInit,
-  OnDestroy
+  OnDestroy,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import {
@@ -43,6 +44,7 @@ import { BaseSearchDirective } from '../../../../shared/directives/base-search.d
     PostListItemComponent,
   ],
   templateUrl: './search-bar.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./search-bar.component.scss'],
 })
 export class SearchBarComponent extends BaseSearchDirective implements OnInit, OnDestroy {

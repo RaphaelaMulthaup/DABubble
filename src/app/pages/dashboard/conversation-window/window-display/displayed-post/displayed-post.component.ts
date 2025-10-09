@@ -1,13 +1,23 @@
-import { Component, Input, Output, WritableSignal } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  WritableSignal,
+} from '@angular/core';
 import { PostInterface } from '../../../../../shared/models/post.interface';
 import { AuthService } from '../../../../../services/auth.service';
 import { UserService } from '../../../../../services/user.service';
 import {
+  combineLatest,
+  defer,
   distinctUntilChanged,
   filter,
   map,
   of,
   shareReplay,
+  startWith,
   Subject,
   switchMap,
   take,
@@ -41,26 +51,29 @@ import { ConnectedPosition } from '@angular/cdk/overlay';
   styleUrl: './displayed-post.component.scss', // SCSS styles for this component
 })
 export class DisplayedPostComponent {
-  @Input() @Output() post!: PostInterface;
+  @Input() post!: PostInterface;
   @Input() editingPost?: boolean;
-  emojis = EMOJIS;
-  currentConversationType!: 'channel' | 'chat';
-  currentConversationId!: string;
+  @Input() conversationWindowState?: 'conversation' | 'thread';
+  // @Output() postLoaded = new EventEmitter<boolean>();
+
+  screenSize$!: Observable<ScreenSize>;
+  dashboardState!: WritableSignal<DashboardState>;
   senderName$!: Observable<string>;
   senderPhotoUrl$!: Observable<string | undefined>;
-  senderIsCurrentUser!: boolean;
   createdAtTime$!: Observable<string>;
   reactions$!: Observable<ReactionInterface[]>;
   visibleReactions$!: Observable<ReactionInterface[]>;
+  // isLoaded$!: Observable<boolean>;
+  private destroy$ = new Subject<void>();
+
+  emojis = EMOJIS;
+  currentConversationType!: 'channel' | 'chat';
+  parentMessageId?: string;
+  currentConversationId!: string;
+  senderIsCurrentUser!: boolean;
   allReactionsVisible: boolean = false;
   postClicked: boolean = false;
   isThreadTheme: boolean = false;
-  parentMessageId?: string; //the id of the message, an answer belongs to -> only if the message is an answer
-  screenSize$!: Observable<ScreenSize>;
-  @Input() conversationWindowState?: 'conversation' | 'thread';
-  private destroy$ = new Subject<void>();
-  chatActiveRouterService: any;
-  dashboardState!: WritableSignal<DashboardState>;
 
   constructor(
     private authService: AuthService,
@@ -76,7 +89,8 @@ export class DisplayedPostComponent {
     this.dashboardState = this.screenService.dashboardState;
   }
 
-  async ngOnChanges() {
+  ngOnChanges() {
+    if (!this.post) return;
     this.conversationActiveRouterService
       .getParams$(this.route)
       .pipe(takeUntil(this.destroy$))
@@ -131,9 +145,15 @@ export class DisplayedPostComponent {
       const user$ = this.userService.getUserById(this.post.senderId);
       this.senderName$ = user$.pipe(map((u) => u?.name ?? ''));
       this.senderPhotoUrl$ = user$.pipe(map((u) => u?.photoUrl ?? ''));
+      // this.setLoadingState();
     });
 
-    // Zeit formatieren
+    // const user$ = this.userService.getUserById(this.post.senderId);
+    // this.senderName$ = user$.pipe(map((u) => u?.name ?? ''));
+    // this.senderPhotoUrl$ = user$.pipe(map((u) => u?.photoUrl ?? ''));
+    // this.senderIsCurrentUser =
+    //   this.post.senderId === this.authService.currentUser?.uid;
+
     this.createdAtTime$ = of(this.post.createdAt).pipe(
       map((ts) => {
         let date: Date;
@@ -149,6 +169,27 @@ export class DisplayedPostComponent {
       })
     );
   }
+
+  // setLoadingState() {
+  //   this.isLoaded$ = defer(() => {
+  //     const senderName$ = this.senderName$ ?? of('');
+  //     const photo$ = this.senderPhotoUrl$ ?? of(undefined);
+  //     const reactions$ = this.reactions$ ?? of([]);
+  //     const screenSize$ = this.screenSize$ ?? of(null);
+
+  //     return combineLatest([senderName$, photo$, reactions$, screenSize$]).pipe(
+  //       map(([name]) => !!name),
+  //       distinctUntilChanged(),
+  //       startWith(false),
+  //       shareReplay({ bufferSize: 1, refCount: true })
+  //     );
+  //   });
+
+  //   // this.isLoaded$.subscribe((loaded) => {
+  //   //   console.log('post loaded', loaded, this.post?.id);
+  //   //   this.postLoaded.emit(loaded);
+  //   // });
+  // }
 
   ngOnDestroy() {
     this.destroy$.next();

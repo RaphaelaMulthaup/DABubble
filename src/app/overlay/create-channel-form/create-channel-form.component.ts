@@ -79,7 +79,7 @@ export class CreateChannelFormComponent {
    * Handles form submission
    */
   onSubmit(): void {
-    console.log('Fehler', this.errorMessage);
+    // console.log('Fehler', this.errorMessage);
     // Check if the form is valid
     if (this.createChannel.invalid) {
       this.errorMessage = 'Please fill in all required fields correctly.';

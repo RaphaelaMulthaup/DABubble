@@ -13,7 +13,7 @@
   }
 
   @if (isLoaded$ | async; as loaded) {
-    @if ((isLoaded$ | async) && (messages$ | async); as messages) {
+    @if ((isLoaded$ | async | json) && (messages$ | async); as messages) {
       @if (messages.length > 0) {
         @for (message of messages; track message.id) { 
           @if (shouldShowDate($index)) {
@@ -50,6 +50,7 @@
             [post]="message"
             [id]="message.id"
             [conversationWindowState]="conversationWindowState"
+            
           ></app-displayed-post>
         } 
       }

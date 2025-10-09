@@ -1,4 +1,4 @@
-import { Component, WritableSignal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, WritableSignal } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
 import { ChannelListComponent } from './channel-list/channel-list.component';
 import { ContactsListComponent } from './contacts-list/contacts-list.component';
@@ -21,6 +21,7 @@ import { OverlayService } from '../../../services/overlay.service';
   // Imports necessary child components used in the sidebar
   imports: [ContactsListComponent, ChannelListComponent, CommonModule],
   templateUrl: './sidenav.component.html', // HTML template for the sidebar
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './sidenav.component.scss', // Styles for the sidebar
 })
 export class SidenavComponent {

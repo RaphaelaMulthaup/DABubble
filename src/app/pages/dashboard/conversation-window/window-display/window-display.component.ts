@@ -13,6 +13,7 @@ import { DisplayedPostComponent } from './displayed-post/displayed-post.componen
 import { PostInterface } from '../../../../shared/models/post.interface';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
+  BehaviorSubject,
   combineLatest,
   defer,
   distinctUntilChanged,
@@ -67,11 +68,12 @@ export class WindowDisplayComponent {
   // Localized days of the week for displaying timestamps
   days = DAYS;
   @Input() conversationWindowState?: 'conversation' | 'thread';
+  private postLoadedStates$ = new BehaviorSubject<boolean[]>([]);
   private pendingScrollTo?: string; // Stores a post ID to scroll to once available
   private destroy$ = new Subject<void>(); // Used to clean up subscriptions
   screenSize$!: Observable<ScreenSize>;
   private initialScrollDone = false;
-  isLoaded$: Observable<boolean>;
+  isLoaded$!: Observable<boolean>;
 
   constructor(
     private el: ElementRef,
@@ -84,20 +86,6 @@ export class WindowDisplayComponent {
   ) {
     this.dashboardState = this.screenService.dashboardState;
     this.screenSize$ = this.screenService.screenSize$;
-    this.isLoaded$ = defer(() => {
-      if (!this.messages$) return of(false);
-      return combineLatest([
-        this.messages$,
-        this.channelTyp$ ?? of(true),
-      ]).pipe(
-        map(
-          ([messages]) => !!messages?.length
-        ),
-        distinctUntilChanged(),
-        startWith(false),
-        shareReplay({ bufferSize: 1, refCount: true })
-      );
-    });
   }
 
   /**
@@ -165,6 +153,35 @@ export class WindowDisplayComponent {
         const id = params['scrollTo'];
         if (id) this.handleScrollRequest(id);
       });
+
+    this.isLoaded$ = defer(() => {
+      if (!this.messages$) return of(false);
+      return combineLatest([this.messages$, this.channelTyp$ ?? of(true)]).pipe(
+        map(([messages]) => !!messages?.length),
+        distinctUntilChanged(),
+        startWith(false),
+        shareReplay({ bufferSize: 1, refCount: true })
+      );
+    });
+
+    // this.isLoaded$ = defer(() => {
+    //   const messages$ = this.messages$ ?? of([]);
+    //   const channelTyp$ = this.channelTyp$ ?? of(true);
+    //   const postLoadedStates$ = this.postLoadedStates$ ?? of([]);
+
+    //   return combineLatest([messages$, channelTyp$, postLoadedStates$]).pipe(
+    //     map(([messages, , postLoadedStates]) => {
+    //       if (!messages?.length) return false;
+    //       const allPostsLoaded =
+    //         postLoadedStates.length >= messages.length &&
+    //         postLoadedStates.every((loaded) => loaded === true);
+    //       return allPostsLoaded;
+    //     }),
+    //     startWith(false),
+    //     distinctUntilChanged(),
+    //     shareReplay({ bufferSize: 1, refCount: true })
+    //   );
+    // });
   }
 
   /**
@@ -196,6 +213,11 @@ export class WindowDisplayComponent {
     // Handle initial scrollTo param (on first load)
     const initial = this.route.snapshot.queryParams['scrollTo'];
     if (initial) this.handleScrollRequest(initial);
+  }
+
+  onPostLoaded(loaded: boolean) {
+    const current = this.postLoadedStates$.value;
+    this.postLoadedStates$.next([...current, loaded]);
   }
 
   private scrollToLastMessage() {
@@ -439,7 +461,7 @@ export class WindowDisplayComponent {
           setTimeout(() => {
             container.scrollTop = container.scrollHeight - previousHeight;
             this.loadingOlderMessages = false;
-            console.log('Scroll top reached', container.scrollTop);
+            // console.log('Scroll top reached', container.scrollTop);
           });
         })
         .catch(() => (this.loadingOlderMessages = false));

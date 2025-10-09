@@ -1,4 +1,4 @@
-import { Component, WritableSignal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, WritableSignal } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { SidenavComponent } from './sidenav/sidenav.component';
 import { ConversationWindowComponent } from './conversation-window/conversation-window.component';
@@ -41,6 +41,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
     SearchResultsNewMessageComponent,
   ],
   templateUrl: './dashboard.component.html', // HTML template for the dashboard
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './dashboard.component.scss', // Styles for the dashboard
 })
 export class DashboardComponent {
