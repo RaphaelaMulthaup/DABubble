@@ -10,7 +10,7 @@
         @if(screenService.sidenavVisible) {
           <app-sidenav class="relative"></app-sidenav>
         }
-        @if (dashboardState() === 'new-message-view') {
+        <!-- @if (dashboardState() === 'new-message-view') {
         <div class="new-message-view flex flex-col h-full">
           <app-header-searchbar (resultsChange)="onResultsChanged($event)" (hasInputChange)="onHasInputChange($event)"></app-header-searchbar>
           <div class="empty-window-web-tablet">
@@ -25,7 +25,8 @@
           @if (dashboardState()==='thread-window') {
             <router-outlet></router-outlet>
           }
-        }
+        } -->
+        <router-outlet></router-outlet>
       </div>
     }
 
