@@ -88,13 +88,6 @@ export class DisplayedPostComponent {
   ) {
     this.screenSize$ = this.screenService.screenSize$;
     this.dashboardState = this.screenService.dashboardState;
-
-    // setTimeout(() => {
-    //   console.log(this.editingPost)
-    // }, 1000);
-    // setTimeout(() => {
-    //   console.log(this.conversationWindowState);
-    // }, 1000);
   }
 
   ngOnChanges() {
@@ -143,7 +136,8 @@ export class DisplayedPostComponent {
           .filter((r) => r.users.length > 0)
           .sort((a, b) => b.users.length - a.users.length)
       ),
-      distinctUntilChanged((a, b) => a === b)
+      distinctUntilChanged((a, b) => a === b),
+      shareReplay({ bufferSize: 1, refCount: true })
     );
 
     setTimeout(() => {

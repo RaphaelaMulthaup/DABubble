@@ -14,7 +14,7 @@ import { DisplayedPostComponent } from './displayed-post/displayed-post.componen
 import { PostInterface } from '../../../../../shared/models/post.interface';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
-  BehaviorSubject,
+  catchError,
   combineLatest,
   defer,
   distinctUntilChanged,
@@ -24,18 +24,17 @@ import {
   shareReplay,
   startWith,
   Subject,
-  take,
   takeUntil,
 } from 'rxjs';
 import { ConversationActiveRouterService } from '../../../../../services/conversation-active-router.service';
 import { ChatService } from '../../../../../services/chat.service';
-import { EmptyChatViewComponent } from './empty-chat-view/empty-chat-view.component';
 import { DashboardState } from '../../../../../shared/types/dashboard-state.type';
-import { EmptyChannelViewComponent } from './empty-channel-view/empty-channel-view.component';
 import { ScreenSize } from '../../../../../shared/types/screen-size.type';
 import { ScreenService } from '../../../../../services/screen.service';
-import { EmptyThreadViewComponent } from './empty-thread-view/empty-thread-view.component';
 import { DAYS } from '../../../../../shared/constants/days';
+import { EmptyChatViewComponent } from './empty-chat-view/empty-chat-view.component';
+import { EmptyChannelViewComponent } from './empty-channel-view/empty-channel-view.component';
+import { EmptyThreadViewComponent } from './empty-thread-view/empty-thread-view.component';
 
 @Component({
   selector: 'app-window-display', // Component selector used in parent templates
@@ -45,13 +44,12 @@ import { DAYS } from '../../../../../shared/constants/days';
     EmptyChatViewComponent,
     EmptyChannelViewComponent,
     EmptyThreadViewComponent,
-  ], // Child components needed in the template
+  ],
   templateUrl: './window-display.component.html', // External HTML template
   styleUrl: './window-display.component.scss', // External SCSS styles
 })
 export class WindowDisplayComponent implements OnInit {
   @Input() messages$!: import('rxjs').Observable<PostInterface[]>;
-  // an array with all posts in this conversation
   currentConversationType?: 'channel' | 'chat';
   postAnsweredId!: string | null;
   postAnswered!: PostInterface | null;
@@ -156,13 +154,14 @@ export class WindowDisplayComponent implements OnInit {
         if (id) this.handleScrollRequest(id);
       });
 
-    // Loaded-Flag
     this.isLoaded$ = defer(() => {
-      if (!this.messages$) return of(true);
+      if (!this.messages$) return of(true); // Kein Stream vorhanden → gilt als geladen
+
       return combineLatest([this.messages$, this.channelTyp$ ?? of(true)]).pipe(
-        map(([messages]) => !!messages?.length),
+        map(([messages]) => messages !== undefined && messages !== null),
         distinctUntilChanged(),
         startWith(false),
+        catchError(() => of(true)), // Falls Firestore-Error, trotzdem UI anzeigen
         shareReplay({ bufferSize: 1, refCount: true })
       );
     });
@@ -170,6 +169,8 @@ export class WindowDisplayComponent implements OnInit {
     // setTimeout(() => {
     //   console.log(this.conversationWindowState, this.postAnswered);
     // }, 1000);
+    // this.channelTyp$.subscribe((m) => console.log(m))
+    // console.log(this.currentConversationId);
   }
 
   /**

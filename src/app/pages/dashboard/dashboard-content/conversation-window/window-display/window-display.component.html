@@ -3,7 +3,7 @@
   class="messages-container"
   [ngClass]="{
     'messages-container-empty-view':
-      (messages$ | async)?.length === 0 && conversationWindowState !== 'thread'
+      (messages$ | async)?.length == 0 && conversationWindowState !== 'thread'
   }"
 >
 
@@ -51,8 +51,7 @@
             [conversationWindowState]="conversationWindowState"
           ></app-displayed-post>
         } 
-      }
-      @else {
+      } @else {
         @if (dashboardState()!=='thread-window') { 
           @switch (channelTyp$ | async) {
             @case ('chat') {

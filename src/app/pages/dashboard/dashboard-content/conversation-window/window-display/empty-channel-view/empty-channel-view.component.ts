@@ -24,7 +24,9 @@ export class EmptyChannelViewComponent {
     private conversationActiveRouterService: ConversationActiveRouterService, // Service for reading chat/channel routing info
     private route: ActivatedRoute, // Gives access to the current route (params, query, etc.)
     private channelService: ChannelsService // Provides methods to fetch channel data
-  ) {}
+  ) {
+    console.log(1)
+  }
 
   /**
    * Lifecycle hook: initializes the component.
@@ -32,7 +34,7 @@ export class EmptyChannelViewComponent {
    * - Fetches the current channel from ChannelsService
    * - Ensures that `channel$` only emits when a valid channel exists
    */
-  ngOnInit() {
+  ngOnChanges() {
     this.conversationActiveRouterService
       .getConversationId$(this.route)
       .pipe(takeUntil(this.destroy$)) // reagiert dauerhaft auf Änderungen
@@ -49,6 +51,9 @@ export class EmptyChannelViewComponent {
             )
           );
       });
+
+    // this.channel$.subscribe((m) => console.log(m));
+    // console.log(this.channelId);
   }
 
   ngOnDestroy() {
