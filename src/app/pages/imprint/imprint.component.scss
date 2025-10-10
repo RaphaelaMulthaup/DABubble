@@ -1,6 +1,14 @@
 @import './../../../styles.scss';
 @import "../../shared/styles/outside-dashboard.scss";
 
+.imrpint-section{
+    height: fit-content;
+}
+
+.imprint-content{
+    overflow-y: auto;
+}
+
 h1 {
     align-self: flex-start;
 
@@ -10,6 +18,7 @@ h1 {
 }
 
 .txt-area{
+    height: 550px;
     padding: 0px 48px 0px 48px;
 }
 

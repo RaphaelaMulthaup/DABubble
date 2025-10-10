@@ -14,9 +14,12 @@
   color: var(--color-purple-medium);
   filter: brightness(0);
 
-  &:hover {
-    filter: brightness(1);
-  }
+    &:hover {
+        filter: brightness(1);
+        @include respond-to(xs) {
+            filter: brightness(0);
+        }
+    }
 }
 
 .arrow-rotate {

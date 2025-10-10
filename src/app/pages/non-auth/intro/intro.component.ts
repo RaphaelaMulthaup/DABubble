@@ -79,6 +79,7 @@ export class IntroComponent implements OnInit {
 
     setTimeout(() => {
       logoContainer?.classList.add('logo-container-final');
+      logoContainer?.classList.add('final-container');
     }, 1000);
   }
 

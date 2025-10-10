@@ -32,9 +32,12 @@ export class ChangeChannelDescriptionComponent {
     this.screenSize$ = this.screenService.screenSize$;
   }
 
-  async saveDescription(newName: string) {
-    await this.channelService.changeChannelDescription(this.channelId!, newName);
-    this.isEditActive = !this.isEditActive;
+  async saveDescription(newDescription: string) {
+    if (!this.channelId || !this.channel) return;
+
+    await this.channelService.changeChannelDescription(this.channelId, newDescription);
+    this.channel.description = newDescription;
+    this.isEditActive = false;
     this.editActiveChange.emit(this.isEditActive);
   }
 
