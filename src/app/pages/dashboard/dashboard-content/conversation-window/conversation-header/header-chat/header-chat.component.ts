@@ -4,6 +4,8 @@ import { Observable } from 'rxjs';
 import { ChatService } from '../../../../../../services/chat.service';
 import { UserInterface } from '../../../../../../shared/models/user.interface';
 import { CommonModule } from '@angular/common';
+import { ScreenService } from '../../../../../../services/screen.service';
+import { ScreenSize } from '../../../../../../shared/types/screen-size.type';
 
 /**
  * The HeaderChatComponent displays the user information of the other participant
@@ -22,11 +24,16 @@ export class HeaderChatComponent {
    * The value is fetched from the ChatService.
    */
   otherUser$!: Observable<UserInterface | null>;
-
+  screenSize$!: Observable<ScreenSize>;
   /**
    * Constructor that injects the ChatService to access chat-related data and logic.
    */
-  constructor(private chatService: ChatService) {}
+  constructor(
+    private chatService: ChatService,
+    private screenService: ScreenService
+  ) {
+    this.screenSize$ = this.screenService.screenSize$;
+  }
 
   /**
    * Lifecycle hook called when the component is initialized.

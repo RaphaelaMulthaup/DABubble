@@ -1,5 +1,6 @@
 @if ((otherUser$ | async)) {
-<section>
+<section [ngStyle]="{
+    height: (screenSize$ | async) === 'handset'? '78px': '96px'}">
   <app-user-list-item
     [user]="(otherUser$ | async)!"
     [inHeaderChat]="true"

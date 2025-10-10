@@ -17,10 +17,6 @@ export const routes: Routes = [
     component: DashboardComponent,
     canActivate: [AuthGuard],
     children: [
-      // {
-      //   path: 'answers/:messageId',
-      //   component: ConversationWindowComponent
-      // },
       {
         path: ':conversationType/:conversationId',
         component: DashboardContentComponent,
@@ -35,16 +31,6 @@ export const routes: Routes = [
       },
     ],
   },
-  // {
-  //   path: 'dashboard/:conversationType/:conversationId/answers/:messageId',
-  //   component: DashboardComponent,
-  //   canActivate: [AuthGuard],
-  // },
-  // {
-  //   path: 'dashboard',
-  //   component: DashboardComponent,
-  //   canActivate: [AuthGuard],
-  // },
   { path: '**', redirectTo: '' },
   { path: 'confirm', component: ConfirmPasswordComponent },
   { path: 'reset', component: ResetPasswordComponent },
