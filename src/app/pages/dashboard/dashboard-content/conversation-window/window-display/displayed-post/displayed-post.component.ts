@@ -90,7 +90,10 @@ export class DisplayedPostComponent {
     this.dashboardState = this.screenService.dashboardState;
 
     // setTimeout(() => {
-    //   console.log(this.post, this.editingPost, this.conversationWindowState)
+    //   console.log(this.editingPost)
+    // }, 1000);
+    // setTimeout(() => {
+    //   console.log(this.conversationWindowState);
     // }, 1000);
   }
 

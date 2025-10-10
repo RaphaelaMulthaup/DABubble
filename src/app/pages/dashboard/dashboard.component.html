@@ -4,109 +4,22 @@
       (screenSize$ | async) === 'handset'}">
   <app-header-dashboard />
 
-  @switch ((screenSize$|async)) {
-    @case ('web') {
-      <div class="dashboard-web flex h-full">
-        @if(screenService.sidenavVisible) {
-          <app-sidenav class="relative"></app-sidenav>
-        }
-
-        <!-- @if (dashboardState() != 'new-message-view' && dashboardState() != 'sidenav') {
-          <app-conversation-window [data$]="messages$" [conversationWindowState]="'conversation'"></app-conversation-window>
-          @if (dashboardState()==='thread-window'){
-            <app-conversation-window
-            class="thread-window"
-            [data$]="answers$"
-            [conversationWindowState]="'thread'">
-            </app-conversation-window>
-          }
-        }
-        @else {
-          <div class="new-message-view flex flex-col h-full">
-            <app-header-searchbar (resultsChange)="onResultsChanged($event)" (hasInputChange)="onHasInputChange($event)"></app-header-searchbar>
-            <div class="empty-window-web-tablet">
-              @if (hasInput) {
-                <app-search-results-new-message [results]="resultsSignal"></app-search-results-new-message>
-              }
-            </div>
-          </div>
-        } -->
-
-        <!-- @if (dashboardState() === 'new-message-view') {
-        <div class="new-message-view flex flex-col h-full">
-          <app-header-searchbar (resultsChange)="onResultsChanged($event)" (hasInputChange)="onHasInputChange($event)"></app-header-searchbar>
-          <div class="empty-window-web-tablet">
-            @if (hasInput) {
-            <app-search-results-new-message [results]="resultsSignal"></app-search-results-new-message>
-            }
-          </div>
-        </div>
-        }
-        @else {
-          <app-conversation-window [data$]="messages$" [conversationWindowState]="'conversation'"></app-conversation-window>
-          @if (dashboardState()==='thread-window') {
-            <router-outlet></router-outlet>
-          }
-        } -->
+  @if ((screenSize$|async) === 'handset') {
+    <div class="w-full h-full">
+      @if (dashboardState() === 'sidenav') {
+        <app-sidenav></app-sidenav>
+      } @else {
         <router-outlet></router-outlet>
-      </div>
-    }
-
-    @case ('tablet') {
-      <div class="dashboard-tablet flex h-full">
-        @if(screenService.sidenavVisible) {
-          <app-sidenav class="relative"></app-sidenav>
-        }
-        <!-- @switch (dashboardState()) {
-          @case ('new-message-view') {
-            <div class="new-message-view flex flex-col h-full">
-              <app-header-searchbar (resultsChange)="onResultsChanged($event)" (hasInputChange)="onHasInputChange($event)"></app-header-searchbar>
-              <div class="empty-window-web-tablet">
-                @if (hasInput) {
-                <app-search-results-new-message [results]="resultsSignal"></app-search-results-new-message>
-                }
-              </div>
-            </div>
-          }
-          @case ('message-window') {
-            <app-conversation-window [data$]="messages$" [conversationWindowState]="'conversation'"></app-conversation-window>
-          }
-          @case ('thread-window') {
-            <router-outlet class="thread-window"></router-outlet>
-          }
-        } -->
-        <router-outlet></router-outlet>
-      </div>
-    }
-
-    @case ('handset') {
-      <div class="w-full h-full">
-        <!-- @switch (dashboardState()) {
-          @case ('sidenav') {
-          <app-sidenav></app-sidenav>
-          }
-          @case ('message-window') {
-          <div>
-            <app-conversation-window [data$]="messages$" [conversationWindowState]="'conversation'"></app-conversation-window>
-          </div>
-          }
-          @case ('thread-window') {
-          <router-outlet class="thread-window"></router-outlet>
-          }
-          @case ('new-message-view') {
-          <app-header-searchbar></app-header-searchbar>
-          <div class="empty-window-handset"></div>
-          }
-        } -->
-        @if (dashboardState() === 'sidenav') {
-          <app-sidenav></app-sidenav>
-        } @else {
-          <router-outlet></router-outlet>
-        }
-      </div>
-    }
-  }
-  
+      }
+    </div>
+  } @else {
+    <div class="dashboard-{{(screenSize$|async)}} flex h-full">
+      @if(screenService.sidenavVisible) {
+        <app-sidenav class="relative"></app-sidenav>
+      }
+      <router-outlet></router-outlet>
+    </div>
+  } 
 </section>
 
 @if ((screenSize$ | async) !== 'handset') {
