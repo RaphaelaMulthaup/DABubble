@@ -114,17 +114,9 @@ export class DashboardComponent {
           conversationId!
         );
 
-        // încarcă prima pagină
-        this.conversationActiveRouterService.loadNextPage(
-          conversationType!,
-          conversationId!,
-          20
-        );
-
         return this.conversationActiveRouterService.getMessages(
           conversationType!,
-          conversationId!,
-          10
+          conversationId!
         );
       }),
       // Share the last value and maintain a reference count to avoid multiple fetches

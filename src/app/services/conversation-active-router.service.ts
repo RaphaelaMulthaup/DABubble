@@ -39,18 +39,7 @@ export class ConversationActiveRouterService {
     channel: 'channels',
     chat: 'chats',
   };
-
-  private pagedMessages$ = new BehaviorSubject<PostInterface[]>([]);
-  private lastVisibleMap = new Map<
-    string,
-    QueryDocumentSnapshot<DocumentData>
-  >();
-
-  private messagesCache = new Map<string, Observable<PostInterface[]>>();
-  private answersCache = new Map<string, Observable<PostInterface[]>>();
   
-  // public threadMessages$: Observable<PostInterface[]> = of([]);
-
   constructor(private firestore: Firestore) {}
 
   // expui un observable pentru id
@@ -81,68 +70,31 @@ export class ConversationActiveRouterService {
     );
   }
 
-  private getRecentMessages(
+  getMessages(
     conversationType: string,
-    conversationId: string,
-    pageSize: number
+    conversationId: string
   ): Observable<PostInterface[]> {
     const basePath = this.basePathMap[conversationType];
     if (!basePath) return of([]);
 
     const path = `${basePath}/${conversationId}/messages`;
     const ref = collection(this.firestore, path);
-
-    const q = query(ref, orderBy('createdAt', 'desc'), limit(pageSize));
+    const q = query(ref, orderBy('createdAt', 'asc'));
 
     return collectionData(q, { idField: 'id' }).pipe(
       map((docs) =>
-        docs
-          .map(
-            (doc) =>
-              ({
-                ...doc,
-                channelId:
-                  conversationType === 'channel' ? conversationId : undefined,
-                chatId:
-                  conversationType === 'chat' ? conversationId : undefined,
-              } as PostInterface)
-          )
-          .reverse()
-      )
-    );
-  }
-
-  getMessages(
-    conversationType: string,
-    conversationId: string,
-    pageSize: number
-  ): Observable<PostInterface[]> {
-    const cacheKey = `${conversationType}-${conversationId}-p${pageSize}`;
-    if (this.messagesCache.has(cacheKey)) return this.messagesCache.get(cacheKey)!;
-
-    const recent$ = this.getRecentMessages(
-      conversationType,
-      conversationId,
-      pageSize
-    );
-
-
-    const messages$ = combineLatest([this.pagedMessages$, recent$]).pipe(
-      map(([paged, recent]) => {
-        const ids = new Set(paged.map((m) => m.id));
-        const merged = [...paged, ...recent.filter((m) => !ids.has(m.id))];
-        return merged.sort((a, b) => {
-          const aTime = a.createdAt?.toMillis?.() ?? 0;
-          const bTime = b.createdAt?.toMillis?.() ?? 0;
-          return aTime - bTime;
-        });
-      }),
-      catchError(() => of([])),
+        docs.map(
+          (doc) =>
+            ({
+              ...doc,
+              channelId:
+                conversationType === 'channel' ? conversationId : undefined,
+              chatId: conversationType === 'chat' ? conversationId : undefined,
+            } as PostInterface)
+        )
+      ),
       shareReplay({ bufferSize: 1, refCount: true })
     );
-
-    this.messagesCache.set(cacheKey, messages$);
-    return messages$;
   }
 
   getAnswers(
@@ -150,9 +102,6 @@ export class ConversationActiveRouterService {
     conversationId: string,
     messageId: string
   ): Observable<PostInterface[]> {
-    const cacheKey = `${conversationType}-${conversationId}-${messageId}`;
-    if (this.answersCache.has(cacheKey)) return this.answersCache.get(cacheKey)!;
-
     const basePath = this.basePathMap[conversationType];
     if (!basePath) return of([]);
 
@@ -160,49 +109,10 @@ export class ConversationActiveRouterService {
     const ref = collection(this.firestore, path);
     const q = query(ref, orderBy('createdAt', 'asc'));
 
-    const answers$ = collectionData(q, { idField: 'id' }).pipe(
-      map((docs) => docs.map((doc) => doc as PostInterface)),
-      catchError(() => of([])),
-      shareReplay({ bufferSize: 1, refCount: true })
+    return collectionData(q, { idField: 'id' }).pipe(
+      map((docs) => docs.map((doc) => ({ ...(doc as PostInterface) }))),
+      shareReplay({ bufferSize: 1, refCount: true }),
+      catchError(() => of([]))
     );
-
-    this.answersCache.set(cacheKey, answers$);
-    return answers$;
-  }
-
-  async loadNextPage(
-    conversationType: string,
-    conversationId: string,
-    pageSize: number
-  ): Promise<void> {
-    const basePath = this.basePathMap[conversationType];
-    if (!basePath) return;
-
-    const path = `${basePath}/${conversationId}/messages`;
-    const ref = collection(this.firestore, path);
-    const lastVisible = this.lastVisibleMap.get(conversationId);
-    let q = query(ref, orderBy('createdAt', 'asc'), limit(pageSize));
-    // console.log('Loading older messages for', conversationId);
-
-    if (lastVisible) {
-      q = query(
-        ref,
-        orderBy('createdAt', 'asc'),
-        startAfter(lastVisible),
-        limit(pageSize)
-      );
-    }
-    const snapshot = await getDocs(q);
-    if (snapshot.docs.length > 0) {
-      this.lastVisibleMap.set(
-        conversationId,
-        snapshot.docs[snapshot.docs.length - 1]
-      );
-    }
-    const newMessages = snapshot.docs.map(
-      (doc) => ({ id: doc.id, ...doc.data() } as PostInterface)
-    );
-
-    this.pagedMessages$.next([...this.pagedMessages$.value, ...newMessages]);
   }
 }

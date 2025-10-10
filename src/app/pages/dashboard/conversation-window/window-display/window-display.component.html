@@ -5,7 +5,6 @@
     'messages-container-empty-view':
       (messages$ | async)?.length === 0 && conversationWindowState !== 'thread'
   }"
-  (scroll)="onScroll()"
 >
 
   @if (postAnswered && conversationWindowState === 'thread' && (!postAnswered.ansCounter || postAnswered.ansCounter === 0)) {

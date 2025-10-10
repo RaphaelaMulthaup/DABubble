@@ -53,7 +53,7 @@ export class ChannelsService {
     channelId: string,
     realtime: boolean = false
   ): Observable<ChannelInterface | undefined> {
-    if (this.channelCache.has(channelId)) {
+    if (realtime && this.channelCache.has(channelId)) {
       return this.channelCache.get(channelId)!;
     }
 
@@ -73,7 +73,9 @@ export class ChannelsService {
           shareReplay({ bufferSize: 1, refCount: false })
         );
 
-    this.channelCache.set(channelId, channel$);
+    if (realtime) {
+      this.channelCache.set(channelId, channel$);
+    }
     return channel$;
   }
 
