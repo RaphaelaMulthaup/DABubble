@@ -404,29 +404,4 @@ export class WindowDisplayComponent {
     }
     return true;
   }
-
-  onScroll() {
-    const container = this.messagesContainer.nativeElement;
-    if (container.scrollTop <= 0 && !this.loadingOlderMessages) {
-      this.loadingOlderMessages = true;
-
-      const previousHeight = container.scrollHeight;
-
-      this.conversationActiveRouterService
-        .loadNextPage(
-          this.currentConversationType!,
-          this.currentConversationId!,
-          20
-        )
-        .then(() => {
-          // păstrăm scroll-ul la aceeași poziție relativă
-          setTimeout(() => {
-            container.scrollTop = container.scrollHeight - previousHeight;
-            this.loadingOlderMessages = false;
-            console.log('Scroll top reached', container.scrollTop);
-          });
-        })
-        .catch(() => (this.loadingOlderMessages = false));
-    }
-  }
 }
