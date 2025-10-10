@@ -1,0 +1,25 @@
+
+
+.btn-tertiary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--color-purple-white);
+    padding-top: 3px;
+    padding-bottom: 3px;
+    .add-person{
+        width: 24px;
+        height: 24px;
+        background-image: url('../../../../../../../assets/img/person-add.svg');
+        transition: background-image 0.2 ease;
+    }
+    &:hover{
+         .add-person {
+            background-image: url('../../../../../../../assets/img/person-add-hover.svg');
+        }
+    }
+}
+

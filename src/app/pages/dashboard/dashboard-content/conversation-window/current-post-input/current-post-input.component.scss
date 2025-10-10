@@ -1,0 +1,89 @@
+@import "./../../../../../../styles.scss";
+
+.current-post-input {
+  border-radius: 20px;
+  max-width: -webkit-fill-available;
+  margin: 4px 16px 16px 16px;
+  padding: 20px;
+  @include dFlex($g: 15px);
+  flex-direction: column;
+  border: 1px solid var(--color-purple-light-lines);
+
+  &:hover {
+    border: 1px solid var(--color-purple-light);
+    .add-emoji {
+      background-image: url("./../../../../../../assets/img/emoji-black.svg?v=1");
+    }
+    .add-user-or-channel {
+      background-image: url("./../../../../../../assets/img/alternate-email-black.svg?v=1");
+    }
+  }
+
+  &:focus-within {
+    border: 1px solid var(--color-purple-medium);
+  }
+
+  .textarea-wrapper {
+    width: 100%;
+    max-height: 108px;
+    overflow-x: auto;
+
+    .post-text-input {
+      width: 100%;
+      font-size: 18px;
+      resize: none;
+      overflow: auto;
+      scrollbar-width: none;
+      &::-webkit-scrollbar {
+        width: 0;
+        height: 0;
+      }
+      &:empty:before {
+        content: attr(data-placeholder);
+        color: var(--color-gray);
+        pointer-events: none;
+      }
+      &:focus {
+        outline: none;
+        box-shadow: none;
+        border-color: var(--color-gray);
+      }
+    }
+  }
+
+  .buttons {
+    width: 100%;
+    @include dFlex($jc: space-between);
+
+    > div,
+    > button {
+      height: 40px;
+    }
+
+    .add-emoji {
+      background-image: url("./../../../../../../assets/img/emoji-gray.svg");
+      &:hover {
+        background-image: url("./../../../../../../assets/img/emoji-purple.svg") !important;
+      }
+    }
+
+    .add-user-or-channel {
+      background-image: url("./../../../../../../assets/img/alternate-email-gray.svg");
+      &:hover {
+        background-image: url("./../../../../../../assets/img/alternate-email-purple.svg") !important;
+      }
+    }
+
+    .send {
+      width: 40px;
+      background-image: url("./../../../../../../assets/img/send-icon.svg");
+      &:hover {
+        background-image: url("./../../../../../../assets/img/send-icon-hover.svg");
+      }
+    }
+  }
+}
+
+.web-current-post-input {
+  margin: 8px 24px 24px 24px;
+}

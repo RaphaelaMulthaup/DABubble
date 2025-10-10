@@ -1,5 +1,9 @@
 @import "./../../../styles.scss";
 
+.overlay {
+  padding: 40px;
+}
+
 .profile-view-other-user {
   @include dFlex($g: 45px);
   flex-direction: column;

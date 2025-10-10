@@ -1,0 +1,8 @@
+@import '../../../../../../../styles.scss';
+
+section {
+    width: 100%;
+    height: 78px;
+    @include dFlex($jc: flex-start);
+    padding-left: 8px;
+}

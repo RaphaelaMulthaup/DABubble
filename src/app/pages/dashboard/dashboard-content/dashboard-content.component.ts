@@ -1,7 +1,15 @@
 import { Component, OnInit, WritableSignal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DashboardState } from '../../../shared/types/dashboard-state.type';
-import { BehaviorSubject, distinctUntilChanged, filter, map, Observable, shareReplay, switchMap } from 'rxjs';
+import {
+  BehaviorSubject,
+  distinctUntilChanged,
+  filter,
+  map,
+  Observable,
+  shareReplay,
+  switchMap,
+} from 'rxjs';
 import { ScreenSize } from '../../../shared/types/screen-size.type';
 import { ScreenService } from '../../../services/screen.service';
 import { PostInterface } from '../../../shared/models/post.interface';
@@ -11,10 +19,18 @@ import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
 import { OverlayService } from '../../../services/overlay.service';
 import { ConversationActiveRouterService } from '../../../services/conversation-active-router.service';
+import { HeaderSearchbarComponent } from './header-searchbar/header-searchbar.component';
+import { SearchResultsNewMessageComponent } from '../../../overlay/search-results-new-message/search-results-new-message.component';
+import { ConversationWindowComponent } from './conversation-window/conversation-window.component';
 
 @Component({
   selector: 'app-dashboard-content',
-  imports: [CommonModule],
+  imports: [
+    CommonModule,
+    HeaderSearchbarComponent,
+    SearchResultsNewMessageComponent,
+    ConversationWindowComponent,
+  ],
   templateUrl: './dashboard-content.component.html',
   styleUrl: './dashboard-content.component.scss',
 })
@@ -59,19 +75,9 @@ export class DashboardContentComponent implements OnInit {
       ),
       // Fetch messages for the active conversation from the service
       switchMap(({ conversationType, conversationId }) => {
-        this.conversationActiveRouterService['pagedMessages$'].next([]);
-        this.conversationActiveRouterService['lastVisibleMap'].delete(
-          conversationId!
-        );
-        this.conversationActiveRouterService.loadNextPage(
-          conversationType!,
-          conversationId!,
-          20
-        );
         return this.conversationActiveRouterService.getMessages(
           conversationType!,
-          conversationId!,
-          10
+          conversationId!
         );
       }),
       // Share the last value and maintain a reference count to avoid multiple fetches
@@ -108,5 +114,13 @@ export class DashboardContentComponent implements OnInit {
       // Share the last value and maintain a reference count to avoid multiple fetches
       shareReplay({ bufferSize: 1, refCount: true })
     );
+  }
+
+  onResultsChanged(results: SearchResult[]) {
+    this.results$.next(results);
+  }
+
+  onHasInputChange(hasInput: boolean) {
+    this.hasInput = hasInput;
   }
 }

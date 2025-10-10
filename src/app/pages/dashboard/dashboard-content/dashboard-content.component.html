@@ -2,28 +2,28 @@
 @switch (dashboardState()) {
     @case('new-message-view') {
         @if ((screenSize$ | async) === 'handset') {
-            <!-- <app-header-searchbar></app-header-searchbar>
-            <div class="empty-window-handset"></div> -->
+            <app-header-searchbar></app-header-searchbar>
+            <div class="empty-window-handset"></div>
         } @else {
-            <!-- <div class="new-message-view flex flex-col h-full">
+            <div class="new-message-view flex flex-col h-full">
               <app-header-searchbar (resultsChange)="onResultsChanged($event)" (hasInputChange)="onHasInputChange($event)"></app-header-searchbar>
               <div class="empty-window-web-tablet">
                 @if (hasInput) {
                 <app-search-results-new-message [results]="resultsSignal"></app-search-results-new-message>
                 }
               </div>
-            </div> -->
+            </div>
         }
     }
     @case('message-window') {
-        <!-- <app-conversation-window [data$]="messages$"></app-conversation-window> -->
+        <app-conversation-window [data$]="messages$"></app-conversation-window>
     }
     @case('thread-window') {
         @if ((screenSize$ | async) === 'web') {
-            <!-- <app-conversation-window [data$]="messages$"></app-conversation-window>
-            <app-conversation-window [data$]="answers$"></app-conversation-window> -->
+            <app-conversation-window [data$]="messages$"></app-conversation-window>
+            <app-conversation-window [data$]="answers$"></app-conversation-window>
         } @else {
-            <!-- <app-conversation-window [data$]="answers$"></app-conversation-window> -->
+            <app-conversation-window [data$]="answers$"></app-conversation-window>
         }
     }
 }

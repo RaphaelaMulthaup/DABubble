@@ -1,0 +1,50 @@
+@import "../../../../../../styles.scss";
+
+app-displayed-post {
+  display: flex;
+  border-radius: 30px;
+}
+
+.seperator-container {
+  width: 100%;
+  margin: 4px 0;
+  padding: 0 24px;
+
+  .seperator {
+    width: 100%;
+    height: 2px;
+    background-color: var(--color-purple-white);
+  }
+
+  p {
+    padding: 6px 16px;
+    border: 2px solid var(--color-purple-white);
+    border-radius: 30px;
+  }
+
+  span {
+    padding-right: 20px;
+    white-space: nowrap;
+    color:var(--color-purple-light-lines)
+  }
+}
+
+.date {
+  white-space: nowrap;
+}
+
+.messages-container {
+  height: 100%;
+  padding-top: 16px;
+  overflow-y: auto; // wichtig!
+  border-radius: 30px;
+}
+
+.messages-container-empty-view {
+  @include dFlex($jc: flex-end);
+  flex-direction: column;
+}
+
+.highlight {
+  background-color: var(--color-purple-light-lines);
+}

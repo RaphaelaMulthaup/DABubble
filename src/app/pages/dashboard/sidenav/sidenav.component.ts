@@ -52,7 +52,6 @@ export class SidenavComponent {
 
   constructor(
     private authService: AuthService, // AuthService to manage user authentication
-    private router: Router,
     public screenService: ScreenService,
     public searchService: SearchService,
     public overlayService: OverlayService,

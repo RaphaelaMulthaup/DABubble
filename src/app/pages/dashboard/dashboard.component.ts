@@ -5,7 +5,6 @@ import {
 } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { SidenavComponent } from './sidenav/sidenav.component';
-import { ConversationWindowComponent } from './conversation-window/conversation-window.component';
 import { CommonModule } from '@angular/common';
 import { OverlayService } from '../../services/overlay.service';
 import {
@@ -23,7 +22,7 @@ import { DashboardState } from '../../shared/types/dashboard-state.type';
 import { PostInterface } from '../../shared/models/post.interface';
 import { ScreenService } from '../../services/screen.service';
 import { ScreenSize } from '../../shared/types/screen-size.type';
-import { HeaderSearchbarComponent } from './header-searchbar/header-searchbar.component';
+import { HeaderSearchbarComponent } from './dashboard-content/header-searchbar/header-searchbar.component';
 import { SearchResult } from '../../shared/types/search-result.type';
 import { SearchResultsNewMessageComponent } from '../../overlay/search-results-new-message/search-results-new-message.component';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -38,11 +37,8 @@ import { toSignal } from '@angular/core/rxjs-interop';
   // Imports necessary child components used inside the dashboard
   imports: [
     SidenavComponent, // Sidebar component
-    ConversationWindowComponent, // Component to display the conversation
     CommonModule, // Angular common module for essential directives and pipes
-    HeaderSearchbarComponent,
     HeaderDashboardComponent,
-    SearchResultsNewMessageComponent,
     RouterOutlet,
   ],
   templateUrl: './dashboard.component.html', // HTML template for the dashboard
@@ -108,12 +104,6 @@ export class DashboardComponent {
       ),
       // Fetch messages for the active conversation from the service
       switchMap(({ conversationType, conversationId }) => {
-        // resetează paginarea la schimbarea conversației
-        this.conversationActiveRouterService['pagedMessages$'].next([]);
-        this.conversationActiveRouterService['lastVisibleMap'].delete(
-          conversationId!
-        );
-
         return this.conversationActiveRouterService.getMessages(
           conversationType!,
           conversationId!
@@ -173,13 +163,5 @@ export class DashboardComponent {
    */
   endEditingPost() {
     this.overlayService.editingPostId.set(null);
-  }
-
-  onResultsChanged(results: SearchResult[]) {
-    this.results$.next(results);
-  }
-
-  onHasInputChange(hasInput: boolean) {
-    this.hasInput = hasInput;
   }
 }
