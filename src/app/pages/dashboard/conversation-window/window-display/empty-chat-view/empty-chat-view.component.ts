@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, SimpleChanges } from '@angular/core';
 import { ChatService } from '../../../../../services/chat.service';
 import { AuthService } from '../../../../../services/auth.service';
 import { UserInterface } from '../../../../../shared/models/user.interface';
@@ -27,39 +27,29 @@ export class EmptyChatViewComponent {
     private overlayService: OverlayService
   ) {}
 
-  /** 
-   * Lifecycle hook called after component initialization.
-   * Initializes currentUserId, retrieves the other user ID, fetches the user data as an Observable,
-   * and checks if the chat is with the current user themselves.
-   */
-  ngOnInit() {
+ngOnInit() {
     this.currentUserId = this.authService.getCurrentUserId()!;
+    this.updateUserData(); // initialer Aufruf
+  }
 
-    // Get the ID of the other user in the chat
-    let userId = this.chatService.getOtherUserId(
-      this.currentChatId,
-      this.currentUserId
-    );
-
-    // Fetch the other user's data as an Observable
-    this.user$ = this.userService.getUserById(userId);
-
-    // Determine if the chat is with the current user themselves
-    if (this.currentUserId === userId) {
-      this.ownChat = true;
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['currentChatId'] && !changes['currentChatId'].firstChange) {
+      this.updateUserData(); // neu laden, wenn Chat-ID sich ändert
     }
   }
 
-  /** 
-   * Opens the overlay to display the other user's profile.
-   * Passes the user Observable to the overlay component.
-   */
+  private updateUserData() {
+    const userId = this.chatService.getOtherUserId(this.currentChatId, this.currentUserId);
+    this.user$ = this.userService.getUserById(userId);
+    this.ownChat = this.currentUserId === userId;
+  }
+
   openProfileOverlay() {
     this.overlayService.openComponent(
-      ProfileViewOtherUsersComponent, // Overlay component to open
-      'cdk-overlay-dark-backdrop',    // Backdrop style for the overlay
-      { globalPosition: 'center' },   // Position overlay in the center of the screen
-      { user$: this.user$ }            // Pass the user Observable as input to the overlay
+      ProfileViewOtherUsersComponent,
+      'cdk-overlay-dark-backdrop',
+      { globalPosition: 'center' },
+      { user$: this.user$ }
     );
   }
 }

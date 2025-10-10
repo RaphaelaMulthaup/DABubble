@@ -14,6 +14,7 @@ import {
   defer,
   distinctUntilChanged,
   filter,
+  firstValueFrom,
   map,
   of,
   shareReplay,
@@ -60,10 +61,10 @@ export class DisplayedPostComponent {
   dashboardState!: WritableSignal<DashboardState>;
   senderName$!: Observable<string>;
   senderPhotoUrl$!: Observable<string | undefined>;
+  senderId$!: Observable<string>;
   createdAtTime$!: Observable<string>;
   reactions$!: Observable<ReactionInterface[]>;
   visibleReactions$!: Observable<ReactionInterface[]>;
-  // isLoaded$!: Observable<boolean>;
   private destroy$ = new Subject<void>();
 
   emojis = EMOJIS;
@@ -149,14 +150,8 @@ export class DisplayedPostComponent {
       const user$ = this.userService.getUserById(this.post.senderId);
       this.senderName$ = user$.pipe(map((u) => u?.name ?? ''));
       this.senderPhotoUrl$ = user$.pipe(map((u) => u?.photoUrl ?? ''));
-      // this.setLoadingState();
+      this.senderId$ = user$.pipe(map((u) => u?.uid ?? ''));
     });
-
-    // const user$ = this.userService.getUserById(this.post.senderId);
-    // this.senderName$ = user$.pipe(map((u) => u?.name ?? ''));
-    // this.senderPhotoUrl$ = user$.pipe(map((u) => u?.photoUrl ?? ''));
-    // this.senderIsCurrentUser =
-    //   this.post.senderId === this.authService.currentUser?.uid;
 
     this.createdAtTime$ = of(this.post.createdAt).pipe(
       map((ts) => {
@@ -174,27 +169,6 @@ export class DisplayedPostComponent {
     );
   }
 
-  // setLoadingState() {
-  //   this.isLoaded$ = defer(() => {
-  //     const senderName$ = this.senderName$ ?? of('');
-  //     const photo$ = this.senderPhotoUrl$ ?? of(undefined);
-  //     const reactions$ = this.reactions$ ?? of([]);
-  //     const screenSize$ = this.screenSize$ ?? of(null);
-
-  //     return combineLatest([senderName$, photo$, reactions$, screenSize$]).pipe(
-  //       map(([name]) => !!name),
-  //       distinctUntilChanged(),
-  //       startWith(false),
-  //       shareReplay({ bufferSize: 1, refCount: true })
-  //     );
-  //   });
-
-  //   // this.isLoaded$.subscribe((loaded) => {
-  //   //   console.log('post loaded', loaded, this.post?.id);
-  //   //   this.postLoaded.emit(loaded);
-  //   // });
-  // }
-
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
@@ -204,13 +178,13 @@ export class DisplayedPostComponent {
    * This method displays the profile view of another user.
    * It triggers the overlay service to open the ProfileViewOtherUsersComponent.
    */
-  openUserProfileOverlay() {
-    this.overlayService.openComponent(
-      ProfileViewOtherUsersComponent,
-      'cdk-overlay-dark-backdrop',
-      { globalPosition: 'center' },
-      { user$: this.userService.getUserById(this.post.senderId) }
-    );
+  async openUserProfileOverlay() {
+    const senderId = await firstValueFrom(this.senderId$);
+    const currentUserId = this.authService.currentUser?.uid;
+    if (!currentUserId) {
+      return;
+    }
+    this.userService.openProfileOverlay(senderId, currentUserId);
   }
 
   /**

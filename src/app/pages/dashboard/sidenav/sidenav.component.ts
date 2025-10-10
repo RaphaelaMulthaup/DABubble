@@ -55,7 +55,8 @@ export class SidenavComponent {
     private router: Router,
     public screenService: ScreenService,
     public searchService: SearchService,
-    public overlayService: OverlayService
+    public overlayService: OverlayService,
+    private router: Router
   ) {
     // Injecting the dashboardState from the mobile service to track mobile state
     this.dashboardState = this.screenService.dashboardState;

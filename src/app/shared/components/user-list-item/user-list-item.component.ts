@@ -1,113 +1,101 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { UserInterface } from '../../models/user.interface'; // Importing the UserInterface for type safety
-import { AuthService } from '../../../services/auth.service'; // Importing AuthService to get the current logged-in user's data
-import { ChatService } from '../../../services/chat.service'; // Importing ChatService to handle chat-related operations
-import { OverlayService } from '../../../services/overlay.service'; // Importing OverlayService for managing overlays like profiles
-import { CommonModule } from '@angular/common'; // Importing CommonModule for basic Angular functionality
-import { ProfileViewOtherUsersComponent } from '../../../overlay/profile-view-other-users/profile-view-other-users.component'; // Importing the profile view component for users
-import { of, Subscription } from 'rxjs'; // Importing `of` to create observables from static values
-import { ProfileViewMainComponent } from '../../../overlay/profile-view-main/profile-view-main.component';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  OnDestroy,
+} from '@angular/core';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { filter, switchMap, shareReplay, map, takeUntil } from 'rxjs/operators';
+import { UserInterface } from '../../models/user.interface';
+import { AuthService } from '../../../services/auth.service';
+import { ChatService } from '../../../services/chat.service';
+import { UserService } from '../../../services/user.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-user-list-item', // Component selector used in parent templates
-  imports: [CommonModule], // Necessary imports for common Angular functionalities
-  templateUrl: './user-list-item.component.html', // The component's template
-  styleUrls: [
-    './user-list-item.component.scss', // Component-specific styles
-    './../../styles/list-item.scss', // Shared list item styles
-  ],
+  selector: 'app-user-list-item',
+  imports: [CommonModule],
+  templateUrl: './user-list-item.component.html',
+  styleUrls: ['./user-list-item.component.scss', './../../styles/list-item.scss'],
 })
-export class UserListItemComponent {
-  /**
-   * Input property that receives a user object from the parent component.
-   * This is used to display information about a specific user.
-   */
-  @Input() user!: UserInterface;
+export class UserListItemComponent implements OnDestroy {
+  private destroy$ = new Subject<void>();
 
-  /** Flag to indicate if this user is related to a search result post */
-  @Input() relatedToSearchResultPost: boolean = false;
+  // Input als Setter: push UID in BehaviorSubject
+  private userUid$ = new BehaviorSubject<string | null>(null);
 
-  /** Flag to indicate if this component is part of search results in the current post input */
-  @Input() isInSearchResultsCurrentPostInput: boolean = false;
+  @Input()
+  set user(value: UserInterface | undefined) {
+    // falls der Parent ein volles User-Objekt liefert:
+    this.userUid$.next(value?.uid ?? null);
+  }
 
-  /** Flag to indicate whether this component should perform no action */
-  @Input() doNothing: boolean = false;
+  // restliche Inputs
+  @Input() relatedToSearchResultPost = false;
+  @Input() isInSearchResultsCurrentPostInput = false;
+  @Input() doNothing = false;
+  @Input() showProfile = false;
+  @Input() inHeaderChat = false;
 
-  /** Flag to control whether to show the profile overlay */
-  @Input() showProfile: boolean = false;
-
-  /** Flag to indicate if this item is part of a header in the chat */
-  @Input() inHeaderChat: boolean = false;
-
-  /** EventEmitter to notify the parent component when a user is selected */
   @Output() userSelected = new EventEmitter<UserInterface>();
 
-  /** Stores the ID of the currently logged-in user */
+  // public Observable, das im Template per async-Pipe benutzt wird
+  public user$: Observable<UserInterface | null>;
+  // currentUserId als Observable (für template checks)
+  public currentUserId$: Observable<string | null>;
+
+  // zusätzlich: synchroner Snapshot für Methoden wie navigate (optional)
+  private lastUserSnapshot: UserInterface | null = null;
   currentUserId: string | null = null;
-  private sub?: Subscription;
+
   constructor(
-    private authService: AuthService, // Injecting AuthService to get the current user
-    private chatService: ChatService, // Injecting ChatService to handle chat-related functions
-    private overlayService: OverlayService // Injecting OverlayService to manage overlays like the profile view
-  ) {}
-  ngOnInit() {
-    this.sub = this.authService.currentUser$.subscribe((user) => {
-      this.currentUserId = user?.uid ?? null;
-    });
+    private authService: AuthService,
+    private chatService: ChatService,
+    private userService: UserService
+  ) {
+    // Observable der Live-Userdaten (nur wenn uid vorhanden)
+    this.user$ = this.userUid$.pipe(
+      filter((uid): uid is string => !!uid),
+      switchMap((uid) => this.userService.getUserById(uid)),
+      // optional: shareReplay damit mehrere async-pipes das selbe Subscription teilen
+      shareReplay({ bufferSize: 1, refCount: true })
+    );
+
+    // currentUserId Observable
+    this.currentUserId$ = this.authService.currentUser$.pipe(
+      map((u) => u?.uid ?? null)
+    );
+
+    // halte synchronen Snapshot für Klick-Handler
+    this.user$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((u) => (this.lastUserSnapshot = u));
+
+    this.currentUserId$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((id) => (this.currentUserId = id));
   }
 
   ngOnDestroy() {
-    this.sub?.unsubscribe();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
-  /**
-   * Finds a chat between the current user and a selected user,
-   * then navigates to it if it exists.
-   *
-   * This function checks if the user is logged in and uses the ChatService to navigate to the chat.
-   */
   async pickOutAndNavigateToChat() {
-    if (!this.currentUserId) return; // If the user is not logged in, do nothing
-    // Navigates to the chat between the current user and the selected user
-    this.chatService.navigateToChat(this.currentUserId, this.user);
+    if (!this.currentUserId || !this.lastUserSnapshot) return;
+    this.chatService.navigateToChat(this.currentUserId, this.lastUserSnapshot);
   }
 
-  /**
-   * Decides whether to navigate to the chat or show the profile overlay based on certain conditions.
-   * It checks if the current user is logged in and whether specific flags are set.
-   */
   async choiceBetweenNavigateAndProfile() {
-    if (!this.currentUserId || this.doNothing) return; // If no user is logged in or if the 'doNothing' flag is true, do nothing
-    if (this.isInSearchResultsCurrentPostInput) {
-      // If this item is part of the search results, emit the selected user
-      this.userSelected.emit(this.user);
-    } else if (this.showProfile || this.inHeaderChat) {
-      // If the 'showProfile' flag is set or if it's in the header chat, show the profile overlay
-      this.openProfileOverlay();
-    } else {
-      // Otherwise, navigate to the chat
-      this.pickOutAndNavigateToChat();
-    }
-  }
+    if (!this.currentUserId || this.doNothing || !this.lastUserSnapshot) return;
 
-  /**
-   * Opens the profile overlay for the selected user.
-   * This is done using the OverlayService, and the user information is passed as an observable.
-   */
-  openProfileOverlay() {
-    if (this.user.uid === this.currentUserId) {
-      this.overlayService.openComponent(
-        ProfileViewMainComponent, // The component to be displayed in the overlay.
-        'cdk-overlay-dark-backdrop', // Backdrop style for the overlay.
-        { globalPosition: 'center' } // Position of the overlay (centered globally).
-      );
+    if (this.isInSearchResultsCurrentPostInput) {
+      this.userSelected.emit(this.lastUserSnapshot);
+    } else if (this.showProfile || this.inHeaderChat) {
+      this.userService.openProfileOverlay(this.lastUserSnapshot.uid, this.currentUserId);
     } else {
-      this.overlayService.openComponent(
-        ProfileViewOtherUsersComponent, // The overlay component to open
-        'cdk-overlay-dark-backdrop', // The backdrop style for the overlay
-        { globalPosition: 'center' }, // Position the overlay in the center of the screen
-        { user$: of(this.user) } // Pass the selected user as an observable to the overlay
-      );
+      this.pickOutAndNavigateToChat();
     }
   }
 }

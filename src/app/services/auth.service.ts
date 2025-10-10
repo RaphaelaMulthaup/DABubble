@@ -6,41 +6,48 @@ import {
   signOut,
   User,
 } from '@angular/fire/auth';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { signInAnonymously } from 'firebase/auth';
-import { deleteUser } from 'firebase/auth';
-
 import {
-  Firestore,
-  deleteDoc,
-  doc,
-  getDoc,
-  setDoc,
-  updateDoc,
-} from '@angular/fire/firestore';
-
-import {
+  signInWithEmailAndPassword,
+  signInAnonymously,
+  deleteUser,
   getAuth,
   signInWithPopup,
   GoogleAuthProvider,
   sendPasswordResetEmail,
 } from 'firebase/auth';
-
+import {
+  Firestore,
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  limit,
+  query,
+  setDoc,
+  updateDoc,
+  where,
+} from '@angular/fire/firestore';
 import { from, map, Observable, of, shareReplay, switchMap, tap } from 'rxjs';
 import { UserInterface } from '../shared/models/user.interface';
 import { UserService } from './user.service';
 import { ChatService } from './chat.service';
 import { ScreenService } from './screen.service';
 import { UserToRegisterInterface } from '../shared/models/user.to.register.interface';
+import { PostService } from './post.service';
+import { ChannelInterface } from '../shared/models/channel.interface';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private provider = new GoogleAuthProvider(); // Google Auth provider
-  // Reaktives Observable für den aktuellen Firestore User
+  private provider = new GoogleAuthProvider();
+
+  /** Reaktives Observable für den aktuellen Firestore-User */
   public currentUser$: Observable<UserInterface | null>;
-  // Optional synchroner Zugriff
+
+  /** Optional synchroner Zugriff */
   private currentUserSnapshot: UserInterface | null = null;
 
   constructor(
@@ -48,50 +55,68 @@ export class AuthService {
     private chatService: ChatService,
     private firestore: Firestore,
     private userService: UserService,
-    private screenService: ScreenService
+    private screenService: ScreenService,
+    private postService: PostService
   ) {
-    // Voll reaktives Observable, das automatisch auf AuthStateChanges reagiert
+    // 🔥 Reaktives Observable mit Absicherung, dass User-Dokument existiert
     this.currentUser$ = new Observable<User | null>((subscriber) =>
       onAuthStateChanged(this.auth, subscriber.next.bind(subscriber))
     ).pipe(
       switchMap((firebaseUser) => {
-        if (firebaseUser) {
-          return this.userService.getUserById(firebaseUser.uid); // Firestore User laden
-        } else {
-          return of(null); // Kein User eingeloggt
-        }
+        if (!firebaseUser) return of(null);
+
+        return from(this.ensureUserDocExists(firebaseUser)).pipe(
+          // Sobald das Doc existiert, reaktiv auf Änderungen hören
+          switchMap(() => this.userService.getUserById(firebaseUser.uid))
+        );
       }),
-      tap((user) => (this.currentUserSnapshot = user)), // Snapshot für synchronen Zugriff speichern
-      shareReplay({ bufferSize: 1, refCount: true }) // Letzten Wert für neue Subscribers zwischenspeichern
+      tap((user) => (this.currentUserSnapshot = user)),
+      shareReplay({ bufferSize: 1, refCount: true })
     );
   }
 
-  /*** Synchronously get the current Firestore User ***/
+  /** Synchronously get current Firestore User */
   get currentUser(): UserInterface | null {
     return this.currentUserSnapshot;
   }
 
-  /*** Get current Firebase Auth user ID or null ***/
+  /** Get current Firebase Auth user ID or null */
   getCurrentUserId(): string | null {
     return this.currentUserSnapshot?.uid ?? null;
   }
 
-  /*** Create or update Firestore user document ***/
+  /** Ensure Firestore document for user exists */
+  private async ensureUserDocExists(user: User): Promise<void> {
+    const userRef = doc(this.firestore, `users/${user.uid}`);
+    let snap = await getDoc(userRef);
+
+    if (!snap.exists()) {
+      await this.createOrUpdateUserInFirestore(
+        user,
+        (user.providerData[0]?.providerId as any) ?? 'password'
+      );
+
+      // Optional: kleine Verzögerung, um Firestore-Propagation abzuwarten
+      await new Promise((res) => setTimeout(res, 150));
+    }
+  }
+
+  /** Create or update Firestore user document */
   private async createOrUpdateUserInFirestore(
     user: User,
     authProvider: 'google.com' | 'password' | 'anonymous',
-    displayName?: string
+    displayName?: string,
+    photoURL?: string
   ) {
     const userRef = doc(this.firestore, `users/${user.uid}`);
     const userSnap = await getDoc(userRef);
 
     if (!userSnap.exists()) {
-      // If user document doesn't exist, create it with default data
       const userData: UserInterface = {
         uid: user.uid,
         name: displayName ?? user.displayName ?? '',
         email: user.email ?? '',
-        photoUrl: user.photoURL ?? '',
+        photoUrl: photoURL ?? user.photoURL ?? '',
         authProvider,
         contacts: {},
         active: true,
@@ -99,14 +124,11 @@ export class AuthService {
       };
       await setDoc(userRef, userData);
     } else {
-      // If user exists, just update the active status
       await updateDoc(userRef, { active: true });
     }
   }
 
-  /**
-   * Registers a new user with name, email, password and avatar
-   */
+  /** Register new user */
   register(userData: UserToRegisterInterface): Observable<void> {
     return from(
       createUserWithEmailAndPassword(
@@ -115,35 +137,20 @@ export class AuthService {
         userData.password
       )
     ).pipe(
-      switchMap((response) => {
+      switchMap(async (response) => {
         const user = response.user;
-        return from(
-          this.createOrUpdateUserInFirestore(
-            user,
-            'password',
-            userData.displayName
-          )
-        ).pipe(
-          switchMap(() =>
-            from(
-              this.userService.updateUser(user.uid, {
-                name: userData.displayName,
-                photoUrl: userData.photoURL,
-              })
-            )
-          ),
-          map(() => void 0) // sorgt dafür, dass Observable<void> rauskommt
+        await this.createOrUpdateUserInFirestore(
+          user,
+          'password',
+          userData.displayName,
+          userData.photoURL || undefined
         );
-      })
+      }),
+      map(() => void 0)
     );
   }
 
-  /**
-   * Logs in a user with email and password
-   * @param email User's email
-   * @param password User's password
-   * @returns Observable<void>
-   */
+  /** Login with email/password */
   login(email: string, password: string): Observable<void> {
     const promise = signInWithEmailAndPassword(this.auth, email, password).then(
       async (response) => {
@@ -154,6 +161,7 @@ export class AuthService {
     return from(promise);
   }
 
+  /** Login as guest */
   loginAsGuest(): Observable<void> {
     const promise = signInAnonymously(this.auth)
       .then(async (credential) => {
@@ -161,27 +169,162 @@ export class AuthService {
         const user = credential.user;
         await this.createOrUpdateUserInFirestore(user, 'anonymous', 'Guest');
         await this.userService.updateUser(user.uid, {
-          photoUrl: `./assets/img/no-avatar.svg`,
+          photoUrl: './assets/img/no-avatar.svg',
         });
         await this.addDirectChatToTeam(user.uid);
+        await this.createDeveloperTeamChannel(user.uid);
       })
-      .catch((error) => {
-        console.error('Guest login error:', error);
-      });
+      .catch((error) => console.error('Guest login error:', error));
     return from(promise) as Observable<void>;
   }
 
   async addDirectChatToTeam(userId: string) {
-    await this.chatService.createChat(userId, 'XbsVa8YOj8Nd9vztzX1kAQXrc7Z2');
-    await this.chatService.createChat(userId, '5lntBSrRRUM9JB5AFE14z7lTE6n1');
-    await this.chatService.createChat(userId, 'rUnD1S8sHOgwxvN55MtyuD9iwAD2');
-    await this.chatService.createChat(userId, 'NxSyGPn1LkPV3bwLSeW94FPKRzm1');
+    const devChats = [
+      'XbsVa8YOj8Nd9vztzX1kAQXrc7Z2',
+      '5lntBSrRRUM9JB5AFE14z7lTE6n1',
+      'rUnD1S8sHOgwxvN55MtyuD9iwAD2',
+      'NxSyGPn1LkPV3bwLSeW94FPKRzm1',
+    ];
+
+    for (const devId of devChats) {
+      // Chat erstellen (gibt keine chatId zurück)
+      await this.chatService.createChat(userId, devId);
+
+      // chatId erneut abrufen
+      const chatId = await this.chatService.getChatId(userId, devId);
+
+      // Beispielnachrichten vorbereiten
+      let messages: { senderId: string; text: string }[] = [];
+
+      switch (devId) {
+        case 'XbsVa8YOj8Nd9vztzX1kAQXrc7Z2':
+          messages = [
+            {
+              senderId: devId,
+              text: 'Hey! Schön, dass du unseren Chat ausprobierst 😊',
+            },
+            { senderId: userId, text: 'Hi! Sieht alles sehr gut aus!' },
+            {
+              senderId: devId,
+              text: 'Freut mich! Probier ruhig ein paar Funktionen aus.',
+            },
+          ];
+          break;
+
+        case '5lntBSrRRUM9JB5AFE14z7lTE6n1':
+          messages = [
+            {
+              senderId: devId,
+              text: 'Hallo! Schön, dass du dir unsere App anschaust.',
+            },
+            {
+              senderId: userId,
+              text: 'Hi! Ja, ich gucke mich gerade ein bisschen um. Was war dein Beitrag zur Chat-App?',
+            },
+            {
+              senderId: devId,
+              text: 'Ich habe zum Beispiel die Suchfunktion umgesetzt. Such doch mal nach dem Channel #Entwicklerteam. Du kannst ihn natürlich auch direkt in der Sidenav anklicken.',
+            },
+          ];
+          break;
+
+        case 'rUnD1S8sHOgwxvN55MtyuD9iwAD2':
+          messages = [
+            { senderId: devId, text: 'Hi! Willkommen im Demo-Chat 🎨' },
+            { senderId: userId, text: 'Danke! Alles wirkt sehr aufgeräumt.' },
+            {
+              senderId: devId,
+              text: 'Freut mich! Schau dich ruhig noch weiter um.',
+            },
+          ];
+          break;
+
+        case 'NxSyGPn1LkPV3bwLSeW94FPKRzm1':
+          messages = [
+            { senderId: devId, text: 'Hey! Schön, dass du hier bist 🧠' },
+            { senderId: userId, text: 'Hi! Die App reagiert richtig flüssig.' },
+            {
+              senderId: devId,
+              text: 'Super! Dann viel Spaß beim Ausprobieren 🚀',
+            },
+          ];
+          break;
+      }
+
+      // Nachrichten erstellen
+      for (const msg of messages) {
+        await this.postService.createMessage(
+          chatId,
+          msg.senderId,
+          msg.text,
+          'chat'
+        );
+      }
+    }
   }
 
-  /**
-   * Logs in a user with Google authentication
-   * @returns Observable<void>
-   */
+  async createDeveloperTeamChannel(guestId: string) {    
+    const devIds = [
+      'XbsVa8YOj8Nd9vztzX1kAQXrc7Z2',
+      '5lntBSrRRUM9JB5AFE14z7lTE6n1',
+      'rUnD1S8sHOgwxvN55MtyuD9iwAD2',
+      'NxSyGPn1LkPV3bwLSeW94FPKRzm1',
+    ];
+    const channelRef = collection(this.firestore, 'channels');
+
+    // Channel existiert noch nicht, also erstellen
+    const channelData: ChannelInterface = {
+      name: 'Entwicklerteam',
+      description:
+        'Hier kannst du dich zusammen mit den EntwicklerInnen über die Chat-App austauschen.',
+      memberIds: [...devIds, guestId],
+      createdBy: guestId,
+      createdAt: new Date(),
+    };
+
+    // Channel anlegen
+    const channelDocRef = await addDoc(channelRef, channelData);
+
+    // Die gesamte Unterhaltung als Nachrichten im Channel einfügen
+    const messages = [
+      {
+        senderId: 'XbsVa8YOj8Nd9vztzX1kAQXrc7Z2',
+        text: 'Wie wäre es, wenn wir beim eigenen User-List-Item noch ein "(Du)" hinzufügen, um den aktuellen Nutzer zu kennzeichnen?',
+      },
+      {
+        senderId: guestId, // Beispiel-Entwickler-ID
+        text: 'Das fände ich super! So sieht man direkt, dass es der eigene Account ist. Besonders für neue Nutzer ist das eine tolle Orientierung.',
+      },
+      {
+        senderId: '5lntBSrRRUM9JB5AFE14z7lTE6n1', // Beispiel-Entwickler-ID
+        text: 'Wir könnten eine kleine Abfrage einbauen, um zu prüfen, ob der User, der angezeigt wird, der aktuelle Nutzer ist. In dem Fall fügen wir das "(Du)" hinzu.',
+      },
+      {
+        senderId: 'rUnD1S8sHOgwxvN55MtyuD9iwAD2', // Beispiel-Entwickler-ID
+        text: 'Ich kann das umsetzen! Wir schauen dann, ob der User in `currentUser$` dem angezeigten User entspricht. Wenn ja, fügen wir das "(Du)" hinzu.',
+      },
+      {
+        senderId: 'NxSyGPn1LkPV3bwLSeW94FPKRzm1', // Der vierte Entwickler
+        text: 'Ich würde noch vorschlagen, dass wir darauf achten, dass das "Du" auch bei einem gekürzten Namen in einem kleineren Layout sichtbar bleibt. Der Name kann sich den Platz nehmen, bis er mit "..." gekürzt wird, aber das "(Du)" sollte immer daneben erscheinen.',
+      },
+      {
+        senderId: guestId,
+        text: 'Super Idee! Dann ist es auch bei kleinen Bildschirmen klar, wer der eigene Account ist. Danke für den Vorschlag!',
+      },
+    ];
+
+    // Nachrichten im Channel erstellen
+    for (const msg of messages) {
+      await this.postService.createMessage(
+        channelDocRef.id,
+        msg.senderId,
+        msg.text,
+        'channel'
+      );
+    }
+  }
+
+  /** Login with Google */
   loginWithGoogle(): Observable<void> {
     const auth = getAuth();
     const promise = signInWithPopup(auth, this.provider)
@@ -190,29 +333,22 @@ export class AuthService {
         const user = response.user;
         await this.createOrUpdateUserInFirestore(user, 'google.com');
       })
-      .catch((error) => {
-        console.error('Google Login Error:', error);
-      });
+      .catch((error) => console.error('Google Login Error:', error));
     return from(promise) as Observable<void>;
   }
 
-  /**
-   * Logs out the current user and updates Firestore to mark the user as inactive
-   */
+  /** Logout and update Firestore */
   logout() {
     const user = this.auth.currentUser;
-    if (!user) {
-      return signOut(this.auth);
-    }
+    if (!user) return signOut(this.auth);
+
     const userRef = doc(this.firestore, `users/${user.uid}`);
     const isGuest = user.isAnonymous;
 
     if (isGuest) {
       return deleteDoc(userRef)
         .catch(() => {})
-        .then(() => {
-          return deleteUser(user);
-        })
+        .then(() => deleteUser(user))
         .catch((err) => console.error('Failed to delete guest user:', err));
     } else {
       return updateDoc(userRef, { active: false }).then(() =>
@@ -221,32 +357,20 @@ export class AuthService {
     }
   }
 
-  /**
-   *
-   * Sends link to firesore mail reset url
-   *
-   */
+  /** Send password reset email */
   sendPasswordResetEmail(email: string): Promise<void> {
     const auth = getAuth();
     return sendPasswordResetEmail(auth, email);
   }
 
-  /**
-   *
-   * funktion to save new user image
-   *
-   */
+  /** Update user profile picture */
   updateUserPhotoUrl(photoUrl: string): Promise<void> {
     const user = this.auth.currentUser;
     const userRef = doc(this.firestore, `users/${user?.uid}`);
     return updateDoc(userRef, { photoUrl });
   }
 
-  /**
-   *
-   * funstion to save new Username
-   *
-   */
+  /** Update user name */
   updateUserName(newName: string): Promise<void> {
     const user = this.auth.currentUser;
     const userRef = doc(this.firestore, `users/${user?.uid}`);

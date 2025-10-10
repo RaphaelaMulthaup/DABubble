@@ -1,13 +1,65 @@
-<!-- @if (isLoaded$ | async; as loaded) {
-  @if (loaded && post) { -->
-    <div
-      class="post-container w-full flex flex-col"
-      [class.post-current-user]="senderIsCurrentUser"
-      [class.web-post-container]="(screenSize$ | async) === 'web'"
-      [class.web-post-current-user]="
-        (screenSize$ | async) === 'web' && senderIsCurrentUser
-      "
-    >
+<div
+  class="post-container w-full flex flex-col"
+  [class.post-current-user]="senderIsCurrentUser"
+  [class.web-post-container]="(screenSize$ | async) === 'web'"
+  [class.web-post-current-user]="
+    (screenSize$ | async) === 'web' && senderIsCurrentUser
+  "
+>
+  <div
+    class="post flex w-full"
+    [class.clicked]="postClicked"
+    [class.editing]="overlayService.editingPostId() === post.id"
+    [class.web-editing]="
+      overlayService.editingPostId() === post.id &&
+      (screenSize$ | async) === 'web'
+    "
+  >
+    <div class="profile-img" (click)="openUserProfileOverlay()">
+      @if(senderPhotoUrl$ | async; as photoUrl) {
+      <img
+        class="profil-img"
+        [src]="senderPhotoUrl$ | async"
+        alt="Profilbild"
+      />
+      } @else {
+      <img
+        class="profil-img"
+        src="/assets/img/no-avatar.svg"
+        alt="Profilbild"
+      />
+      }
+    </div>
+
+    <div class="post-content flex flex-col">
+      <div class="post-header flex">
+        <h4>{{ senderName$ | async }}</h4>
+        <span class="post-time">{{ createdAtTime$ | async }} Uhr</span>
+      </div>
+
+      <div class="post-text">
+        @if(senderIsCurrentUser && overlayService.editingPostId() === post.id) {
+        <app-edit-displayed-post
+          [post]="post"
+          [conversationWindowState]="conversationWindowState"
+          (endEditingPost)="editingPost = false"
+          (click)="$event.preventDefault()"
+          class="w-full h-full"
+        />
+        } @else {
+        <div
+          (click)="
+            isThreadTheme
+              ? $event.preventDefault()
+              : openPostInteractionOverlay($event)
+          "
+          class="text"
+          [innerHTML]="postService.textToHtml(post.text)"
+        ></div>
+        }
+      </div>
+
+      @if (post.ansCounter && !isThreadTheme){
       <div
         class="post flex w-full"
         [class.clicked]="postClicked"

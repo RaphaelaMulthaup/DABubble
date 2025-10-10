@@ -1,6 +1,7 @@
 import { ElementRef, Injectable } from '@angular/core';
 import {
   collection,
+  CollectionReference,
   doc,
   docData,
   Firestore,
@@ -9,12 +10,7 @@ import {
   setDoc,
   updateDoc,
 } from '@angular/fire/firestore';
-import {
-  Observable,
-  of,
-  shareReplay,
-  Subject,
-} from 'rxjs';
+import { Observable, of, shareReplay, Subject } from 'rxjs';
 import { PostInterface } from '../shared/models/post.interface';
 import { Router } from '@angular/router';
 import { EMOJIS } from '../shared/constants/emojis';
@@ -43,36 +39,41 @@ export class PostService {
 
   /**
    * Sends a post to a given subcollection (e.g. messages of a conversation or thread).
-   * Automatically sets the `createdAt` field to the server timestamp.
    *
    * @param parentPath - Path to the parent document (e.g. "chats/{chatId}").
    * @param subcollectionName - Name of the subcollection (e.g. "messages").
    * @param post - post object without `createdAt` (timestamp is added automatically).
-   * @returns A Promise that resolves once the message has been written.
    */
   async sendPost(
     parentPath: string,
     subcollectionName: string,
     post: Omit<PostInterface, 'createdAt' | 'id'>
   ) {
-    // Reference to the subcollection
     const postsRef = collection(
       this.firestore,
       `${parentPath}/${subcollectionName}`
     );
+    await this.createPost(postsRef, post);
+  }
 
-    // Create a new document reference with an auto-generated ID
-    const newDocRef = doc(postsRef); // Firestore generates the ID automatically
-
-    // Write the document including the ID and server timestamp
+  /**
+   * Create a new document reference and write the document including the ID and server timestamp
+   * @param postsRef Reference to the subcollection where the post should be saved
+   * @param post post object without `createdAt` (timestamp is added automatically).
+   * @returns Return the ID of the created document
+   */
+  async createPost(
+    postsRef: CollectionReference,
+    post: Omit<PostInterface, 'createdAt' | 'id'>
+  ) {
+    const newDocRef = doc(postsRef);
     await setDoc(newDocRef, {
       ...post,
-      id: newDocRef.id, // Save the document ID in the document
+      id: newDocRef.id,
       createdAt: serverTimestamp(),
       hasReactions: false,
     });
-
-    return newDocRef.id; // Return the ID of the created document (optional)
+    return newDocRef.id;
   }
 
   /**

@@ -1,3 +1,5 @@
+@import "../../../../styles.scss";
+
 nav {
   background-color: var(--color-white);
   height: 100%;
@@ -24,7 +26,7 @@ app-contacts-list {
   width: 100%;
 }
 
-.new-message {
+.new-message-handset {
   width: 60px;
   aspect-ratio: 1;
   border-radius: 50%;
@@ -37,6 +39,37 @@ app-contacts-list {
   &:active {
     background-color: var(--color-purple-light);
   }
+}
+
+.new-message {
+  margin-left: 22px;
+  margin-bottom: 32px;
+  padding: 0 20px 0 12px;
+  width: fit-content;
+  border-radius: 23.5px;
+  @include dFlex($jc: flex-start, $g: 4px);
+  cursor: pointer;
+  span {
+    font-size: 20px;
+    font-weight: bold;
+  }
+  &:hover {
+    background-color: var(--color-purple-white);
+    color: var(--color-purple-medium);
+    .new-message-tablet-web {
+      background-image: url(../../../../assets/img/new-message-black-hover.svg);
+    }
+  }
+  &:active {
+    .new-message-tablet-web {
+      background-image: url(../../../../assets/img/new-message-black-click.svg);
+    }
+  }
+}
+
+.new-message-tablet-web {
+  margin-bottom: 7px;
+  background-image: url(../../../../assets/img/new-message-black.svg);
 }
 
 ::-webkit-scrollbar {
@@ -64,4 +97,3 @@ app-contacts-list {
   background-color: var(--color-white) !important;
   border-radius: 5px;
 }
-

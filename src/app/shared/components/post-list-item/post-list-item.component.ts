@@ -4,6 +4,14 @@ import { Router } from '@angular/router';
 import { PostService } from '../../../services/post.service';
 import { ScreenService } from '../../../services/screen.service';
 
+/** The data needed for navigation per route. */
+interface NavigationData {
+  type: 'chat' | 'channel';
+  id: string;
+  answerId: string;
+  parentMessageId?: string;
+}
+
 @Component({
   selector: 'app-post-list-item',
   imports: [],
@@ -23,43 +31,68 @@ export class PostListItemComponent {
   ) {}
 
   /**
-   * Navigates to the conversation or thread based on post type.
-   * This method handles the routing logic to navigate either to a message window or a thread window.
+   * Navigates to the selected post and passes it to postService.
    */
   navigateToConversation() {
-    // Determine the conversation type based on the presence of chatId or channelId
-    const conversationType = this.post.chatId ? 'chat' : 'channel';
-    const conversationId = this.post.chatId ?? this.post.channelId ?? 'unknown'; // Select conversation ID (chat or channel)
-    const postId = this.post.id; // Get the post ID
-    const parentMessageId = this.post.parentMessageId; // Get the parent message ID (if any)
-
-    // If a post ID exists, proceed with navigation
+    const postId = this.post.id;
     if (postId) {
-      // Mark the post as selected in the PostService
       this.postService.select(postId);
-
-      // If the post has an answer, navigate to the thread window with the parent message ID
-      if (this.post.answer) {
-        this.screenService.setDashboardState('thread-window'); // Set the mobile dashboard state for thread view
-        this.router.navigate(
-          [
-            '/dashboard', // Base route
-            conversationType, // Chat or channel type
-            conversationId, // Conversation ID
-            'answers', // Sub-route for answers
-            parentMessageId, // Parent message ID for threading
-          ],
-          {
-            queryParams: { scrollTo: postId }, // Scroll to the specific post
-          }
-        );
-      } else {
-        // Otherwise, navigate to the message window view
-        this.screenService.setDashboardState('message-window'); // Set the mobile dashboard state for message view
-        this.router.navigate(['/dashboard', conversationType, conversationId], {
-          queryParams: { scrollTo: postId }, // Scroll to the specific post
-        });
-      }
+      this.navigateToAnswerOrMessage(postId);
     }
+  }
+
+  /**
+   * Navigates to the conversation or thread based on post type.
+   * 
+   * @param postId The ID of the selected post.
+   */
+  navigateToAnswerOrMessage(postId: string) {
+    const conversationType = this.post.chatId ? 'chat' : 'channel';
+    const conversationId = this.post.chatId ?? this.post.channelId ?? 'unknown';
+    if (this.post.answer) {
+      this.navigateToAnswer(conversationType, conversationId, postId);
+    } else {
+      this.screenService.setDashboardState('message-window');
+      this.router.navigate(['/dashboard', conversationType, conversationId], {
+        queryParams: { scrollTo: postId },
+      });
+    }
+  }
+
+  /**
+   * This function passes the data needed to navigate to the answer.
+   * 
+   * @param conversationType The type of conversation ('chat' | 'channel') in which the answer was given.
+   * @param conversationId The ID of the conversation in which the answer was given.
+   * @param answerId 
+   */
+  navigateToAnswer(
+    conversationType: 'chat' | 'channel',
+    conversationId: string,
+    answerId: string
+  ) {
+    this.navigateToAnswerByData({
+      type: conversationType,
+      id: conversationId,
+      answerId,
+      parentMessageId: this.post.parentMessageId,
+    });
+  }
+
+  /**
+   * Navigates to the thread of the selected answer and scrolls to the answer.
+   * 
+   * @param data The data needed for the route and scrolling to the answer.
+   */
+  private navigateToAnswerByData(data: NavigationData) {
+    this.screenService.setDashboardState('thread-window');
+    const route = [
+      '/dashboard',
+      data.type,
+      data.id,
+      'answers',
+      data.parentMessageId,
+    ];
+    this.router.navigate(route, { queryParams: { scrollTo: data.answerId } });
   }
 }
