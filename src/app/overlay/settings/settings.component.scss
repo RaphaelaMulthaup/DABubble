@@ -69,14 +69,6 @@
   }
 }
 
-.profile{
-  background-image: url('./../../../assets/img/person-profile-view.svg');
-
-  &:hover{
-    background-image: url('./../../../assets/img/account-circle.svg');
-  }
-}
-
 .overlay-close {
   transition: transform 0.5s ease, opacity 0.5s ease;
   transform: translateY(0);
