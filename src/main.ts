@@ -1,7 +1,13 @@
 import { bootstrapApplication } from '@angular/platform-browser';
 import { AppComponent } from './app/app.component';
-import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
-import { provideFirestore, getFirestore } from '@angular/fire/firestore';
+import { provideFirebaseApp, initializeApp, getApp } from '@angular/fire/app';
+import {
+  provideFirestore,
+  getFirestore,
+  persistentLocalCache,
+  persistentMultipleTabManager,
+  initializeFirestore,
+} from '@angular/fire/firestore';
 import { environment } from './environments/environment';
 import { provideAuth, getAuth } from '@angular/fire/auth';
 
@@ -20,14 +26,20 @@ bootstrapApplication(AppComponent, {
     provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
 
     // Provides Firestore instance for dependency injection
-    provideFirestore(() => getFirestore()),
+    provideFirestore(() =>
+      initializeFirestore(getApp(), {
+        localCache: persistentLocalCache({
+          tabManager: persistentMultipleTabManager(),
+        }),
+      })
+    ),
 
     // Provides Firebase Authentication instance for dependency injection
     provideAuth(() => getAuth()),
 
     // Add additional providers here if needed
     importProvidersFrom(HttpClientModule),
-  ]
+  ],
 })
-// Catches and logs any errors during application bootstrap
-.catch((err) => console.error(err));
+  // Catches and logs any errors during application bootstrap
+  .catch((err) => console.error(err));
