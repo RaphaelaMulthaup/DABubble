@@ -67,6 +67,7 @@ export class WindowDisplayComponent implements OnInit {
   @ViewChildren('messageElement', { read: ElementRef })
   messageElements!: QueryList<ElementRef>;
   loadingOlderMessages = false;
+  private previousScrollHeight = 0; // sagve scrollHeight for loading
   // Localized days of the week for displaying timestamps
   days = DAYS;
   @Input() conversationWindowState?: 'conversation' | 'thread';
@@ -136,7 +137,15 @@ export class WindowDisplayComponent implements OnInit {
     // Hauptmessages abonnieren
     this.messages$.pipe(takeUntil(this.destroy$)).subscribe((data) => {
       this.onContentChange(this.currentConversationId, data);
-      setTimeout(() => this.scrollToLastMessage());
+      if (this.loadingOlderMessages) {
+        const offset = 150;
+        const el = this.messagesContainer.nativeElement;
+        const newScrollHeight = el.scrollHeight;
+        el.scrollTop = newScrollHeight - this.previousScrollHeight + offset; // menține poziția
+        this.loadingOlderMessages = false;
+      } else if (!this.initialScrollDone) {
+        setTimeout(() => this.scrollToLastMessage());
+      }
     });
 
     // Scroll-Handling
@@ -164,77 +173,6 @@ export class WindowDisplayComponent implements OnInit {
         shareReplay({ bufferSize: 1, refCount: true })
       );
     });
-
-    // this.channelTyp$ =
-    //   this.conversationActiveRouterService.getConversationType$(this.route);
-
-    // // Subscribe to conversation ID from route params
-    // this.route.parent?.params
-    //   .pipe(takeUntil(this.destroy$))
-    //   .subscribe((params) => {
-    //     this.currentConversationId = params['conversationId'];
-    //     this.currentConversationType = params['conversationType'];
-    //     const id = params['scrollTo'];
-    //     if (id) this.handleScrollRequest(id);
-    //   });
-
-    // this.route.params
-    //   .pipe(
-    //     map((params) => params['messageId'] ?? null),
-    //     distinctUntilChanged(),
-    //     takeUntil(this.destroy$)
-    //   )
-    //   .subscribe((messageId) => {
-    //     this.postAnsweredId = messageId;
-    //     if (this.postAnsweredId) {
-    //       this.postService
-    //         .getPostById(
-    //           this.currentConversationType!,
-    //           this.currentConversationId!,
-    //           this.postAnsweredId!
-    //         )
-    //         .pipe(takeUntil(this.destroy$))
-    //         .subscribe((post) => {
-    //           this.postAnswered = post;
-    //         });
-    //     } else {
-    //       this.postAnswered = null;
-    //     }
-    //   });
-
-    // this.messages$.pipe(takeUntil(this.destroy$)).subscribe((data) => {
-    //   // Update content when new messages are received
-    //   this.onContentChange(
-    //     this.currentConversationId, // new chat ID
-    //     data // new messages
-    //   );
-    //   setTimeout(() => this.scrollToLastMessage());
-    // });
-
-    // // Subscribe to scroll requests from PostService
-    // this.postService.selected$
-    //   .pipe(takeUntil(this.destroy$))
-    //   .subscribe((postId) => {
-    //     this.handleScrollRequest(postId);
-    //   });
-
-    // // Handle scroll-to from query parameters
-    // this.route.queryParams
-    //   .pipe(takeUntil(this.destroy$))
-    //   .subscribe((params) => {
-    //     const id = params['scrollTo'];
-    //     if (id) this.handleScrollRequest(id);
-    //   });
-
-    // this.isLoaded$ = defer(() => {
-    //   if (!this.messages$) return of(false);
-    //   return combineLatest([this.messages$, this.channelTyp$ ?? of(true)]).pipe(
-    //     map(([messages]) => !!messages?.length),
-    //     distinctUntilChanged(),
-    //     startWith(false),
-    //     shareReplay({ bufferSize: 1, refCount: true })
-    //   );
-    // });
   }
 
   /**
@@ -489,5 +427,15 @@ export class WindowDisplayComponent implements OnInit {
       return currentPostDate !== previousPostDate;
     }
     return true;
+  }
+
+  onScroll() {
+    const el = this.messagesContainer.nativeElement;
+    const threshold = 20;
+    if (el.scrollTop <= threshold && !this.loadingOlderMessages) {
+      this.previousScrollHeight = el.scrollHeight; // salvează înainte
+      this.loadingOlderMessages = true;
+      this.conversationActiveRouterService.loadMore();
+    }
   }
 }
