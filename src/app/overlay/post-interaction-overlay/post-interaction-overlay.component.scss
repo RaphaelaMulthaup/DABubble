@@ -1,7 +1,7 @@
 .interaction-options {
     margin-bottom: 40px;
-    padding: 4px 16px;
-    gap: 6px;
+    padding: clamp(0.125rem, 0.0625rem + 0.3125vw, 0.25rem) clamp(0.5rem, 0.2500rem + 1.2500vw, 1rem);
+    gap: clamp(0.25rem, 0.1875rem + 0.3125vw, 0.375rem);
     border: 1px solid var(--color-purple-light);
     border-radius: 25px;
     border-bottom-left-radius: 0;

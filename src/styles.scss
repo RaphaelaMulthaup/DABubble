@@ -412,7 +412,7 @@ h4 {
 }
 
 .results-list-handset {
-  padding: 24px 61px;
+  padding: clamp(1rem, 0.7500rem + 1.2500vw, 1.5rem) clamp(1.25rem, -0.0315rem + 6.4075vw, 3.813rem);
   width: 100vw;
 }
 

@@ -1,18 +1,18 @@
 @import "./../../../styles.scss";
 
 .overlay {
-  padding: 40px;
+  padding: clamp(1.25rem, 0.6250rem + 3.1250vw, 2.5rem);
 }
 
 .profile-view-other-user {
-  @include dFlex($g: 45px);
+  @include dFlex($g: clamp(1.25rem, 0.4685rem + 3.9075vw, 2.813rem));
   flex-direction: column;
-  width: 358px;
+  width: clamp(17.5rem, 15.0625rem + 12.1875vw, 22.375rem);
   margin-top: 45px;
 }
 
 .profil-img {
-  width: 200px;
+  width: clamp(7.5rem, 5.0000rem + 12.5000vw, 12.5rem);
   aspect-ratio: 1;
   border-radius: 50%;
 }
@@ -23,7 +23,7 @@
   width: 100%;
   h1 {
     color: black;
-    width: 300px;
+    width: clamp(17.5rem, 16.8750rem + 3.1250vw, 18.75rem);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

@@ -1,13 +1,13 @@
 .edit-post {
     margin-top: 4px;
-    padding: 8px 12px;
+    padding: clamp(0.25rem, 0.1250rem + 0.6250vw, 0.5rem) clamp(0.375rem, 0.1875rem + 0.9375vw, 0.75rem);
     border-radius: 30px;
     border-top-right-radius: 0;
     background-color: var(--color-white);
     box-shadow: 0px 6px 14px 0px #00000033;
 
     button {
-        padding: 8px 12px;
+        padding: clamp(0.2rem, 0.0500rem + 0.7500vw, 0.5rem) clamp(0.25rem, 0.0000rem + 1.2500vw, 0.75rem);
         border-radius: 30px;
         font-size: 18px;
         font-weight: 600;
