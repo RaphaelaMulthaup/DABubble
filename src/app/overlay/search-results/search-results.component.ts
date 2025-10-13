@@ -79,6 +79,4 @@ export class SearchResultsComponent {
   get overlayWeb(): boolean {
     return this.screenSize !== 'handset';
   }
-
-  
 }

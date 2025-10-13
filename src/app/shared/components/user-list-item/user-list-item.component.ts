@@ -12,6 +12,7 @@ import { AuthService } from '../../../services/auth.service';
 import { ChatService } from '../../../services/chat.service';
 import { UserService } from '../../../services/user.service';
 import { CommonModule } from '@angular/common';
+import { OverlayService } from '../../../services/overlay.service';
 
 @Component({
   selector: 'app-user-list-item',
@@ -52,7 +53,8 @@ export class UserListItemComponent implements OnDestroy {
   constructor(
     private authService: AuthService,
     private chatService: ChatService,
-    private userService: UserService
+    private userService: UserService,
+    private overlayService: OverlayService
   ) {
     // Observable der Live-Userdaten (nur wenn uid vorhanden)
     this.user$ = this.userUid$.pipe(
@@ -84,6 +86,7 @@ export class UserListItemComponent implements OnDestroy {
 
   async pickOutAndNavigateToChat() {
     if (!this.currentUserId || !this.lastUserSnapshot) return;
+    this.overlayService.closeAll();
     this.chatService.navigateToChat(this.currentUserId, this.lastUserSnapshot);
   }
 
