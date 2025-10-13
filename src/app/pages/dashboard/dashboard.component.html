@@ -1,7 +1,5 @@
-<section class="dashboard w-full" [ngClass]="{
-    'new-message-view-mobile':
-      dashboardState() === 'new-message-view' &&
-      (screenSize$ | async) === 'handset'}">
+<section class="dashboard w-full" 
+      [ngClass]="{'new-message-view-mobile': dashboardState() === 'new-message-view' && (screenSize$ | async) === 'handset'}">
   <app-header-dashboard />
 
   @if ((screenSize$|async) === 'handset') {
@@ -13,7 +11,8 @@
       }
     </div>
   } @else {
-    <div class="dashboard-{{(screenSize$|async)}} flex h-full">
+    <div class="dashboard-{{(screenSize$|async)}} flex h-full"
+    [ngStyle]="{'margin-left': (screenSize$|async) !== 'handset' && screenService.sidenavVisible? '0px': '-10px'}">
       @if(screenService.sidenavVisible) {
         <app-sidenav class="relative"></app-sidenav>
       }

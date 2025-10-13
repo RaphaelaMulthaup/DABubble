@@ -1,6 +1,6 @@
-<nav class="flex flex-col">
+<nav class="flex flex-col" [class.nav-tablet]="(screenSize$|async) === 'tablet'">
   <div class="nav-content flex flex-col">
-    @if ((screenSize$|async) != 'handset') {
+    @if ((screenSize$|async) !== 'handset') {
       <div class="new-message" (click)="openNewMessageView()">
         <button class="btn-tertiary new-message-tablet-web"></button>
         <span>Neue Nachricht</span>

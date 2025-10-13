@@ -3,14 +3,15 @@
 nav {
   background-color: var(--color-white);
   height: 100%;
-  // max-width: 336px;
-  // border-radius: 30px;
-  padding-top: 32px;
-  padding-bottom: 32px;
-  padding-left: 30px;
-  gap: 28px;
+  padding: 32px 0 32px 30px;
   border-radius: 30px;
-  // height: 80dvh !important;
+}
+
+.nav-tablet {
+  padding: clamp(1.5rem, 0.4091rem + 1.8182vw, 2rem) 0 clamp(1.5rem, 0.4091rem + 1.8182vw, 2rem) clamp(0.75rem, -1.7045rem + 4.0909vw, 1.875rem);
+  .new-message {
+    margin-bottom: clamp(1.5rem, 0.4091rem + 1.8182vw, 2rem);
+  }
 }
 
 .nav-content {
