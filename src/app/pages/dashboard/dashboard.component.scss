@@ -20,7 +20,7 @@
   }
 
   app-sidenav {
-    width: clamp(18.75rem, 7.6442rem + 12.6923vw, 22.875rem);
+    min-width: 366px !important;
   }
 }
 
@@ -35,7 +35,7 @@
   }
 
   app-sidenav {
-    width: clamp(17.5rem, 2.8617rem + 22.8723vw, 22.875rem);
+    min-width: clamp(17.5rem, 5.7727rem + 19.5455vw, 22.875rem) !important;
   }
 }
 

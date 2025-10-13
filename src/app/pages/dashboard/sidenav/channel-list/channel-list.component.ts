@@ -1,4 +1,4 @@
-import { Component, inject, WritableSignal } from '@angular/core';
+import { Component, inject, Input, WritableSignal } from '@angular/core';
 import { ChannelsService } from '../../../../services/channels.service';
 import { Observable } from 'rxjs';
 import { ChannelInterface } from '../../../../shared/models/channel.interface';
@@ -12,6 +12,7 @@ import { ChannelListItemComponent } from '../../../../shared/components/channel-
 import { DashboardState } from '../../../../shared/types/dashboard-state.type';
 import { SearchService } from '../../../../services/search.service';
 import { ScreenService } from '../../../../services/screen.service';
+import { ConversationActiveRouterService } from '../../../../services/conversation-active-router.service';
 
 @Component({
   selector: 'app-channel-list',
@@ -39,7 +40,8 @@ export class ChannelListComponent {
     private authService: AuthService,
     private overlayService: OverlayService,
     private searchService: SearchService,
-    public screenService: ScreenService,
+    public conversationActiveRouterService: ConversationActiveRouterService,
+    public screenService: ScreenService
   ) {
     this.dashboardState = this.screenService.dashboardState;
     this.currentUserId = this.authService.getCurrentUserId();

@@ -6,7 +6,8 @@
     !isInSearchResultsCurrentPostInput
       ? ['/dashboard', 'channel', channel.id]
       : null
-  " [ngClass]="{ 'related-to-search-result-post': relatedToSearchResultPost }">
+  " [ngClass]="{ 'related-to-search-result-post': relatedToSearchResultPost }"
+  [class.active]="(screenSize$|async) !== 'handset' && conversationActiveRouterService.currentConversation() === channel.id">
 
   @if(isInChannelHeader){
     <div class="tag"></div>
@@ -17,7 +18,7 @@
   }
   <span class="arrow"></span>
   }@else {
-  <div class="tag" [class.tag-is-active]="active"></div>
-  <span [class.channel-is-active]="active">{{ channel.name }}</span>
+  <div class="tag"></div>
+  <span class="name">{{ channel.name }}</span>
   }
 </li>

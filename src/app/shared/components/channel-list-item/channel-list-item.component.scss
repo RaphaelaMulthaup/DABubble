@@ -26,7 +26,7 @@
     line-clamp: 1;
     -webkit-box-orient: vertical;
   }
-  
+
   &:hover {
     .tag {
       background-image: url("./../../../../assets/img/tag-blue.svg");
@@ -47,13 +47,14 @@
   }
 }
 
-.channel-is-active {
-  color: var(--color-purple-medium);
-  font-weight: 700;
-  font-style: Bold;
-  font-size: 18px;
-}
-
-.tag-is-active {
-  background-image: url("./../../../../assets/img/tag-blue.svg") !important;
+.active {
+  .tag {
+    background-image: url("./../../../../assets/img/tag-blue.svg") !important;
+  }
+  .name {
+    color: var(--color-purple-medium);
+    font-weight: 700;
+    font-style: Bold;
+    font-size: 18px;
+  }
 }

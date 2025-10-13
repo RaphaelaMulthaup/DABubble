@@ -23,10 +23,10 @@ $breakpoints: (
   l: 1200px,
   xl: 1399px,
 
-  '835': 835px,
-  '624': 624px,
-  '515': 515px,
-  '430': 430px,
+  "835": 835px,
+  "624": 624px,
+  "515": 515px,
+  "430": 430px,
 );
 
 :root {
@@ -69,7 +69,7 @@ $breakpoints: (
   }
 }
 
-body{
+body {
   height: 100dvh;
 }
 
@@ -253,6 +253,14 @@ h4 {
   }
 }
 
+.box-shadow-line {
+  width: 100%;
+  height: 4px;
+  background-color: var(--color-white);
+  position: relative;
+  z-index: 9999;
+}
+
 .box-shadow-top {
   box-shadow: 0px -4px 8px 0px var(--color-white), 0px 0px 4px 0px var(--color-white);
 }
@@ -262,10 +270,9 @@ h4 {
 }
 
 .box-shadow-inset {
-  box-shadow: 
-    0px 4px 8px 0px var(--color-white) inset, 
+  box-shadow: 0px 4px 8px 0px var(--color-white) inset,
     0px 0px 4px 0px var(--color-white) inset,
-    0px -4px 8px 0px var(--color-white) inset 
+    0px -4px 8px 0px var(--color-white) inset;
 }
 
 .overlay {
@@ -392,7 +399,6 @@ h4 {
 }
 
 .results-list {
-  
   @include dFlex($jc: flex-start, $ai: flex-start, $g: 13px);
   flex-direction: column;
   overflow-x: hidden;

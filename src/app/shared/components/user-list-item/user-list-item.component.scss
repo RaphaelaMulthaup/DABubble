@@ -24,11 +24,18 @@
   bottom: 0;
 }
 
-.related-to-search-result-post{
-  .profil-img-and-status{
+.related-to-search-result-post {
+  .profil-img-and-status {
     width: 24px;
   }
-  .profil-img{
+  .profil-img {
     width: 24px;
   }
+}
+
+.active {
+  color: var(--color-purple-medium);
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 18px;
 }

@@ -3,20 +3,13 @@
   <ul class="results-list-current-post-input">
     @for (item of results; track $index) { @switch (item.type) { @case ('user')
     {
-    <app-user-list-item
-      [user]="item"
-      [isInSearchResultsCurrentPostInput]="true"
-      (userSelected)="onUserSelected($event)"
-    ></app-user-list-item
-    >} @case ('channel') {
-    <app-channel-list-item
-      [channel]="item"
-      [isInSearchResultsCurrentPostInput]="true"
-      (channelSelected)="onChannelSelected($event)"
-    ></app-channel-list-item>
+    <app-user-list-item [user]="item" [isInSearchResultsCurrentPostInput]="true"
+      (userSelected)="onUserSelected($event)"></app-user-list-item>} @case ('channel') {
+    <app-channel-list-item [channel]="item" [isInSearchResultsCurrentPostInput]="true"
+      (channelSelected)="onChannelSelected($event)"></app-channel-list-item>
     } @default {
     {{
-      item | json
+    item | json
     }}
     } } }
   </ul>

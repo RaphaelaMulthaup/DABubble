@@ -1,8 +1,21 @@
-import { ChangeDetectionStrategy, Component, WritableSignal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  WritableSignal,
+} from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
 import { ChannelListComponent } from './channel-list/channel-list.component';
 import { ContactsListComponent } from './contacts-list/contacts-list.component';
-import { Observable, Subject, takeUntil } from 'rxjs';
+import {
+  filter,
+  map,
+  Observable,
+  of,
+  shareReplay,
+  Subject,
+  switchMap,
+  takeUntil,
+} from 'rxjs';
 import { UserInterface } from '../../../shared/models/user.interface';
 import { DashboardState } from '../../../shared/types/dashboard-state.type';
 import { CommonModule } from '@angular/common';
@@ -10,7 +23,8 @@ import { SearchService } from '../../../services/search.service';
 import { ScreenService } from '../../../services/screen.service';
 import { ScreenSize } from '../../../shared/types/screen-size.type';
 import { OverlayService } from '../../../services/overlay.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { ConversationActiveRouterService } from '../../../services/conversation-active-router.service';
 
 /**
  * The SidenavComponent is responsible for rendering the sidebar of the application,
@@ -22,7 +36,6 @@ import { Router } from '@angular/router';
   // Imports necessary child components used in the sidebar
   imports: [ContactsListComponent, ChannelListComponent, CommonModule],
   templateUrl: './sidenav.component.html', // HTML template for the sidebar
-  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './sidenav.component.scss', // Styles for the sidebar
 })
 export class SidenavComponent {
@@ -49,12 +62,14 @@ export class SidenavComponent {
    * This signal stores the current state of the mobile dashboard (e.g., whether it's in 'new-message-view').
    */
   dashboardState: WritableSignal<DashboardState>;
-
+  
   constructor(
-    private authService: AuthService, // AuthService to manage user authentication
+    private authService: AuthService,
+    private conversationActiveRouterService: ConversationActiveRouterService,
     public screenService: ScreenService,
     public searchService: SearchService,
     public overlayService: OverlayService,
+    private route: ActivatedRoute,
     private router: Router
   ) {
     // Injecting the dashboardState from the mobile service to track mobile state

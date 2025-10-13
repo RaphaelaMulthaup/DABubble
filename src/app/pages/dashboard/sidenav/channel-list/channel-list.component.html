@@ -28,7 +28,8 @@
   <app-channel-list-item
     [channel]="channel"
     (click)="screenService.dashboardState.set('message-window')"
-  ></app-channel-list-item>
+    (click)="conversationActiveRouterService.currentConversation.set(channel.id!)"
+    ></app-channel-list-item>
   }
 </div>
 <button
@@ -38,5 +39,4 @@
   <img src="./assets/img/add-circle.svg" alt="add button" />
   Channel hinzufügen
 </button>
-
 }

@@ -12,12 +12,18 @@ import { AuthService } from '../../../services/auth.service';
 import { ChatService } from '../../../services/chat.service';
 import { UserService } from '../../../services/user.service';
 import { CommonModule } from '@angular/common';
+import { ConversationActiveRouterService } from '../../../services/conversation-active-router.service';
+import { ScreenService } from '../../../services/screen.service';
+import { ScreenSize } from '../../types/screen-size.type';
 
 @Component({
   selector: 'app-user-list-item',
   imports: [CommonModule],
   templateUrl: './user-list-item.component.html',
-  styleUrls: ['./user-list-item.component.scss', './../../styles/list-item.scss'],
+  styleUrls: [
+    './user-list-item.component.scss',
+    './../../styles/list-item.scss',
+  ],
 })
 export class UserListItemComponent implements OnDestroy {
   private destroy$ = new Subject<void>();
@@ -39,21 +45,24 @@ export class UserListItemComponent implements OnDestroy {
   @Input() inHeaderChat = false;
 
   @Output() userSelected = new EventEmitter<UserInterface>();
-
+  screenSize$!: Observable<ScreenSize>;
   // public Observable, das im Template per async-Pipe benutzt wird
   public user$: Observable<UserInterface | null>;
   // currentUserId als Observable (für template checks)
   public currentUserId$: Observable<string | null>;
 
   // zusätzlich: synchroner Snapshot für Methoden wie navigate (optional)
-  private lastUserSnapshot: UserInterface | null = null;
+  lastUserSnapshot: UserInterface | null = null;
   currentUserId: string | null = null;
 
   constructor(
     private authService: AuthService,
     private chatService: ChatService,
+    public conversationActiveRouterService: ConversationActiveRouterService,
+    public screenService: ScreenService,
     private userService: UserService
   ) {
+    this.screenSize$ = this.screenService.screenSize$;
     // Observable der Live-Userdaten (nur wenn uid vorhanden)
     this.user$ = this.userUid$.pipe(
       filter((uid): uid is string => !!uid),
@@ -93,7 +102,10 @@ export class UserListItemComponent implements OnDestroy {
     if (this.isInSearchResultsCurrentPostInput) {
       this.userSelected.emit(this.lastUserSnapshot);
     } else if (this.showProfile || this.inHeaderChat) {
-      this.userService.openProfileOverlay(this.lastUserSnapshot.uid, this.currentUserId);
+      this.userService.openProfileOverlay(
+        this.lastUserSnapshot.uid,
+        this.currentUserId
+      );
     } else {
       this.pickOutAndNavigateToChat();
     }

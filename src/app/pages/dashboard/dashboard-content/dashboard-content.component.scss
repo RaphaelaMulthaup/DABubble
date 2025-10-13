@@ -18,7 +18,6 @@
   }
 
   .thread-window {
-    width: 485px;
     max-width: 485px;
   }
 }
@@ -44,11 +43,10 @@
 
 .new-message-view {
   .empty-window-web-tablet {
-    padding-top: 8px;
     flex: 1;
     border-radius: 0 0 30px 30px;
     background-color: var(--color-white);
-    overflow-y: scroll;
+    overflow-y: hidden;
     scrollbar-width: none;
     -ms-overflow-style: none;
     &::-webkit-scrollbar {

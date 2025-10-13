@@ -5,6 +5,7 @@
     'related-to-search-result-post': relatedToSearchResultPost,
     'in-header-chat': inHeaderChat
   }"
+  [class.active]="(screenSize$|async) !== 'handset' && !inHeaderChat && !relatedToSearchResultPost && conversationActiveRouterService.currentConversation() === lastUserSnapshot?.uid"
 >
   <div class="profil-img-and-status">
     <img class="profil-img" src="{{ (user$ | async)?.photoUrl }}" alt="Profilbild" />

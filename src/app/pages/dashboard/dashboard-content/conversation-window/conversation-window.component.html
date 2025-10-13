@@ -8,6 +8,6 @@
   <app-window-display [messages$]="data$" [conversationWindowState]="conversationWindowState" [style.margin-top.px]="(screenSize$ | async) !== 'handset'
       ? '96'
       : '0'"></app-window-display>
-  <app-current-post-input [conversationWindowState]="conversationWindowState" class="box-shadow-top"></app-current-post-input>
+  <app-current-post-input [conversationWindowState]="conversationWindowState"></app-current-post-input>
   }
 </section>

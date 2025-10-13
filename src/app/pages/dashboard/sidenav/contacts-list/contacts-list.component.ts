@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, WritableSignal } from '@angular/core';
+import { Component, inject, Input, OnInit, WritableSignal } from '@angular/core';
 import { CommonModule, AsyncPipe } from '@angular/common';
 import { UserService } from '../../../../services/user.service';
 import { AuthService } from '../../../../services/auth.service';
@@ -20,6 +20,7 @@ import { UserInterface } from '../../../../shared/models/user.interface';
 import { UserListItemComponent } from '../../../../shared/components/user-list-item/user-list-item.component';
 import { DashboardState } from '../../../../shared/types/dashboard-state.type';
 import { ScreenService } from '../../../../services/screen.service';
+import { ConversationActiveRouterService } from '../../../../services/conversation-active-router.service';
 
 @Component({
   selector: 'app-contacts-list',
@@ -38,6 +39,7 @@ export class ContactsListComponent implements OnInit {
     private userService: UserService,
     private authService: AuthService,
     private chatService: ChatService,
+    public conversationActiveRouterService: ConversationActiveRouterService,
     public screenService: ScreenService
   ) {
     // Subscribe to current user observable from AuthService
@@ -70,7 +72,7 @@ export class ContactsListComponent implements OnInit {
             );
           }),
           // Remove current user from the contact list just in case
-          map((users) => users.filter((u) =>  u && u.uid !== user.uid))
+          map((users) => users.filter((u) => u && u.uid !== user.uid))
         )
       ),
       shareReplay({ bufferSize: 1, refCount: true }) // Cache latest contacts for new subscribers

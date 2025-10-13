@@ -1,4 +1,4 @@
-import { Injectable, WritableSignal } from '@angular/core';
+import { Injectable, signal, WritableSignal } from '@angular/core';
 import {
   DocumentData,
   Firestore,
@@ -25,8 +25,9 @@ import {
   combineLatest,
   BehaviorSubject,
   last,
+  filter,
 } from 'rxjs';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { PostInterface } from '../shared/models/post.interface';
 import { ChannelInterface } from '../shared/models/channel.interface';
 import { DashboardState } from '../shared/types/dashboard-state.type';
@@ -39,8 +40,14 @@ export class ConversationActiveRouterService {
     channel: 'channels',
     chat: 'chats',
   };
-  
-  constructor(private firestore: Firestore) {}
+
+  currentConversation = signal<string | null>(null);
+
+  constructor(
+    private firestore: Firestore,
+    private router: Router,
+    private route: ActivatedRoute
+  ) {}
 
   // expui un observable pentru id
   getConversationId$(route: ActivatedRoute): Observable<string> {

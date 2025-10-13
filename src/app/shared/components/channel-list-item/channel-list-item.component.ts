@@ -23,7 +23,7 @@ export class ChannelListItemComponent {
   constructor(
     public screenService: ScreenService,
     private route: ActivatedRoute,
-    private conversationActiveRouterService: ConversationActiveRouterService
+    public conversationActiveRouterService: ConversationActiveRouterService
   ) {
     this.screenSize$ = this.screenService.screenSize$;
   }
@@ -49,15 +49,15 @@ export class ChannelListItemComponent {
 
   private destroy$ = new Subject<void>();
 
-  active = false;
+  @Input() active:boolean = false;
 
   ngOnInit() {
-    this.conversationActiveRouterService
-      .getConversationId$(this.route)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((id) => {
-        this.active = this.channel.id === id;
-      });
+    // this.conversationActiveRouterService
+    //   .getConversationId$(this.route)
+    //   .pipe(takeUntil(this.destroy$))
+    //   .subscribe((id) => {
+    //     this.active = this.channel.id === id;
+    //   });
   }
 
   ngOnDestroy() {

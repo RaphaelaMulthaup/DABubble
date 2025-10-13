@@ -14,6 +14,7 @@
     }
   </ul>
   } @else {
-  <div class="results-list no-hits" [ngClass]="(screenSize$|async) === 'handset' ? 'results-list-handset' : 'results-list-web'">Keine Treffer</div>
+  <div class="results-list no-hits"
+    [ngClass]="(screenSize$|async) === 'handset' ? 'results-list-handset' : 'results-list-web'">Keine Treffer</div>
   }
 </div>
