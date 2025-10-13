@@ -6,28 +6,30 @@
     'in-header-chat': inHeaderChat
   }"
 >
-  <div class="profil-img-and-status">
-    <img class="profil-img" src="{{ (user$ | async)?.photoUrl }}" alt="Profilbild" />
-    @if (!relatedToSearchResultPost) {
-    <img
-      class="status"
-      [src]="
-        currentUserId === (user$ | async)?.uid
-          ? 'assets/img/online-with-white-circle.svg'
-          : (user$ | async)?.active
-          ? 'assets/img/online-with-white-circle.svg'
-          : 'assets/img/offline-with-white-circle.svg'
-      "
-      alt="Status"
-    />
-    }
-  </div>
-  <div>
-    <span [ngClass]="{ 'in-header-chat': inHeaderChat }">
-      {{ (user$ | async)?.name }}
-    </span>
-    @if (currentUserId == (user$ | async)?.uid) {
-    <span [ngClass]="{ 'in-header-chat': inHeaderChat }">(Du)</span>
-    }
-  </div>
+  @if (user$ | async; as user) {
+    <div class="profil-img-and-status">
+      <img class="profil-img" src="{{ user.photoUrl }}" alt="Profilbild" />
+      @if (!relatedToSearchResultPost) {
+      <img
+        class="status"
+        [src]="
+          currentUserId === user.uid
+            ? 'assets/img/online-with-white-circle.svg'
+            : user.active
+            ? 'assets/img/online-with-white-circle.svg'
+            : 'assets/img/offline-with-white-circle.svg'
+        "
+        alt="Status"
+      />
+      }
+    </div>
+    <div>
+      <span [ngClass]="{ 'in-header-chat': inHeaderChat }">
+        {{ user.name }}
+      </span>
+      @if (currentUserId == user.uid) {
+      <span [ngClass]="{ 'in-header-chat': inHeaderChat }">(Du)</span>
+      }
+    </div>
+  }
 </li>
