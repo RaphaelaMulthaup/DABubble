@@ -3,7 +3,8 @@
 nav {
   background-color: var(--color-white);
   height: 100%;
-  padding: 32px 0 32px 30px;
+  padding: 32px 0;
+  padding-left: clamp(0.75rem, 0.1875rem + 2.8125vw, 1.875rem);
   border-radius: 30px;
 }
 

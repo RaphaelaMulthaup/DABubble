@@ -10,7 +10,7 @@
     [ngClass]="
       searchResultsExisting ? 'inputWithCloseIcon' : 'inputWithSearchIcon'
     "
-    [placeholder]="(screenSize$|async) === 'handset' ? 'Geh zu...' : 'Devspace durchsuchen'"
+    [placeholder]="(screenSize$|async) === 'handset' ? 'Gehe zu...' : 'Devspace durchsuchen'"
     [formControl]="searchControl"
     (focus)="onFocus()"
   />
