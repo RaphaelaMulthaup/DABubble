@@ -20,6 +20,10 @@ h1 {
 .txt-area{
     height: 550px;
     padding: 0px 48px 0px 48px;
+
+    @include respond-to(xxxs) {
+        padding: 0px;
+    }
 }
 
 a {

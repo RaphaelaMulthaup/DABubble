@@ -8,6 +8,10 @@
     padding: 74px 0px 0px 0px;
     transition: background-color 0.5s ease-out;
 
+    @include respond-to(m) {
+        padding: 24px 0px 0px 0px;
+    }
+
     .solo-logo{
         position: relative;
         width: 80px;
@@ -15,8 +19,13 @@
         overflow: hidden;
 
         @include respond-to('624') {
-            width: 60px;
+            width: 64px;
             height: 60px;
+        }
+
+        @include respond-to(xxxs) {
+            width: 52px !important;
+            height: 48px !important;
         }
     }
 }
@@ -46,6 +55,7 @@
 
     @include respond-to(xxxs) {
         margin: 0px 0px 0px 12px !important;
+        font-size: 24px !important;
     }
 }
 
@@ -119,10 +129,10 @@
 }
 
 .addMargin{
-    margin: 0px 74px 0px 74px;
+    margin: 0px 0px 0px 74px;
 
     @include respond-to(xxxs) {
-        margin: 0px 74px 0px 74px;
+        margin: 0px 0px 0px 15px !important;
     }
 }
 
@@ -137,7 +147,12 @@
 .final-container{
     position: absolute;
     top: 0px;
-    width: 448px;
+    width: 340px;
+    height: 144px !important;
+
+    @include respond-to(m) {
+        height: 80px !important;
+    }
 
     @include respond-to(sm) {
         width: 100%;

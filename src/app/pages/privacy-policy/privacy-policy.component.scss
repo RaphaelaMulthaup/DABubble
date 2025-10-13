@@ -3,10 +3,14 @@
 
 .non-auth-form{
     height: 75dvh;
+
+    @include respond-to(xxxs) {
+        width: 288px;
+    }
 }
 
 .policeHeader{
-    @include respond-to(xxxs) {
+    @include respond-to(xxs) {
         flex-direction: column;
     }
 }
@@ -20,6 +24,7 @@ h1 {
 
     @include respond-to(xxxs) {
         padding: 0px 0px 0px 12px;
+        font-size: 24px;
     }
 }
 
@@ -38,6 +43,17 @@ h1 {
     @include respond-to(xxs) {
         width: 272px;
     }
+
+    @include respond-to(xxxs) {
+        width: 248px;
+    }
+    
+    a{
+        @include respond-to(xxs) {
+            font-size: 12px;
+        }
+    }
+
 }
 
 a{

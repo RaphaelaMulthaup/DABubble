@@ -1,9 +1,25 @@
 @import "../../shared/styles/outside-dashboard.scss";
+@import "./../../../styles.scss";
 
 header {
+    @include respond-to(m) {
+        padding: 12px 75px 0px 75px;
+    }
+
     .logo{
         visibility: hidden;
     }
+}
+
+.non-auth-form{
+    @include respond-to(xxxs) {
+        padding: 20px 20px !important;
+        width: 300px !important;
+    }
+}
+
+.non-auth-header{
+    height: 96px;
 }
 
 .show-logo{
