@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import {
   Auth,
+  authState,
   createUserWithEmailAndPassword,
   onAuthStateChanged,
   signOut,
@@ -18,9 +19,11 @@ import {
 import {
   Firestore,
   addDoc,
+  arrayUnion,
   collection,
   deleteDoc,
   doc,
+  docData,
   getDoc,
   getDocs,
   limit,
@@ -29,7 +32,17 @@ import {
   updateDoc,
   where,
 } from '@angular/fire/firestore';
-import { from, map, Observable, of, shareReplay, switchMap, tap } from 'rxjs';
+import {
+  catchError,
+  distinctUntilChanged,
+  from,
+  map,
+  Observable,
+  of,
+  shareReplay,
+  switchMap,
+  tap,
+} from 'rxjs';
 import { UserInterface } from '../shared/models/user.interface';
 import { UserService } from './user.service';
 import { ChatService } from './chat.service';
@@ -59,18 +72,27 @@ export class AuthService {
     private postService: PostService
   ) {
     // 🔥 Reaktives Observable mit Absicherung, dass User-Dokument existiert
-    this.currentUser$ = new Observable<User | null>((subscriber) =>
-      onAuthStateChanged(this.auth, subscriber.next.bind(subscriber))
-    ).pipe(
+    this.currentUser$ = authState(this.auth).pipe(
       switchMap((firebaseUser) => {
         if (!firebaseUser) return of(null);
 
+        const userRef = doc(this.firestore, `users/${firebaseUser.uid}`);
+
         return from(this.ensureUserDocExists(firebaseUser)).pipe(
-          // Sobald das Doc existiert, reaktiv auf Änderungen hören
-          switchMap(() => this.userService.getUserById(firebaseUser.uid))
+          // falls ensureUserDocExists fehlschlägt, fangen wir den Fehler ab
+          // und geben null zurück, anstatt den Stream sterben zu lassen
+          catchError((err) => {
+            console.error('ensureUserDocExists failed', err);
+            return of(void 0);
+          }),
+          switchMap(() => docData(userRef) as Observable<UserInterface | null>),
+          // wenn docData mal undefined liefert, setzen wir explizit null
+          map((data) => data ?? null)
         );
       }),
       tap((user) => (this.currentUserSnapshot = user)),
+      // optional: nur dann neu emitten wenn sich die uid ändert
+      distinctUntilChanged((a, b) => a?.uid === b?.uid),
       shareReplay({ bufferSize: 1, refCount: true })
     );
   }
@@ -88,19 +110,16 @@ export class AuthService {
   /** Ensure Firestore document for user exists */
   private async ensureUserDocExists(user: User): Promise<void> {
     const userRef = doc(this.firestore, `users/${user.uid}`);
-    let snap = await getDoc(userRef);
+    const snap = await getDoc(userRef);
 
     if (!snap.exists()) {
       await this.createOrUpdateUserInFirestore(
         user,
         (user.providerData[0]?.providerId as any) ?? 'password'
       );
-
-      // Optional: kleine Verzögerung, um Firestore-Propagation abzuwarten
-      await new Promise((res) => setTimeout(res, 150));
     }
   }
-
+  
   /** Create or update Firestore user document */
   private async createOrUpdateUserInFirestore(
     user: User,
@@ -172,7 +191,11 @@ export class AuthService {
           photoUrl: './assets/img/no-avatar.svg',
         });
         await this.addDirectChatToTeam(user.uid);
-        await this.createDeveloperTeamChannel(user.uid);
+        const channelDocRef = doc(
+          this.firestore,
+          `channels/2TrvdqcsYSbj2ZpWLfvT`
+        );
+        await updateDoc(channelDocRef, { memberIds: arrayUnion(user.uid) });
       })
       .catch((error) => console.error('Guest login error:', error));
     return from(promise) as Observable<void>;
@@ -260,67 +283,6 @@ export class AuthService {
           'chat'
         );
       }
-    }
-  }
-
-  async createDeveloperTeamChannel(guestId: string) {    
-    const devIds = [
-      'XbsVa8YOj8Nd9vztzX1kAQXrc7Z2',
-      '5lntBSrRRUM9JB5AFE14z7lTE6n1',
-      'rUnD1S8sHOgwxvN55MtyuD9iwAD2',
-      'NxSyGPn1LkPV3bwLSeW94FPKRzm1',
-    ];
-    const channelRef = collection(this.firestore, 'channels');
-
-    // Channel existiert noch nicht, also erstellen
-    const channelData: ChannelInterface = {
-      name: 'Entwicklerteam',
-      description:
-        'Hier kannst du dich zusammen mit den EntwicklerInnen über die Chat-App austauschen.',
-      memberIds: [...devIds, guestId],
-      createdBy: guestId,
-      createdAt: new Date(),
-    };
-
-    // Channel anlegen
-    const channelDocRef = await addDoc(channelRef, channelData);
-
-    // Die gesamte Unterhaltung als Nachrichten im Channel einfügen
-    const messages = [
-      {
-        senderId: 'XbsVa8YOj8Nd9vztzX1kAQXrc7Z2',
-        text: 'Wie wäre es, wenn wir beim eigenen User-List-Item noch ein "(Du)" hinzufügen, um den aktuellen Nutzer zu kennzeichnen?',
-      },
-      {
-        senderId: guestId, // Beispiel-Entwickler-ID
-        text: 'Das fände ich super! So sieht man direkt, dass es der eigene Account ist. Besonders für neue Nutzer ist das eine tolle Orientierung.',
-      },
-      {
-        senderId: '5lntBSrRRUM9JB5AFE14z7lTE6n1', // Beispiel-Entwickler-ID
-        text: 'Wir könnten eine kleine Abfrage einbauen, um zu prüfen, ob der User, der angezeigt wird, der aktuelle Nutzer ist. In dem Fall fügen wir das "(Du)" hinzu.',
-      },
-      {
-        senderId: 'rUnD1S8sHOgwxvN55MtyuD9iwAD2', // Beispiel-Entwickler-ID
-        text: 'Ich kann das umsetzen! Wir schauen dann, ob der User in `currentUser$` dem angezeigten User entspricht. Wenn ja, fügen wir das "(Du)" hinzu.',
-      },
-      {
-        senderId: 'NxSyGPn1LkPV3bwLSeW94FPKRzm1', // Der vierte Entwickler
-        text: 'Ich würde noch vorschlagen, dass wir darauf achten, dass das "Du" auch bei einem gekürzten Namen in einem kleineren Layout sichtbar bleibt. Der Name kann sich den Platz nehmen, bis er mit "..." gekürzt wird, aber das "(Du)" sollte immer daneben erscheinen.',
-      },
-      {
-        senderId: guestId,
-        text: 'Super Idee! Dann ist es auch bei kleinen Bildschirmen klar, wer der eigene Account ist. Danke für den Vorschlag!',
-      },
-    ];
-
-    // Nachrichten im Channel erstellen
-    for (const msg of messages) {
-      await this.postService.createMessage(
-        channelDocRef.id,
-        msg.senderId,
-        msg.text,
-        'channel'
-      );
     }
   }
 

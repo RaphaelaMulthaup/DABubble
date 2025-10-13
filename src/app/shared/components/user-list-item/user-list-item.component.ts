@@ -5,8 +5,8 @@ import {
   Output,
   OnDestroy,
 } from '@angular/core';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
-import { filter, switchMap, shareReplay, map, takeUntil } from 'rxjs/operators';
+import { BehaviorSubject, Observable, Subject, timer } from 'rxjs';
+import { filter, switchMap, shareReplay, map, takeUntil, delayWhen, repeatWhen, takeWhile } from 'rxjs/operators';
 import { UserInterface } from '../../models/user.interface';
 import { AuthService } from '../../../services/auth.service';
 import { ChatService } from '../../../services/chat.service';
@@ -15,6 +15,7 @@ import { CommonModule } from '@angular/common';
 import { ConversationActiveRouterService } from '../../../services/conversation-active-router.service';
 import { ScreenService } from '../../../services/screen.service';
 import { ScreenSize } from '../../types/screen-size.type';
+import { OverlayService } from '../../../services/overlay.service';
 
 @Component({
   selector: 'app-user-list-item',
@@ -59,6 +60,7 @@ export class UserListItemComponent implements OnDestroy {
     private authService: AuthService,
     private chatService: ChatService,
     public conversationActiveRouterService: ConversationActiveRouterService,
+    private overlayService: OverlayService,
     public screenService: ScreenService,
     private userService: UserService
   ) {
@@ -66,11 +68,22 @@ export class UserListItemComponent implements OnDestroy {
     // Observable der Live-Userdaten (nur wenn uid vorhanden)
     this.user$ = this.userUid$.pipe(
       filter((uid): uid is string => !!uid),
-      switchMap((uid) => this.userService.getUserById(uid)),
-      // optional: shareReplay damit mehrere async-pipes das selbe Subscription teilen
+      switchMap((uid) =>
+        this.userService.getUserById(uid).pipe(
+          // 🔁 Wiederhole, wenn docData noch nichts geliefert hat
+          repeatWhen((complete$) =>
+            complete$.pipe(
+              delayWhen(() => timer(100)), // 100 ms warten
+              takeWhile((_, i) => i < 4) // max. 5 Versuche
+            )
+          ),
+          // nur emitten, wenn das Dokument existiert
+          filter((user): user is UserInterface => !!user)
+        )
+      ),
       shareReplay({ bufferSize: 1, refCount: true })
     );
-
+    
     // currentUserId Observable
     this.currentUserId$ = this.authService.currentUser$.pipe(
       map((u) => u?.uid ?? null)
@@ -93,6 +106,7 @@ export class UserListItemComponent implements OnDestroy {
 
   async pickOutAndNavigateToChat() {
     if (!this.currentUserId || !this.lastUserSnapshot) return;
+    this.overlayService.closeAll();
     this.chatService.navigateToChat(this.currentUserId, this.lastUserSnapshot);
   }
 

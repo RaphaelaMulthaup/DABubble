@@ -13,13 +13,20 @@
 </button>
 
 @if (directMessagesVisible) {
-<ul class="contacts-list">
-  @if (currentUser$) {
-  <app-user-list-item [user]="currentUser" (click)="screenService.dashboardState.set('message-window')"
-  (click)="conversationActiveRouterService.currentConversation.set(currentUser.uid)"></app-user-list-item>
-  } @for (user of contacts$ | async; track $index) {
-  <app-user-list-item [user]="user" (click)="screenService.dashboardState.set('message-window')"
-  (click)="conversationActiveRouterService.currentConversation.set(user.uid)"></app-user-list-item>
-  }
-</ul>
+  <ul class="contacts-list">
+    @if (currentUser$ | async; as currentUser) {
+      <app-user-list-item
+        [user]="currentUser"
+        (click)="screenService.dashboardState.set('message-window')"
+        (click)="conversationActiveRouterService.currentConversation.set(currentUser.uid)">
+      </app-user-list-item>
+    }
+    @for (user of contacts$ | async; track $index) {
+      <app-user-list-item
+        [user]="user"
+        (click)="screenService.dashboardState.set('message-window')"
+        (click)="conversationActiveRouterService.currentConversation.set(user.uid)">
+      </app-user-list-item>
+    }
+  </ul>
 }
