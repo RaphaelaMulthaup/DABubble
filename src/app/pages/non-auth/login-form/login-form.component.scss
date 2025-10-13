@@ -29,8 +29,25 @@
     gap: 20px;
     white-space: nowrap;
     margin: 24px 0px 0px 0px;
+
+    @include respond-to(xxxs) {
+        gap: 8px;
+        margin: 12px 0px 0px 0px;
+    }
+
+    .btn-primary{
+        @include respond-to(xxxs) {
+            font-size: 16px;
+        }
+    }
 }
 
 .resetPasswordLink{
     margin: 0px 0px 16px 0px;
+}
+
+.form-group{
+    @include respond-to(m) {
+        gap: 8px;
+    }
 }

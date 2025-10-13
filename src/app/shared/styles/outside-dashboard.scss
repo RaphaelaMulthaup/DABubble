@@ -1,9 +1,15 @@
+@import "./../../../styles.scss";
+
 body {
     background-color: var(--color-purple-white);
 }
 
 main {
     padding: 30px 16px;
+
+    @include respond-to(m) {
+        padding: 12px 16px;
+    }
 
     .non-auth-form {
         //padding: 50px 60px; for desktop
