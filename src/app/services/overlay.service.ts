@@ -110,9 +110,9 @@ export class OverlayService {
     const componentRef = this.overlayRef?.attach(portal)!;
     if (data) Object.assign(componentRef.instance, data);
     this.handleDetach(this.overlayRef, destroy$, afterClosed$, backdropClick$);
-    // fromEvent(window, 'resize')
-    //   .pipe(debounceTime(150), takeUntil(this.overlayRef.detachments()))
-    //   .subscribe(() => this.closeAll());
+    fromEvent(window, 'resize')
+      .pipe(debounceTime(150), takeUntil(this.overlayRef.detachments()))
+      .subscribe(() => this.closeAll());
     return {
       ref: componentRef,
       overlayRef: this.overlayRef,

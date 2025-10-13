@@ -260,7 +260,7 @@ export class DisplayedPostComponent {
         originPositionFallback: {
           originX: 'center',
           originY: 'top',
-          overlayX: 'end',
+          overlayX: 'center',
           overlayY: 'bottom',
         },
       },
