@@ -29,7 +29,16 @@ import {
   updateDoc,
   where,
 } from '@angular/fire/firestore';
-import { from, map, Observable, of, shareReplay, switchMap, tap } from 'rxjs';
+import {
+  concatMap,
+  from,
+  map,
+  Observable,
+  of,
+  shareReplay,
+  switchMap,
+  tap,
+} from 'rxjs';
 import { UserInterface } from '../shared/models/user.interface';
 import { UserService } from './user.service';
 import { ChatService } from './chat.service';
@@ -137,15 +146,16 @@ export class AuthService {
         userData.password
       )
     ).pipe(
-      switchMap(async (response) => {
-        const user = response.user;
-        await this.createOrUpdateUserInFirestore(
-          user,
-          'password',
-          userData.displayName,
-          userData.photoURL || undefined
-        );
-      }),
+      concatMap((response) =>
+        from(
+          this.createOrUpdateUserInFirestore(
+            response.user,
+            'password',
+            userData.displayName,
+            userData.photoURL || undefined
+          )
+        )
+      ),
       map(() => void 0)
     );
   }
@@ -263,7 +273,7 @@ export class AuthService {
     }
   }
 
-  async createDeveloperTeamChannel(guestId: string) {    
+  async createDeveloperTeamChannel(guestId: string) {
     const devIds = [
       'XbsVa8YOj8Nd9vztzX1kAQXrc7Z2',
       '5lntBSrRRUM9JB5AFE14z7lTE6n1',
