@@ -137,15 +137,15 @@ export class WindowDisplayComponent implements OnInit {
     // Hauptmessages abonnieren
     this.messages$.pipe(takeUntil(this.destroy$)).subscribe((data) => {
       this.onContentChange(this.currentConversationId, data);
-      if (this.loadingOlderMessages) {
+      // if (this.loadingOlderMessages) {
         const offset = 150;
         const el = this.messagesContainer.nativeElement;
         const newScrollHeight = el.scrollHeight;
         el.scrollTop = newScrollHeight - this.previousScrollHeight + offset; // menține poziția
         this.loadingOlderMessages = false;
-      } else if (!this.initialScrollDone) {
-        setTimeout(() => this.scrollToLastMessage());
-      }
+      // } else if (!this.initialScrollDone) {
+      //   setTimeout(() => this.scrollToLastMessage());
+      // }
     });
 
     // Scroll-Handling
