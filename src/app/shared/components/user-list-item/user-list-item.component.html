@@ -13,7 +13,7 @@
       <img
         class="status"
         [src]="
-          currentUserId === user.uid
+          (currentUserId$ | async) === user.uid
             ? 'assets/img/online-with-white-circle.svg'
             : user.active
             ? 'assets/img/online-with-white-circle.svg'
@@ -27,7 +27,7 @@
       <span [ngClass]="{ 'in-header-chat': inHeaderChat }">
         {{ user.name }}
       </span>
-      @if (currentUserId == user.uid) {
+      @if ((currentUserId$ | async) == user.uid) {
       <span [ngClass]="{ 'in-header-chat': inHeaderChat }">(Du)</span>
       }
     </div>

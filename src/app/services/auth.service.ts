@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import {
   Auth,
+  authState,
   createUserWithEmailAndPassword,
   onAuthStateChanged,
   signOut,
@@ -22,6 +23,7 @@ import {
   collection,
   deleteDoc,
   doc,
+  docData,
   getDoc,
   getDocs,
   limit,
@@ -30,7 +32,17 @@ import {
   updateDoc,
   where,
 } from '@angular/fire/firestore';
-import { from, map, Observable, of, shareReplay, switchMap, tap } from 'rxjs';
+import {
+  catchError,
+  distinctUntilChanged,
+  from,
+  map,
+  Observable,
+  of,
+  shareReplay,
+  switchMap,
+  tap,
+} from 'rxjs';
 import { UserInterface } from '../shared/models/user.interface';
 import { UserService } from './user.service';
 import { ChatService } from './chat.service';
@@ -57,21 +69,30 @@ export class AuthService {
     private firestore: Firestore,
     private userService: UserService,
     private screenService: ScreenService,
-    private postService: PostService,
+    private postService: PostService
   ) {
     // 🔥 Reaktives Observable mit Absicherung, dass User-Dokument existiert
-    this.currentUser$ = new Observable<User | null>((subscriber) =>
-      onAuthStateChanged(this.auth, subscriber.next.bind(subscriber))
-    ).pipe(
+    this.currentUser$ = authState(this.auth).pipe(
       switchMap((firebaseUser) => {
         if (!firebaseUser) return of(null);
 
+        const userRef = doc(this.firestore, `users/${firebaseUser.uid}`);
+
         return from(this.ensureUserDocExists(firebaseUser)).pipe(
-          // Sobald das Doc existiert, reaktiv auf Änderungen hören
-          switchMap(() => this.userService.getUserById(firebaseUser.uid))
+          // falls ensureUserDocExists fehlschlägt, fangen wir den Fehler ab
+          // und geben null zurück, anstatt den Stream sterben zu lassen
+          catchError((err) => {
+            console.error('ensureUserDocExists failed', err);
+            return of(void 0);
+          }),
+          switchMap(() => docData(userRef) as Observable<UserInterface | null>),
+          // wenn docData mal undefined liefert, setzen wir explizit null
+          map((data) => data ?? null)
         );
       }),
       tap((user) => (this.currentUserSnapshot = user)),
+      // optional: nur dann neu emitten wenn sich die uid ändert
+      distinctUntilChanged((a, b) => a?.uid === b?.uid),
       shareReplay({ bufferSize: 1, refCount: true })
     );
   }
@@ -89,19 +110,16 @@ export class AuthService {
   /** Ensure Firestore document for user exists */
   private async ensureUserDocExists(user: User): Promise<void> {
     const userRef = doc(this.firestore, `users/${user.uid}`);
-    let snap = await getDoc(userRef);
+    const snap = await getDoc(userRef);
 
     if (!snap.exists()) {
       await this.createOrUpdateUserInFirestore(
         user,
         (user.providerData[0]?.providerId as any) ?? 'password'
       );
-
-      // Optional: kleine Verzögerung, um Firestore-Propagation abzuwarten
-      await new Promise((res) => setTimeout(res, 150));
     }
   }
-
+  
   /** Create or update Firestore user document */
   private async createOrUpdateUserInFirestore(
     user: User,
@@ -173,7 +191,10 @@ export class AuthService {
           photoUrl: './assets/img/no-avatar.svg',
         });
         await this.addDirectChatToTeam(user.uid);
-        const channelDocRef = doc(this.firestore, `channels/2TrvdqcsYSbj2ZpWLfvT`);
+        const channelDocRef = doc(
+          this.firestore,
+          `channels/2TrvdqcsYSbj2ZpWLfvT`
+        );
         await updateDoc(channelDocRef, { memberIds: arrayUnion(user.uid) });
       })
       .catch((error) => console.error('Guest login error:', error));
