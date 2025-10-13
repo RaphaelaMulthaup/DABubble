@@ -70,11 +70,11 @@ header {
   padding: 25px 34px 20px 20px;
 
   .logo-box {
-    min-width: 366px;
+    width: clamp(17.5rem, 2.8617rem + 22.8723vw, 22.875rem);
+    padding-left: 24px;
     .logo-final {
-      width: 242px;
-      height: 70px;
-      margin-left: -60px;
+      width: clamp(13.625rem, 11.9107rem + 2.6786vw, 15.125rem);
+      height: clamp(3.938rem, 3.4386rem + 0.7804vw, 4.375rem);
     }
   }
 
@@ -99,11 +99,11 @@ header {
   padding: 25px 34px 20px 20px;
 
   .logo-box {
-    min-width: 366px;
+    width: clamp(18.75rem, 7.6442rem + 12.6923vw, 22.875rem);
+    padding-left: 32px;
     .logo-final {
       width: 242px;
       height: 70px;
-      margin-left: -60px;
     }
   }
 
