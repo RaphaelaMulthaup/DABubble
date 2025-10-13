@@ -9,7 +9,7 @@
   <section class="header-content flex items-center w-full">
     <div class="logo-box flex items-start">
       @if((screenSize$|async) === 'handset' && dashboardState() !== 'sidenav'){<button
-        (click)="screenService.setDashboardState('sidenav')" class="arrow-btn arrow-back"></button>}
+        (click)="screenService.setDashboardState('sidenav')" class="arrow-btn arrow-back self-center"></button>}
       <img class="logo-final" src="assets/img/logo.png" alt="Logo DABubble" />
     </div>
 

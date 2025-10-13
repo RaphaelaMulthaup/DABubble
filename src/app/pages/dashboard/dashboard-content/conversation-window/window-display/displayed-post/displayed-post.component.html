@@ -1,11 +1,11 @@
 <div class="post-container w-full flex flex-col" [class.post-current-user]="senderIsCurrentUser"
-  [class.web-post-container]="(screenSize$ | async) === 'web'" [class.web-post-current-user]="
-     (screenSize$ | async) === 'web' && senderIsCurrentUser
+  [class.web-tablet-post-container]="(screenSize$ | async) !== 'handset'" [class.web-tablet-post-current-user]="
+     (screenSize$ | async) !== 'handset' && senderIsCurrentUser
    ">
   <div class="post flex w-full" [class.clicked]="postClicked"
-    [class.editing]="overlayService.editingPostId() === post.id" [class.web-editing]="
+    [class.editing]="overlayService.editingPostId() === post.id" [class.web-tablet-editing]="
        overlayService.editingPostId() === post.id &&
-       (screenSize$ | async) === 'web'
+       (screenSize$ | async) !== 'handset'
      ">
     <div class="profile-img">
       @if(senderPhotoUrl$ | async; as photoUrl) {
@@ -36,7 +36,7 @@
 
       @if (post.ansCounter && !isThreadTheme){
       <div class="answers flex" [ngClass]="
-           (screenSize$ | async) === 'web'
+           (screenSize$ | async) !== 'handset'
              ? 'flex-row items-center'
              : ' flex-col-reverse items-start'
          ">
