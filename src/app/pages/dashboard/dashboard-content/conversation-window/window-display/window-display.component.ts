@@ -65,6 +65,7 @@ export class WindowDisplayComponent implements OnInit {
   @ViewChildren('messageElement', { read: ElementRef })
   messageElements!: QueryList<ElementRef>;
   loadingOlderMessages = false;
+  private previousScrollHeight = 0; // sagve scrollHeight for loading
   // Localized days of the week for displaying timestamps
   days = DAYS;
   @Input() conversationWindowState?: 'conversation' | 'thread';
@@ -136,7 +137,15 @@ export class WindowDisplayComponent implements OnInit {
     // Hauptmessages abonnieren
     this.messages$.pipe(takeUntil(this.destroy$)).subscribe((data) => {
       this.onContentChange(this.currentConversationId, data);
-      setTimeout(() => this.scrollToLastMessage());
+      if (this.loadingOlderMessages) {
+        const offset = 150;
+        const el = this.messagesContainer.nativeElement;
+        const newScrollHeight = el.scrollHeight;
+        el.scrollTop = newScrollHeight - this.previousScrollHeight + offset; // menține poziția
+        this.loadingOlderMessages = false;
+      } else if (!this.initialScrollDone) {
+        setTimeout(() => this.scrollToLastMessage());
+      }
     });
 
     // Scroll-Handling
@@ -165,12 +174,6 @@ export class WindowDisplayComponent implements OnInit {
         shareReplay({ bufferSize: 1, refCount: true })
       );
     });
-
-    // setTimeout(() => {
-    //   console.log(this.conversationWindowState, this.postAnswered);
-    // }, 1000);
-    // this.channelTyp$.subscribe((m) => console.log(m))
-    // console.log(this.currentConversationId);
   }
 
   /**
@@ -425,5 +428,15 @@ export class WindowDisplayComponent implements OnInit {
       return currentPostDate !== previousPostDate;
     }
     return true;
+  }
+
+  onScroll() {
+    const el = this.messagesContainer.nativeElement;
+    const threshold = 20;
+    if (el.scrollTop <= threshold && !this.loadingOlderMessages) {
+      this.previousScrollHeight = el.scrollHeight; // salvează înainte
+      this.loadingOlderMessages = true;
+      this.conversationActiveRouterService.loadMore();
+    }
   }
 }

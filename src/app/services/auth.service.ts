@@ -35,6 +35,7 @@ import {
 import {
   catchError,
   distinctUntilChanged,
+  concatMap,
   from,
   map,
   Observable,
@@ -156,15 +157,16 @@ export class AuthService {
         userData.password
       )
     ).pipe(
-      switchMap(async (response) => {
-        const user = response.user;
-        await this.createOrUpdateUserInFirestore(
-          user,
-          'password',
-          userData.displayName,
-          userData.photoURL || undefined
-        );
-      }),
+      concatMap((response) =>
+        from(
+          this.createOrUpdateUserInFirestore(
+            response.user,
+            'password',
+            userData.displayName,
+            userData.photoURL || undefined
+          )
+        )
+      ),
       map(() => void 0)
     );
   }

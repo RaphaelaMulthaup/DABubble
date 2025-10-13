@@ -1,25 +1,25 @@
-@import '../../../../../../../styles.scss';
+@import "../../../../../../../styles.scss";
 
 section {
-    @include dFlex($g: 24px, $ai: flex-start);
-    flex-direction: column;
+  @include dFlex($g: 24px, $ai: flex-start);
+  flex-direction: column;
 }
 
-.infos{
-    @include dFlex($g: 10px, $ai: flex-end);
-    img{
-        border-radius: 50%;
-        height: 88px;
-        aspect-ratio: 1;
-    }
+.infos {
+  @include dFlex($g: 10px, $ai: flex-end);
+  img {
+    border-radius: 50%;
+    height: 88px;
+    aspect-ratio: 1;
+  }
 }
 
 .description {
-    font-size: 20px;
-    color: var(--color-gray);
+  font-size: 20px;
+  color: var(--color-gray);
 }
 
-.link-to-chat{
-    color: var(--color-purple-medium);
-    cursor: pointer;
+.link-to-chat {
+  color: var(--color-purple-medium);
+  cursor: pointer;
 }
