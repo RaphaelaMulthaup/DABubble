@@ -19,6 +19,7 @@ import {
 import {
   Firestore,
   addDoc,
+  arrayRemove,
   arrayUnion,
   collection,
   deleteDoc,
@@ -63,6 +64,7 @@ export class AuthService {
 
   /** Optional synchroner Zugriff */
   private currentUserSnapshot: UserInterface | null = null;
+  channelEntwicklerteamDocRef;
 
   constructor(
     private auth: Auth,
@@ -96,6 +98,10 @@ export class AuthService {
       distinctUntilChanged((a, b) => a?.uid === b?.uid),
       shareReplay({ bufferSize: 1, refCount: true })
     );
+    this.channelEntwicklerteamDocRef = doc(
+      this.firestore,
+      `channels/2TrvdqcsYSbj2ZpWLfvT`
+    );
   }
 
   /** Synchronously get current Firestore User */
@@ -120,7 +126,7 @@ export class AuthService {
       );
     }
   }
-  
+
   /** Create or update Firestore user document */
   private async createOrUpdateUserInFirestore(
     user: User,
@@ -193,11 +199,10 @@ export class AuthService {
           photoUrl: './assets/img/no-avatar.svg',
         });
         await this.addDirectChatToTeam(user.uid);
-        const channelDocRef = doc(
-          this.firestore,
-          `channels/2TrvdqcsYSbj2ZpWLfvT`
-        );
-        await updateDoc(channelDocRef, { memberIds: arrayUnion(user.uid) });
+
+        await updateDoc(this.channelEntwicklerteamDocRef, {
+          memberIds: arrayUnion(user.uid),
+        });
       })
       .catch((error) => console.error('Guest login error:', error));
     return from(promise) as Observable<void>;
@@ -302,7 +307,7 @@ export class AuthService {
   }
 
   /** Logout and update Firestore */
-  logout() {
+  async logout() {
     const user = this.auth.currentUser;
     if (!user) return signOut(this.auth);
 
@@ -310,6 +315,9 @@ export class AuthService {
     const isGuest = user.isAnonymous;
 
     if (isGuest) {
+      await updateDoc(this.channelEntwicklerteamDocRef, {
+        memberIds: arrayRemove(user.uid),
+      });
       return deleteDoc(userRef)
         .catch(() => {})
         .then(() => deleteUser(user))

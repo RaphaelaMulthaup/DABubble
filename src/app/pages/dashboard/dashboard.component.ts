@@ -145,6 +145,7 @@ export class DashboardComponent {
     // );
   }
 
+  //Ich glaube, die Funktion wird nirgendwo aufgerufen
   /**
    * Logs out the current user by calling the `logout` method in the AuthService.
    */
