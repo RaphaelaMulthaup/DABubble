@@ -44,7 +44,7 @@
     display: none;
     font-size: 34px;
     font-weight: 656;
-    color: white;
+    color: var(--color-white);
     margin: 0px 2px 0px 24px;
     animation: slideFromLeft 0.5s ease-in;
     width: 164px;
@@ -60,7 +60,7 @@
 }
 
 .name-black{
-    color: black;
+    color: var(--color-black);
 }
 
 .animated-logo{
@@ -123,7 +123,7 @@
     height: 100%;
     width: 100%;
 
-    @include respond-to(xs) {
+    @include respond-to('959') {
         justify-content: center;
     }
 }
@@ -169,4 +169,3 @@
         opacity: 1;
     }
 }
-

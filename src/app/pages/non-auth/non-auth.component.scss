@@ -2,36 +2,52 @@
 @import "./../../../styles.scss";
 
 * {
-    background-color: var(--color-purple-white);
+  background-color: var(--color-purple-white);
 }
 
-header {
-    .logo{
-        visibility: hidden;
-    }
-}
-
-.non-auth-header{
-    height: 96px;
-}
-
-.show-logo{
+.non-auth-header {
+  width: 100%;
+  height: 96px;
+  height: 160px;
+  align-self: center;
+  .logo {
+    visibility: hidden;
+  }
+  .show-logo {
     visibility: visible;
+  }
+
+  @media (min-width: 1920px) {
+    max-width: 1920px;
+    align-self: center;
+  }
+}
+
+main {
+  flex: 1;
+
+  .non-auth-form {
+    max-width: 606px;
+    margin: 0 20px;
+    margin-bottom: 108px;
+    padding: clamp(2rem, 1.5rem + 2.5vw, 3rem)
+      clamp(1.25rem, -0.125rem + 6.875vw, 4rem);
+    border-radius: 30px;
+    background-color: var(--color-white);
+    box-shadow: 0px 2px 10px 0px #00000014;
+  }
+
+  @media (min-height: 1080px) {
+    height: 848px;
+    flex: none;
+  }
 }
 
 footer {
-    padding-bottom: 16px;
-    gap: 16px;
+  padding-bottom: 16px;
+  gap: 16px;
 
-    a {
-        margin-top: 32px;
-    }
-}
-
-.show {
-    display: flex !important;
-}
-
-.hideIntro{
-    display: none;
+  a {
+    margin-top: 32px;
+  }
 }

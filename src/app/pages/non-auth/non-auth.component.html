@@ -1,32 +1,32 @@
 <body>
-  <app-header-outside-dashboard class="non-auth-header flex" (changeAuthState)="currentState = $event" [currentState]="currentState" [context]="'non-auth'"></app-header-outside-dashboard>
-
-  <!-- <app-intro class="intro" #introRef></app-intro> -->
-
-  <main class="flex flex-col place-content-center items-center">
-    <section class="non-auth-form flex flex-col items-center">
-      @if (currentState === 'login') {
-        <app-login-form (forgotPassword)="onForgotPassword()"></app-login-form>
-      } @else if (currentState === 'registration-form') {
-        <app-register-form [userToRegister]="userToRegister" (changeAuthState)="currentState = $event" />
-      } @else if (currentState === 'registration-avatar') {
-        <app-avatar-selection [userToRegister]="userToRegister" (changeAuthState)="currentState = $event" />
-      } @else if (currentState === 'reset-password-init') {
-        <app-confirm-password
-          (changeAuthState)="currentState = $event"
-        ></app-confirm-password>
-      } @else if (currentState === 'reset-password-confirm') {
-        <app-reset-password></app-reset-password>
+    <app-header-outside-dashboard class="non-auth-header flex" (changeAuthState)="currentState = $event" [currentState]="currentState" [context]="'non-auth'"></app-header-outside-dashboard>
+  
+    <app-intro class="intro" #introRef></app-intro>
+  
+    <main class="flex flex-col place-content-center items-center">
+      <section class="non-auth-form flex flex-col items-center">
+        @if (currentState === 'login') {
+          <app-login-form (forgotPassword)="onForgotPassword()"></app-login-form>
+        } @else if (currentState === 'registration-form') {
+          <app-register-form [userToRegister]="userToRegister" (changeAuthState)="currentState = $event" />
+        } @else if (currentState === 'registration-avatar') {
+          <app-avatar-selection [userToRegister]="userToRegister" (changeAuthState)="currentState = $event" />
+        } @else if (currentState === 'reset-password-init') {
+          <app-confirm-password
+            (changeAuthState)="currentState = $event"
+          ></app-confirm-password>
+        } @else if (currentState === 'reset-password-confirm') {
+          <app-reset-password></app-reset-password>
+        }
+      </section>
+    
+      @if (currentState === 'login' && ((screenSize$|async) === 'handset')) {
+        <app-create-account-btn class="relative h-0" (changeAuthState)="currentState = $event" />
       }
-    </section>
-
-    @if (currentState === 'login' && ((screenSize$|async) === 'handset')) {
-      <app-create-account-btn class="relative h-0" (changeAuthState)="currentState = $event" />
-    }
-  </main>
-
-  <footer class="flex place-content-center">
-    <a class="link" routerLink="/imprint">Impressum</a>
-    <a class="link" routerLink="/privacy-policy">Datenschutz</a>
-  </footer>
+    </main>
+  
+    <footer class="flex place-content-center">
+      <a class="link" routerLink="/imprint">Impressum</a>
+      <a class="link" routerLink="/privacy-policy">Datenschutz</a>
+    </footer>
 </body>
