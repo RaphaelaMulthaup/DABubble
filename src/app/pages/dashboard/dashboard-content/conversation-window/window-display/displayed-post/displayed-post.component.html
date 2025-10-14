@@ -1,3 +1,4 @@
+@if (isLoaded$ | async; as loaded) {
 <div class="post-container w-full flex flex-col" [class.post-current-user]="senderIsCurrentUser"
   [class.web-tablet-post-container]="(screenSize$ | async) !== 'handset'" [class.web-tablet-post-current-user]="
      (screenSize$ | async) !== 'handset' && senderIsCurrentUser
@@ -17,7 +18,7 @@
 
     <div class="post-content flex flex-col">
       <div class="post-header flex">
-        <h4>{{ senderName$ | async }}</h4>
+        <h4>{{ (senderName$ | async) || 'Gast' }}</h4>
         <span class="post-time">{{ createdAtTime$ | async }} Uhr</span>
       </div>
 
@@ -115,3 +116,4 @@
 </div>
 }
 </div>
+}

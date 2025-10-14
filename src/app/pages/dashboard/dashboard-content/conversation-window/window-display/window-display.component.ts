@@ -86,14 +86,6 @@ export class WindowDisplayComponent implements OnInit {
   ) {
     this.dashboardState = this.screenService.dashboardState;
     this.screenSize$ = this.screenService.screenSize$;
-
-    // let screenSize;
-    // this.screenSize$.pipe(take(1)).subscribe((size) => (screenSize = size));
-    // if (screenSize === 'web' && this.dashboardState() === 'thread-window') {
-    //   this.conversationWindowState = 'thread';
-    //   this.messages$ = this.conversationActiveRouterService.threadMessages$;
-    //   this.messages$.pipe(take(1)).subscribe((m) => console.log(m));
-    // }
   }
 
   /**
@@ -118,7 +110,6 @@ export class WindowDisplayComponent implements OnInit {
         takeUntil(this.destroy$)
       )
       .subscribe((messageId) => {
-        // console.log(messageId)
         this.postAnsweredId = messageId;
         if (this.postAnsweredId) {
           this.postService

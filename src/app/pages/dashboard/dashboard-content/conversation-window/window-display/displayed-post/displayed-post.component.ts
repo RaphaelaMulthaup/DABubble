@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   EventEmitter,
   Input,
@@ -10,6 +11,7 @@ import { PostInterface } from '../../../../../../shared/models/post.interface';
 import { AuthService } from '../../../../../../services/auth.service';
 import { UserService } from '../../../../../../services/user.service';
 import {
+  catchError,
   combineLatest,
   defer,
   distinctUntilChanged,
@@ -23,6 +25,7 @@ import {
   switchMap,
   take,
   takeUntil,
+  tap,
 } from 'rxjs';
 import { Timestamp } from '@angular/fire/firestore';
 import { CommonModule } from '@angular/common';
@@ -49,13 +52,13 @@ import { ConnectedPosition } from '@angular/cdk/overlay';
   selector: 'app-displayed-post', // Component to display a single message in the conversation
   imports: [CommonModule, FormsModule, EditDisplayedPostComponent],
   templateUrl: './displayed-post.component.html', // External HTML template
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './displayed-post.component.scss', // SCSS styles for this component
 })
-export class DisplayedPostComponent {
+export class DisplayedPostComponent implements OnInit {
   @Input() post!: PostInterface;
   @Input() editingPost?: boolean;
   @Input() conversationWindowState?: 'conversation' | 'thread';
-  // @Output() postLoaded = new EventEmitter<boolean>();
 
   screenSize$!: Observable<ScreenSize>;
   dashboardState!: WritableSignal<DashboardState>;
@@ -71,10 +74,11 @@ export class DisplayedPostComponent {
   currentConversationType!: 'channel' | 'chat';
   parentMessageId?: string;
   currentConversationId!: string;
-  senderIsCurrentUser!: boolean;
+  senderIsCurrentUser: boolean | null = null;
   allReactionsVisible: boolean = false;
   postClicked: boolean = false;
   isThreadTheme: boolean = false;
+  isLoaded$!: Observable<boolean>;
 
   constructor(
     private authService: AuthService,
@@ -90,14 +94,52 @@ export class DisplayedPostComponent {
     this.dashboardState = this.screenService.dashboardState;
   }
 
+  ngOnInit() {
+    if (!this.post || !this.post.senderId) {
+      this.isLoaded$ = of(false);
+      return;
+    }
+
+    const user$ = this.userService.getUserById(this.post.senderId).pipe(
+      tap((user) => {
+        this.senderIsCurrentUser =
+          user?.uid === this.authService.currentUser?.uid;
+      }),
+      shareReplay(1)
+    );
+
+    this.senderName$ = user$.pipe(map((u) => u?.name ?? ''));
+    this.senderPhotoUrl$ = user$.pipe(map((u) => u?.photoUrl ?? ''));
+    this.senderId$ = user$.pipe(map((u) => u?.uid ?? ''));
+
+    this.isLoaded$ = user$.pipe(
+      map((user) => !!user),
+      startWith(false),
+      distinctUntilChanged(),
+      shareReplay(1)
+    );
+
+    this.createdAtTime$ = of(this.post.createdAt).pipe(
+      map((ts) => {
+        const date = ts instanceof Timestamp ? ts.toDate() : new Date(ts);
+        return date.toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+        });
+      })
+    );
+  }
+
   ngOnChanges() {
     if (!this.post) return;
+
     this.conversationActiveRouterService
       .getParams$(this.route)
       .pipe(takeUntil(this.destroy$))
       .subscribe(({ conversationType, conversationId }) => {
         this.currentConversationType = conversationType as 'channel' | 'chat';
         this.currentConversationId = conversationId;
+        this.loadReactions();
       });
 
     this.conversationActiveRouterService
@@ -105,28 +147,138 @@ export class DisplayedPostComponent {
       .pipe(takeUntil(this.destroy$))
       .subscribe((messageId) => {
         if (this.conversationWindowState === 'thread') {
-          messageId === this.post.id
-            ? (this.isThreadTheme = true)
-            : (this.isThreadTheme = false);
+          this.isThreadTheme = messageId === this.post.id;
           this.parentMessageId = messageId;
+          this.loadReactions();
         }
       });
 
+    this.createdAtTime$ = of(this.post.createdAt).pipe(
+      map((ts) => {
+        const date = ts instanceof Timestamp ? ts.toDate() : new Date(ts);
+        return date.toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+        });
+      }),
+      shareReplay(1)
+    );
+  }
+
+  // ngOnInit() {
+  //   this.isLoaded$ = defer(() => {
+  //     return combineLatest([this.senderIsCurrentUser ?? of(true)]).pipe(
+  //       map(([senderIsCurrentUser]) => senderIsCurrentUser !== null ),
+  //       distinctUntilChanged(),
+  //       startWith(false),
+  //       shareReplay({ bufferSize: 1, refCount: true })
+  //     );
+  //   });
+  // }
+
+  // ngOnChanges() {
+  //   if (!this.post) return;
+  //   this.conversationActiveRouterService
+  //     .getParams$(this.route)
+  //     .pipe(takeUntil(this.destroy$))
+  //     .subscribe(({ conversationType, conversationId }) => {
+  //       this.currentConversationType = conversationType as 'channel' | 'chat';
+  //       this.currentConversationId = conversationId;
+  //     });
+
+  //   this.conversationActiveRouterService
+  //     .getMessageId$(this.route)
+  //     .pipe(takeUntil(this.destroy$))
+  //     .subscribe((messageId) => {
+  //       if (this.conversationWindowState === 'thread') {
+  //         messageId === this.post.id
+  //           ? (this.isThreadTheme = true)
+  //           : (this.isThreadTheme = false);
+  //         this.parentMessageId = messageId;
+  //       }
+  //     });
+
+  //   this.reactions$ = of(this.post).pipe(
+  //     filter((post) => post.hasReactions === true),
+  //     switchMap((post) =>
+  //       this.parentMessageId
+  //         ? this.reactionsService.getReactions(
+  //             `/${this.currentConversationType}s/${this.currentConversationId}/messages/${this.parentMessageId}`,
+  //             'answers',
+  //             post.id!
+  //           )
+  //         : this.reactionsService.getReactions(
+  //             `/${this.currentConversationType}s/${this.currentConversationId}`,
+  //             'messages',
+  //             post.id!
+  //           )
+  //     ),
+  //     shareReplay({ bufferSize: 1, refCount: true })
+  //   );
+
+  //   this.visibleReactions$ = this.reactions$.pipe(
+  //     map((list) =>
+  //       list
+  //         .filter((r) => r.users.length > 0)
+  //         .sort((a, b) => b.users.length - a.users.length)
+  //     ),
+  //     distinctUntilChanged((a, b) => a === b),
+  //     shareReplay({ bufferSize: 1, refCount: true })
+  //   );
+
+  //   setTimeout(() => {
+  //     if (!this.post) return;
+  //     this.senderIsCurrentUser =
+  //       this.post.senderId === this.authService.currentUser?.uid;
+  //     const user$ = this.userService.getUserById(this.post.senderId);
+  //     this.senderName$ = user$.pipe(map((u) => u?.name ?? ''));
+  //     this.senderPhotoUrl$ = user$.pipe(map((u) => u?.photoUrl ?? ''));
+  //     this.senderId$ = user$.pipe(map((u) => u?.uid ?? ''));
+  //   });
+
+  //   this.createdAtTime$ = of(this.post.createdAt).pipe(
+  //     map((ts) => {
+  //       let date: Date;
+  //       if (ts instanceof Timestamp) {
+  //         date = ts.toDate();
+  //       } else {
+  //         date = new Date(ts);
+  //       }
+  //       return date.toLocaleTimeString([], {
+  //         hour: '2-digit',
+  //         minute: '2-digit',
+  //       });
+  //     })
+  //   );
+  // }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  loadReactions() {
+    if (
+      !this.post ||
+      !this.currentConversationType ||
+      !this.currentConversationId
+    )
+      return;
+
     this.reactions$ = of(this.post).pipe(
       filter((post) => post.hasReactions === true),
-      switchMap((post) =>
-        this.parentMessageId
-          ? this.reactionsService.getReactions(
-              `/${this.currentConversationType}s/${this.currentConversationId}/messages/${this.parentMessageId}`,
-              'answers',
-              post.id!
-            )
-          : this.reactionsService.getReactions(
-              `/${this.currentConversationType}s/${this.currentConversationId}`,
-              'messages',
-              post.id!
-            )
-      ),
+      switchMap((post) => {
+        const basePath = this.parentMessageId
+          ? `/${this.currentConversationType}s/${this.currentConversationId}/messages/${this.parentMessageId}`
+          : `/${this.currentConversationType}s/${this.currentConversationId}`;
+
+        const subcollection = this.parentMessageId ? 'answers' : 'messages';
+        return this.reactionsService.getReactions(
+          basePath,
+          subcollection,
+          post.id!
+        );
+      }),
       shareReplay({ bufferSize: 1, refCount: true })
     );
 
@@ -136,39 +288,9 @@ export class DisplayedPostComponent {
           .filter((r) => r.users.length > 0)
           .sort((a, b) => b.users.length - a.users.length)
       ),
-      distinctUntilChanged((a, b) => a === b),
+      distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
       shareReplay({ bufferSize: 1, refCount: true })
     );
-
-    setTimeout(() => {
-      if (!this.post) return;
-      this.senderIsCurrentUser =
-        this.post.senderId === this.authService.currentUser?.uid;
-      const user$ = this.userService.getUserById(this.post.senderId);
-      this.senderName$ = user$.pipe(map((u) => u?.name ?? ''));
-      this.senderPhotoUrl$ = user$.pipe(map((u) => u?.photoUrl ?? ''));
-      this.senderId$ = user$.pipe(map((u) => u?.uid ?? ''));
-    });
-
-    this.createdAtTime$ = of(this.post.createdAt).pipe(
-      map((ts) => {
-        let date: Date;
-        if (ts instanceof Timestamp) {
-          date = ts.toDate();
-        } else {
-          date = new Date(ts);
-        }
-        return date.toLocaleTimeString([], {
-          hour: '2-digit',
-          minute: '2-digit',
-        });
-      })
-    );
-  }
-
-  ngOnDestroy() {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 
   /**
@@ -197,13 +319,13 @@ export class DisplayedPostComponent {
       {
         origin: event.currentTarget as HTMLElement,
         originPosition: await this.reactionsService.resolveEmojiPickerPosition(
-          this.senderIsCurrentUser
+          this.senderIsCurrentUser!
         ),
       },
       {
         rightAngleTopRight:
           await this.reactionsService.checkEmojiPickerPosition(
-            this.senderIsCurrentUser
+            this.senderIsCurrentUser!
           ),
       }
     );
