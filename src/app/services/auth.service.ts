@@ -339,18 +339,19 @@ export class AuthService {
     const isGuest = user.isAnonymous;
 
     if (isGuest) {
+      await deleteDoc(userRef)
+        .catch(() => {})
+        .then(() => deleteUser(user))
+        .catch((err) => console.error('Failed to delete guest user:', err));
+
+      // 👉 Dieser Teil kommt jetzt am Ende
       await updateDoc(this.channelEntwicklerteamDocRef, {
         memberIds: arrayRemove(user.uid),
       });
       await this.resetExampleChannel();
-      return deleteDoc(userRef)
-        .catch(() => {})
-        .then(() => deleteUser(user))
-        .catch((err) => console.error('Failed to delete guest user:', err));
     } else {
-      return updateDoc(userRef, { active: false }).then(() =>
-        signOut(this.auth)
-      );
+      await updateDoc(userRef, { active: false });
+      await signOut(this.auth);
     }
   }
 
@@ -366,8 +367,11 @@ export class AuthService {
       deleteDoc(msgDoc.ref)
     );
     await Promise.all(deletePromises);
-
-    console.log(`Deleted ${deletePromises.length} old messages.`);
+    await Promise.all(
+      this.guestsMessages.map((messageRef) =>
+        updateDoc(messageRef, { senderId: '' })
+      )
+    );
   }
 
   /** Send password reset email */
