@@ -39,6 +39,7 @@
       @include respond-to(xxxs) {
         flex-direction: column;
         gap: 0px;
+        margin-left: 24px;
       }
     }
 
@@ -58,20 +59,26 @@
         text-align: left;
       }
     }
+
+    @include respond-to(xxxs) {
+      position: relative;
+      right: 24px;
+    }
   }
 
   .interactions-container {
-    margin-left: clamp(4.375rem, 4.0000rem + 1.8750vw, 5.125rem);
+    margin-left: clamp(4.375rem, 4rem + 1.875vw, 5.125rem);
     padding-top: 2px;
     .interactions {
       display: grid;
       grid-template-columns: repeat(3, max-content);
-      gap: clamp(0.25rem, 0.1250rem + 0.6250vw, 0.5rem);
+      gap: clamp(0.25rem, 0.125rem + 0.625vw, 0.5rem);
       border-radius: 50%;
 
       .reaction {
         width: max-content;
-        padding: clamp(0.125rem, 0.0935rem + 0.1575vw, 0.188rem) clamp(0.375rem, 0.1250rem + 1.2500vw, 0.875rem);
+        padding: clamp(0.125rem, 0.0935rem + 0.1575vw, 0.188rem)
+          clamp(0.375rem, 0.125rem + 1.25vw, 0.875rem);
         border: 2px solid var(--color-purple-white);
         border-radius: 30px;
         flex-direction: row !important;
@@ -163,6 +170,7 @@
           align-items: end;
           flex-direction: column;
           gap: 0px;
+          margin-right: 24px;
         }
       }
 
@@ -177,12 +185,17 @@
       .answers button {
         text-align: end;
       }
+
+      @include respond-to(xxxs) {
+        position: relative;
+        left: 24px;
+      }
     }
   }
 
   .interactions-container {
     margin-left: 0;
-    margin-right: clamp(4.375rem, 4.0000rem + 1.8750vw, 5.125rem);
+    margin-right: clamp(4.375rem, 4rem + 1.875vw, 5.125rem);
     justify-content: end;
 
     .interactions {

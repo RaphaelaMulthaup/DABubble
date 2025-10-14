@@ -1,3 +1,5 @@
+@import "../../../../../../../../styles.scss";
+
 .current-post-input {
   width: 100% !important;
   padding: 8px;
@@ -10,6 +12,11 @@
     padding: 8px;
     border: unset !important;
     outline: unset !important;
+  }
+
+  @include respond-to(xxxs) {
+    position: relative;
+    left: calc(2rem - clamp(0.25rem, -7.7500rem + 40.0000vw, 1.75rem));
   }
 }
 
