@@ -128,8 +128,7 @@ export class ChatService {
    * @param userId2 - The second user's ID.
    * @returns A string representing the unique chat ID for the two users.
    */
-  async getChatId(userId1: string, userId2: string) {
-    // Sort the user IDs alphabetically to ensure the order doesn't affect the chat ID
+  async getChatId(userId1: string, userId2: string) {    // Sort the user IDs alphabetically to ensure the order doesn't affect the chat ID
     const sortedIds = [userId1, userId2].sort();
     return `${sortedIds[0]}_${sortedIds[1]}`; // Join the sorted IDs with an underscore
   }
@@ -211,9 +210,10 @@ export class ChatService {
     this._otherUser$.next(user); // Update the BehaviorSubject with the new other user
   }
 
-  unsubscribeAll() {
-    this.chatSubscriptions.forEach((sub) => sub.unsubscribe());
-    this.chatSubscriptions = [];
-    this.chatsCache.clear(); // Cache auch leeren
-  }
+  // unsubscribeAll() {
+  //   this.chatSubscriptions.forEach((sub) => sub.unsubscribe());
+  //   this.chatSubscriptions = [];
+  //   this.chatsCache.clear(); // Cache auch leeren
+  //   this._otherUser$.next(null);
+  // }
 }

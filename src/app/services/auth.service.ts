@@ -21,15 +21,18 @@ import {
   addDoc,
   arrayRemove,
   arrayUnion,
+  clearIndexedDbPersistence,
   collection,
   deleteDoc,
   doc,
   docData,
   getDoc,
   getDocs,
+  getFirestore,
   limit,
   query,
   setDoc,
+  terminate,
   updateDoc,
   where,
 } from '@angular/fire/firestore';
@@ -341,7 +344,6 @@ export class AuthService {
     const isGuest = user.isAnonymous;
 
     if (isGuest) {
-      this.chatService.unsubscribeAll();
       await deleteDoc(userRef)
         .catch(() => {})
         .then(() => deleteUser(user))
@@ -353,6 +355,7 @@ export class AuthService {
       });
       await this.resetExampleChannel();
       await this.deleteChats();
+      // this.chatService.unsubscribeAll(); // 🧹 interne Streams leeren
     } else {
       await updateDoc(userRef, { active: false });
       await signOut(this.auth);
@@ -380,12 +383,27 @@ export class AuthService {
 
   async deleteChats() {
     const chatsRef = collection(this.firestore, 'chats');
+
     for (const chatId of this.chatsWithGuestsIds) {
-      await deleteDoc(doc(chatsRef, chatId));
+      const chatDocRef = doc(chatsRef, chatId);
+      const messagesRef = collection(
+        this.firestore,
+        `chats/${chatId}/messages`
+      );
+
+      // 🔹 1. Alle Nachrichten in der Subcollection löschen
+      const messagesSnap = await getDocs(messagesRef);
+      for (const message of messagesSnap.docs) {
+        await deleteDoc(message.ref);
+      }
+
+      // 🔹 2. Danach den Chat selbst löschen
+      await deleteDoc(chatDocRef);
     }
+
+    // 🔹 3. Interne Liste zurücksetzen
     this.chatsWithGuestsIds = [];
   }
-
   /** Send password reset email */
   sendPasswordResetEmail(email: string): Promise<void> {
     const auth = getAuth();
