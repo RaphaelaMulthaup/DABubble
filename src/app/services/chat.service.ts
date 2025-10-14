@@ -19,6 +19,7 @@ import {
   Observable,
   of,
   shareReplay,
+  Subscription,
   take,
 } from 'rxjs';
 import { NavigationEnd, Router } from '@angular/router'; // Router to navigate within the app
@@ -34,7 +35,7 @@ export class ChatService {
    * It is exposed as an observable for other components to subscribe to.
    */
   private chatsCache = new Map<string, Observable<ChatInterface[]>>();
-
+  private chatSubscriptions: Subscription[] = [];
   private _otherUser$ = new BehaviorSubject<UserInterface | null>(null);
   public otherUser$ = this._otherUser$.asObservable(); // Public observable for other user
   previousUrl = '';
@@ -109,6 +110,8 @@ export class ChatService {
         ),
         shareReplay({ bufferSize: 1, refCount: true })
       );
+      const sub = chats$.subscribe();
+      this.chatSubscriptions.push(sub);
       this.chatsCache.set(userId, chats$);
     }
     return this.chatsCache.get(userId)!;
@@ -206,5 +209,11 @@ export class ChatService {
    */
   setOtherUser(user: UserInterface) {
     this._otherUser$.next(user); // Update the BehaviorSubject with the new other user
+  }
+
+  unsubscribeAll() {
+    this.chatSubscriptions.forEach((sub) => sub.unsubscribe());
+    this.chatSubscriptions = [];
+    this.chatsCache.clear(); // Cache auch leeren
   }
 }

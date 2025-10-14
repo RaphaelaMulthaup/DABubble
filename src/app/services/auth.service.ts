@@ -68,6 +68,7 @@ export class AuthService {
   channelEntwicklerteamDocRef;
   messagesChannelEntwicklerteamDocRef;
   guestsMessages: any[] = [];
+  chatsWithGuestsIds: any[] = [];
 
   constructor(
     private auth: Auth,
@@ -234,7 +235,7 @@ export class AuthService {
 
   async addDirectChatToTeam(userId: string) {
     const devChats = [
-      'XbsVa8YOj8Nd9vztzX1kAQXrc7Z2',
+      'YMOQBS4sWIQoVbLI2OUphJ7Ruug2',
       '5lntBSrRRUM9JB5AFE14z7lTE6n1',
       'rUnD1S8sHOgwxvN55MtyuD9iwAD2',
       'NxSyGPn1LkPV3bwLSeW94FPKRzm1',
@@ -246,12 +247,13 @@ export class AuthService {
 
       // chatId erneut abrufen
       const chatId = await this.chatService.getChatId(userId, devId);
+      this.chatsWithGuestsIds.push(chatId);
 
       // Beispielnachrichten vorbereiten
       let messages: { senderId: string; text: string }[] = [];
 
       switch (devId) {
-        case 'XbsVa8YOj8Nd9vztzX1kAQXrc7Z2':
+        case 'YMOQBS4sWIQoVbLI2OUphJ7Ruug2':
           messages = [
             {
               senderId: devId,
@@ -339,6 +341,7 @@ export class AuthService {
     const isGuest = user.isAnonymous;
 
     if (isGuest) {
+      this.chatService.unsubscribeAll();
       await deleteDoc(userRef)
         .catch(() => {})
         .then(() => deleteUser(user))
@@ -349,6 +352,7 @@ export class AuthService {
         memberIds: arrayRemove(user.uid),
       });
       await this.resetExampleChannel();
+      await this.deleteChats();
     } else {
       await updateDoc(userRef, { active: false });
       await signOut(this.auth);
@@ -372,6 +376,14 @@ export class AuthService {
         updateDoc(messageRef, { senderId: '' })
       )
     );
+  }
+
+  async deleteChats() {
+    const chatsRef = collection(this.firestore, 'chats');
+    for (const chatId of this.chatsWithGuestsIds) {
+      await deleteDoc(doc(chatsRef, chatId));
+    }
+    this.chatsWithGuestsIds = [];
   }
 
   /** Send password reset email */
