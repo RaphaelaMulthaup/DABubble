@@ -6,13 +6,13 @@
       <span class="save"></span>
     </button>
     }@else {
-    <button class="nameTag" (click)="saveName(nameInput!)">Speichern</button>
+    <button class="name-tag" (click)="saveName(nameInput!)">Speichern</button>
     } }@else { @if((screenSize$|async) === 'handset'){
     <button class="btn" (click)="toggleEdit()">
       <span class="edit"></span>
     </button>
     }@else {
-    <button class="nameTag" (click)="toggleEdit()">Bearbeiten</button>
+    <button class="name-tag" (click)="toggleEdit()">Bearbeiten</button>
     } }
   </div>
   <div class="nameAndError w-full">

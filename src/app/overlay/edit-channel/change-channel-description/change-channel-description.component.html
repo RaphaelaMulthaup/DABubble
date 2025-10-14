@@ -7,7 +7,7 @@
         <span class="save"></span>
       </button>
       }@else {
-      <button class="nameTag" (click)="saveDescription(descriptionInput!)">
+      <button class="name-tag" (click)="saveDescription(descriptionInput!)">
         Speichern
       </button>
       } }@else { @if((screenSize$|async) === 'handset'){
@@ -15,7 +15,7 @@
         <span class="edit"></span>
       </button>
       }@else {
-      <button class="nameTag" (click)="toggleEdit()">Bearbeiten</button>
+      <button class="name-tag" (click)="toggleEdit()">Bearbeiten</button>
       } }
     </div>
     <div class="w-full">

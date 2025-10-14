@@ -58,12 +58,12 @@ form {
 .toast-notification {
     position: absolute;
     width: fit-content;
-    padding: 20px 30px;
+    padding: clamp(1.25rem, 0.8750rem + 1.8750vw, 2rem) clamp(1.875rem, 1.5625rem + 1.5625vw, 2.5rem);
     border-radius: 30px;
     border-bottom-right-radius: 0;
     background-color: var(--color-purple-dark);
     color: var(--color-white);
-    font-size: 18px;
+    font-size: 22px;
     font-weight: 700;
     box-shadow: 0px 6px 10px 0px #00000033;
     display: none;

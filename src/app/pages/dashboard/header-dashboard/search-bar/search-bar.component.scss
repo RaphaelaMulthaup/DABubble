@@ -12,22 +12,22 @@ input {
   flex: 1;
   height: 100%;
   border-radius: 42px;
-  padding-left: 45px;
+  padding-left: clamp(1rem, 0.0935rem + 4.5325vw, 2.813rem);
   line-height: 70px;
   font-size: 24px;
 }
 
 .inputWithSearchIcon {
-  padding-right: 80px;
+  padding-right: clamp(1rem, 0.0935rem + 4.5325vw, 2.813rem);
 }
 
 .inputWithCloseIcon {
-  padding-right: 64px;
+  padding-right: clamp(1rem, 0.0935rem + 4.5325vw, 2.813rem);
 }
 
 .search-icon {
   position: absolute;
-  right: 45px;
+  right: clamp(1rem, 0.0935rem + 4.5325vw, 2.813rem);
 }
 
 .close {

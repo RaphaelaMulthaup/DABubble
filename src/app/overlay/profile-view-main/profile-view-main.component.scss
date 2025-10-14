@@ -1,7 +1,7 @@
 @import './../../../styles.scss';
 
 .profil-view-main{
-    width: clamp(17.5rem, 15.0625rem + 12.1875vw, 22.375rem);
+    min-width: clamp(17.5rem, 15.0625rem + 12.1875vw, 22.375rem);
     padding: clamp(1.25rem, 0.6250rem + 3.1250vw, 2.5rem);
     gap: clamp(1.25rem, 0.4685rem + 3.9075vw, 2.813rem);
 }
