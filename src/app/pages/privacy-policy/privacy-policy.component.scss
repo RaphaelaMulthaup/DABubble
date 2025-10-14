@@ -1,61 +1,7 @@
 @import './../../../styles.scss';
 @import "../../shared/styles/outside-dashboard.scss";
 
-.non-auth-form{
-    height: 75dvh;
-
-    @include respond-to(xxxs) {
-        width: 288px;
-    }
-}
-
-.policeHeader{
-    @include respond-to(xxs) {
-        flex-direction: column;
-    }
-}
-
 h1 {
-    align-self: flex-start;
-
-    @include respond-to(xs) {
-        font-size: 24px;
-    }
-
-    @include respond-to(xxxs) {
-        padding: 0px 0px 0px 12px;
-        font-size: 24px;
-    }
-}
-
-.txt-area{
-    padding: 0px 48px 0px 48px;
-    overflow-y: scroll;
-
-    @include respond-to('624') {
-        padding: 0px;
-    }
-
-    @include respond-to('515') {
-        width: 350px;
-    }
-
-    @include respond-to(xxs) {
-        width: 272px;
-    }
-
-    @include respond-to(xxxs) {
-        width: 248px;
-    }
-    
-    a{
-        @include respond-to(xxs) {
-            font-size: 12px;
-        }
-    }
-
-}
-
-a{
-    color: var(--color-purple-dark);
+  flex: 1;
+  padding-right: 40px;
 }

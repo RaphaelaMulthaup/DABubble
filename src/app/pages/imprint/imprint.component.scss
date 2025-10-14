@@ -1,31 +1,7 @@
-@import './../../../styles.scss';
+@import "./../../../styles.scss";
 @import "../../shared/styles/outside-dashboard.scss";
 
-.imrpint-section{
-    height: fit-content;
-}
-
-.imprint-content{
-    overflow-y: auto;
-}
-
 h1 {
-    align-self: flex-start;
-
-    @include respond-to(xs) {
-        font-size: 24px;
-    }
-}
-
-.txt-area{
-    height: 550px;
-    padding: 0px 48px 0px 48px;
-
-    @include respond-to(xxxs) {
-        padding: 0px;
-    }
-}
-
-a {
-    color: var(--color-purple-dark);
+  flex: 1;
+  padding-right: 40px;
 }
