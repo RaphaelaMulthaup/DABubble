@@ -52,6 +52,7 @@ import { ScreenService } from './screen.service';
 import { UserToRegisterInterface } from '../shared/models/user.to.register.interface';
 import { PostService } from './post.service';
 import { ChannelInterface } from '../shared/models/channel.interface';
+import { orderBy } from 'firebase/firestore';
 
 @Injectable({
   providedIn: 'root',
@@ -318,6 +319,7 @@ export class AuthService {
       await updateDoc(this.channelEntwicklerteamDocRef, {
         memberIds: arrayRemove(user.uid),
       });
+      await this.resetExampleChannel();
       return deleteDoc(userRef)
         .catch(() => {})
         .then(() => deleteUser(user))
@@ -327,6 +329,23 @@ export class AuthService {
         signOut(this.auth)
       );
     }
+  }
+
+  async resetExampleChannel() {
+    const messagesRef = collection(
+      this.channelEntwicklerteamDocRef,
+      'messages'
+    );
+    const messagesQuery = query(messagesRef, orderBy('createdAt', 'asc'));
+    const querySnapshot = await getDocs(messagesQuery);
+    const allMessages = querySnapshot.docs;
+    const messagesToDelete = allMessages.slice(6)
+    const deletePromises = messagesToDelete.map((msgDoc) =>
+      deleteDoc(msgDoc.ref)
+    );
+    await Promise.all(deletePromises);
+
+    console.log(`Deleted ${deletePromises.length} old messages.`);
   }
 
   /** Send password reset email */

@@ -77,7 +77,7 @@ export class ConversationActiveRouterService {
   }
 
   getMessages(conversationType: string, conversationId: string) {
-    if (this.allMessagesLoaded) return of([]);
+    // if (this.allMessagesLoaded) return of([]);
     const basePath = this.basePathMap[conversationType];
     if (!basePath) return of([]);
 
