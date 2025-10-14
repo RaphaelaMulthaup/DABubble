@@ -66,6 +66,8 @@ export class AuthService {
   /** Optional synchroner Zugriff */
   private currentUserSnapshot: UserInterface | null = null;
   channelEntwicklerteamDocRef;
+  messagesChannelEntwicklerteamDocRef;
+  guestsMessages: any[] = [];
 
   constructor(
     private auth: Auth,
@@ -99,10 +101,26 @@ export class AuthService {
       distinctUntilChanged((a, b) => a?.uid === b?.uid),
       shareReplay({ bufferSize: 1, refCount: true })
     );
+
     this.channelEntwicklerteamDocRef = doc(
       this.firestore,
       `channels/2TrvdqcsYSbj2ZpWLfvT`
     );
+    this.messagesChannelEntwicklerteamDocRef = collection(
+      this.channelEntwicklerteamDocRef,
+      'messages'
+    );
+    this.preparationMessagesGuest();
+  }
+
+  async preparationMessagesGuest() {
+    const messageIds = ['1MIeATQI5Qvu2Ace1DxY', '6u1OUoejMlf0HE4Vr44t'];
+    this.guestsMessages = [];
+
+    for (const id of messageIds) {
+      const docRef = doc(this.messagesChannelEntwicklerteamDocRef, id);
+      this.guestsMessages.push(docRef);
+    }
   }
 
   /** Synchronously get current Firestore User */
@@ -204,6 +222,11 @@ export class AuthService {
         await updateDoc(this.channelEntwicklerteamDocRef, {
           memberIds: arrayUnion(user.uid),
         });
+        await Promise.all(
+          this.guestsMessages.map((messageRef) =>
+            updateDoc(messageRef, { senderId: user.uid })
+          )
+        );
       })
       .catch((error) => console.error('Guest login error:', error));
     return from(promise) as Observable<void>;
@@ -332,14 +355,13 @@ export class AuthService {
   }
 
   async resetExampleChannel() {
-    const messagesRef = collection(
-      this.channelEntwicklerteamDocRef,
-      'messages'
+    const messagesQuery = query(
+      this.messagesChannelEntwicklerteamDocRef,
+      orderBy('createdAt', 'asc')
     );
-    const messagesQuery = query(messagesRef, orderBy('createdAt', 'asc'));
     const querySnapshot = await getDocs(messagesQuery);
     const allMessages = querySnapshot.docs;
-    const messagesToDelete = allMessages.slice(6)
+    const messagesToDelete = allMessages.slice(6);
     const deletePromises = messagesToDelete.map((msgDoc) =>
       deleteDoc(msgDoc.ref)
     );
