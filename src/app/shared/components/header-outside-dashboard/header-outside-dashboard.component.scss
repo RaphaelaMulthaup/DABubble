@@ -1,25 +1,14 @@
 @import "./../../../../styles.scss";
 
 header {
-  // @include dFlex($g: 20px);
   background-color: var(--color-purple-white);
-  padding: 75px;
+  padding: clamp(3rem, 2.25rem + 3.75vw, 4.5rem);
   padding-bottom: 0;
 
-  // @include respond-to(xs) {
-  //   justify-content: center !important;
-  //   padding: 75px 0px 75px 0px;
-  // }
-
   .logo-final {
-    height: 70px;
-    width: 241px;
+    width: 100%;
+    max-width: 306px;
     visibility: hidden;
-
-    // @include respond-to(xxxs) {
-    //   height: 56px !important;
-    //   width: 180px !important;
-    // }
   }
 
   .showLogo {

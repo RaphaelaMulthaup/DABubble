@@ -1,6 +1,7 @@
 @import "./../../../styles.scss";
 
-body {
+body,
+main {
   background-color: var(--color-purple-white);
   display: flex;
   flex-direction: column;

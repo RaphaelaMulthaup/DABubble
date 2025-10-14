@@ -1,7 +1,19 @@
-@import './../../../styles.scss';
+@import "./../../../styles.scss";
 @import "../../shared/styles/outside-dashboard.scss";
+
+app-header-outside-dashboard {
+    @media (min-width: 1920px) {
+    width: 1920px;
+    align-self: center;
+  }
+}
 
 h1 {
   flex: 1;
   padding-right: 40px;
+  word-break: keep-all;
+}
+
+.link-area a {
+  word-break: break-all;
 }

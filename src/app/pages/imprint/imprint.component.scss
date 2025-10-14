@@ -1,6 +1,13 @@
 @import "./../../../styles.scss";
 @import "../../shared/styles/outside-dashboard.scss";
 
+app-header-outside-dashboard {
+    @media (min-width: 1920px) {
+    width: 1920px;
+    align-self: center;
+  }
+}
+
 h1 {
   flex: 1;
   padding-right: 40px;
