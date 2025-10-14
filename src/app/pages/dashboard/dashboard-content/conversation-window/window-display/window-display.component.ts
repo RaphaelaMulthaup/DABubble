@@ -65,7 +65,9 @@ export class WindowDisplayComponent implements OnInit {
   @ViewChildren('messageElement', { read: ElementRef })
   messageElements!: QueryList<ElementRef>;
   loadingOlderMessages = false;
-  private previousScrollHeight = 0; // sagve scrollHeight for loading
+  lastconversationId: string | undefined;
+
+  private previousScrollHeight = 0; // save scrollHeight for loading
   // Localized days of the week for displaying timestamps
   days = DAYS;
   @Input() conversationWindowState?: 'conversation' | 'thread';
@@ -137,15 +139,16 @@ export class WindowDisplayComponent implements OnInit {
     // Hauptmessages abonnieren
     this.messages$.pipe(takeUntil(this.destroy$)).subscribe((data) => {
       this.onContentChange(this.currentConversationId, data);
-      // if (this.loadingOlderMessages) {
-        const offset = 150;
-        const el = this.messagesContainer.nativeElement;
+      const el = this.messagesContainer.nativeElement;
+      if (this.loadingOlderMessages) {
+        const offset = 20;
         const newScrollHeight = el.scrollHeight;
         el.scrollTop = newScrollHeight - this.previousScrollHeight + offset; // menține poziția
         this.loadingOlderMessages = false;
-      // } else if (!this.initialScrollDone) {
-      //   setTimeout(() => this.scrollToLastMessage());
-      // }
+      } else if (!this.initialScrollDone) {
+        setTimeout(() => this.scrollToLastMessage());
+        this.initialScrollDone = true;
+      }
     });
 
     // Scroll-Handling
@@ -181,19 +184,19 @@ export class WindowDisplayComponent implements OnInit {
    * Used to scroll to posts once DOM elements are available.
    */
   ngAfterViewInit() {
-    setTimeout(() => {
-      if (!this.initialScrollDone) {
-        this.scrollToLastMessage();
-      }
-    }, 0);
+    // setTimeout(() => {
+    //   if (!this.initialScrollDone) {
+    //     // this.scrollToLastMessage();
+    //   }
+    // }, 0);
 
-    this.messageElements.changes
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(() => {
-        if (!this.initialScrollDone) {
-          // this.scrollToLastMessage();
-        }
-      });
+    // this.messageElements.changes
+    //   .pipe(takeUntil(this.destroy$))
+    //   .subscribe(() => {
+    //     if (!this.initialScrollDone) {
+    //       // this.scrollToLastMessage();
+    //     }
+    //   });
 
     // Retry pending scroll requests when ViewChildren change
     this.postElements.changes.pipe(takeUntil(this.destroy$)).subscribe(() => {
@@ -251,11 +254,15 @@ export class WindowDisplayComponent implements OnInit {
    */
   onContentChange(newChatId?: string, newMessages: PostInterface[] = []) {
     const previousChatId = this.currentConversationId;
-
     this.currentConversationId = newChatId;
     this.postInfo = newMessages;
 
     if (previousChatId && previousChatId !== newChatId) {
+
+    // Reset per-channel scroll/loading flags
+    this.initialScrollDone = false;
+    this.loadingOlderMessages = false;
+
       this.tryDeleteEmptyChat(previousChatId);
     }
   }
@@ -434,9 +441,17 @@ export class WindowDisplayComponent implements OnInit {
     const el = this.messagesContainer.nativeElement;
     const threshold = 20;
     if (el.scrollTop <= threshold && !this.loadingOlderMessages) {
-      this.previousScrollHeight = el.scrollHeight; // salvează înainte
+      if (
+        this.conversationActiveRouterService.allMessagesLoaded.get(this.currentConversationId!)
+      ) {
+        console.log('all messages are loaded');
+        return;
+      }
+      this.previousScrollHeight = el.scrollHeight;
       this.loadingOlderMessages = true;
-      this.conversationActiveRouterService.loadMore();
+      this.conversationActiveRouterService.loadMore(
+        this.currentConversationId!
+      );
     }
   }
 }

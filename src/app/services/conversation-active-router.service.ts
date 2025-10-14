@@ -1,19 +1,11 @@
-import { Injectable, signal, WritableSignal } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import {
-  DocumentData,
   Firestore,
-  QueryDocumentSnapshot,
   collection,
   collectionData,
-  doc,
-  docData,
-  getDocs,
-  limit,
   limitToLast,
-  or,
   orderBy,
   query,
-  startAfter,
 } from '@angular/fire/firestore';
 import {
   Observable,
@@ -21,17 +13,11 @@ import {
   map,
   shareReplay,
   catchError,
-  from,
-  combineLatest,
   BehaviorSubject,
-  last,
-  filter,
   switchMap,
 } from 'rxjs';
-import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { PostInterface } from '../shared/models/post.interface';
-import { ChannelInterface } from '../shared/models/channel.interface';
-import { DashboardState } from '../shared/types/dashboard-state.type';
 
 @Injectable({
   providedIn: 'root',
@@ -43,24 +29,25 @@ export class ConversationActiveRouterService {
   };
 
   currentConversation = signal<string | null>(null);
-  private limit$ = new BehaviorSubject<number>(5);
-  private allMessagesLoaded = false;
+  limit$ = new BehaviorSubject<number>(5);
 
+   private limits = new Map<string, BehaviorSubject<number>>();
+  allMessagesLoaded = new Map<string, boolean>();
   constructor(private firestore: Firestore) {}
 
-  // expui un observable pentru id
+  // Observable for Id
   getConversationId$(route: ActivatedRoute): Observable<string> {
     return route.paramMap.pipe(map((params) => params.get('conversationId')!));
   }
 
-  // expui un observable pentru type
+  // Observable for Type
   getConversationType$(route: ActivatedRoute): Observable<string> {
     return route.paramMap.pipe(
       map((params) => params.get('conversationType')!)
     );
   }
 
-  // expui un observable pentru type
+  // Observable for type ???
   getMessageId$(route: ActivatedRoute): Observable<string> {
     return route.paramMap.pipe(map((params) => params.get('messageId')!));
   }
@@ -76,12 +63,27 @@ export class ConversationActiveRouterService {
     );
   }
 
+    private getLimit$(conversationId: string) {
+    if (!this.limits.has(conversationId)) {
+      this.limits.set(conversationId, new BehaviorSubject<number>(5));
+    }
+    return this.limits.get(conversationId)!;
+  }
+
+    resetConversation(conversationId: string) {
+    this.allMessagesLoaded.delete(conversationId);
+    if (this.limits.has(conversationId)) {
+      this.limits.get(conversationId)!.next(5);
+    }
+  }
+
+
+
   getMessages(conversationType: string, conversationId: string) {
-    if (this.allMessagesLoaded) return of([]);
     const basePath = this.basePathMap[conversationType];
     if (!basePath) return of([]);
 
-    return this.limit$.pipe(
+    return this.getLimit$(conversationId).pipe(
       switchMap((limitValue) => {
         const path = `${basePath}/${conversationId}/messages`;
         const ref = collection(this.firestore, path);
@@ -93,7 +95,7 @@ export class ConversationActiveRouterService {
         return collectionData(q, { idField: 'id' }).pipe(
           map((docs) => {
             if (docs.length < limitValue) {
-              this.allMessagesLoaded = true;
+              this.allMessagesLoaded.set(conversationId, true);
             }
             return docs;
           })
@@ -102,10 +104,21 @@ export class ConversationActiveRouterService {
     );
   }
 
-  loadMore() {
-    if (this.allMessagesLoaded) return;
-    this.limit$.next(this.limit$.value + 5);
+//   resetConversation(conversationId: string) {
+//   this.limit$.next(5);
+//   this.allMessagesLoaded.delete(conversationId);
+// }
+
+  loadMore(conversationId: string) {
+    if (this.allMessagesLoaded.get(conversationId)) return;
+    this.getLimit$(conversationId).next(this.getLimit$(conversationId).value + 5);
   }
+
+  // loadMore(conversationId: string) {
+  //   if (this.allMessagesLoaded.get(conversationId)) return;
+  //   this.limit$.next(this.limit$.value + 5);
+  //   console.log(this.limit$.value);
+  // }
 
   getAnswers(
     conversationType: string,

@@ -75,6 +75,7 @@ export class DashboardContentComponent implements OnInit {
       ),
       // Fetch messages for the active conversation from the service
       switchMap(({ conversationType, conversationId }) => {
+        this.conversationActiveRouterService.resetConversation(conversationId!);
         return this.conversationActiveRouterService.getMessages(
           conversationType!,
           conversationId!
