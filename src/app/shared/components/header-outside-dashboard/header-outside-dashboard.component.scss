@@ -6,20 +6,20 @@ header {
   padding: 75px;
   padding-bottom: 0;
 
-  @include respond-to(xs) {
-    justify-content: center !important;
-    padding: 75px 0px 75px 0px;
-  }
+  // @include respond-to(xs) {
+  //   justify-content: center !important;
+  //   padding: 75px 0px 75px 0px;
+  // }
 
   .logo-final {
     height: 70px;
     width: 241px;
     visibility: hidden;
 
-    @include respond-to(xxxs) {
-      height: 56px !important;
-      width: 180px !important;
-    }
+    // @include respond-to(xxxs) {
+    //   height: 56px !important;
+    //   width: 180px !important;
+    // }
   }
 
   .showLogo {

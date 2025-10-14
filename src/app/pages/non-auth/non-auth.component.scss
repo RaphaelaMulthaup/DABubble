@@ -1,20 +1,13 @@
 @import "../../shared/styles/outside-dashboard.scss";
 @import "./../../../styles.scss";
 
-header {
-    @include respond-to(m) {
-        padding: 12px 75px 0px 75px;
-    }
-
-    .logo{
-        visibility: hidden;
-    }
+* {
+    background-color: var(--color-purple-white);
 }
 
-.non-auth-form{
-    @include respond-to(xxxs) {
-        padding: 20px 20px !important;
-        width: 300px !important;
+header {
+    .logo{
+        visibility: hidden;
     }
 }
 
@@ -29,6 +22,10 @@ header {
 footer {
     padding-bottom: 16px;
     gap: 16px;
+
+    a {
+        margin-top: 32px;
+    }
 }
 
 .show {

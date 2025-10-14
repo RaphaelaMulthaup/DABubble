@@ -1,37 +1,46 @@
 @import "../../../shared/styles/outside-dashboard.scss";
 
 h1 {
-    flex: 1;
-    padding-right: 40px;
+  flex: 1;
+  padding-right: 40px;
 }
 
 .selected-avatar {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
+  width: clamp(6rem, 5.25rem + 3.75vw, 7.5rem);
+  aspect-ratio: 1;
+  border-radius: 50%;
 }
 
 .user-name {
-    padding-top: 24px;
-    font-size: 32px;
-    font-weight: 700;
+  padding-top: clamp(1rem, 0.75rem + 1.25vw, 1.5rem);
+  font-size: 32px;
+  font-weight: 700;
 }
 
 .choose-avatar-explanation {
-    font-size: 20px;
-    padding-top: 8px;
-    padding-bottom: 16px;
+  font-size: 20px;
+  padding-top: 8px;
+  padding-bottom: 16px;
+  text-align: center;
 }
 
 .avatar-list {
-    img {
-        width: 48px;
-        height: 48px;
-        border-radius: 50%;
-        cursor: pointer;
-    }
+  gap: 8px;
+
+  img {
+    width: clamp(3rem, 2.5rem + 2.5vw, 4rem);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
+  @include respond-to("430") {
+    max-width: 80%;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
 }
 
 .submit-btn {
-    margin-top: 24px;
+  margin-top: clamp(1.25rem, 1.125rem + 0.625vw, 1.5rem);
 }

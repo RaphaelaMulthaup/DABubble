@@ -1,6 +1,6 @@
 <section class="flex flex-col items-center">
     <div class="headline flex flex-col">
-        <div class="flex place-content-center w-full">
+        <div class="title w-full">
             <button (click)="backToLogin()" class="btn-back btn-tertiary"
                 (mouseenter)="arrowBackImg.src = './assets/img/arrow-back-hover.svg'"
                 (mouseleave)="arrowBackImg.src = './assets/img/arrow-back.svg'">
@@ -26,9 +26,11 @@
                         name="displayName"
                         required>
                 </div>
-                <p class="error-message">@if (registerForm.get('displayName')?.invalid &&
+                <p class="error-message">
+                    @if (registerForm.get('displayName')?.invalid &&
                     registerForm.get('displayName')?.touched)
-                    {Diese Feld darf nicht leer sein.}</p>
+                        {Diese Feld darf nicht leer sein.}
+                </p>
             </div>
 
             <div>

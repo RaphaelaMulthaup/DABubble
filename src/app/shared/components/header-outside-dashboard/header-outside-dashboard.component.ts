@@ -43,8 +43,6 @@ export class HeaderOutsideDashboardComponent {
   }
 
   onChildStateChange(newState: AuthState) {
-    // console.log('NEWSTATE', newState);
-    
     this.changeAuthState.emit(newState);
   }
 }

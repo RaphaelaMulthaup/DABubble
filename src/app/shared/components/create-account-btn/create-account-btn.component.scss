@@ -2,10 +2,12 @@
 
 .register {
   width: 100%;
-  padding-bottom: 40px;
-  gap: 20px;
-  @include respond-to(m) {
-    padding: 14px 0px 0px 0px;
+  gap: 8px;
+
+  @include respond-to('959') {
+    margin-top: -108px;
+    padding-top: 40px;
+    gap: 20px;
   }
 
   button {

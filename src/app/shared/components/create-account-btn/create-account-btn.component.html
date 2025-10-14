@@ -1,4 +1,4 @@
 <div class="register flex flex-col items-center">
     <p>Neu bei DABubble?</p>
-    <button class="btn-secondary" (click)="emitStateChange()">Konto erstellen</button>
+    <button (click)="emitStateChange()" [ngClass]="(screenSize$|async) === 'handset'? 'btn-secondary': 'link'">Konto erstellen</button>
 </div>

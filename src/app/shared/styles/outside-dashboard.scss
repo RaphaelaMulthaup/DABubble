@@ -1,113 +1,130 @@
 @import "./../../../styles.scss";
 
 body {
-    background-color: var(--color-purple-white);
+  background-color: var(--color-purple-white);
+  display: flex;
+  flex-direction: column;
 }
 
 main {
-    padding: 30px 16px;
+  flex: 1;
 
-    @include respond-to(m) {
-        padding: 12px 16px;
-    }
-
-    .non-auth-form {
-        //padding: 50px 60px; for desktop
-        padding: 35px 20px;
-        border-radius: 30px;
-        background-color: var(--color-white);
-        box-shadow: 0px 2px 10px 0px #00000014;
-    }
-}
-
-.btn-back {
-    align-self: flex-start;
+  .non-auth-form {
+    max-width: 606px;
+    margin: 0 20px;
+    margin-bottom: 108px;
+    padding: clamp(2rem, 1.5rem + 2.5vw, 3rem)
+      clamp(1.25rem, -0.125rem + 6.875vw, 4rem);
+    border-radius: 30px;
+    background-color: var(--color-white);
+    box-shadow: 0px 2px 10px 0px #00000014;
+  }
 }
 
 section,
 form {
-    background-color: var(--color-white);
-    gap: 20px;
+  background-color: var(--color-white);
+  gap: 20px;
 }
 
 .headline {
-    gap: 15px;
-    text-align: center;
+  gap: 15px;
+  text-align: center;
+
+  .title {
+    display: flex;
+    justify-content: space-around;
+
+    .btn-back {
+      align-self: flex-start;
+    }
+  }
+
+  @include respond-to("624") {
+    .title {
+      flex-direction: column;
+
+      h1 {
+        padding: 0;
+      }
+    }
+  }
 }
 
 .input-container {
-    gap: 12px;
+  gap: 12px;
 
-    .input-icon {
-        left: 24px
-    }
+  .input-icon {
+    left: clamp(0.75rem, 0.375rem + 1.875vw, 1.5rem);
+  }
 
-    input {
-        padding-left: 64px;
-    }
+  input {
+    padding-left: clamp(2.5rem, 1.75rem + 3.75vw, 4rem);
+  }
 }
 
 .error-message {
-    height: 16px;
-    padding-top: 4px;
-    font-size: 16px;
-    color: var(--color-pink);
-    line-height: 1;
+  height: 16px;
+  padding-top: 4px;
+  font-size: 16px;
+  color: var(--color-pink);
+  line-height: 1;
 }
 
 .toast-notification {
-    position: absolute;
-    width: fit-content;
-    padding: clamp(1.25rem, 0.8750rem + 1.8750vw, 2rem) clamp(1.875rem, 1.5625rem + 1.5625vw, 2.5rem);
-    border-radius: 30px;
-    border-bottom-right-radius: 0;
-    background-color: var(--color-purple-dark);
-    color: var(--color-white);
-    font-size: 22px;
-    font-weight: 700;
-    box-shadow: 0px 6px 10px 0px #00000033;
-    display: none;
-    justify-content: center;
-    align-items: center;
-    gap: 16px;
-    animation: slidInFromRight 0.3s ease-in;
+  position: absolute;
+  width: fit-content;
+  padding: clamp(1.25rem, 0.875rem + 1.875vw, 2rem)
+    clamp(1.875rem, 1.5625rem + 1.5625vw, 2.5rem);
+  border-radius: 30px;
+  border-bottom-right-radius: 0;
+  background-color: var(--color-purple-dark);
+  color: var(--color-white);
+  font-size: 22px;
+  font-weight: 700;
+  box-shadow: 0px 6px 10px 0px #00000033;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  animation: slidInFromRight 0.3s ease-in;
 
-    img {
-        width: 20px;
-        aspect-ratio: 1 / 1;
-    }
+  img {
+    width: 20px;
+    aspect-ratio: 1 / 1;
+  }
 }
 
 .reset-toast {
-    position: absolute;
-    display: none;
-    width: 448px;
-    z-index: 5;
-    animation: slidInFromRight 0.3s ease-in;
-    background-color: var(--color-purple-dark);
-    color: white;
-    height: 148px;
-    padding: 0px 10px 0px 10px;
-    font-size: 36px;
-    font-weight: 700;
-    border-top-left-radius: 20px;
-    border-top-right-radius: 20px;
-    border-bottom-left-radius: 20px;
+  position: absolute;
+  display: none;
+  width: 448px;
+  z-index: 5;
+  animation: slidInFromRight 0.3s ease-in;
+  background-color: var(--color-purple-dark);
+  color: white;
+  height: 148px;
+  padding: 0px 10px 0px 10px;
+  font-size: 36px;
+  font-weight: 700;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  border-bottom-left-radius: 20px;
 }
 
 .show-toast {
-    display: flex;
-    opacity: 1;
+  display: flex;
+  opacity: 1;
 }
 
 @keyframes slidInFromRight {
-    from {
-        transform: translateX(100%);
-        opacity: 0;
-    }
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
 
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }

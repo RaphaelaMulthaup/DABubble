@@ -3,5 +3,5 @@
     <img class="logo-final" src="assets/img/logo.png" alt="Logo DABubble" />
   </div>
   @if (currentState === 'login' && ((screenSize$|async) != 'handset')) {
-  <app-create-account-btn (changeAuthState)="onChildStateChange($event)"></app-create-account-btn>}
+  <app-create-account-btn (changeAuthState)="onChildStateChange($event)" class="z-index-1001"></app-create-account-btn>}
 </header>

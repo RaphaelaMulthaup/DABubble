@@ -1,6 +1,6 @@
 <section class="flex flex-col items-center">
     <div class="headline flex flex-col">
-        <div class="flex place-content-center w-full">
+        <div class="title w-full">
             <button (click)="backToRegistration()" class="btn-back btn-tertiary" (mouseenter)="arrowBackImg.src = './assets/img/arrow-back-hover.svg'"
                 (mouseleave)="arrowBackImg.src = './assets/img/arrow-back.svg'">
                 <img #arrowBackImg src="./assets/img/arrow-back.svg" alt="go back to previous page">
@@ -15,7 +15,7 @@
         <p class="choose-avatar-explanation w-full">Wähle einen Avatar aus der Liste</p>
         <div class="avatar-list flex items-center place-content-between w-full">
             @for (img of avatarOptions; track $index) {
-            <img class="avatar" (click)="selectAvatar($index + 1)" src="{{img}}" alt="avatar option">
+                <img class="avatar" (click)="selectAvatar($index + 1)" src="{{img}}" alt="avatar option">
             }
         </div>
     </div>
