@@ -5,6 +5,7 @@ import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
   signOut,
+  user,
   User,
 } from '@angular/fire/auth';
 import {
@@ -55,7 +56,7 @@ import { ScreenService } from './screen.service';
 import { UserToRegisterInterface } from '../shared/models/user.to.register.interface';
 import { PostService } from './post.service';
 import { ChannelInterface } from '../shared/models/channel.interface';
-import { orderBy } from 'firebase/firestore';
+import { orderBy, writeBatch } from 'firebase/firestore';
 
 @Injectable({
   providedIn: 'root',
@@ -71,7 +72,7 @@ export class AuthService {
   channelEntwicklerteamDocRef;
   messagesChannelEntwicklerteamDocRef;
   guestsMessages: any[] = [];
-  chatsWithGuestsIds: any[] = [];
+  // chatsWithGuestsIds: any[] = [];
 
   constructor(
     private auth: Auth,
@@ -250,7 +251,7 @@ export class AuthService {
 
       // chatId erneut abrufen
       const chatId = await this.chatService.getChatId(userId, devId);
-      this.chatsWithGuestsIds.push(chatId);
+      // this.chatsWithGuestsIds.push(chatId);
 
       // Beispielnachrichten vorbereiten
       let messages: { senderId: string; text: string }[] = [];
@@ -354,7 +355,7 @@ export class AuthService {
         memberIds: arrayRemove(user.uid),
       });
       await this.resetExampleChannel();
-      await this.deleteChats();
+      await this.deleteChats(user.uid);
       // this.chatService.unsubscribeAll(); // 🧹 interne Streams leeren
     } else {
       await updateDoc(userRef, { active: false });
@@ -381,29 +382,25 @@ export class AuthService {
     );
   }
 
-  async deleteChats() {
-    const chatsRef = collection(this.firestore, 'chats');
-
-    for (const chatId of this.chatsWithGuestsIds) {
-      const chatDocRef = doc(chatsRef, chatId);
-      const messagesRef = collection(
-        this.firestore,
-        `chats/${chatId}/messages`
-      );
-
-      // 🔹 1. Alle Nachrichten in der Subcollection löschen
+  async deleteChats(userId: string) {
+    const userChats = await this.chatService.getChatRefsForUser(userId);
+    for (const chat of userChats) {
+      const messagesRef = collection(chat.ref, 'messages');
       const messagesSnap = await getDocs(messagesRef);
-      for (const message of messagesSnap.docs) {
-        await deleteDoc(message.ref);
-      }
 
-      // 🔹 2. Danach den Chat selbst löschen
-      await deleteDoc(chatDocRef);
+      const batch = writeBatch(this.firestore);
+
+      // Alle Nachrichten im Batch löschen
+      messagesSnap.docs.forEach((msg) => batch.delete(msg.ref));
+
+      // Chat-Dokument selbst löschen
+      batch.delete(chat.ref);
+
+      // Batch ausführen
+      await batch.commit();
     }
-
-    // 🔹 3. Interne Liste zurücksetzen
-    this.chatsWithGuestsIds = [];
   }
+  
   /** Send password reset email */
   sendPasswordResetEmail(email: string): Promise<void> {
     const auth = getAuth();
