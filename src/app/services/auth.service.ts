@@ -347,7 +347,6 @@ export class AuthService {
     await this.resetExampleChannel(user.uid);
     await this.deleteChannels(user.uid);
     await this.deleteChats(user.uid);
-    // this.chatService.unsubscribeAll(); // 🧹 interne Streams leeren
   }
 
   async resetExampleChannel(guestUserId: string) {
@@ -357,17 +356,13 @@ export class AuthService {
       description:
         'Hier kannst du dich zusammen mit den EntwicklerInnen über die Chat-App austauschen.',
     });
-    await this.resetMessagesExampleChannel();
+    await this.resetMessagesExampleChannel(guestUserId);
   }
 
-  async resetMessagesExampleChannel() {
-    const messagesQuery = query(
-      this.messagesChannelEntwicklerteamDocRef,
-      orderBy('createdAt', 'asc')
-    );
+  async resetMessagesExampleChannel(guestUserId: string) {
+    const messagesQuery = query(this.messagesChannelEntwicklerteamDocRef, where("senderId", "==", guestUserId));
     const querySnapshot = await getDocs(messagesQuery);
-    const allMessages = querySnapshot.docs;
-    const messagesToDelete = allMessages.slice(6);
+    const messagesToDelete = querySnapshot.docs;
     const deletePromises = messagesToDelete.map((msgDoc) =>
       deleteDoc(msgDoc.ref)
     );
