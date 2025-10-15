@@ -1,6 +1,5 @@
-import { Component, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { UserService } from '../../services/user.service';
-import { UserInterface } from '../../shared/models/user.interface';
 import { ReactionInterface } from '../../shared/models/reaction.interface';
 import { AuthService } from '../../services/auth.service';
 import { Subject, takeUntil } from 'rxjs';

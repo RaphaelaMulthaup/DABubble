@@ -15,7 +15,7 @@
   
   <button
     class="settings-btn flex items-center justify-center"
-    (click)="showProfile()"
+    (click)="openProfileViewMainOverlay()"
   >
     <img 
       class="settingsIcon" 
@@ -25,7 +25,7 @@
   </button>
   <button
     class="settings-btn flex items-center justify-center"
-    (click)="logOut()"
+    (click)="authService.logout()"
   >
     <img
       class="settingsIcon"

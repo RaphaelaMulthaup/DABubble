@@ -7,29 +7,21 @@ import { Observable } from 'rxjs';
 import { ScreenService } from '../../services/screen.service';
 import { ScreenSize } from '../../shared/types/screen-size.type';
 
-/**
- * Component that displays the search results for new messages.
- * It takes the results as input and renders them using the appropriate list item components.
- */
 @Component({
-  selector: 'app-search-results-new-message', // Defines the component selector for HTML usage
+  selector: 'app-search-results-new-message',
   imports: [
     UserListItemComponent,
     ChannelListItemComponent,
     JsonPipe,
     CommonModule,
-  ], // Imports components and pipes for rendering user and channel list items, and JSON formatting
-  templateUrl: './search-results-new-message.component.html', // Path to the component's HTML template
-  styleUrl: './search-results-new-message.component.scss', // Path to the component's styling file
+  ],
+  templateUrl: './search-results-new-message.component.html',
+  styleUrl: './search-results-new-message.component.scss',
 })
 export class SearchResultsNewMessageComponent {
-  /**
-   * The search results passed to the component.
-   * This array holds the search results which are of type `SearchResult[]`.
-   * It is passed from the parent component via Angular's Input mechanism.
-   */
   @Input() results!: Signal<SearchResult[]>;
   screenSize$!: Observable<ScreenSize>;
+
   constructor(public screenService: ScreenService) {
     this.screenSize$ = this.screenService.screenSize$;
   }
