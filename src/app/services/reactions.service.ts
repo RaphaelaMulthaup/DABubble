@@ -5,6 +5,8 @@ import {
   collection,
   collectionData,
   doc,
+  DocumentReference,
+  DocumentSnapshot,
   Firestore,
   getDoc,
   getDocs,
@@ -23,7 +25,7 @@ import { ConnectedPosition } from '@angular/cdk/overlay';
 })
 export class ReactionsService {
   private reactionCache = new Map<string, Observable<ReactionInterface[]>>();
-  screenSize$!: Observable<ScreenSize>;
+  private screenSize$!: Observable<ScreenSize>;
 
   constructor(
     private authService: AuthService,
@@ -35,16 +37,14 @@ export class ReactionsService {
 
   /**
    * Toggles a reaction for a given post.
-   *
-   * - If the user has already reacted with the emoji, their ID will be removed.
-   * - Otherwise, their ID will be added.
-   * - If the emoji does not exist yet, a new reaction document is created.
+   * If the user has already reacted with the emoji, their ID will be removed.
+   * Otherwise, their ID will be added.
+   * If the emoji does not exist in the reactions yet, a new reaction document is created.
    *
    * @param parentPath - Path to the parent document (e.g. "chats/{chatId}").
    * @param subcollectionName - Name of the subcollection (e.g. "messages").
    * @param postId - ID of the post being reacted to.
-   * @param emojiToken - The token of the chosen emoji.
-   * @returns A Promise that resolves once the reaction update has been applied.
+   * @param emoji - the chosen emoji.
    */
   async toggleReaction(
     parentPath: string,
@@ -52,40 +52,116 @@ export class ReactionsService {
     postId: string,
     emoji: { token: string; src: string }
   ) {
-    let userId = this.authService.currentUser?.uid ?? null;
+    const userId = this.authService.currentUser?.uid ?? null;
+    if (!userId) return;
+    const { postPath, postRef, reactionRef, reactionSnap } =
+    await this.getReactionContext(parentPath, subcollectionName, postId, emoji.token);
+    if (reactionSnap.exists()) {
+      await this.updateExistingReaction(
+        postRef,
+        reactionRef,
+        reactionSnap,
+        userId
+      );
+    } else { await this.createNewReaction(postRef, reactionRef, emoji, userId); }
+  }
+
+  /**
+   * Builds and fetches all Firestore references needed for a reaction toggle.
+   *
+   * @param parentPath - Path to the parent document (e.g. "chats/{chatId}")
+   * @param subcollectionName - Name of the subcollection (e.g. "messages")
+   * @param postId - ID of the post being reacted to
+   * @param emoji - the chosen emoji
+   */
+  async getReactionContext(
+    parentPath: string,
+    subcollectionName: string,
+    postId: string,
+    emojiToken: string
+  ) {
     const postPath = `${parentPath}/${subcollectionName}/${postId}`;
     const postRef = doc(this.firestore, postPath);
     const reactionRef = doc(
       this.firestore,
-      `${postPath}/reactions/${emoji.token}`
+      `${postPath}/reactions/${emojiToken}`
     );
     const reactionSnap = await getDoc(reactionRef);
-    if (reactionSnap.exists()) {
-      const data = reactionSnap.data();
-      const users: string[] = data['users'] || [];
+    return { postPath, postRef, reactionRef, reactionSnap };
+  }
 
-      if (userId && users.includes(userId)) {
-        // User already reacted → remove their reaction
-        await updateDoc(reactionRef, {
-          users: arrayRemove(userId),
-        });
-        const postHasReactions = await this.checkForPostReactions(postPath);
-        await updateDoc(postRef, { hasReactions: postHasReactions });
-      } else {
-        // User has not reacted → add their reaction
-        await updateDoc(reactionRef, {
-          users: arrayUnion(userId),
-        });
-        await updateDoc(postRef, { hasReactions: true });
-      }
+  /**
+   * Updates an existing reaction by toggling the user's ID.
+   *
+   * @param postRef - the document of the post reacted to
+   * @param reactionRef - the document of reaction
+   * @param reactionSnap - a snapshot of the the document of reaction
+   * @param userId - the user that reacted
+   */
+  async updateExistingReaction(
+    postRef: DocumentReference,
+    reactionRef: DocumentReference,
+    reactionSnap: DocumentSnapshot,
+    userId: string
+  ) {
+    const data = reactionSnap.data();
+    const users: string[] = data!['users'] || [];
+    if (users.includes(userId)) {
+      await this.removeUserFromReaction(postRef, reactionRef, userId);
     } else {
-      // First reaction with this emoji → create a new reaction document
-      await setDoc(reactionRef, {
-        emoji,
-        users: [userId],
-      });
-      await updateDoc(postRef, { hasReactions: true });
+      await this.addUserToReaction(postRef, reactionRef, userId);
     }
+  }
+
+  /**
+   * Removes the current user from the given reaction and updates the post reaction status.
+   *
+   * @param postRef - the document of the post reacted to
+   * @param reactionRef - the document of reaction
+   * @param userId - the user that reacted
+   */
+  async removeUserFromReaction(
+    postRef: DocumentReference,
+    reactionRef: DocumentReference,
+    userId: string
+  ) {
+    await updateDoc(reactionRef, { users: arrayRemove(userId) });
+    const stillHasReactions = await this.checkForPostReactions(postRef.path);
+    await updateDoc(postRef, { hasReactions: stillHasReactions });
+  }
+
+  /**
+   * Adds the current user to the given reaction and marks the post as reacted.
+   *
+   * @param postRef - the document of the post reacted to
+   * @param reactionRef - the document of reaction
+   * @param userId - the user that reacted
+   */
+  async addUserToReaction(
+    postRef: DocumentReference,
+    reactionRef: DocumentReference,
+    userId: string
+  ) {
+    await updateDoc(reactionRef, { users: arrayUnion(userId) });
+    await updateDoc(postRef, { hasReactions: true });
+  }
+
+  /**
+   * Creates a new reaction-document, when the selected reaction does not exist for this post yet.
+   *
+   * @param postRef - the document of the post reacted to
+   * @param reactionRef - the document of reaction
+   * @param emoji - the emoji reacted with
+   * @param userId - the user that reacted
+   */
+  async createNewReaction(
+    postRef: DocumentReference,
+    reactionRef: DocumentReference,
+    emoji: { token: string; src: string },
+    userId: string
+  ) {
+    await setDoc(reactionRef, { emoji, users: [userId] });
+    await updateDoc(postRef, { hasReactions: true });
   }
 
   /**
@@ -95,10 +171,9 @@ export class ReactionsService {
    *
    * @param postPath - the path to the post in firebase.
    */
-  private async checkForPostReactions(postPath: string): Promise<boolean> {
+  async checkForPostReactions(postPath: string): Promise<boolean> {
     const reactionsColRef = collection(this.firestore, `${postPath}/reactions`);
     const reactionsSnap = await getDocs(reactionsColRef);
-
     return reactionsSnap.docs.some((docSnap) => {
       const users: string[] = docSnap.data()?.['users'] || [];
       return users.length > 0;
@@ -106,12 +181,11 @@ export class ReactionsService {
   }
 
   /**
-   * Fetches all reactions of a post in real-time.
+   * Fetches all reactions of a post in real-time as an ReactionInterface-Observable.
    *
    * @param parentPath - Path to the parent document (e.g. "chats/{chatId}").
    * @param subcollectionName - Name of the subcollection (e.g. "messages").
    * @param postId - ID of the post whose reactions should be fetched.
-   * @returns Observable that emits the list of reactions (with emoji name and user IDs).
    */
   getReactions(
     parentPath: string,
@@ -139,7 +213,7 @@ export class ReactionsService {
    * This function returns true or false depending on the screenSize and whether senderIsCurrentUser is true or false.
    * It is used to place the right angle of the emoji-picker overlay in the correct corner and to place the emoji-picker overlay on the correct side of the cursor.
    *
-   * @param senderIsCurrentUser whether the posts sender is the current user or not.
+   * @param senderIsCurrentUser - whether the posts sender is the current user or not.
    */
   async checkEmojiPickerPosition(
     senderIsCurrentUser: boolean
@@ -165,7 +239,9 @@ export class ReactionsService {
    *
    * @param senderIsCurrentUser whether the posts sender is the current user or not.
    */
-  async resolveEmojiPickerPosition(senderIsCurrentUser: boolean): Promise<ConnectedPosition> {
+  async resolveEmojiPickerPosition(
+    senderIsCurrentUser: boolean
+  ): Promise<ConnectedPosition> {
     if (await this.checkEmojiPickerPosition(senderIsCurrentUser)) {
       return {
         originX: 'start',
