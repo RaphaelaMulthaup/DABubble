@@ -106,7 +106,7 @@ export class AuthService {
       this.channelEntwicklerteamDocRef,
       'messages'
     );
-    window.addEventListener('beforeunload', () => {      
+    window.addEventListener('beforeunload', () => {
       const user = this.auth.currentUser;
       if (user?.isAnonymous) {
         try {
@@ -118,7 +118,6 @@ export class AuthService {
       }
     });
   }
-
 
   /** Synchronously get current Firestore User */
   get currentUser(): UserInterface | null {
@@ -360,7 +359,10 @@ export class AuthService {
   }
 
   async resetMessagesExampleChannel(guestUserId: string) {
-    const messagesQuery = query(this.messagesChannelEntwicklerteamDocRef, where("senderId", "==", guestUserId));
+    const messagesQuery = query(
+      this.messagesChannelEntwicklerteamDocRef,
+      where('senderId', '==', guestUserId)
+    );
     const querySnapshot = await getDocs(messagesQuery);
     const messagesToDelete = querySnapshot.docs;
     const deletePromises = messagesToDelete.map((msgDoc) =>
@@ -372,16 +374,26 @@ export class AuthService {
   async deleteChannels(guestUserId: string) {
     const q = this.buildUserChannelsQuery(guestUserId);
     const snapshot = await getDocs(q);
-    const channels = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    })) as ChannelInterface[];
+    const channelsCreatedByGuest: ChannelInterface[] = snapshot.docs
+      .map((doc) => ({ id: doc.id, ...(doc.data() as ChannelInterface) }))
+      .filter((channel) => channel.createdBy === guestUserId);
     const batch = writeBatch(this.firestore);
-    for (const channel of channels) {
+    for (const channel of channelsCreatedByGuest) {
       const channelRef = doc(this.firestore, `channels/${channel.id}`);
       batch.delete(channelRef);
     }
     await batch.commit();
+    for (const docSnap of snapshot.docs) {
+      const channel = docSnap.data() as ChannelInterface;
+
+      // Channel nur bearbeiten, wenn er **nicht vom Guest erstellt** wurde
+      if (channel.createdBy !== guestUserId) {
+        const channelRef = doc(this.firestore, 'channels', docSnap.id); // <-- docSnap.id verwenden
+        await updateDoc(channelRef, {
+          memberIds: arrayRemove(guestUserId),
+        });
+      }
+    }
   }
 
   buildUserChannelsQuery(userId: string) {
