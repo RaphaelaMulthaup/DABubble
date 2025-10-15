@@ -25,6 +25,7 @@ import {
   docData,
   getDoc,
   getDocs,
+  limit,
   query,
   setDoc,
   updateDoc,
@@ -365,16 +366,133 @@ export class AuthService {
   }
 
   async resetMessagesExampleChannel(guestUserId: string) {
-    const messagesQuery = query(
-      this.messagesChannelEntwicklerteamDocRef,
-      where('senderId', '==', guestUserId)
-    );
-    const querySnapshot = await getDocs(messagesQuery);
-    const messagesToDelete = querySnapshot.docs;
-    const deletePromises = messagesToDelete.map((msgDoc) =>
-      deleteDoc(msgDoc.ref)
-    );
-    await Promise.all(deletePromises);
+    try {
+      // 1) Alle Nachrichten des Gasts löschen
+      const messagesQuery = query(
+        this.messagesChannelEntwicklerteamDocRef,
+        where('senderId', '==', guestUserId)
+      );
+      const messagesSnapshot = await getDocs(messagesQuery);
+      // Löschen in Batches
+      let batch = writeBatch(this.firestore); // this.firestore = Firestore instance
+      let batchOps = 0;
+      const MAX_BATCH_OPS = 400;
+
+      for (const msgDoc of messagesSnapshot.docs) {
+        batch.delete(msgDoc.ref);
+        batchOps++;
+        if (batchOps >= MAX_BATCH_OPS) {
+          await batch.commit();
+          batch = writeBatch(this.firestore);
+          batchOps = 0;
+        }
+      }
+      if (batchOps > 0) {
+        await batch.commit();
+      }
+
+      // 2) Nachrichten mit hasReactions == true abrufen
+      const messagesWithReactionsQuery = query(
+        this.messagesChannelEntwicklerteamDocRef,
+        where('hasReactions', '==', true)
+      );
+      const messagesWithReactionsSnapshot = await getDocs(
+        messagesWithReactionsQuery
+      );
+
+      // 3) Für jede Nachricht prüfen & Reaktionen des Gasts löschen
+      for (const msgDoc of messagesWithReactionsSnapshot.docs) {
+        const msgRef = msgDoc.ref;
+
+        // 3.a) Schau, ob überhaupt reactionName-Dokumente existieren
+        const reactionsColRef = collection(msgRef, 'reactions');
+        const reactionNamesSnap = await getDocs(reactionsColRef);
+
+        if (reactionNamesSnap.empty) {
+          // Keine Reactions mehr vorhanden -> setze hasReactions auf false (frühzeitig)
+          try {
+            await updateDoc(msgRef, { hasReactions: false });
+          } catch (err) {
+            console.warn(
+              'Konnte hasReactions nicht updaten für',
+              msgDoc.id,
+              err
+            );
+          }
+          continue; // zur nächsten Nachricht
+        }
+
+        // 3.b) Lösche guest user docs unter jeder reactionName (reactions/{reactionName}/user/{guestUserId})
+        // und räume reactionName-doc weg, falls danach leer.
+        let localBatch = writeBatch(this.firestore);
+        let localOps = 0;
+
+        for (const reactionDoc of reactionNamesSnap.docs) {
+          const reactionDocRef = reactionDoc.ref; // .../reactions/{reactionName}
+          const userDocRef = doc(reactionDocRef, 'user', guestUserId); // .../reactions/{reactionName}/user/{guestUserId}
+
+          // Prüfe ob user doc existiert; wenn ja -> löschen
+          const userSnap = await getDoc(userDocRef);
+          if (userSnap.exists()) {
+            localBatch.delete(userDocRef);
+            localOps++;
+          }
+
+          // Falls batch groß wird, commit und neu starten
+          if (localOps >= MAX_BATCH_OPS) {
+            await localBatch.commit();
+            localBatch = writeBatch(this.firestore);
+            localOps = 0;
+          }
+        }
+
+        if (localOps > 0) {
+          await localBatch.commit();
+        }
+
+        // 3.c) Jetzt: cleanup der einzelnen reactionName docs, falls ihre 'user' Subcollection nun leer ist
+        // (Optional: falls du reactionName-Dokumente behalten willst weil sie Metadaten haben, entferne diesen Schritt)
+        for (const reactionDoc of reactionNamesSnap.docs) {
+          const usersColRef = collection(reactionDoc.ref, 'user');
+          const usersSnap = await getDocs(query(usersColRef, limit(1))); // reicht 1 doc
+          if (usersSnap.empty) {
+            // keine user mehr -> reactionName doc kann entfernt werden
+            try {
+              await deleteDoc(reactionDoc.ref);
+            } catch (err) {
+              console.warn(
+                `Konnte reactionName doc ${reactionDoc.id} nicht löschen:`,
+                err
+              );
+            }
+          }
+        }
+
+        // 3.d) Final: Prüfe, ob unter reactions noch irgendwas existiert.
+        // Wenn nicht -> hasReactions = false, sonst belasse es true.
+        const remainingReactionNamesSnap = await getDocs(reactionsColRef);
+        if (remainingReactionNamesSnap.empty) {
+          try {
+            await updateDoc(msgRef, { hasReactions: false });
+          } catch (err) {
+            console.warn(
+              'Konnte hasReactions nicht updaten (final) für',
+              msgDoc.id,
+              err
+            );
+          }
+        } else {
+          // Optional: wenn du ein count-Feld pflegst, könntest du das hier aktualisieren
+        }
+      }
+
+      console.log(
+        `Fertig: Nachrichten des Gasts gelöscht und seine Reaktionen entfernt (Guest: ${guestUserId}).`
+      );
+    } catch (error) {
+      console.error('Fehler beim Zurücksetzen des Channels:', error);
+      throw error;
+    }
   }
 
   async handleGuestsChannels(guestUserId: string) {
