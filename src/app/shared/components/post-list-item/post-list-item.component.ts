@@ -1,16 +1,9 @@
-import { Component, inject, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
+import { NavigationData } from '../../models/navigation.data.interface';
 import { PostInterface } from '../../models/post.interface';
 import { Router } from '@angular/router';
 import { PostService } from '../../../services/post.service';
 import { ScreenService } from '../../../services/screen.service';
-
-/** The data needed for navigation per route. */
-interface NavigationData {
-  type: 'chat' | 'channel';
-  id: string;
-  answerId: string;
-  parentMessageId?: string;
-}
 
 @Component({
   selector: 'app-post-list-item',
@@ -22,12 +15,12 @@ interface NavigationData {
   ],
 })
 export class PostListItemComponent {
-  @Input() post!: PostInterface; // Input property to receive a post object
+  @Input() post!: PostInterface;
 
   constructor(
-    private router: Router, // Router for navigating to different views
-    public postService: PostService, // Service for handling post-related logic
-    public screenService: ScreenService // Service for managing mobile dashboard state
+    private router: Router,
+    public postService: PostService,
+    public screenService: ScreenService
   ) {}
 
   /**
@@ -43,8 +36,8 @@ export class PostListItemComponent {
 
   /**
    * Navigates to the conversation or thread based on post type.
-   * 
-   * @param postId The ID of the selected post.
+   *
+   * @param postId - The ID of the selected post
    */
   navigateToAnswerOrMessage(postId: string) {
     const conversationType = this.post.chatId ? 'chat' : 'channel';
@@ -61,10 +54,10 @@ export class PostListItemComponent {
 
   /**
    * This function passes the data needed to navigate to the answer.
-   * 
-   * @param conversationType The type of conversation ('chat' | 'channel') in which the answer was given.
-   * @param conversationId The ID of the conversation in which the answer was given.
-   * @param answerId 
+   *
+   * @param conversationType - The type of conversation ('chat' | 'channel') in which the answer was given
+   * @param conversationId - The ID of the conversation in which the answer was given
+   * @param answerId - The ID of the answer to navigate to
    */
   navigateToAnswer(
     conversationType: 'chat' | 'channel',
@@ -81,8 +74,8 @@ export class PostListItemComponent {
 
   /**
    * Navigates to the thread of the selected answer and scrolls to the answer.
-   * 
-   * @param data The data needed for the route and scrolling to the answer.
+   *
+   * @param data - The data needed for the route and scrolling to the answer.
    */
   private navigateToAnswerByData(data: NavigationData) {
     this.screenService.setDashboardState('thread-window');

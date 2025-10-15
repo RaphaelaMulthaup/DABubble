@@ -1,4 +1,4 @@
-import { Component, inject, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { OverlayService } from '../../../services/overlay.service';
 import { OverlayRef } from '@angular/cdk/overlay';
 
@@ -9,9 +9,9 @@ import { OverlayRef } from '@angular/cdk/overlay';
   styleUrl: './header-overlay.component.scss',
 })
 export class HeaderOverlayComponent {
-  constructor(public overlayService: OverlayService) {}
-
   @Input() overlayHeadline: string = '';
   @Input() overlayRef!: OverlayRef;
-  @Input() isChannelHeader:boolean = false;
+  @Input() isChannelHeader: boolean = false;
+
+  constructor(public overlayService: OverlayService) {}
 }

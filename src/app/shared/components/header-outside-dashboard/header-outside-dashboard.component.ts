@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 import { ScreenSize } from '../../types/screen-size.type';
 import { ScreenService } from '../../../services/screen.service';
 import { AsyncPipe } from '@angular/common';
-import { CreateAccountBtnComponent } from "../create-account-btn/create-account-btn.component";
+import { CreateAccountBtnComponent } from '../create-account-btn/create-account-btn.component';
 import { AuthState } from '../../types/auth-state.type';
 
 @Component({
@@ -17,18 +17,20 @@ export class HeaderOutsideDashboardComponent {
   @Input() currentState!: AuthState;
   @Output() changeAuthState = new EventEmitter<AuthState>();
   screenSize$!: Observable<ScreenSize>;
-  
+
   constructor(public screenService: ScreenService) {
     this.screenSize$ = this.screenService.screenSize$;
   }
+
+  ngOnInit() {
+    this.showLogo();
+  }
+
   /**
    * Detects context and shows logo matching to intro animation in "non-auth"
    */
-  ngOnInit(): void {
+  showLogo() {
     if (this.context === 'non-auth') {
-      setTimeout(() => {
-        //this.showFinalLogo();
-      }, 3200);
     } else {
       this.showFinalLogo();
     }
@@ -42,6 +44,11 @@ export class HeaderOutsideDashboardComponent {
     finalLogo?.classList.add('showLogo');
   }
 
+  /**
+   * Changes the Auth-State.
+   * 
+   * @param newState - the new AuthState
+   */
   onChildStateChange(newState: AuthState) {
     this.changeAuthState.emit(newState);
   }

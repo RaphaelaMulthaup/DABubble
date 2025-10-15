@@ -19,6 +19,9 @@ export class CreateAccountBtnComponent {
     this.screenSize$ = this.screenService.screenSize$;
   }
 
+  /**
+   * Changes the Auth-State to registration form.
+   */
   emitStateChange() {
     this.changeAuthState.emit('registration-form');
   }

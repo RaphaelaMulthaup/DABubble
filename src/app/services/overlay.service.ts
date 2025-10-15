@@ -19,17 +19,17 @@ import { OverlayPositionInterface } from '../shared/models/overlay.position.inte
   providedIn: 'root',
 })
 export class OverlayService {
-  public overlayComponent: Type<any> | null = null; // The component to be displayed in the overlay, can be set dynamically.
-  public overlayInputs: Record<string, any> = {}; // Object to store inputs for the overlay component (currently not used in this code).
-  public editingPostId = signal<string | null>(null); // Reactive signal to store the ID of the post currently being edited.
-  public users = signal<UserInterface[]>([]); // Test signals for sending user data between overlays.
+  public overlayComponent: Type<any> | null = null;
+  public overlayInputs: Record<string, any> = {};
+  public editingPostId = signal<string | null>(null);
+  public users = signal<UserInterface[]>([]);
   public searchReset = signal(false);
 
-  private overlayInputSubject = new BehaviorSubject<OverlayData | null>(null); // Subject to handle overlay input data.
+  private overlayInputSubject = new BehaviorSubject<OverlayData | null>(null);
   public overlayInput = this.overlayInputSubject.asObservable();
 
-  private overlayRef!: OverlayRef; // A single overlay-reference.
-  private overlayRefs: OverlayRef[] = []; // Store references to all open overlays.
+  private overlayRef!: OverlayRef;
+  private overlayRefs: OverlayRef[] = [];
 
   constructor(
     private injector: Injector,

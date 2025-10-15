@@ -1,6 +1,6 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { from, Observable, Subject, takeUntil } from 'rxjs';
+import { Observable, Subject, takeUntil } from 'rxjs';
 import { UserInterface } from '../../models/user.interface';
 import { UserService } from '../../../services/user.service';
 import { ChannelInterface } from '../../models/channel.interface';
@@ -10,7 +10,7 @@ import { AddMemberToChannelComponent } from '../../../overlay/add-member-to-chan
 import { OverlayRef } from '@angular/cdk/overlay';
 import { ScreenSize } from '../../types/screen-size.type';
 import { ScreenService } from '../../../services/screen.service';
-
+import { OverlayPositionInterface } from '../../models/overlay.position.interface';
 
 @Component({
   selector: 'app-channel-members',
@@ -25,16 +25,18 @@ export class ChannelMembersComponent implements OnDestroy, OnInit {
   @Input() channelDetails$?: Observable<ChannelInterface | undefined>;
   @Input() overlay: string = '';
   @Input() onBottom: boolean = false;
-  memberIds?: string[];
-  clickedFromHeader: boolean = false;
-  clickedAddMember: boolean = false;
+
   screenSize$!: Observable<ScreenSize>;
   users$!: Observable<UserInterface[]>;
   private destroy$ = new Subject<void>();
 
+  memberIds?: string[];
+  clickedFromHeader: boolean = false;
+  clickedAddMember: boolean = false;
+
   constructor(
     public screenService: ScreenService,
-    private userService: UserService, 
+    private userService: UserService,
     private overlayService: OverlayService
   ) {
     this.screenSize$ = this.screenService.screenSize$;
@@ -54,7 +56,14 @@ export class ChannelMembersComponent implements OnDestroy, OnInit {
     this.destroy$.complete();
   }
 
-  choiseBetweenComponentAndHeader(event: MouseEvent) {
+  /**
+   * Determines the action based on where the click originated:
+   * - If the click came from the header, sets `clickedAddMember` to true.
+   * - Otherwise, opens the "Add Member to Channel" overlay at the click event position.
+   *
+   * @param event - The mouse event that triggered the action.
+   */
+  choiceBetweenComponentAndHeader(event: MouseEvent) {
     if (this.clickedFromHeader) {
       this.clickedAddMember = true;
     } else {
@@ -62,44 +71,53 @@ export class ChannelMembersComponent implements OnDestroy, OnInit {
     }
   }
 
+  /**
+   * Opens the add AddMemberToChannel-Overlay.
+   * Its position depends on whether the onBottom-variable is true or false.
+   *
+   * @param event - The mouse event that triggered the action.
+   */
   openAddMemberToChannelOverlay(event: MouseEvent) {
     let overlay;
-    if (this.onBottom) {
-      overlay = this.overlayService.openComponent(
-        AddMemberToChannelComponent,
-        'cdk-overlay-dark-backdrop',
-        {
-          globalPosition: 'bottom',
-        },
-        {
-          channelDetails$: this.channelDetails$ as Observable<
-            ChannelInterface | undefined
-          >,
-          overlay: 'overlay',
-          onBottom: this.onBottom,
-        }
-      );
-    } else {
-      overlay = this.overlayService.openComponent(
-        AddMemberToChannelComponent,
-        'cdk-overlay-dark-backdrop',
-        {
-          origin: event.currentTarget as HTMLElement,
-          originPosition: {
-            originX: 'start',
-            originY: 'bottom',
-            overlayX: 'end',
-            overlayY: 'top',
-          },
-        },
-        {
-          channelDetails$: this.channelDetails$ as Observable<
-            ChannelInterface | undefined
-          >,
-          overlay: 'overlay',
-        }
-      );
-    }
+    let positionStrategy: OverlayPositionInterface = this.onBottom
+      ? this.returnOverlayBottomPosition()
+      : this.returnOverlayOriginPosition(event);
+    overlay = this.overlayService.openComponent(
+      AddMemberToChannelComponent,
+      'cdk-overlay-dark-backdrop',
+      positionStrategy,
+      {
+        channelDetails$: this.channelDetails$ as Observable< ChannelInterface | undefined >,
+        overlay: 'overlay',
+        onBottom: this.onBottom,
+      }
+    );
     overlay!.ref.instance.overlayRef = overlay?.overlayRef as OverlayRef;
+  }
+
+  /**
+   * returns the positionStrategy for the overlay if its placed on the bottom.
+   */
+  returnOverlayBottomPosition(): OverlayPositionInterface {
+    return {
+      globalPosition: 'bottom',
+    };
+  }
+
+  /**
+   * returns the positionStrategy for the overlay if its placed connected to an origin.
+   *
+   * @param event - The mouse event that triggered the action.
+   */
+  returnOverlayOriginPosition(event: MouseEvent): OverlayPositionInterface {
+    return {
+      origin: event.currentTarget as HTMLElement,
+      originPosition: {
+        originX: 'start',
+        originY: 'bottom',
+        overlayX: 'end',
+        overlayY: 'top',
+      },
+    };
   }
 }
