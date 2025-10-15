@@ -17,25 +17,19 @@ import { EMOJIS } from '../shared/constants/emojis';
 import { ScreenService } from './screen.service';
 
 @Injectable({
-  providedIn: 'root', // Service is available globally in the application
+  providedIn: 'root',
 })
 export class PostService {
   private emojis = EMOJIS;
   private postCache = new Map<string, Observable<PostInterface>>();
+  private _select$ = new Subject<string>();
+  public selected$ = this._select$.asObservable();
 
   constructor(
     private firestore: Firestore,
     private router: Router,
     public screenService: ScreenService
   ) {}
-
-  // Holds the current list of messages for the displayed conversation
-  // private _messagesDisplayedConversation = new BehaviorSubject<
-  //   PostInterface[]
-  // >([]);
-  // Public observable for components to subscribe to
-  // messagesDisplayedConversation$ =
-  //   this._messagesDisplayedConversation.asObservable();
 
   /**
    * Sends a post to a given subcollection (e.g. messages of a conversation or thread).
@@ -57,10 +51,11 @@ export class PostService {
   }
 
   /**
-   * Create a new document reference and write the document including the ID and server timestamp
-   * @param postsRef Reference to the subcollection where the post should be saved
-   * @param post post object without `createdAt` (timestamp is added automatically).
-   * @returns Return the ID of the created document
+   * Create a new document reference and write the document including the ID and server timestamp.
+   * It returns the created posts id.
+   *
+   * @param postsRef - reference to the subcollection where the post should be saved
+   * @param post - post object (message or answer) without `createdAt` (timestamp is added automatically).
    */
   async createPost(
     postsRef: CollectionReference,
@@ -83,7 +78,6 @@ export class PostService {
    * @param senderId - User ID of the sender.
    * @param text - Text content of the message.
    * @param conversationType - Type of conversation ("chat" or "channel").
-   * @returns An observable placeholder (currently resolves to an empty array).
    */
   async createMessage(
     conversationId: string,
@@ -106,7 +100,6 @@ export class PostService {
    * @param senderId - ID of the replying user.
    * @param text - Text content of the reply.
    * @param conversationType - Type of conversation (currently only supports "channel").
-   * @returns A Promise with the created answer document reference, or an empty observable if not in a channel.
    */
   async createAnswer(
     conversationId: string,
@@ -171,7 +164,6 @@ export class PostService {
    * Returns true if the post was created today, false otherwise.
    *
    * @param postDate - The creation date of the post.
-   * @returns A boolean indicating whether the post was created today.
    */
   isPostCreatedToday(postDate: any): boolean {
     if (postDate === null) {
@@ -182,9 +174,6 @@ export class PostService {
     let today = new Date().setHours(0, 0, 0, 0);
     return postDate == today;
   }
-
-  private _select$ = new Subject<string>();
-  selected$ = this._select$.asObservable();
 
   /**
    * Selects a post to be highlighted or interacted with.
@@ -199,9 +188,9 @@ export class PostService {
   /**
    * This function navigates to the thread-window with the answers to the selected post.
    *
-   * @param postId The ID of the post.
-   * @param conversationType The type of the conversation ('channel' or 'chat').
-   * @param conversationId The ID of the conversation.
+   * @param postId - The ID of the post.
+   * @param conversationType - The type of the conversation ('channel' or 'chat').
+   * @param conversationId - The ID of the conversation.
    */
   openAnswers(
     postId: string,
@@ -220,10 +209,10 @@ export class PostService {
 
   /**
    * This function transforms the post input value in HTML to text for saving it in Firebase.
-   * Line breaks and emojis are preserved during the transformation.
+   * Line breaks, emojis and marks are preserved during the transformation.
+   * The result is a text suitable for saving in Firebase
    *
-   * @param postInput The content of the input field (as HTML).
-   * @returns The text representation of the post (suitable for saving in Firebase).
+   * @param postInput - The content of the input field (as HTML).
    */
   htmlToText(postInput: string): string {
     const postHtml = postInput
@@ -231,6 +220,18 @@ export class PostService {
       .replaceAll('</div>', '');
     const parser = new DOMParser();
     const doc = parser.parseFromString(postHtml, 'text/html');
+    this.replaceEmojis(doc);
+    this.replaceMarks(doc);
+    const postText = doc.body.innerText;
+    return postText;
+  }
+
+  /**
+   * This function replaces all images with class 'emoji' with the corresponding token.
+   *
+   * @param doc - the DOM-document created from the html-string.
+   */
+  replaceEmojis(doc: Document) {
     doc.querySelectorAll('img.emoji').forEach((img) => {
       const src = img.getAttribute('src');
       const emoji = this.emojis.find((e) => e.src === src);
@@ -239,6 +240,14 @@ export class PostService {
         img.replaceWith(textNode);
       }
     });
+  }
+
+  /**
+   * This function replaces all marks with a token including the type of result (channel or user) and the marked name.
+   *
+   * @param doc - the DOM-document created from the html-string.
+   */
+  replaceMarks(doc: Document) {
     doc.querySelectorAll('.mark').forEach((mark) => {
       const img = mark.querySelector('img');
       const span = mark.querySelector('span');
@@ -250,24 +259,41 @@ export class PostService {
         mark.replaceWith(textNode);
       }
     });
-    const postText = doc.body.innerText;
-    return postText;
   }
 
   /**
    * This function transforms the text saved in Firebase back into HTML.
-   * Line breaks and emojis are correctly represented.
+   * Line breaks, emojis and marks are correctly represented.
    *
-   * @param text The post's text as saved in Firebase.
-   * @returns The HTML representation of the text (with line breaks and emojis).
+   * @param text - The post's text as saved in Firebase.
    */
   textToHtml(text: string): string {
     if (!text) return '';
     let result = text.replaceAll('\n', '</div><div>');
+    result = this.replaceEmojiTokens(result);
+    result = this.replaceMarkTokens(result);
+    return result;
+  }
+
+  /**
+   * This function replaces all emoji-tokens with an image of that emoji.
+   *
+   * @param result - the result of the transformed text
+   */
+  replaceEmojiTokens(result: string) {
     this.emojis.forEach((e) => {
       const imgTag = `&nbsp;<img src="${e.src}" alt="${e.token}" class="emoji">&nbsp;`;
       result = result.replaceAll(e.token, imgTag);
     });
+    return result;
+  }
+
+  /**
+   * This function replaces all mark-tokens with an html-mark including the type of result (channel or user) and the marked name.
+   *
+   * @param result - the result of the transformed text
+   */
+  replaceMarkTokens(result: string) {
     result = result.replace(/\{@([^}]+)\}/g, (_, name: string) => {
       return `<mark class="mark flex" contenteditable="false">
                 <img src="/assets/img/alternate-email-purple.svg" alt="mark">
@@ -286,7 +312,7 @@ export class PostService {
   /**
    * This function sets the cursor to the end of an editable div.
    *
-   * @param element - the editable to focus on.
+   * @param element - the editable to focus on
    */
   focusAtEndEditable(element: ElementRef | null) {
     if (element) {
@@ -303,25 +329,27 @@ export class PostService {
   }
 
   /**
-   * Fetch a single user by UID.
-   * @param uid - User ID.
-   * Returns an Observable of UserInterface.
+   * Fetches a single post by its ID and returns an PostInterface-Observable.
+   *
+   * @param conversationType - whether the post is part of a channel or chat.
+   * @param conversationId - the ID of the conversation
+   * @param postId - the ID of the post itself
    */
   getPostById(
     conversationType: 'channel' | 'chat',
     conversationId: string,
-    messageId: string
+    postId: string
   ): Observable<PostInterface> {
-    if (!this.postCache.has(messageId)) {
+    if (!this.postCache.has(postId)) {
       const ref = doc(
         this.firestore,
-        `${conversationType}s/${conversationId}/messages/${messageId}`
+        `${conversationType}s/${conversationId}/messages/${postId}`
       );
       const post$ = docData(ref).pipe(
         shareReplay({ bufferSize: 1, refCount: true })
       );
-      this.postCache.set(messageId, post$ as Observable<PostInterface>);
+      this.postCache.set(postId, post$ as Observable<PostInterface>);
     }
-    return this.postCache.get(messageId)!;
+    return this.postCache.get(postId)!;
   }
 }
