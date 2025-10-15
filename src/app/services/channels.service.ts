@@ -42,8 +42,8 @@ export class ChannelsService {
   /**
    * This function returns an Channel-Interface-Observable of the current channel.
    *
-   * @param channelId Name of the channel (check is channel-name already taken)
-   * @param realtime whether the channel should be fetched a single time or should be watched live
+   * @param channelId - Name of the channel (check is channel-name already taken)
+   * @param realtime - whether the channel should be fetched a single time or should be watched live
    */
   getCurrentChannel(
     channelId: string,
@@ -70,8 +70,8 @@ export class ChannelsService {
   /**
    * Creates a new channel with the current user as the creator and first member and returns the according observable.
    *
-   * @param name Name of the channel (check is channel-name already taken)
-   * @param description Optional description of the channel
+   * @param name - Name of the channel (check is channel-name already taken)
+   * @param description - Optional description of the channel
    */
   createChannel(
     name: string,
@@ -101,7 +101,7 @@ export class ChannelsService {
   /**
    * This function removes a channel and its content from firestore.
    *
-   * @param channelId ID of the channel to delete
+   * @param channelId - ID of the channel to delete
    */
   deleteChannel(channelId: string): Observable<void> {
     const channelDocRef = doc(this.firestore, `channels/${channelId}`);
@@ -131,8 +131,8 @@ export class ChannelsService {
   /**
    * Add a new member to a channel.
    *
-   * @param channelId ID of the channel where a new member is added
-   * @param newMembers: string[] with membersIds
+   * @param channelId - ID of the channel where a new member is added
+   * @param newMembers - string[] with membersIds
    */
   async addMemberToChannel(channelId: string, newMembers: string[]) {
     const channelDocRef = doc(this.firestore, `channels/${channelId}`);

@@ -3,7 +3,6 @@ import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 import {
   Overlay,
   OverlayRef,
-  ConnectedPosition,
   ScrollStrategyOptions,
   PositionStrategy,
   OverlayConfig,
@@ -38,27 +37,41 @@ export class OverlayService {
     private scrollStrategies: ScrollStrategyOptions
   ) {}
 
-  // Sets the users in the service (used for updating the users signal).
+  /**
+   * Sets the users in the service (used for updating the users signal).
+   *
+   * @param users - an array with the users in the users signal
+   */
   setUsers(users: UserInterface[]): void {
     this.users.set(users);
   }
 
-  // Method to add a user to the users signal (used for tracking users).
+  /**
+   * Method to add a user to the users signal (used for tracking users).
+   *
+   * @param user - the user to be tracked.
+   */
   addUser(user: UserInterface) {
     this.users.update((list) => [...list, user]);
   }
 
-  // Method to clear the user list (used to reset the users signal).
+  /**
+   * Method to clear the user list (used to reset the users signal).
+   */
   clearUsers() {
     this.users.set([]);
   }
 
-  // Method to trigger a reset for search functionality.
+  /**
+   * Method to trigger a reset for search functionality.
+   */
   triggerReset() {
     this.searchReset.set(true);
   }
 
-  // Method to clear the reset signal.
+  /**
+   * Method to clear the reset signal.
+   */
   clearReset() {
     this.searchReset.set(false);
   }
@@ -247,7 +260,7 @@ export class OverlayService {
   }
 
   /**
-   * Closes all open overlays.
+   * Closes all open overlays
    */
   closeAll(): void {
     this.overlayRefs.forEach((ref) => ref.dispose());
