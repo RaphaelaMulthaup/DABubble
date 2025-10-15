@@ -49,7 +49,13 @@ import { ScreenService } from './screen.service';
 import { UserToRegisterInterface } from '../shared/models/user.to.register.interface';
 import { PostService } from './post.service';
 import { ChannelInterface } from '../shared/models/channel.interface';
-import { DocumentReference, orderBy, writeBatch } from 'firebase/firestore';
+import {
+  DocumentReference,
+  orderBy,
+  QueryDocumentSnapshot,
+  WriteBatch,
+  writeBatch,
+} from 'firebase/firestore';
 
 @Injectable({
   providedIn: 'root',
@@ -344,7 +350,7 @@ export class AuthService {
       .then(() => deleteUser(user))
       .catch((err) => console.error('Failed to delete guest user:', err));
     await this.resetExampleChannel(user.uid);
-    await this.deleteChannels(user.uid);
+    await this.handleGuestsChannels(user.uid);
     await this.deleteChats(user.uid);
   }
 
@@ -371,28 +377,27 @@ export class AuthService {
     await Promise.all(deletePromises);
   }
 
-  async deleteChannels(guestUserId: string) {
+  async handleGuestsChannels(guestUserId: string) {
     const q = this.buildUserChannelsQuery(guestUserId);
     const snapshot = await getDocs(q);
-    const channelsCreatedByGuest: ChannelInterface[] = snapshot.docs
-      .map((doc) => ({ id: doc.id, ...(doc.data() as ChannelInterface) }))
-      .filter((channel) => channel.createdBy === guestUserId);
     const batch = writeBatch(this.firestore);
-    for (const channel of channelsCreatedByGuest) {
-      const channelRef = doc(this.firestore, `channels/${channel.id}`);
-      batch.delete(channelRef);
+    for (const docSnap of snapshot.docs) {
+      this.handleChannelBatchUpdate(batch, docSnap, guestUserId);
     }
     await batch.commit();
-    for (const docSnap of snapshot.docs) {
-      const channel = docSnap.data() as ChannelInterface;
+  }
 
-      // Channel nur bearbeiten, wenn er **nicht vom Guest erstellt** wurde
-      if (channel.createdBy !== guestUserId) {
-        const channelRef = doc(this.firestore, 'channels', docSnap.id); // <-- docSnap.id verwenden
-        await updateDoc(channelRef, {
-          memberIds: arrayRemove(guestUserId),
-        });
-      }
+  private handleChannelBatchUpdate(
+    batch: WriteBatch,
+    docSnap: QueryDocumentSnapshot,
+    guestUserId: string
+  ) {
+    const channel = docSnap.data() as ChannelInterface;
+    const channelRef = doc(this.firestore, 'channels', docSnap.id);
+    if (channel.createdBy === guestUserId) {
+      batch.delete(channelRef);
+    } else {
+      batch.update(channelRef, { memberIds: arrayRemove(guestUserId) });
     }
   }
 
