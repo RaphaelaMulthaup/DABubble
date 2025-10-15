@@ -155,7 +155,7 @@ export class WindowDisplayComponent implements OnInit {
     this.postService.selected$
       .pipe(takeUntil(this.destroy$))
       .subscribe((postId) => {
-        this.handleScrollRequest(postId);
+        this.handleScrollRequest(postId, this.currentConversationId);
       });
 
     // Scroll-to QueryParams
@@ -163,7 +163,7 @@ export class WindowDisplayComponent implements OnInit {
       .pipe(takeUntil(this.destroy$))
       .subscribe((params) => {
         const id = params['scrollTo'];
-        if (id) this.handleScrollRequest(id);
+        if (id) this.handleScrollRequest(id, this.currentConversationId);
       });
 
     this.isLoaded$ = defer(() => {
@@ -201,13 +201,13 @@ export class WindowDisplayComponent implements OnInit {
     // Retry pending scroll requests when ViewChildren change
     this.postElements.changes.pipe(takeUntil(this.destroy$)).subscribe(() => {
       if (this.pendingScrollTo) {
-        this.handleScrollRequest(this.pendingScrollTo);
+        this.handleScrollRequest(this.pendingScrollTo, this.currentConversationId);
       }
     });
 
     // Handle initial scrollTo param (on first load)
     const initial = this.route.snapshot.queryParams['scrollTo'];
-    if (initial) this.handleScrollRequest(initial);
+    if (initial) this.handleScrollRequest(initial, this.currentConversationId);
   }
 
   private scrollToLastMessage() {
@@ -272,27 +272,47 @@ export class WindowDisplayComponent implements OnInit {
    * Highlights the post, scrolls to it, and clears the URL param.
    * @param postId - ID of the post to scroll to
    */
-  private handleScrollRequest(postId: string) {
+  private async handleScrollRequest(postId: string, conversationId?:string) {
     if (!postId) return;
     this.pendingScrollTo = postId;
 
-    const maybe = this.postElements?.find(
-      (e) => (e.nativeElement as HTMLElement).id === postId
-    );
-    if (!maybe) return; // Not yet in DOM
+    const maxRetries = 20;   // de câte ori să încerce
+    const retryDelay = 300;  // ms între încercări
+    // const maybe = this.postElements?.find(
+    //   (e) => (e.nativeElement as HTMLElement).id === postId);
 
-    this.pendingScrollTo = undefined;
-    const el = maybe.nativeElement as HTMLElement;
+    for (let i = 0; i < maxRetries; i++) {
+      const maybe = this.postElements?.find(
+        (e) => (e.nativeElement as HTMLElement).id === postId)
+      
+      if(maybe){
+        this.pendingScrollTo = undefined;
+        const el = maybe.nativeElement as HTMLElement;
 
-    this.triggerHighlight(el);
-    this.scrollIfNeeded(el);
+        this.triggerHighlight(el);
+        this.scrollIfNeeded(el);
 
-    this.router.navigate([], {
-      queryParams: { scrollTo: null },
-      queryParamsHandling: 'merge',
-      replaceUrl: true,
-    });
+        this.router.navigate([], {queryParams: { scrollTo: null },
+            queryParamsHandling: 'merge',
+            replaceUrl: true,
+        });
+                return;
+      }
+      
+        this.conversationActiveRouterService.loadMore(conversationId!);
+
+        await new Promise((resolve) => setTimeout(resolve, retryDelay));
+
+        if (this.conversationActiveRouterService.allMessagesLoaded.get(conversationId!)) {
+          console.warn(`Post ${conversationId} not found — all messages loaded.`);
+        }
+
+      };
+  console.warn(`❗ Post ${conversationId} not found after ${maxRetries} retries`);
   }
+
+
+
 
   /**
    * Triggers a highlight animation on a given post element.
@@ -348,9 +368,7 @@ export class WindowDisplayComponent implements OnInit {
       container === document.documentElement ||
       container === document.body
     ) {
-      return (
-        elRect.top >= 0 &&
-        elRect.bottom <=
+      return (elRect.top >= 0 && elRect.bottom <=
           (window.innerHeight || document.documentElement.clientHeight)
       );
     } else {
