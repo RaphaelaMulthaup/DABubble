@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ChannelInterface } from '../../../../../../shared/models/channel.interface';
 import { filter, Observable, Subject, take, takeUntil } from 'rxjs';
 import { ConversationActiveRouterService } from '../../../../../../services/conversation-active-router.service';
@@ -12,7 +12,7 @@ import { CommonModule } from '@angular/common';
   templateUrl: './empty-channel-view.component.html', // External HTML template
   styleUrl: './empty-channel-view.component.scss', // External SCSS file
 })
-export class EmptyChannelViewComponent {
+export class EmptyChannelViewComponent implements OnInit {
   // Observable stream of the current channel
   channel$!: Observable<ChannelInterface>;
 
@@ -24,9 +24,7 @@ export class EmptyChannelViewComponent {
     private conversationActiveRouterService: ConversationActiveRouterService, // Service for reading chat/channel routing info
     private route: ActivatedRoute, // Gives access to the current route (params, query, etc.)
     private channelService: ChannelsService // Provides methods to fetch channel data
-  ) {
-    console.log(1)
-  }
+  ) {}
 
   /**
    * Lifecycle hook: initializes the component.
@@ -34,7 +32,7 @@ export class EmptyChannelViewComponent {
    * - Fetches the current channel from ChannelsService
    * - Ensures that `channel$` only emits when a valid channel exists
    */
-  ngOnChanges() {
+  ngOnInit() {
     this.conversationActiveRouterService
       .getConversationId$(this.route)
       .pipe(takeUntil(this.destroy$)) // reagiert dauerhaft auf Änderungen
@@ -51,9 +49,6 @@ export class EmptyChannelViewComponent {
             )
           );
       });
-
-    // this.channel$.subscribe((m) => console.log(m));
-    // console.log(this.channelId);
   }
 
   ngOnDestroy() {

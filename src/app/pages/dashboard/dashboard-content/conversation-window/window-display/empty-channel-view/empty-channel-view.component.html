@@ -1,13 +1,11 @@
 <section>
   <div class="infos">
     <img src="./assets/img/tag-black.svg" alt="tag" />
-    <h2>{{ (channel$ | async)?.name }}</h2>
+    <h2>{{(channel$ | async)?.name}}</h2>
   </div>
   <span class="description">
     Dieser Channel wurde neu erstellt. Das ist der Anfang des Channels
-    <img src="./assets/img/tag-blue-thin.svg" alt="tag" /><span>{{
-      (channel$ | async)?.name
-    }}</span
-    >.
+    <img src="./assets/img/tag-blue-thin.svg" alt="tag" />
+    <span>{{(channel$ | async)?.name}}</span>.
   </span>
 </section>
