@@ -2,65 +2,50 @@ import { Directive, ElementRef, OnDestroy } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Observable, Subject, map, startWith, takeUntil } from 'rxjs';
 
-/**
- * Abstrakte, wiederverwendbare Basis-Directive für Such-Inputs.
- * - Stellt `searchControl`, `term$` und `destroy$` bereit
- * - Hilfsmethoden: createTerm$, setupFocusListener, subscribeToTermChanges
- *
- * Variante A: Overlay- und darstellungs-spezifische Logik bleibt in den konkreten Komponenten.
- */
 @Directive()
 export abstract class BaseSearchDirective implements OnDestroy {
-  /** FormControl, das in allen Suchkomponenten genutzt wird */
   public searchControl = new FormControl<string>('', { nonNullable: true });
-
-  /** Observable der getrimmten Suchbegriffe (initialisiert durch createTerm$) */
   protected term$!: Observable<string>;
-
-  /** destroy-Subject für unsubscribe */
+  private _focusListener?: (ev: Event) => void;
   protected destroy$ = new Subject<void>();
 
-  private _focusListener?: (ev: Event) => void;
-
   /**
-   * Erzeugt das `term$` Observable (startWith, trim).
-   * Gibt das Observable zurück und schreibt es in `this.term$`.
+   * Creates and returns a `term$` Observable (startWith, trim).
    */
   protected createTerm$(): Observable<string> {
     this.term$ = this.searchControl.valueChanges.pipe(
       startWith(this.searchControl.value),
-      map((v) => (v ?? '').trim()),
+      map((v) => (v ?? '').trim())
     );
     return this.term$;
   }
 
   /**
-   * Richtet einen Fokus-Listener für das übergebene Element ein.
-   * Der Callback wird aufgerufen, wenn das Element fokussiert wird.
+   * Creates a focus-listener for the given element.
+   * The callback is called once the element is focused.
    *
-   * Wichtig: Rufe diese Methode in der concrete Komponente in `ngOnInit`
-   * nachdem dein ViewChild (ElementRef) verfügbar ist.
+   * @param el - the element that should get the foucs-listener
+   * @param onFocus - the function called onfocus
    */
   protected setupFocusListener(
     el: ElementRef<HTMLElement>,
     onFocus: () => void
   ): void {
-    // Entferne evtl. alten Listener
     if (this._focusListener) {
       try {
         el.nativeElement.removeEventListener('focus', this._focusListener);
       } catch {}
       this._focusListener = undefined;
     }
-
     this._focusListener = () => onFocus();
     el.nativeElement.addEventListener('focus', this._focusListener);
   }
 
   /**
-   * Convenience: subscribeToTermChanges(handler) abonniert `term$` und
-   * führt handler(term) für jeden Wert aus. Das Abo wird automatisch
-   * mit destroy$ beendet.
+   * Subscribes to changes of the search/input term and calls the provided handler on each change.
+   * The subscription is automatically unsubscribed when the component/service is destroyed.
+   *
+   * @param handler - A callback function that receives the updated term as a string whenever it changes.
    */
   protected subscribeToTermChanges(handler: (term: string) => void) {
     if (!this.term$) this.createTerm$();

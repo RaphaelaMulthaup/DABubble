@@ -1,20 +1,24 @@
-import { Directive, ElementRef, EventEmitter, Host, HostListener, Output} from '@angular/core';
+import {
+  Directive,
+  ElementRef,
+  EventEmitter,
+  HostListener,
+  Output,
+} from '@angular/core';
 
 @Directive({
-  selector: '[appRectangleDragClose]'
+  selector: '[appRectangleDragClose]',
 })
 export class RectangleDragCloseDirective {
- 
   private startY = 0;
   @Output() dragClose = new EventEmitter<void>();
-  constructor(private el: ElementRef) { }
+  constructor(private el: ElementRef) {}
 
   @HostListener('mousedown', ['$event'])
   @HostListener('touchstart', ['$event'])
-  onStart(event: MouseEvent | TouchEvent){
+  onStart(event: MouseEvent | TouchEvent) {
     this.startY = this.getY(event);
   }
-
 
   @HostListener('mouseup', ['$event'])
   @HostListener('touchend', ['$event'])
@@ -25,8 +29,7 @@ export class RectangleDragCloseDirective {
     }
   }
 
-
-    private getY(event: MouseEvent | TouchEvent): number {
+  private getY(event: MouseEvent | TouchEvent): number {
     return event instanceof MouseEvent
       ? event.clientY
       : event.changedTouches[0].clientY;

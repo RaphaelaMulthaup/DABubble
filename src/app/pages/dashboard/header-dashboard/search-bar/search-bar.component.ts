@@ -68,7 +68,6 @@ export class SearchBarComponent
   }
 
   ngOnInit(): void {
-    // Fokuslistener via Base helper; öffnet Overlay nur wenn Feld Inhalt hat.
     this.setupFocusListener(this.searchbar, () => {
       const term = this.searchControl.value.trim();
       if (term.length > 0) {

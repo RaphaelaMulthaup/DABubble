@@ -1,4 +1,4 @@
 export type ScreenSize =
-  | 'handset'   //to 599px
-  | 'tablet'    //600px – 839px
-  | 'web';      //from 840px
+  | 'handset'   //< 959px
+  | 'tablet'    //960px – 1399px
+  | 'web';      //> 1400px

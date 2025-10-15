@@ -17,11 +17,11 @@
     flex-shrink: 0;
   }
   > div:last-child {
-    @include dFlex($jc: flex-start, $ai: center); // Name + (Du) in einer Reihe
-    gap: 4px; // kleiner Abstand dazwischen
-    flex: 1 1 auto; // nimmt den restlichen Platz
-    min-width: 0; // nötig für ellipsis
-    overflow: hidden; // damit ellipsis funktioniert
+    @include dFlex($jc: flex-start, $ai: center);
+    gap: 4px;
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
     > span:first-child {
       overflow: hidden;
       text-overflow: ellipsis;
