@@ -1,7 +1,4 @@
-import {
-  Component,
-  WritableSignal,
-} from '@angular/core';
+import { Component, WritableSignal } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
 import { Observable } from 'rxjs';
 import { UserInterface } from '../../../shared/models/user.interface';
@@ -52,11 +49,19 @@ export class HeaderDashboardComponent {
   /**
    * Opens a profile overlay using the OverlayService when the profile is clicked.
    */
-  showSettings() {
+  openSettings(event: MouseEvent) {
     this.overlayService.openComponent(
-      SettingsComponent, // The component to be displayed in the overlay.
-      'cdk-overlay-dark-backdrop', // Backdrop style for the overlay.
-      { globalPosition: 'center' } // Position of the overlay (centered globally).
+      SettingsComponent,
+      'cdk-overlay-dark-backdrop',
+      {
+        origin: event.currentTarget as HTMLElement,
+        originPosition: {
+          originX: 'end',
+          originY: 'bottom',
+          overlayX: 'end',
+          overlayY: 'top',
+        }
+      }
     );
   }
 }

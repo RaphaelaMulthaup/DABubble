@@ -20,6 +20,10 @@
   .thread-window {
     max-width: 485px;
   }
+
+  @media (min-height: 1080px) {
+    height: 945px;
+  }
 }
 
 .dashboard-tablet {

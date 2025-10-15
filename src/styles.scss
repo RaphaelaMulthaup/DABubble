@@ -436,6 +436,13 @@ h4 {
   padding: 0 45px 73px;
 }
 
+.content-limitation {
+  @media (min-width: 1920px) {
+    max-width: 1920px;
+    align-self: center;
+  }
+}
+
 /* nunito-200 - latin */
 @font-face {
   font-display: swap;

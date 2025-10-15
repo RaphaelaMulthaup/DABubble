@@ -121,4 +121,9 @@ header {
       height: 70px;
     }
   }
+
+  @media (min-width: 1920px) {
+    width: 1920px;
+    justify-self: center;
+  }
 }
