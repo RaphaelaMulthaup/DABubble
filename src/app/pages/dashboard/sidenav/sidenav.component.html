@@ -12,6 +12,5 @@
   </div>
 </nav>
 @if ((screenSize$|async) === 'handset') {
-<button class="new-message-handset" (click)="openNewMessageView(); overlayService.closeAll()"
-  [ngClass]="{ 'z-index-1001': searchService.overlaySearchResultsOpen }"></button>
+<button class="new-message-handset" (click)="openNewMessageView(); overlayService.closeAll()"></button>
 }
