@@ -350,11 +350,8 @@ export class AuthService {
         .then(() => deleteUser(user))
         .catch((err) => console.error('Failed to delete guest user:', err));
 
-      // 👉 Dieser Teil kommt jetzt am Ende
-      await updateDoc(this.channelEntwicklerteamDocRef, {
-        memberIds: arrayRemove(user.uid),
-      });
-      await this.resetExampleChannel();
+      await this.resetExampleChannel(user.uid);
+      await this.deleteChannels();
       await this.deleteChats(user.uid);
       // this.chatService.unsubscribeAll(); // 🧹 interne Streams leeren
     } else {
@@ -363,7 +360,17 @@ export class AuthService {
     }
   }
 
-  async resetExampleChannel() {
+  async resetExampleChannel(guestUserId: string) {
+    await updateDoc(this.channelEntwicklerteamDocRef, {
+      memberIds: arrayRemove(guestUserId),
+    });
+    await updateDoc(this.channelEntwicklerteamDocRef, {
+      name: 'Entwicklerteam',
+    });
+    await this.resetMessagesExampleChannel();
+  }
+
+  async resetMessagesExampleChannel() {
     const messagesQuery = query(
       this.messagesChannelEntwicklerteamDocRef,
       orderBy('createdAt', 'asc')
@@ -381,6 +388,8 @@ export class AuthService {
       )
     );
   }
+
+  async deleteChannels() {}
 
   async deleteChats(userId: string) {
     const userChats = await this.chatService.getChatRefsForUser(userId);
@@ -400,7 +409,7 @@ export class AuthService {
       await batch.commit();
     }
   }
-  
+
   /** Send password reset email */
   sendPasswordResetEmail(email: string): Promise<void> {
     const auth = getAuth();
