@@ -57,6 +57,7 @@ import { UserToRegisterInterface } from '../shared/models/user.to.register.inter
 import { PostService } from './post.service';
 import { ChannelInterface } from '../shared/models/channel.interface';
 import { orderBy, writeBatch } from 'firebase/firestore';
+import { ChannelsService } from './channels.service';
 
 @Injectable({
   providedIn: 'root',
@@ -351,7 +352,7 @@ export class AuthService {
         .catch((err) => console.error('Failed to delete guest user:', err));
 
       await this.resetExampleChannel(user.uid);
-      await this.deleteChannels();
+      await this.deleteChannels(user.uid);
       await this.deleteChats(user.uid);
       // this.chatService.unsubscribeAll(); // 🧹 interne Streams leeren
     } else {
@@ -389,7 +390,27 @@ export class AuthService {
     );
   }
 
-  async deleteChannels() {}
+  async deleteChannels(guestUserId: string) {
+    const q = this.buildUserChannelsQuery(guestUserId);
+    const snapshot = await getDocs(q);
+    const channels = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    })) as ChannelInterface[];
+    const batch = writeBatch(this.firestore);
+    for (const channel of channels) {
+      const channelRef = doc(this.firestore, `channels/${channel.id}`);
+      batch.delete(channelRef);
+    }
+    await batch.commit();
+  }
+
+  buildUserChannelsQuery(userId: string) {
+    return query(
+      collection(this.firestore, 'channels'),
+      where('memberIds', 'array-contains', userId)
+    );
+  }
 
   async deleteChats(userId: string) {
     const userChats = await this.chatService.getChatRefsForUser(userId);
