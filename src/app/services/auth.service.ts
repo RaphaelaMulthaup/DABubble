@@ -3,9 +3,7 @@ import {
   Auth,
   authState,
   createUserWithEmailAndPassword,
-  onAuthStateChanged,
   signOut,
-  user,
   User,
 } from '@angular/fire/auth';
 import {
@@ -19,21 +17,16 @@ import {
 } from 'firebase/auth';
 import {
   Firestore,
-  addDoc,
   arrayRemove,
   arrayUnion,
-  clearIndexedDbPersistence,
   collection,
   deleteDoc,
   doc,
   docData,
   getDoc,
   getDocs,
-  getFirestore,
-  limit,
   query,
   setDoc,
-  terminate,
   updateDoc,
   where,
 } from '@angular/fire/firestore';
@@ -56,8 +49,7 @@ import { ScreenService } from './screen.service';
 import { UserToRegisterInterface } from '../shared/models/user.to.register.interface';
 import { PostService } from './post.service';
 import { ChannelInterface } from '../shared/models/channel.interface';
-import { orderBy, writeBatch } from 'firebase/firestore';
-import { ChannelsService } from './channels.service';
+import { DocumentReference, orderBy, writeBatch } from 'firebase/firestore';
 
 @Injectable({
   providedIn: 'root',
@@ -346,19 +338,22 @@ export class AuthService {
     const isGuest = user.isAnonymous;
 
     if (isGuest) {
-      await deleteDoc(userRef)
-        .catch(() => {})
-        .then(() => deleteUser(user))
-        .catch((err) => console.error('Failed to delete guest user:', err));
-
-      await this.resetExampleChannel(user.uid);
-      await this.deleteChannels(user.uid);
-      await this.deleteChats(user.uid);
-      // this.chatService.unsubscribeAll(); // 🧹 interne Streams leeren
+      await this.logoutGuest(user, userRef);
     } else {
       await updateDoc(userRef, { active: false });
       await signOut(this.auth);
     }
+  }
+
+  async logoutGuest(user: User, userRef: DocumentReference) {
+    await deleteDoc(userRef)
+      .catch(() => {})
+      .then(() => deleteUser(user))
+      .catch((err) => console.error('Failed to delete guest user:', err));
+    await this.resetExampleChannel(user.uid);
+    await this.deleteChannels(user.uid);
+    await this.deleteChats(user.uid);
+    // this.chatService.unsubscribeAll(); // 🧹 interne Streams leeren
   }
 
   async resetExampleChannel(guestUserId: string) {
