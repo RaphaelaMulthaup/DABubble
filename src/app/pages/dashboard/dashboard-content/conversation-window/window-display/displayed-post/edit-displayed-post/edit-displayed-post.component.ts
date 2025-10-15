@@ -66,7 +66,6 @@ export class EditDisplayedPostComponent implements OnInit {
     textarea.querySelectorAll('mark.mark').forEach((mark) => {
       mark.setAttribute('contenteditable', 'false');
     });
-    console.log(this.conversationWindowState)
   }
 
   ngOnDestroy() {

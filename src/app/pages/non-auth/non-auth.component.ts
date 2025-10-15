@@ -65,8 +65,6 @@ export class NonAuthComponent {
         // Navigate to dashboard if user is logged in
         this.router.navigate(['/dashboard']);
       } else {
-        // Log a message if no user is logged in and navigate to home
-        //console.log('No user is logged in');
         this.router.navigate(['/']);
       }
     });

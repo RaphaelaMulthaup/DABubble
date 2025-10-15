@@ -63,13 +63,5 @@ export class ConversationWindowComponent {
   ) {
     this.dashboardState = this.screenService.dashboardState;
     this.screenSize$ = this.screenService.screenSize$;
-
-    // let screenSize;
-    // this.screenSize$.pipe((take(1))).subscribe((size) => screenSize = size);
-    // if (screenSize === 'web' && this.dashboardState() === 'thread-window') {
-    //   this.conversationWindowState = 'thread';
-    //   this.data$ = this.conversationActiveRouterService.threadMessages$;
-    //   this.data$.pipe(take(1)).subscribe((m) => console.log(m));
-    // }
   }
 }

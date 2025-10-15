@@ -98,9 +98,7 @@ export class WindowDisplayComponent implements OnInit {
 
     this.route.params.pipe(takeUntil(this.destroy$)).subscribe((params) => {
       this.currentConversationId = params['conversationId'];
-      //console.log(this.currentConversationId)
       this.currentConversationType = params['conversationType'];
-      //console.log(this.currentConversationType)
     });
 
     this.route.params

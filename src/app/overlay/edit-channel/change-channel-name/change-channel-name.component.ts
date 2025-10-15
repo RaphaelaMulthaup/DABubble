@@ -44,7 +44,7 @@ export class ChangeChannelNameComponent {
       return;
     }
 
-    let isAvailable = await this.channelService.checkNameTacken(newName).toPromise();
+    let isAvailable = await this.channelService.isChannelNameAvailable(newName).toPromise();
 
     if (isAvailable) {
       await this.channelService.changeChannelName(this.channelId, newName);
