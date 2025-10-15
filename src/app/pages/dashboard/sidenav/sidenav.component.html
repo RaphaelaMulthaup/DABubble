@@ -1,4 +1,5 @@
-<nav class="flex flex-col" [class.nav-tablet]="(screenSize$|async) === 'tablet'">
+<nav class="flex flex-col" [class.nav-tablet]="(screenSize$|async) === 'tablet'"
+  [ngClass]="{'border-radius-0': (screenSize$ | async) === 'handset'}">
   <div class="nav-content flex flex-col">
     @if ((screenSize$|async) !== 'handset') {
     <div class="new-message" (click)="openNewMessageView()">

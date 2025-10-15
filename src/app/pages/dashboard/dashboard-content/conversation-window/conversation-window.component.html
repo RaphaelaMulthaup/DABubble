@@ -2,7 +2,8 @@
     (screenSize$ | async) !== 'handset'
       ? '100%'
       : 'calc(100vh - 82px)'
-  ">
+  "
+  [ngClass]="{'border-radius-0': (screenSize$ | async) === 'handset'}">
   <app-conversation-header [conversationWindowState]="conversationWindowState"></app-conversation-header>
   @if (data$) {
   <app-window-display [messages$]="data$" [conversationWindowState]="conversationWindowState" [style.margin-top.px]="(screenSize$ | async) !== 'handset'
