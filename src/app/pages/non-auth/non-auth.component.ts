@@ -37,6 +37,7 @@ import { UserToRegisterInterface } from '../../shared/models/user.to.register.in
   styleUrl: './non-auth.component.scss',
 })
 export class NonAuthComponent {
+  screenSize$!: Observable<ScreenSize>;
   currentState: AuthState = 'login';
   userToRegister: UserToRegisterInterface = {
     displayName: '',
@@ -48,68 +49,49 @@ export class NonAuthComponent {
   showConfirm: boolean = false;
   showLogin: boolean = true;
   showIntro: any;
-  screenSize$!: Observable<ScreenSize>;
+
   constructor(
     private auth: Auth,
     private firestore: Firestore,
-    private router: Router,
     private route: ActivatedRoute,
+    private router: Router,
     public screenService: ScreenService
   ) {
     this.screenSize$ = this.screenService.screenSize$;
-    const navaigation = this.router.getCurrentNavigation();
-    const uid = navaigation?.extras.state?.['uid'];
-    // Listen for authentication state changes
+
     onAuthStateChanged(this.auth, (user) => {
       if (user) {
-        // Navigate to dashboard if user is logged in
         this.router.navigate(['/dashboard']);
       } else {
         this.router.navigate(['/']);
       }
     });
-    const usersRef = collection(this.firestore, 'users');
   }
 
-  /**
-   * Lifecycle hook: Runs on component initialization
-   * Fetches all users from Firestore and logs their names
-   */
   ngOnInit() {
     const usersRef = collection(this.firestore, 'users');
     this.handleIntroState();
-
-    // URL-Parameter abfragen
     this.route.queryParams.subscribe((params) => {
       const uid = params['uid'];
-      if (uid) {
-        // Es wurde ein uid-Parameter erkannt, also gehe in den 'reset-password' Modus
-        this.currentState = 'reset-password-confirm';
-      }
+      if (uid) this.currentState = 'reset-password-confirm';
     });
-
-    collectionData(usersRef)
-      .pipe(map((users: any[]) => users.map((user) => user.name)))
+    collectionData(usersRef).pipe(
+      map((users: any[]) => users.map((user) => user.name))
+    );
   }
 
   /**
-   * Repalced the animted logo with the actual one.
+   * Sets the currentState to 'reset-password-init'.
    */
-  showLogo() {
-    let shownLogo = document.querySelector('.logo');
-    shownLogo?.classList.add('show-logo');
-  }
-
   onForgotPassword() {
     this.currentState = 'reset-password-init';
   }
 
+  /**
+   * Sets the currentState to 'login'.
+   */
   hideResetPassword() {
     this.currentState = 'login';
-  }
-
-  procedToReset() {
-    this.currentState = 'reset-password-confirm';
   }
 
   /**
@@ -121,6 +103,14 @@ export class NonAuthComponent {
     } else {
       this.noIntro();
     }
+  }
+
+  /**
+   * Repalced the animted logo with the actual one.
+   */
+  showLogo() {
+    let shownLogo = document.querySelector('.logo');
+    shownLogo?.classList.add('show-logo');
   }
 
   /**

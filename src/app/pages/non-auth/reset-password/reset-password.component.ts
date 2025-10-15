@@ -23,7 +23,6 @@ import { AuthState } from '../../../shared/types/auth-state.type';
 })
 export class ResetPasswordComponent implements OnInit {
   @Output() changeAuthState = new EventEmitter<AuthState>();
-
   registerForm!: FormGroup;
   showErrorMessage: boolean = false;
   uid!: string;
@@ -38,7 +37,6 @@ export class ResetPasswordComponent implements OnInit {
 
   ngOnInit(): void {
     this.oobCode = this.route.snapshot.queryParams['oobCode'] ?? '';
-
     this.registerForm = new FormGroup({
       password: new FormControl('', [
         Validators.required,
@@ -55,7 +53,7 @@ export class ResetPasswordComponent implements OnInit {
   /**
    * Checks on any interaction if inputs are identical
    */
-  ngDoCheck(): void {
+  ngDoCheck() {
     this.checkPasswords();
   }
 
@@ -74,6 +72,10 @@ export class ResetPasswordComponent implements OnInit {
       });
   }
 
+  /**
+   * OnSubmit the passwords are checked.
+   * If no error is thrown, the passwords reset.
+   */
   onSubmit() {
     this.checkPasswords();
     if (!this.showErrorMessage) {
@@ -82,22 +84,20 @@ export class ResetPasswordComponent implements OnInit {
   }
 
   /**
-   * check if input is valid
+   * Check if inputs are valid.
    */
   checkPasswords() {
     let password = this.registerForm.get('password')?.value;
     let passwordConfirm = this.registerForm.get('passwordConfirm')?.value;
-
     this.showErrorMessage = password !== passwordConfirm;
   }
 
   /**
-   * Saves the new password
+   * Saves the new password and shows the according toast-notification.
    */
   resetPassword() {
     const auth = getAuth();
     const newPassword = this.registerForm.get('password')?.value;
-
     confirmPasswordReset(auth, this.oobCode, newPassword)
       .then(() => {
         this.showToast = true;

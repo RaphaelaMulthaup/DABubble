@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import {
   FormControl,
   FormsModule,
@@ -16,11 +16,11 @@ import { UserToRegisterInterface } from '../../../shared/models/user.to.register
   templateUrl: './register-form.component.html',
   styleUrl: './register-form.component.scss',
 })
-export class RegisterFormComponent {
+export class RegisterFormComponent implements OnInit {
   @Input() userToRegister!: UserToRegisterInterface;
   @Output() changeAuthState = new EventEmitter<AuthState>();
+  registerForm!: FormGroup;
   emailExists: boolean = false;
-  registerForm!: FormGroup; // Defines the registration form with validators for email, password, and display name
 
   constructor(private userService: UserService) {}
 
@@ -32,22 +32,16 @@ export class RegisterFormComponent {
     if (this.userToRegister) this.initForm();
   }
 
+  /**
+   * This function initalizes the registerform.
+   * If userToRegister already has data, those are automatically inserted.
+   */
   initForm() {
     this.registerForm = new FormGroup({
-      displayName: new FormControl(this.userToRegister.displayName, [
-        Validators.required,
-      ]),
-      email: new FormControl(this.userToRegister.email, [
-        Validators.required,
-        Validators.email,
-      ]),
-      password: new FormControl(this.userToRegister.password, [
-        Validators.required,
-        Validators.minLength(6),
-      ]),
-      policyAccepted: new FormControl(this.userToRegister.policyAccepted, [
-        Validators.required,
-      ]),
+      displayName: new FormControl(this.userToRegister.displayName, [Validators.required,]),
+      email: new FormControl(this.userToRegister.email, [Validators.required,Validators.email,]),
+      password: new FormControl(this.userToRegister.password, [Validators.required,Validators.minLength(6),]),
+      policyAccepted: new FormControl(this.userToRegister.policyAccepted, [Validators.required,]),
     });
   }
 
@@ -70,8 +64,7 @@ export class RegisterFormComponent {
    * This function toggles the checkboxChecked-variable to change the checkbox' appearence.
    */
   toggleCheckboxChecked() {
-    this.registerForm.value.policyAccepted =
-      !this.registerForm.value.policyAccepted;
+    this.registerForm.value.policyAccepted = !this.registerForm.value.policyAccepted;
   }
 
   /**

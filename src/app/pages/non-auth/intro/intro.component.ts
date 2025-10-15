@@ -4,24 +4,23 @@ import { Component, OnInit } from '@angular/core';
   selector: 'app-intro',
   imports: [],
   templateUrl: './intro.component.html',
-  styleUrl: './intro.component.scss'
+  styleUrl: './intro.component.scss',
 })
 export class IntroComponent implements OnInit {
-  constructor(){}
+  constructor() {}
 
   ngOnInit(): void {
-      this.introAnimation();
+    this.introAnimation();
   }
 
   /**
-   * Animation function intro screen
+   * Handles the intro-animation.
    */
   introAnimation() {
-    let logoContainer = document.querySelector(".logo-container");
+    let logoContainer = document.querySelector('.logo-container');
     this.moveLogo();
-
     setTimeout(() => {
-      logoContainer?.classList.add("container-transperent");
+      logoContainer?.classList.add('container-transperent');
       this.moveUp();
       this.getFinalForm();
     }, 2500);
@@ -31,9 +30,9 @@ export class IntroComponent implements OnInit {
    * Moves logo to the left and calls function "moveSpan"
    */
   moveLogo() {
-    let animatedLogo = document.querySelector(".animated-logo");
+    let animatedLogo = document.querySelector('.animated-logo');
     setTimeout(() => {
-      animatedLogo?.classList.add("expand");
+      animatedLogo?.classList.add('expand');
       this.moveSpan();
     }, 500);
   }
@@ -42,10 +41,10 @@ export class IntroComponent implements OnInit {
    * Name span appers from the left side
    */
   moveSpan() {
-    let animatName = document.querySelector(".animat-name");
+    let animatName = document.querySelector('.animat-name');
 
     setTimeout(() => {
-      animatName?.classList.add("show");
+      animatName?.classList.add('show');
     }, 1000);
   }
 
@@ -53,26 +52,15 @@ export class IntroComponent implements OnInit {
    * Moves the now complete logo to the final position
    */
   moveUp() {
-    let animatedLogo = document.querySelector(".animated-logo");
-    animatedLogo?.classList.add("moveUp");
-    animatedLogo?.classList.add("addMargin");
+    let animatedLogo = document.querySelector('.animated-logo');
+    animatedLogo?.classList.add('moveUp');
+    animatedLogo?.classList.add('addMargin');
 
     this.changeColor();
   }
 
   /**
-   * removes the animated logo and makes way for the actual logo
-   */
-  // getRid() {
-  //   let logoContainer = document.querySelector(".logo-container");
-
-  //   setTimeout(() => {
-  //     logoContainer?.classList.add("getRid");
-  //   }, 700);
-  // }
-
-  /**
-   * Let logo stay in final position. 
+   * Let logo stay in final position.
    */
   getFinalForm() {
     let logoContainer = document.querySelector('.logo-container');
@@ -90,5 +78,4 @@ export class IntroComponent implements OnInit {
     let name = document.querySelector('.animat-name');
     name?.classList.add('name-black');
   }
-
 }

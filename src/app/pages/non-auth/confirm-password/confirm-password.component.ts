@@ -21,25 +21,22 @@ export class ConfirmPasswordComponent {
   @Input() oobCode!: string;
   @Output() changeAuthState = new EventEmitter<AuthState>();
 
-  showErrorMessage: boolean = false;
-  showToast: boolean = false;
-  emailList: string[] = [];
-  emailExists: boolean = false;
-  userColl: any;
   confirmForm: FormGroup = new FormGroup({
     email: new FormControl('', [Validators.required, Validators.email]),
   });
   userList!: any[];
   functions: any;
+  userColl: any;
+
+  emailList: string[] = [];
+  showErrorMessage: boolean = false;
+  showToast: boolean = false;
+  emailExists: boolean = false;
 
   constructor(
     private authService: AuthService,
     private userService: UserService
   ) {}
-
-  veriyResetCode() {
-    throw new Error('Method not implemented.');
-  }
 
   /**
    * Compares email from input with emails from loaded mail list.
@@ -47,24 +44,18 @@ export class ConfirmPasswordComponent {
    */
   async onSubmit() {
     const inputEmail = this.confirmForm.get('email')?.value;
-    const uid = await this.userService.getUserIdByEmail(inputEmail);
-
-    if (uid) {
+    if (await this.userService.getUserIdByEmail(inputEmail)) {
       this.authService
         .sendPasswordResetEmail(inputEmail)
         .then(() => {
           this.showToast = true;
-          setTimeout(() => {
-            this.backToLogin();
-          }, 1500);
+          setTimeout(() => this.backToLogin(), 1500);
         })
         .catch((error) => {
           console.error('Reset-Mail konnte nicht versendet werden', error);
           this.showErrorMessage = true;
         });
-    } else {
-      this.showErrorMessage = true;
-    }
+    } else this.showErrorMessage = true;
   }
 
   /**
@@ -75,14 +66,7 @@ export class ConfirmPasswordComponent {
   }
 
   /**
-   * Proced to "reset-password"
-   */
-  procedToReset() {
-    this.changeAuthState.emit('reset-password-confirm');
-  }
-
-  /**
-   * Sends linkt to reset password to found email
+   * Sends linkt to reset password to email
    */
   sendPasswortResset(email: string) {
     this.authService

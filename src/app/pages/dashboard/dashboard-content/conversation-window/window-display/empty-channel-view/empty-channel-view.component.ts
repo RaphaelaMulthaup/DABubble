@@ -42,7 +42,7 @@ export class EmptyChannelViewComponent implements OnInit {
         this.channelId = channelId;
 
         this.channel$ = this.channelService
-          .getCurrentChannel(channelId)
+          .getCurrentChannel(channelId, true)
           .pipe(
             filter(
               (channel): channel is ChannelInterface => channel !== undefined

@@ -6,17 +6,6 @@ import { HeaderOutsideDashboardComponent } from '../../shared/components/header-
   selector: 'app-privacy-policy',
   imports: [RouterLink, HeaderOutsideDashboardComponent],
   templateUrl: './privacy-policy.component.html',
-  styleUrl: './privacy-policy.component.scss'
+  styleUrl: './privacy-policy.component.scss',
 })
-export class PrivacyPolicyComponent implements OnInit {
-  isPolice!: boolean;
-  
-
-  ngOnInit(): void {
-      this.isPolice = true;
-  }
-
-  showLogo() {
-
-  }
-}
+export class PrivacyPolicyComponent {}

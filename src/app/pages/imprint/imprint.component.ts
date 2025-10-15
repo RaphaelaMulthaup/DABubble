@@ -6,8 +6,6 @@ import { HeaderOutsideDashboardComponent } from '../../shared/components/header-
   selector: 'app-imprint',
   imports: [RouterLink, HeaderOutsideDashboardComponent],
   templateUrl: './imprint.component.html',
-  styleUrl: './imprint.component.scss'
+  styleUrl: './imprint.component.scss',
 })
-export class ImprintComponent {
-
-}
+export class ImprintComponent {}
