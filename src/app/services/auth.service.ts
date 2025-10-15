@@ -64,8 +64,6 @@ export class AuthService {
   private currentUserSnapshot: UserInterface | null = null;
   channelEntwicklerteamDocRef;
   messagesChannelEntwicklerteamDocRef;
-  guestsMessages: any[] = [];
-  // chatsWithGuestsIds: any[] = [];
 
   constructor(
     private auth: Auth,
@@ -108,18 +106,19 @@ export class AuthService {
       this.channelEntwicklerteamDocRef,
       'messages'
     );
-    this.preparationMessagesGuest();
+    window.addEventListener('beforeunload', () => {      
+      const user = this.auth.currentUser;
+      if (user?.isAnonymous) {
+        try {
+          const userRef = doc(this.firestore, `users/${user.uid}`);
+          this.logoutGuest(user, userRef);
+        } catch (err) {
+          console.warn('Guest logout on unload failed:', err);
+        }
+      }
+    });
   }
 
-  async preparationMessagesGuest() {
-    const messageIds = ['1MIeATQI5Qvu2Ace1DxY', '6u1OUoejMlf0HE4Vr44t'];
-    this.guestsMessages = [];
-
-    for (const id of messageIds) {
-      const docRef = doc(this.messagesChannelEntwicklerteamDocRef, id);
-      this.guestsMessages.push(docRef);
-    }
-  }
 
   /** Synchronously get current Firestore User */
   get currentUser(): UserInterface | null {
@@ -220,11 +219,6 @@ export class AuthService {
         await updateDoc(this.channelEntwicklerteamDocRef, {
           memberIds: arrayUnion(user.uid),
         });
-        await Promise.all(
-          this.guestsMessages.map((messageRef) =>
-            updateDoc(messageRef, { senderId: user.uid })
-          )
-        );
       })
       .catch((error) => console.error('Guest login error:', error));
     return from(promise) as Observable<void>;
@@ -378,11 +372,6 @@ export class AuthService {
       deleteDoc(msgDoc.ref)
     );
     await Promise.all(deletePromises);
-    await Promise.all(
-      this.guestsMessages.map((messageRef) =>
-        updateDoc(messageRef, { senderId: '' })
-      )
-    );
   }
 
   async deleteChannels(guestUserId: string) {
