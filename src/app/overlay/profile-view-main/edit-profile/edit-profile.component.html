@@ -12,7 +12,7 @@
       class="user-img"
       [src]="user.photoUrl"
       alt="user img"
-      (click)="showAvatarSelection()"
+      (click)="openNewAvatarSelectionOverlay()"
     />
   </div>
   <div class="name-section flex flex-col w-full">
@@ -33,7 +33,7 @@
     <button class="btn-secondary" (click)="overlayService.closeOne(this.overlayRef)">
       Abbrechen
     </button>
-    <button class="btn-primary save" (click)="saveName()">
+    <button class="btn-primary save" (click)="changeUserName()">
       Speichern
     </button>
   </div>

@@ -28,7 +28,7 @@
     </div>
     <div class="flex w-full flex-col gap-[20px]">
       <ul class="cont">
-        @for(user of ListWithMember; track $index){
+        @for(user of membersList; track $index){
         <li class="container">
           <img class="profil-img" src="{{ user.photoUrl }}" alt="Profilbild" />
           <span>{{ getFirstWord(user.name) }}</span>
@@ -42,7 +42,7 @@
             #addMemberSearchBar
             type="text"
             class=""
-            [placeholder]="ListWithMember.length > 0 ? '' : 'Name eingeben'"
+            [placeholder]="membersList.length > 0 ? '' : 'Name eingeben'"
             [formControl]="searchControl"
           />
         </li>
@@ -51,7 +51,7 @@
         <button
           class="btn-primary"
           (click)="addMembertoChannel(channelDetails.id!)"
-          [disabled]="ListWithMember.length === 0"
+          [disabled]="membersList.length === 0"
         >
           Hinzufügen
         </button>

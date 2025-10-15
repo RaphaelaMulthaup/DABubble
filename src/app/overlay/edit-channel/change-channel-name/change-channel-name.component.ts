@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, inject } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ChannelsService } from '../../../services/channels.service';
@@ -14,9 +14,10 @@ import { ScreenSize } from '../../../shared/types/screen-size.type';
   styleUrl: './change-channel-name.component.scss',
 })
 export class ChangeChannelNameComponent {
-  @Input() channelId?: string;
   @Input() channel?: ChannelInterface;
+  @Input() channelId?: string;
   @Output() editActiveChange = new EventEmitter<boolean>();
+
   screenSize$!: Observable<ScreenSize>;
   isEditActive: boolean = false;
   nameInput?: string;
@@ -31,35 +32,61 @@ export class ChangeChannelNameComponent {
   }
 
   /**
-   * Changes Channel-name and throw error if name is allready in use 
-   * 
+   * Changes the channel-name.
+   *
+   * @param newName - the new channel-name
    */
-  async saveName(newName: string) {
+  async updateName(newName: string) {
     if (!this.channelId || !newName || newName.trim() === '') return;
-    
-    if(this.channel && newName.trim() === this.channel.name) {
-      this.isEditActive = false;
-      this.editActiveChange.emit(this.isEditActive);
-      this.showErrorMessage = false;
-      return;
-    }
+    if (this.channel && newName.trim() === this.channel.name) return this.resetEditState();
 
-    let isAvailable = await this.channelService.isChannelNameAvailable(newName).toPromise();
-
+    const isAvailable = await this.checkNameAvailability(newName);
     if (isAvailable) {
-      await this.channelService.changeChannelName(this.channelId, newName);
-      
-      if (this.channel) {
-        this.channel.name = newName;
-      }
-      
-      this.isEditActive = false;
-      this.editActiveChange.emit(this.isEditActive);
-      this.isNameTaken = false;
+      await this.applyNewChannelName(newName);
     } else {
-      this.showErrorMessage = true;
-      this.isNameTaken = true;
+      this.showNameTakenError();
     }
+  }
+
+  /**
+   * Resets the edit state after cancelling or keeping the same name
+   */
+  resetEditState() {
+    this.isEditActive = false;
+    this.editActiveChange.emit(this.isEditActive);
+    this.showErrorMessage = false;
+  }
+
+  /**
+   * Checks if the new channel-name is available.
+   *
+   * @param newName - the new channel-name
+   */
+  async checkNameAvailability(newName: string) {
+    return await this.channelService
+      .isChannelNameAvailable(newName)
+      .toPromise();
+  }
+
+  /**
+   * Applies the new name and updates UI state.
+   *
+   * @param newName - the new channel-name
+   */
+  async applyNewChannelName(newName: string) {
+    await this.channelService.changeChannelName(this.channelId!, newName);
+    if (this.channel) this.channel.name = newName;
+    this.isEditActive = false;
+    this.editActiveChange.emit(this.isEditActive);
+    this.isNameTaken = false;
+  }
+
+  /**
+   * Displays the 'name already taken' error.
+   */
+  showNameTakenError() {
+    this.showErrorMessage = true;
+    this.isNameTaken = true;
   }
 
   /**
@@ -70,11 +97,12 @@ export class ChangeChannelNameComponent {
     this.isNameTaken = false;
   }
 
+  /**
+   * Toggles the isEditActive-variable and emits its value.
+   */
   toggleEdit() {
     this.isEditActive = !this.isEditActive;
     this.editActiveChange.emit(this.isEditActive);
-    if (this.isEditActive && this.channel) {
-      this.nameInput = this.channel.name;
-    }
+    if (this.isEditActive && this.channel) this.nameInput = this.channel.name;
   }
 }

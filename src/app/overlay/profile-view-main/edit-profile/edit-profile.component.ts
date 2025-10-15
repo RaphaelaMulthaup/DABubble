@@ -2,7 +2,6 @@ import { AsyncPipe, CommonModule } from '@angular/common';
 import {
   Component,
   ElementRef,
-  inject,
   OnInit,
   Output,
   ViewChild,
@@ -14,7 +13,7 @@ import { UserInterface } from '../../../shared/models/user.interface';
 import { NewAvatarSelectionComponent } from './new-avatar-selection/new-avatar-selection.component';
 import { FormsModule } from '@angular/forms';
 import { HeaderOverlayComponent } from '../../../shared/components/header-overlay/header-overlay.component';
-import { Overlay, OverlayRef } from '@angular/cdk/overlay';
+import { OverlayRef } from '@angular/cdk/overlay';
 
 @Component({
   selector: 'app-edit-profile',
@@ -23,15 +22,15 @@ import { Overlay, OverlayRef } from '@angular/cdk/overlay';
   styleUrl: './edit-profile.component.scss',
 })
 export class EditProfileComponent implements OnInit {
+  @Output() overlayRef!: OverlayRef;
   @ViewChild('userNameInput') userNameInput!: ElementRef;
   user$: Observable<UserInterface | null>;
-  userName: string = '';
-  @Output() overlayRef!: OverlayRef;
   private destroy$ = new Subject<void>();
+  userName: string = '';
 
   constructor(
-    public overlayService: OverlayService,
-    private authService: AuthService
+    private authService: AuthService,
+    public overlayService: OverlayService
   ) {
     this.user$= this.authService.currentUser$;
   }
@@ -44,9 +43,6 @@ export class EditProfileComponent implements OnInit {
     });
   }
 
-  /**
-   * Set autofocus in inputfield
-   */
   ngAfterViewInit(): void {
     setTimeout(() => this.userNameInput.nativeElement.focus(), 0);
   }
@@ -57,28 +53,25 @@ export class EditProfileComponent implements OnInit {
   }
 
   /**
-   * Shows overlay to select new avatar and close overlay
+   * This function opens the NewAvatarSelection-Overlay.
    */
-  showAvatarSelection() {
+  openNewAvatarSelectionOverlay() {
     const overlay = this.overlayService.openComponent(
       NewAvatarSelectionComponent,
       'cdk-overlay-dark-backdrop',
       { globalPosition: 'center' }
     );
-
     overlay!.ref.instance.overlayRef = overlay?.overlayRef as OverlayRef;
   }
 
   /**
-   * Saves new Username from input
+   * Updates the users name.
    */
-  saveName() {
+  changeUserName() {
     if (this.userName.trim()) {
       this.authService.updateUserName(this.userName.trim()).then(() => {
         this.overlayService.closeOne(this.overlayRef);
       });
-    } else {
-      this.overlayService.closeOne(this.overlayRef);
-    }
+    } else { this.overlayService.closeOne(this.overlayRef); }
   }
 }

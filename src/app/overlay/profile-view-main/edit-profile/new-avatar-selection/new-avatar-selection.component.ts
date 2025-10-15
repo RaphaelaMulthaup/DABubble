@@ -1,12 +1,12 @@
-import { Component, inject, Output } from '@angular/core';
+import { Component, Output } from '@angular/core';
 import { OverlayService } from '../../../../services/overlay.service';
 import { AuthService } from '../../../../services/auth.service';
 import { Observable } from 'rxjs';
 import { UserInterface } from '../../../../shared/models/user.interface';
 import { AsyncPipe, CommonModule } from '@angular/common';
 import { HeaderOverlayComponent } from '../../../../shared/components/header-overlay/header-overlay.component';
-import { EditProfileComponent } from '../edit-profile.component';
 import { OverlayRef } from '@angular/cdk/overlay';
+import { AVATAROPTIONS } from '../../../../shared/constants/avatar-options';
 
 @Component({
   selector: 'app-new-avatar-selection',
@@ -15,49 +15,36 @@ import { OverlayRef } from '@angular/cdk/overlay';
   styleUrl: './new-avatar-selection.component.scss',
 })
 export class NewAvatarSelectionComponent {
-  user$: Observable<UserInterface | null>;
-  selectedAvatar: number = 0;
   @Output() overlayRef!: OverlayRef;
-
-  //an array with all the names of the available avatar-options
-  avatarOptions = [
-    './assets/img/avatar-option-1.svg',
-    './assets/img/avatar-option-2.svg',
-    './assets/img/avatar-option-3.svg',
-    './assets/img/avatar-option-4.svg',
-    './assets/img/avatar-option-5.svg',
-    './assets/img/avatar-option-6.svg',
-  ];
+  user$: Observable<UserInterface | null>;
+  avatarOptions = AVATAROPTIONS;
+  selectedAvatar: number = 0;
 
   constructor(
-    public overlayService: OverlayService,
-    private authService: AuthService
+    private authService: AuthService,
+    public overlayService: OverlayService
   ) {
     this.user$ = this.authService.currentUser$;
   }
 
   /**
-   *
-   * function to select new user avatar
-   *
+   * Sets the selectedAvatar to the chosen avatar.
+   * 
+   * @param avatarOption - the chosen avatar-index
    */
-  selectAvatar(avatarIdx: number): void {
-    this.selectedAvatar = avatarIdx;
+  selectAvatar(avatarOption: number): void {
+    this.selectedAvatar = avatarOption;
   }
 
   /**
-   *
-   * funstion saves selected avatar an close overlay
-   *
+   * Updates the users avatar.
    */
-  saveAvatar() {
+  changeAvatar() {
     if (this.selectedAvatar > 0) {
       const avatarUrl = this.avatarOptions[this.selectedAvatar - 1];
       this.authService.updateUserPhotoUrl(avatarUrl).then(() => {
         this.overlayService.closeOne(this.overlayRef);
       });
-    } else {
-      this.overlayService.closeOne(this.overlayRef);
-    }
+    } else { this.overlayService.closeOne(this.overlayRef); }
   }
 }

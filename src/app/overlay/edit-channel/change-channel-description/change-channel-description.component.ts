@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output} from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ChannelsService } from '../../../services/channels.service';
 import { FormsModule } from '@angular/forms';
@@ -16,14 +16,14 @@ import { ScreenService } from '../../../services/screen.service';
   styleUrl: './change-channel-description.component.scss',
 })
 export class ChangeChannelDescriptionComponent {
+  @Input() channel?: ChannelInterface;
   @Input() channelId?: string;
   @Input() user$?: Observable<UserInterface>;
-
-  @Input() channel?: ChannelInterface;
   @Output() editActiveChange = new EventEmitter<boolean>();
+
+  screenSize$!: Observable<ScreenSize>;
   isEditActive: boolean = false;
   descriptionInput?: string;
-  screenSize$!: Observable<ScreenSize>;
 
   constructor(
     private channelService: ChannelsService,
@@ -32,21 +32,28 @@ export class ChangeChannelDescriptionComponent {
     this.screenSize$ = this.screenService.screenSize$;
   }
 
-  async saveDescription(newDescription: string) {
+  /**
+   * Changes the channel-description.
+   *
+   * @param newDescription - the new channel-description
+   */
+  async updateDescription(newDescription: string) {
     if (!this.channelId || !this.channel) return;
-
-    await this.channelService.changeChannelDescription(this.channelId, newDescription);
+    await this.channelService.changeChannelDescription(
+      this.channelId,
+      newDescription
+    );
     this.channel.description = newDescription;
     this.isEditActive = false;
     this.editActiveChange.emit(this.isEditActive);
   }
 
+  /**
+   * Toggles the isEditActive-variable and emits its value.
+   */
   toggleEdit() {
     this.isEditActive = !this.isEditActive;
     this.editActiveChange.emit(this.isEditActive);
-
-    if (this.isEditActive && this.channel) {
-      this.descriptionInput = this.channel.description;
-    }
+    if (this.isEditActive && this.channel) this.descriptionInput = this.channel.description;
   }
 }

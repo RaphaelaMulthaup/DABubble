@@ -1,13 +1,6 @@
-import {
-  Component,
-  EventEmitter,
-  inject,
-  Input,
-  OnInit,
-  Output,
-} from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Observable, of, take } from 'rxjs';
+import { take } from 'rxjs';
 import { OverlayService } from '../../services/overlay.service';
 import { EmojiPickerComponent } from '../emoji-picker/emoji-picker.component';
 import { PostService } from '../../services/post.service';
@@ -24,19 +17,20 @@ import { ReactionsService } from '../../services/reactions.service';
   styleUrl: './post-interaction-overlay.component.scss',
 })
 export class PostInteractionOverlayComponent implements OnInit {
+  @Input() post!: PostInterface;
+  emojis = EMOJIS;
+
+  conversationWindowState?: 'conversation' | 'thread';
   currentConversationType!: 'channel' | 'chat';
   currentConversationId!: string;
-  @Input() post!: PostInterface;
   senderIsCurrentUser!: boolean;
-  emojis = EMOJIS;
-  conversationWindowState?: 'conversation' | 'thread';
   parentMessageId?: string; //the id of the message, an answer belongs to -> only if the message is an answer
 
   constructor(
     private authService: AuthService,
-    private reactionsService: ReactionsService,
     public overlayService: OverlayService,
-    public postService: PostService
+    public postService: PostService,
+    private reactionsService: ReactionsService
   ) {}
 
   ngOnInit() {
@@ -49,19 +43,13 @@ export class PostInteractionOverlayComponent implements OnInit {
    * This function lets the user react quickly to a post by selecting on of the two preselected emojis.
    * The emoji that fits to the given token is used to react.
    *
-   * @param emojiToken the token of the chosen preselected emoji.
+   * @param emojiToken - The token of the chosen preselected emoji.
    */
   reactToPostWithPreselection(emojiToken: string) {
     let emoji = this.emojis.find((e) => e.token == emojiToken);
-
     if (this.parentMessageId) {
       this.reactionsService.toggleReaction(
-        '/' +
-          this.currentConversationType +
-          's/' +
-          this.currentConversationId +
-          '/messages/' +
-          this.parentMessageId,
+        '/' + this.currentConversationType + 's/' + this.currentConversationId + '/messages/' + this.parentMessageId,
         'answers',
         this.post.id!,
         emoji!
@@ -74,15 +62,14 @@ export class PostInteractionOverlayComponent implements OnInit {
         emoji!
       );
     }
-
     this.overlayService.closeAll();
   }
 
   /**
-   * This function opens the emoji-picker overlay and transmits the isMessageFromCurrentUser-variable.
+   * This function opens the EmojiPicker-Overlay.
    * The overlay possibly emits an emoji and this emoji is used to react to the post.
    *
-   * @param event the user-interaction with an object.
+   * @param event - The user-interaction with an object.
    */
   async openEmojiPickerOverlay(event: MouseEvent) {
     const overlay = this.overlayService.openComponent(
@@ -90,56 +77,37 @@ export class PostInteractionOverlayComponent implements OnInit {
       'cdk-overlay-transparent-backdrop',
       {
         origin: event.currentTarget as HTMLElement,
-        originPosition: await this.reactionsService.resolveEmojiPickerPosition(
-          this.senderIsCurrentUser
-        ),
+        originPosition: await this.reactionsService.resolveEmojiPickerPosition(this.senderIsCurrentUser)
       },
-      {
-        rightAngleTopRight:
-          await this.reactionsService.checkEmojiPickerPosition(
-            this.senderIsCurrentUser
-          ),
-      }
+      { rightAngleTopRight: await this.reactionsService.checkEmojiPickerPosition(this.senderIsCurrentUser)}
     );
-
-    //das abonniert den event emitter vom emoji-picker component
     overlay!.ref.instance.selectedEmoji
       .pipe(take(1))
-      .subscribe((emoji: { token: string; src: string }) => {
-        if (this.parentMessageId) {
-          this.reactionsService.toggleReaction(
-            '/' +
-              this.currentConversationType +
-              's/' +
-              this.currentConversationId +
-              '/messages/' +
-              this.parentMessageId,
-            'answers',
-            this.post.id!,
-            emoji
-          );
-        } else {
-          this.reactionsService.toggleReaction(
-            '/' +
-              this.currentConversationType +
-              's/' +
-              this.currentConversationId,
-            'messages',
-            this.post.id!,
-            emoji
-          );
-        }
-        this.overlayService.closeAll();
-      });
+      .subscribe((emoji) => this.handleSelectedEmoji(emoji));
   }
 
   /**
-   * This functions opens the edit-post-overlay.
+   * This function uses the emitted emoji to react to a post.
+   * After that, all overlays are closed.
+   *
+   * @param emoji - The selected emoji to react
+   */
+  handleSelectedEmoji(emoji: { token: string; src: string }) {
+    const path = this.parentMessageId
+      ? `/${this.currentConversationType}s/${this.currentConversationId}/messages/${this.parentMessageId}`
+      : `/${this.currentConversationType}s/${this.currentConversationId}`;
+    const subcollection = this.parentMessageId ? 'answers' : 'messages';
+    this.reactionsService.toggleReaction(path, subcollection, this.post.id!, emoji);
+    this.overlayService.closeAll();
+  }
+
+  /**
+   * This functions opens the EditPostBtn-overlay.
    *
    * @param event the user-interaction with an object.
    */
   openEditPostBtnOverlay(event: MouseEvent) {
-    const overlay = this.overlayService.openComponent(
+    this.overlayService.openComponent(
       EditPostBtnComponent,
       'cdk-overlay-transparent-backdrop',
       {
@@ -149,7 +117,7 @@ export class PostInteractionOverlayComponent implements OnInit {
           originY: 'bottom',
           overlayX: 'end',
           overlayY: 'top',
-        }
+        },
       },
       { post: this.post }
     );

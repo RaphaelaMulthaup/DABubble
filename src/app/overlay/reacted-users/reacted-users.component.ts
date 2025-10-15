@@ -17,8 +17,8 @@ export class ReactedUsersComponent {
   private destroy$ = new Subject<void>();
 
   constructor(
-    private userService: UserService,
-    private authService: AuthService
+    private authService: AuthService,
+    private userService: UserService
   ) {}
 
   ngOnInit() {

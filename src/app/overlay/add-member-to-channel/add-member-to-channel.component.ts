@@ -37,57 +37,46 @@ import { RectangleDragCloseDirective } from '../../shared/directives/rectangle-d
     ReactiveFormsModule,
     RectangleDragCloseDirective,
   ],
-  templateUrl: './add-member-to-channel.component.html', // Path to the HTML template
-  styleUrls: ['./add-member-to-channel.component.scss'], // Path to the styling file
+  templateUrl: './add-member-to-channel.component.html',
+  styleUrls: ['./add-member-to-channel.component.scss'],
 })
 export class AddMemberToChannelComponent {
-  @Input() channelDetails$?: Observable<ChannelInterface | undefined>; // Observable to hold channel details
+  @Input() channelDetails$?: Observable<ChannelInterface | undefined>;
   @Input() onBottom: boolean = false;
-  @Output() overlayRef!: OverlayRef; // Overlay reference to manage the overlay's lifecycle
-  ListWithMember: UserInterface[] = []; // List of users to be added to the channel
-  overlay: string = ''; // String used to manage overlay state
-  private resultsOverlayRef?: OverlayRef; // Here save the overlay ref to close if results are null
-
-  //We use this boolean to check if our overlay is open or close
-  isClosing = false;
+  @Output() overlayRef!: OverlayRef;
 
   @ViewChild('addMemberSearchBar', { static: false })
   addMemberSearchBar!: ElementRef<HTMLElement>;
-
-  // Reactive form control for the search input
   searchControl = new FormControl<string>('', { nonNullable: true });
-
-  // Observable stream for the search term
+  membersIds$ = new BehaviorSubject<string[]>([]);
+  results!: Signal<UserInterface[]>;
+  private destroy$ = new Subject<void>();
   private term$: Observable<string> = this.searchControl.valueChanges.pipe(
     startWith(this.searchControl.value),
-    map((v) => v.trim().toLowerCase()) // Normalize the search term for matching
+    map((v) => v.trim().toLowerCase())
   );
 
-  // Signal for storing filtered users based on the search term
-  results!: Signal<UserInterface[]>;
-
-  private destroy$ = new Subject<void>();
-  membersIds$ = new BehaviorSubject<string[]>([]);
+  membersList: UserInterface[] = [];
+  private resultsOverlayRef?: OverlayRef;
+  isClosing = false;
+  overlay: string = '';
 
   constructor(
-    private searchService: SearchService, // Service to manage search functionality
-    private channelService: ChannelsService, // Service to manage channels and members
-    private overlayService: OverlayService // Service for managing overlays
+    private channelService: ChannelsService,
+    private overlayService: OverlayService,
+    private searchService: SearchService
   ) {
-    // Reacting to reset signal to clear the search field
     effect(() => {
       if (this.overlayService.searchReset()) {
-        this.searchControl.reset(); // Reset the search control
-        this.overlayService.clearReset(); // Clear the reset signal
+        this.searchControl.reset();
+        this.overlayService.clearReset();
       }
     });
 
-    // Reacting to changes in the user list (adding/removing members)
     effect(() => {
-      this.ListWithMember = this.overlayService.users(); // Get updated list of users from service
+      this.membersList = this.overlayService.users();
     });
 
-    // Trigger the overlay for adding members when results are available
     effect(() => {
       const r = this.results();
       if (r.length > 0) {
@@ -100,7 +89,6 @@ export class AddMemberToChannelComponent {
       }
     });
 
-    // Combining search term and users from the service to filter users based on the term
     this.results = toSignal(
       combineLatest([
         this.term$,
@@ -108,7 +96,7 @@ export class AddMemberToChannelComponent {
         this.membersIds$,
       ]).pipe(
         map(([term, users, memberIds]) => {
-          if (!term) return []; // No search term, return empty array
+          if (!term) return [];
           return users.filter(
             (user) =>
               !memberIds.includes(user.uid) &&
@@ -117,7 +105,7 @@ export class AddMemberToChannelComponent {
           );
         })
       ),
-      { initialValue: [] as UserInterface[] } // Initial value when no search is performed
+      { initialValue: [] as UserInterface[] }
     );
   }
 
@@ -127,7 +115,6 @@ export class AddMemberToChannelComponent {
       .subscribe((channel) => {
         this.membersIds$.next(channel?.memberIds ?? []);
       });
-    // Clear the list of users in the service when the component is initialized
     this.overlayService.clearUsers();
   }
 
@@ -136,42 +123,57 @@ export class AddMemberToChannelComponent {
     this.destroy$.complete();
   }
 
+  /**
+   * This function closes all overlays after the animation.
+   */
   closeOverlay() {
     this.isClosing = true;
     setTimeout(() => {
       this.overlayService.closeAll();
-    }, 500); // duration matches CSS transition
+    }, 500);
   }
 
-  // Method to extract the first word of a user's name
+  /**
+   * Method to extract the first word of a user's name.
+   *
+   * @param name - the users name
+   */
   getFirstWord(name: string): string {
     return name.split(' ')[0];
   }
 
-  // Method to remove a user from the list and update the service
+  /**
+   * Method to remove a user from the list and update the service.
+   *
+   * @param index - the users index in the membersLists
+   */
   removeFromList(index: number) {
-    const updatedUsers = [...this.ListWithMember];
-    updatedUsers.splice(index, 1); // Remove user from the array
-    this.overlayService.setUsers(updatedUsers); // Update the users list in the service
+    const updatedUsers = [...this.membersList];
+    updatedUsers.splice(index, 1);
+    this.overlayService.setUsers(updatedUsers);
   }
 
-  // Method to add members to the channel, calling the service method to update the channel
+  /**
+   * Method to add members to the channel, calling the service method to update the channel.
+   *
+   * @param channelId - the ID of the channel
+   */
   addMembertoChannel(channelId: string) {
-    const membersId = this.ListWithMember.map((user) => user.uid); // Collect member IDs
-    this.channelService.addMemberToChannel(channelId, membersId); // Add members to channel
-
-    // Reset the list of users in the service after adding members
+    const membersId = this.membersList.map((user) => user.uid);
+    this.channelService.addMemberToChannel(channelId, membersId);
     this.overlayService.clearUsers();
-    this.overlayService.closeAll(); // Close all open overlays
+    this.overlayService.closeAll();
   }
 
-  // Method to open the overlay for adding members to the channel
+  /**
+   * This function opens the UserListItemToChannel-Overlay.
+   */
   openAddMembersToChannel() {
     const overlay = this.overlayService.openComponent(
-      UserListItemToChannelComponent, // Component to display users
-      null, // Styling for the overlay backdrop
+      UserListItemToChannelComponent,
+      null,
       {
-        origin: this.addMemberSearchBar.nativeElement, // Positioning of the overlay relative to the event
+        origin: this.addMemberSearchBar.nativeElement,
         originPosition: {
           originX: 'start',
           originY: 'bottom',
@@ -183,17 +185,27 @@ export class AddMemberToChannelComponent {
           originY: 'top',
           overlayX: 'start',
           overlayY: 'bottom',
-        }
+        },
       },
       {
-        results: this.results, // Pass filtered search results to the overlay component
+        results: this.results,
         onBottom: this.onBottom,
       }
     );
-    if (!overlay) return; // If overlay is not created, return
-    Object.assign(overlay.ref.instance, { overlayRef: overlay.overlayRef }); // Attach the overlay reference
+
+    if (!overlay) return;
+    this.configureResultsOverlay(overlay);
+  }
+
+  /**
+   * Configures the overlay behavior and handles closing logic.
+   *
+   * @param overlay - the UserListItemToChannel-Overlay
+   */
+  configureResultsOverlay(overlay: any) {
+    Object.assign(overlay.ref.instance, { overlayRef: overlay.overlayRef });
     this.resultsOverlayRef = overlay.overlayRef;
-    this.resultsOverlayRef.backdropClick().subscribe(() => {
+    this.resultsOverlayRef!.backdropClick().subscribe(() => {
       this.overlayService.closeOne(this.resultsOverlayRef!);
       this.resultsOverlayRef = undefined;
     });

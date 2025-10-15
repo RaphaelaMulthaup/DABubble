@@ -52,7 +52,7 @@ input {
   max-width: fit-content;
   gap: 15px;
   border-radius: 35px;
-  background-color: #eceefe;
+  background-color: var(--color-purple-light-lines);
   padding: 3px 15px;
 }
 
@@ -71,7 +71,7 @@ input {
 }
 
 .cont li input {
-  height: 55px; /* same as .container */
+  height: 55px;
   border: none;
   outline: none;
   padding: 0 10px;
@@ -82,7 +82,7 @@ input {
 }
 
 .cont li:last-child {
-  flex: 1; /* allow input li to expand */
+  flex: 1;
 }
 
 .color {

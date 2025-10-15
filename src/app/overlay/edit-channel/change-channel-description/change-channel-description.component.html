@@ -3,11 +3,11 @@
     <div class="flex w-full items-center justify-between">
       <h4>Beschreibung</h4>
       @if(isEditActive){ @if((screenSize$|async) === 'handset'){
-      <button class="btn" (click)="saveDescription(descriptionInput!)">
+      <button class="btn" (click)="updateDescription(descriptionInput!)">
         <span class="save"></span>
       </button>
       }@else {
-      <button class="name-tag" (click)="saveDescription(descriptionInput!)">
+      <button class="name-tag" (click)="updateDescription(descriptionInput!)">
         Speichern
       </button>
       } }@else { @if((screenSize$|async) === 'handset'){

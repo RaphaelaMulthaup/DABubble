@@ -28,7 +28,7 @@ p {
 
 .input-wrapper {
   display: flex;
-  align-items: center; /* centrează pe verticală */
+  align-items: center;
   position: relative;
 }
 
@@ -36,11 +36,10 @@ p {
   position: absolute;
   left: 20px;
   top: 23px;
-  pointer-events: none; /* prevents blocking typing */
+  pointer-events: none;
 }
 
 .error-massage {
-  color: red;
   height: 16px;
   padding-top: 4px;
   padding-left: 12px;

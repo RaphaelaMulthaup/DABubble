@@ -10,17 +10,20 @@ import { OverlayService } from '../../services/overlay.service';
   styleUrl: './emoji-picker.component.scss',
 })
 export class EmojiPickerComponent {
+  @Output() selectedEmoji = new EventEmitter<{ token: string; src: string }>();
+  emojis = EMOJIS;
   rightAngleTopRight!: boolean;
   rightAngleBottomLeft: boolean = false;
-  emojis = EMOJIS;
-  @Output() selectedEmoji = new EventEmitter<{ token: string; src: string; }>();
 
-  constructor(private overlayService: OverlayService){}
+  constructor(private overlayService: OverlayService) {}
 
   /**
-   * This function uses the chosen emoji and the userId to react to a post
+   * This function uses the chosen emoji and the userId to react to a post.
+   * After that, all overlays are closed.
+   * 
+   * @param emoji - the emoji used to react to a post
    */
-  reactToPost(emoji: { token: string; src: string;}) {
+  reactToPost(emoji: { token: string; src: string }) {
     this.selectedEmoji.emit(emoji);
     this.overlayService.closeAll();
   }

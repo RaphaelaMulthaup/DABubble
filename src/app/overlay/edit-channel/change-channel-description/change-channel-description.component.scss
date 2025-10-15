@@ -58,6 +58,6 @@ textarea {
 }
 
 .word-break {
-  overflow-wrap: break-word; /* sau word-wrap: break-word; pentru compatibilitate mai veche */
-  word-break: break-word; /* forțează ruperea cuvintelor lungi */
+  overflow-wrap: break-word;
+  word-break: break-word;
 }

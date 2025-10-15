@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { OverlayService } from '../../services/overlay.service';
 import { Observable } from 'rxjs';
 import { UserInterface } from '../../shared/models/user.interface';
@@ -24,19 +24,21 @@ export class ProfileViewMainComponent {
   overlayRef!: OverlayRef;
 
   constructor(
-    public overlayService: OverlayService,
-    private authService: AuthService
+    private authService: AuthService,
+    public overlayService: OverlayService
   ) {
     this.user$ = this.authService.currentUser$;
   }
 
-  showEdit() {
+  /**
+   * This function opens the EditProfile-Overlay.
+   */
+  openEditProfileOverlay() {
     const overlay = this.overlayService.openComponent(
       EditProfileComponent,
       'cdk-overlay-dark-backdrop',
       { globalPosition: 'center' }
     );
-
     overlay!.ref.instance.overlayRef = overlay?.overlayRef as OverlayRef;
   }
 }

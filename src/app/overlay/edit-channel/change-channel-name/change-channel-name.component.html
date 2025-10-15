@@ -2,11 +2,11 @@
   <div class="flex w-full items-center justify-between">
     <h4>Channel name</h4>
     @if(isEditActive){ @if((screenSize$|async) === 'handset'){
-    <button class="btn" (click)="saveName(nameInput!)">
+    <button class="btn" (click)="updateName(nameInput!)">
       <span class="save"></span>
     </button>
     }@else {
-    <button class="name-tag" (click)="saveName(nameInput!)">Speichern</button>
+    <button class="name-tag" (click)="updateName(nameInput!)">Speichern</button>
     } }@else { @if((screenSize$|async) === 'handset'){
     <button class="btn" (click)="toggleEdit()">
       <span class="edit"></span>

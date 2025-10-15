@@ -1,11 +1,4 @@
-import {
-  Component,
-  EventEmitter,
-  inject,
-  OnInit,
-  Output,
-  WritableSignal,
-} from '@angular/core';
+import { Component, EventEmitter, Output, WritableSignal } from '@angular/core';
 import { ChannelsService } from '../../services/channels.service';
 import {
   FormControl,
@@ -38,36 +31,26 @@ import { DashboardState } from '../../shared/types/dashboard-state.type';
   styleUrl: './create-channel-form.component.scss',
 })
 export class CreateChannelFormComponent {
-  // Event emitter to notify parent to close the form
-  @Output() close = new EventEmitter<void>();
+  @Output() close = new EventEmitter<void>(); // Event emitter to notify parent to close the form
+  @Output() submitForm = new EventEmitter<any>(); // Event emitter to notify parent when the form is submitted
 
-  // Event emitter to notify parent when the form is submitted
-  @Output() submitForm = new EventEmitter<any>();
-
+  createSub: any;
   dashboardState!: WritableSignal<DashboardState>;
-  // Stores an error message if form submission fails
-  errorMessage: string | null = null;
-
-  // Form group for creating a channel
+  channel$!: Observable<ChannelInterface | undefined>;
+  screenSize$!: Observable<ScreenSize>;
   createChannel: FormGroup = new FormGroup({
-    // Name field is required, no specific character limit
     name: new FormControl('', [Validators.required]),
-
-    // Description field is optional
     description: new FormControl(''),
   });
 
-  showErrorMessage: boolean = false;
-  createSub: any;
-
-  inviteMembers: boolean = false;
   channel: ChannelInterface | undefined;
-  channel$!: Observable<ChannelInterface | undefined>;
-  screenSize$!: Observable<ScreenSize>;
+  errorMessage: string | null = null;
+  showErrorMessage: boolean = false;
+  inviteMembers: boolean = false;
 
   constructor(
-    public overlayService: OverlayService,
     private channelService: ChannelsService,
+    public overlayService: OverlayService,
     private router: Router,
     public screenService: ScreenService
   ) {
@@ -75,65 +58,6 @@ export class CreateChannelFormComponent {
     this.screenSize$ = this.screenService.screenSize$;
   }
 
-  /**
-   * Handles form submission
-   */
-  onSubmit(): void {
-    if (this.createChannel.invalid) {
-      this.errorMessage = 'Please fill in all required fields correctly.';
-      return;
-    }
-
-    const name = this.createChannel.get('name')?.value?.trim();
-    const descriptionValue = this.createChannel
-      .get('description')
-      ?.value?.trim();
-
-    // Convert empty string to undefined
-    const description = descriptionValue ? descriptionValue : undefined;
-    this.handlePossibleError(name);
-  }
-
-  /**
-   *
-   * Throws error-message if channel-name is taken
-   */
-  handlePossibleError(name: string, description?: string): void {
-    if (this.createSub) {
-      this.createSub.unsubscribe();
-    }
-    this.createSub = this.channelService
-      .createChannel(name, description)
-      .subscribe({
-        next: (channel) => {
-          this.errorMessage = null;
-          this.createChannel.reset();
-          this.channel = channel;
-          this.router.navigate(['/dashboard', 'channel', channel?.id]);
-          this.screenService.setDashboardState('message-window');
-          this.openAddMembersToChannel();
-        },
-        error: (err) => {
-          if (err.message === 'name vergeben') {
-            this.showErrorMessage = true;
-          } else {
-            this.errorMessage = err.message;
-          }
-        },
-      });
-  }
-
-  /**
-   *  Function witch transform a normal object to a observable.
-   */
-  channelToObservable() {
-    this.channel$ = of(this.channel);
-    return this.channel$;
-  }
-
-  /**
-   * Ends subscription if necessary.
-   */
   ngOnDestroy() {
     if (this.createSub) {
       this.createSub.unsubscribe();
@@ -146,14 +70,63 @@ export class CreateChannelFormComponent {
   onNameInput(): void {
     const nameControl = this.createChannel.get('name');
     const value = nameControl?.value.trim();
-
     if (this.showErrorMessage && value && value !== '') {
       this.showErrorMessage = false;
       this.errorMessage = null;
     }
   }
 
-  openAddMembersToChannel() {
+  /**
+   * Handles form submission.
+   */
+  onSubmit(): void {
+    if (this.createChannel.invalid) {
+      this.errorMessage = 'Please fill in all required fields correctly.';
+      return;
+    }
+    const name = this.createChannel.get('name')?.value?.trim();
+    const descriptionValue = this.createChannel
+      .get('description')
+      ?.value?.trim();
+    const description = descriptionValue ? descriptionValue : undefined;
+    this.tryCreateChannel(name);
+  }
+
+  /**
+   * Attempts to create a channel.
+   * Throws error-message if channel-name is taken.
+   *
+   * @param name - the channel-name
+   * @param description - the channel-description
+   */
+  tryCreateChannel(name: string, description?: string): void {
+    if (this.createSub) this.createSub.unsubscribe();
+    this.createSub = this.channelService
+      .createChannel(name, description)
+      .subscribe({
+        next: (channel) => this.handleSuccessfulChannelCreation(channel!),
+        error: (err) => this.handleChannelCreationError(err)
+      });
+  }
+
+  /**
+   * Handles a successful channel creation.
+   *
+   * @param channel - the created channel
+   */
+  handleSuccessfulChannelCreation(channel: ChannelInterface): void {
+    this.errorMessage = null;
+    this.createChannel.reset();
+    this.channel = channel;
+    this.router.navigate(['/dashboard', 'channel', channel?.id]);
+    this.screenService.setDashboardState('message-window');
+    this.openAddMembersToChannelOverlay();
+  }
+
+  /**
+   * This function opens the AddMemberToChannel-Overlay.
+   */
+  openAddMembersToChannelOverlay() {
     this.overlayService.openComponent(
       AddMemberToChannelComponent,
       'cdk-overlay-dark-backdrop',
@@ -166,5 +139,26 @@ export class CreateChannelFormComponent {
         overlay: 'overlay',
       }
     );
+  }
+
+  /**
+   *  Function witch transform a normal object to a observable.
+   */
+  channelToObservable() {
+    this.channel$ = of(this.channel);
+    return this.channel$;
+  }
+
+  /**
+   * Handles error with channel creation.
+   *
+   * @param error - the error occured
+   */
+  handleChannelCreationError(error: any): void {
+    if (error.message === 'name vergeben') {
+      this.showErrorMessage = true;
+    } else {
+      this.errorMessage = error.message;
+    }
   }
 }

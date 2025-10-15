@@ -24,8 +24,7 @@
 }
 
 .container-boarder {
-  border-color: #adb0d9;
-  // box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+  border-color: var(--color-purple-light-lines);
 }
 
 .mobile-overlay {
@@ -34,7 +33,7 @@
   height: 100vh;
   background-color: var(--color-white);
   border-radius: 0;
-  overflow-y: auto; /* scroll beheiver if wee need */
+  overflow-y: auto;
 }
 
 header {
@@ -45,7 +44,3 @@ header {
 .header-shadow {
   box-shadow: 0px 2px 10px 0px #00000014;
 }
-
-// .nameAndErrorEdit{
-//   height: 180px;
-// }

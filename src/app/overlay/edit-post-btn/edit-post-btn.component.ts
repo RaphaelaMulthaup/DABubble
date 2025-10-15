@@ -1,10 +1,4 @@
-import {
-  Component,
-  EventEmitter,
-  inject,
-  Output,
-  WritableSignal,
-} from '@angular/core';
+import { Component } from '@angular/core';
 import { PostInterface } from '../../shared/models/post.interface';
 import { OverlayService } from '../../services/overlay.service';
 
@@ -16,14 +10,14 @@ import { OverlayService } from '../../services/overlay.service';
 })
 export class EditPostBtnComponent {
   post!: PostInterface;
-  // @Output() editingCurrentPost = new EventEmitter<boolean>;
-  // editPostActive!: WritableSignal<boolean>;
 
   constructor(private overlayService: OverlayService) {}
 
+  /**
+   * Sets the editingPostId to the current post id.
+   * After that, all overlays are closed.
+   */
   confirmEdit() {
-    // this.editingCurrentPost.emit(true);
-    // this.overlayService.editPostActive = true;
     this.overlayService.editingPostId.set(this.post.id!);
     this.overlayService.closeAll();
   }

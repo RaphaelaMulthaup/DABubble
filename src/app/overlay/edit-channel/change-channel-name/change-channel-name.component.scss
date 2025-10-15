@@ -1,49 +1,45 @@
-.btn{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background-color: var(--color-purple-white);
-    padding-top: 3px;
-    padding-bottom: 3px;
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--color-purple-white);
+  padding-top: 3px;
+  padding-bottom: 3px;
+  .save {
+    width: 24px;
+    height: 24px;
+    background-image: url("../../../../assets/img/check-circle-black.svg");
+    transition: background-image 0.2 ease;
+  }
+  .edit {
+    width: 24px;
+    height: 24px;
+    background-image: url("../../../../assets/img/edit.svg");
+    transition: background-image 0.2 ease;
+  }
+  &:hover {
     .save {
-        width: 24px;
-        height: 24px;
-        background-image: url("../../../../assets/img/check-circle-black.svg");
-        transition: background-image 0.2 ease;
+      background-image: url("../../../../assets/img/check-circle-blue.svg");
     }
     .edit {
-        width: 24px;
-        height: 24px;
-        background-image: url("../../../../assets/img/edit.svg");
-        transition: background-image 0.2 ease;
+      background-image: url("../../../../assets/img/edit-blue.svg");
     }
-    &:hover {
-        .save {
-            background-image: url("../../../../assets/img/check-circle-blue.svg");
-        }
-        .edit {
-            background-image: url("../../../../assets/img/edit-blue.svg");
-        }
-    }
+  }
 }
 
-.nameAndError{
-    height: 48px;
+.nameAndError {
+  height: 48px;
 }
 
 .error-massage {
-    position: relative;
-    color: red;
-    height: 16px;
-    padding-top: 4px;
-    padding-left: 12px;
-    font-size: 16px;
-    color: var(--color-pink);
-    line-height: 1;
+  position: relative;
+  height: 16px;
+  padding-top: 4px;
+  padding-left: 12px;
+  font-size: 16px;
+  color: var(--color-pink);
+  line-height: 1;
 }
-
-
-
