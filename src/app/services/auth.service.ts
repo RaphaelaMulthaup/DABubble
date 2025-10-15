@@ -367,6 +367,9 @@ export class AuthService {
     await updateDoc(this.channelEntwicklerteamDocRef, {
       name: 'Entwicklerteam',
     });
+    await updateDoc(this.channelEntwicklerteamDocRef, {
+      description: 'Hier kannst du dich zusammen mit den EntwicklerInnen über die Chat-App austauschen.',
+    });
     await this.resetMessagesExampleChannel();
   }
 
