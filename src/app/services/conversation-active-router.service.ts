@@ -30,8 +30,7 @@ export class ConversationActiveRouterService {
 
   currentConversation = signal<string | null>(null);
   limit$ = new BehaviorSubject<number>(5);
-
-   private limits = new Map<string, BehaviorSubject<number>>();
+  private limits = new Map<string, BehaviorSubject<number>>();
   allMessagesLoaded = new Map<string, boolean>();
   constructor(private firestore: Firestore) {}
 
@@ -63,26 +62,23 @@ export class ConversationActiveRouterService {
     );
   }
 
-    private getLimit$(conversationId: string) {
+  private getLimit$(conversationId: string) {
     if (!this.limits.has(conversationId)) {
       this.limits.set(conversationId, new BehaviorSubject<number>(5));
     }
     return this.limits.get(conversationId)!;
   }
 
-    resetConversation(conversationId: string) {
-    this.allMessagesLoaded.delete(conversationId);
+  resetConversation(conversationId: string) {
+    this.allMessagesLoaded.delete(conversationId);  
     if (this.limits.has(conversationId)) {
       this.limits.get(conversationId)!.next(5);
     }
   }
 
-
-
   getMessages(conversationType: string, conversationId: string) {
     const basePath = this.basePathMap[conversationType];
     if (!basePath) return of([]);
-
     return this.getLimit$(conversationId).pipe(
       switchMap((limitValue) => {
         const path = `${basePath}/${conversationId}/messages`;
@@ -104,21 +100,10 @@ export class ConversationActiveRouterService {
     );
   }
 
-//   resetConversation(conversationId: string) {
-//   this.limit$.next(5);
-//   this.allMessagesLoaded.delete(conversationId);
-// }
-
   loadMore(conversationId: string) {
     if (this.allMessagesLoaded.get(conversationId)) return;
     this.getLimit$(conversationId).next(this.getLimit$(conversationId).value + 5);
   }
-
-  // loadMore(conversationId: string) {
-  //   if (this.allMessagesLoaded.get(conversationId)) return;
-  //   this.limit$.next(this.limit$.value + 5);
-  //   console.log(this.limit$.value);
-  // }
 
   getAnswers(
     conversationType: string,

@@ -35,6 +35,7 @@
           }
           @if (postAnswered && $index === 0 && conversationWindowState === 'thread') {
             <app-displayed-post
+              #messageElement
               [post]="postAnswered"
               [conversationWindowState]="conversationWindowState"
             ></app-displayed-post>
