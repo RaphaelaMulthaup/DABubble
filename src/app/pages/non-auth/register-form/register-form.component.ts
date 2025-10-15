@@ -62,9 +62,8 @@ export class RegisterFormComponent {
    * This function sets the emailExists-variable.
    */
   async checkForExistingUser() {
-    this.emailExists = await this.userService.checkForExistingUser(
-      this.registerForm.value.email
-    );
+    const existingUserID = await this.userService.getUserIdByEmail(this.registerForm.value.email);
+    existingUserID === null? this.emailExists = false : this.emailExists = true;
   }
 
   /**

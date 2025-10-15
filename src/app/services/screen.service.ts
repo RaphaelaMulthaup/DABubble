@@ -11,9 +11,9 @@ import { Router } from '@angular/router';
 })
 export class ScreenService {
   screenSize$: Observable<ScreenSize>;
-  breakpoints = BREAKPOINTS;
   dashboardState = signal<DashboardState>('sidenav');
-  sidenavVisible: boolean = true;                     //This can be toggled by clicking the collapsible in tablet- and webversion.
+  breakpoints = BREAKPOINTS;
+  sidenavVisible: boolean = true;
 
   constructor(
     private breakpointObserver: BreakpointObserver,
@@ -45,14 +45,12 @@ export class ScreenService {
    */
   setDashboardState(state: DashboardState) {
     this.dashboardState.set(state);
-    if (state === 'sidenav') {
-      this.router.navigate(['/dashboard']);
-    }
+    if (state === 'sidenav') this.router.navigate(['/dashboard']);
   }
 
   /**
-   * This function sets the initial dashboard-state according to the screen size,
-   * which is 'sidenav' for handset and new-message-view for tablets and web.
+   * This function sets the initial dashboard-state according to the screen size.
+   * --> 'sidenav' for handset and new-message-view for tablets and web.
    */
   async setInitDashboardState() {
     const currentScreenSize = await firstValueFrom(this.screenSize$);

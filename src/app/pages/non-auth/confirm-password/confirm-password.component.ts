@@ -47,7 +47,7 @@ export class ConfirmPasswordComponent {
    */
   async onSubmit() {
     const inputEmail = this.confirmForm.get('email')?.value;
-    const uid = await this.userService.checkMailAndUid(inputEmail);
+    const uid = await this.userService.getUserIdByEmail(inputEmail);
 
     if (uid) {
       this.authService

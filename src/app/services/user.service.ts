@@ -8,6 +8,7 @@ import {
   query,
   where,
   getDocs,
+  limit,
 } from '@angular/fire/firestore';
 import { UserInterface } from '../shared/models/user.interface';
 import { combineLatest, map, Observable, of, shareReplay } from 'rxjs';
@@ -24,29 +25,30 @@ export class UserService {
 
   constructor(
     private firestore: Firestore,
-    private overlayService: OverlayService,
+    private overlayService: OverlayService
   ) {}
 
   /**
-   * Fetch a single user by UID.
-   * @param uid - User ID.
-   * Returns an Observable of UserInterface.
+   * Fetch a single user by UID and returns an Observable of UserInterface.
+   *
+   * @param userId - the users ID
    */
-  getUserById(uid: string): Observable<UserInterface> {
-    if (!this.userCache.has(uid)) {
-      const userDocRef = doc(this.firestore, `users/${uid}`);
+  getUserById(userId: string): Observable<UserInterface> {
+    if (!this.userCache.has(userId)) {
+      const userDocRef = doc(this.firestore, `users/${userId}`);
       const user$ = docData(userDocRef, { idField: 'uid' }).pipe(
         map((doc) => doc as UserInterface),
         shareReplay({ bufferSize: 1, refCount: true })
       );
-      this.userCache.set(uid, user$);
+      this.userCache.set(userId, user$);
     }
-    return this.userCache.get(uid)!;
+    return this.userCache.get(userId)!;
   }
 
   /**
-   * Update or overwrite a user (not currently used).
-   * @param userId - User ID.
+   * Updates a users data.
+   *
+   * @param userId - the users ID
    * @param data - Partial data to update.
    */
   async updateUser(userId: string, data: Partial<UserInterface>) {
@@ -55,74 +57,31 @@ export class UserService {
   }
 
   /**
-   * Check if a user with the given email already exists in Firestore.
+   * Checks if a user with the given email exists in Firestore.
+   * Returns the user's ID if found, otherwise null.
+   *
    * @param inputEmail - The email address to check.
-   * Returns true if the email already exists, otherwise false.
    */
-  async checkForExistingUser(inputEmail: string): Promise<boolean> {
-    const usersCollection = collection(this.firestore, 'users'); // Reference to 'users' collection
-    const emailQuery = query(usersCollection, where('email', '==', inputEmail));
+  async getUserIdByEmail(inputEmail: string): Promise<string | null> {
+    const usersCollection = collection(this.firestore, 'users');
+    const emailQuery = query(
+      usersCollection,
+      where('email', '==', inputEmail),
+      limit(1)
+    );
     const querySnapshot = await getDocs(emailQuery);
-    return !querySnapshot.empty; // Returns true when the inputEmail already exists in Firestore
+    if (!querySnapshot.empty) return querySnapshot.docs[0].id;
+    return null;
   }
-
-  //wird nicht genutzt
-  // /**
-  //  * Get all email addresses from the 'users' collection.
-  //  * Creates an Observable of objects containing the 'uid' and 'email' fields.
-  //  * This can be subscribed to in components like "confirm-password.ts".
-  //  */
-  // getAllUserEmails(): Observable<{ uid: string; email: string }[]> {
-  //   const userColl = collection(this.firestore, 'users');
-  //   return collectionData(userColl).pipe(
-  //     map((users: any[]) =>
-  //       users.map((user) => ({
-  //         uid: user.uid,
-  //         email: user.email,
-  //       }))
-  //     )
-  //   );
-  // }
-
-  /**
-   * Fetches users based on an array of member IDs.
-   * @param memberIds - List of user IDs.
-   * Returns an Observable of UserInterface for the members.
-   */
-  // getMembersFromChannel(memberIds: string[]): Observable<UserInterface[]> {
-  //   const userColl = collection(this.firestore, 'users');
-  //   const q = query(userColl, where('uid', 'in', memberIds)); // Query for users whose UID is in memberIds
-  //   return collectionData(q, { idField: 'id' }) as Observable<UserInterface[]>;
-  // }
 
   /**
    * Fetches users from Firestore whose UIDs are included in the provided array of member IDs.
    *
-   * Firestore has a limitation on `in` queries: you can only query for up to 10 values at a time.
-   * This function automatically splits the `memberIds` array into batches of 10 and queries Firestore
-   * for each batch separately, then combines the results into a single Observable emitting an array
-   * of `UserInterface`.
-   *
-   * @param memberIds - Array of user IDs (UIDs) for the members you want to fetch.
-   * @returns Observable<UserInterface[]> - Emits an array of `UserInterface` objects corresponding
-   *           to the requested member IDs. If `memberIds` is empty, emits an empty array immediately.
-   *
-   * @example
-   * // Example usage:
-   * const memberIds = ['uid1', 'uid2', 'uid3'];
-   * userService.getMembersFromChannel(memberIds).subscribe(users => {
-   *   console.log(users); // Array of UserInterface objects for uid1, uid2, uid3
-   * });
-   *
-   * @note
-   * - Handles Firestore's `in` query limitation by batching requests in groups of 10.
-   * - Returns a single combined array if multiple batches are required.
-   * - Uses `combineLatest` to merge results from multiple batches into a single array.
+   * @param memberIds - Array of user IDs
    */
   getMembersFromChannel(memberIds: string[]): Observable<UserInterface[]> {
     if (memberIds.length === 0) return of([]);
     const batches: Observable<UserInterface[]>[] = [];
-
     for (let i = 0; i < memberIds.length; i += 10) {
       const batchIds = memberIds.slice(i, i + 10);
       const q = query(
@@ -133,46 +92,30 @@ export class UserService {
         collectionData(q, { idField: 'uid' }) as Observable<UserInterface[]>
       );
     }
-
     return batches.length > 1
       ? combineLatest(batches).pipe(map((arrs) => arrs.flat()))
       : batches[0];
   }
 
   /**
-   * Check if Mail-Adress from inputfield is existing in Firebase. If that's the case,
-   * returns UID.
-   */
-  async checkMailAndUid(inputEmail: string): Promise<string | null> {
-    let userColl = collection(this.firestore, 'users');
-    let mailQuery = query(userColl, where('email', '==', inputEmail));
-    let querySnapshot = await getDocs(mailQuery);
-
-    if (!querySnapshot.empty) {
-      let userDoc = querySnapshot.docs[0];
-      let data = userDoc.data();
-      return userDoc.id;
-    }
-    return null;
-  }
-
-  /**
    * Opens the profile overlay for the selected user.
-   * This is done using the OverlayService, and the user information is passed as an observable.
+   * 
+   * @param userId - the ID of the user selected
+   * @param currentUserId - the ID of the current user
    */
   openProfileOverlay(userId: string, currentUserId: string) {
     if (userId === currentUserId) {
       this.overlayService.openComponent(
-        ProfileViewMainComponent, // The component to be displayed in the overlay.
-        'cdk-overlay-dark-backdrop', // Backdrop style for the overlay.
-        { globalPosition: 'center' } // Position of the overlay (centered globally).
+        ProfileViewMainComponent,
+        'cdk-overlay-dark-backdrop',
+        { globalPosition: 'center' }
       );
     } else {
       this.overlayService.openComponent(
-        ProfileViewOtherUsersComponent, // The overlay component to open
-        'cdk-overlay-dark-backdrop', // The backdrop style for the overlay
-        { globalPosition: 'center' }, // Position the overlay in the center of the screen
-        { user$: this.getUserById(userId) } // Pass the selected user as an observable to the overlay
+        ProfileViewOtherUsersComponent,
+        'cdk-overlay-dark-backdrop',
+        { globalPosition: 'center' },
+        { user$: this.getUserById(userId) }
       );
     }
   }
