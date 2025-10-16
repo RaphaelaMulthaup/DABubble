@@ -224,7 +224,6 @@ export class AuthService {
           photoUrl: './assets/img/no-avatar.svg',
         });
         await this.addDirectChatToTeam(user.uid);
-
         await updateDoc(this.channelEntwicklerteamDocRef, {
           memberIds: arrayUnion(user.uid),
         });

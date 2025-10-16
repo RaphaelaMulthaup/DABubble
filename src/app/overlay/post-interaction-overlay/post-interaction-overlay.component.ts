@@ -24,7 +24,7 @@ export class PostInteractionOverlayComponent implements OnInit {
   currentConversationType!: 'channel' | 'chat';
   currentConversationId!: string;
   senderIsCurrentUser!: boolean;
-  parentMessageId?: string; //the id of the message, an answer belongs to -> only if the message is an answer
+  parentMessageId?: string;
 
   constructor(
     private authService: AuthService,

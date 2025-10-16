@@ -3,6 +3,7 @@ import { AuthService } from '../../../services/auth.service';
 import { AuthState } from '../../../shared/types/auth-state.type';
 import { UserToRegisterInterface } from '../../../shared/models/user.to.register.interface';
 import { AVATAROPTIONS } from '../../../shared/constants/avatar-options';
+import { ScreenService } from '../../../services/screen.service';
 
 @Component({
   selector: 'app-avatar-selection',
@@ -18,7 +19,7 @@ export class AvatarSelectionComponent implements OnInit {
   selectedAvatar: number = 0;
   showToast: boolean = false;
 
-  constructor(public authService: AuthService) {}
+  constructor(public authService: AuthService, private screenService: ScreenService) {}
 
   ngOnInit() {
     this.setPreselectedAvatar();
@@ -57,6 +58,7 @@ export class AvatarSelectionComponent implements OnInit {
     setTimeout(() => {
       this.authService.register(this.userToRegister).subscribe(() => {
         this.changeAuthState.emit('login');
+        this.screenService.setInitDashboardState();
       });
     }, 1000);
   }
