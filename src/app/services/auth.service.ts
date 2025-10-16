@@ -370,16 +370,17 @@ export class AuthService {
 
   async resetMessagesExampleChannel(guestUserId: string) {
     await this.deleteGuestsMessagesInExampleChannel(guestUserId);
-    const messagesWithReactionsQuery = query(
-      this.messagesChannelEntwicklerteamDocRef,
-      where('hasReactions', '==', true)
-    );
-    const messagesWithReactionsSnapshot = await getDocs(
-      messagesWithReactionsQuery
-    );
-    for (const msgDoc of messagesWithReactionsSnapshot.docs) {
-      await this.handleMessagesWithReactions(msgDoc, guestUserId);
-    }
+    await this.filterMessagesWithReactions(guestUserId);
+    // const messagesWithReactionsQuery = query(
+    //   this.messagesChannelEntwicklerteamDocRef,
+    //   where('hasReactions', '==', true)
+    // );
+    // const messagesWithReactionsSnapshot = await getDocs(
+    //   messagesWithReactionsQuery
+    // );
+    // for (const msgDoc of messagesWithReactionsSnapshot.docs) {
+    //   await this.handleMessagesWithReactions(msgDoc, guestUserId);
+    // }
   }
 
   async deleteGuestsMessagesInExampleChannel(guestUserId: string) {
@@ -396,10 +397,27 @@ export class AuthService {
     await batch.commit();
   }
 
-  async handleMessagesWithReactions(msgDoc: QueryDocumentSnapshot<DocumentData>, guestUserId: string) {
+  async filterMessagesWithReactions(guestUserId: string) {
+    const messagesWithReactionsQuery = query(
+      this.messagesChannelEntwicklerteamDocRef,
+      where('hasReactions', '==', true)
+    );
+    const messagesWithReactionsSnapshot = await getDocs(
+      messagesWithReactionsQuery
+    );
+    for (const msgDoc of messagesWithReactionsSnapshot.docs) {
+      await this.handleMessagesWithReactions(msgDoc, guestUserId);
+    }
+  }
+
+  async handleMessagesWithReactions(
+    msgDoc: QueryDocumentSnapshot<DocumentData>,
+    guestUserId: string
+  ) {
     const msgRef = msgDoc.ref;
     const reactionsColRef = collection(msgRef, 'reactions');
     const reactionNamesSnap = await getDocs(reactionsColRef);
+    //hier bin ich jetzt beim Durchgehen
     await this.deleteGuestUserIdAsSenderOfReactions(
       reactionNamesSnap,
       guestUserId
@@ -428,7 +446,7 @@ export class AuthService {
     guestUserId: string,
     batch: WriteBatch
   ) {
-    const userDocRef = doc(reactionDocRef, 'user', guestUserId);
+    const userDocRef = doc(reactionDocRef, 'users', guestUserId);
     const userSnap = await getDoc(userDocRef);
     if (userSnap.exists()) {
       batch.delete(userDocRef);
@@ -439,7 +457,7 @@ export class AuthService {
     reactionNamesSnap: QuerySnapshot<DocumentData>
   ) {
     for (const reactionDoc of reactionNamesSnap.docs) {
-      const usersColRef = collection(reactionDoc.ref, 'user');
+      const usersColRef = collection(reactionDoc.ref, 'users');
       const usersSnap = await getDocs(query(usersColRef, limit(1)));
       if (usersSnap.empty) {
         await deleteDoc(reactionDoc.ref);
