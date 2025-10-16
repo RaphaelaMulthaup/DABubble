@@ -58,6 +58,8 @@ export class WindowDisplayComponent implements OnInit {
   private initialScrollDone = false;
   isLoaded$!: Observable<boolean>;
 
+  hasScrollbar = false;
+
   constructor(
     // private el: ElementRef,
     private route: ActivatedRoute,
@@ -76,6 +78,7 @@ export class WindowDisplayComponent implements OnInit {
    * messages, and scroll requests.
    */
   ngOnInit() {
+
     this.channelTyp$ = this.conversationActiveRouterService.getConversationType$(this.route);
     this.route.params.pipe(takeUntil(this.destroy$)).subscribe((params) => {
       this.currentConversationId = params['conversationId'];
@@ -158,6 +161,7 @@ export class WindowDisplayComponent implements OnInit {
    * Used to scroll to posts once DOM elements are available.
    */
   ngAfterViewInit() {
+    this.tryAutoLoadUntilScrollbar()
     // Retry pending scroll requests when ViewChildren change
     this.postElements.changes.pipe(takeUntil(this.destroy$)).subscribe(() => {
       if (this.pendingScrollTo) {
@@ -417,4 +421,29 @@ export class WindowDisplayComponent implements OnInit {
       this.conversationActiveRouterService.loadMore(this.currentConversationId!);
     }
   }
+
+
+async tryAutoLoadUntilScrollbar() {
+  const el = this.messagesContainer.nativeElement;
+  let iteration = 0;
+
+  // limita de siguranță (ca să nu blocheze aplicația)
+  const maxTries = 20;
+
+  while (el.scrollHeight <= el.clientHeight && iteration < maxTries) {
+    iteration++;
+    console.log('no scrollbar → loading more...', iteration);
+
+    this.loadingOlderMessages = true;
+    await this.conversationActiveRouterService.loadMore(this.currentConversationId!);
+
+    // așteaptă o rundă de re-render
+    await new Promise((resolve) => setTimeout(resolve, 300));
+
+    // actualizează elementul după ce Angular a randat mesajele noi
+    this.loadingOlderMessages = false;
+  }
+
+  console.log('✅ scrollbar appeared or max tries reached');
+}
 }
