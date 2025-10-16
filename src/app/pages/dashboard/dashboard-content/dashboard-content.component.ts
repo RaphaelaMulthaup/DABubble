@@ -61,7 +61,7 @@ export class DashboardContentComponent implements OnInit {
    * Initializes the message stream based on the active route parameters.
    * Reacts to changes in conversation type or ID and fetches messages accordingly.
    */
-  initMessagesStream(): Observable<any[]> {
+  initMessagesStream() {
     return this.route.paramMap.pipe(
       map((params) => ({
         type: params.get('conversationType'),
@@ -69,9 +69,10 @@ export class DashboardContentComponent implements OnInit {
       })),
       filter(({ type, id }) => !!type && !!id),
       distinctUntilChanged((a, b) => a.type === b.type && a.id === b.id),
-      switchMap(({ type, id }) =>
-        this.conversationActiveRouterService.getMessages(type!, id!)
-      ),
+      switchMap(({ type, id }) => {
+        this.conversationActiveRouterService.resetConversation(id!)
+        return this.conversationActiveRouterService.getMessages(type!, id!)
+    }),
       shareReplay({ bufferSize: 1, refCount: true })
     );
   }

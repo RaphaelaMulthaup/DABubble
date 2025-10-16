@@ -1,31 +1,14 @@
-import {
-  Component,
-  ElementRef,
-  Input,
-  OnInit,
-  QueryList,
-  ViewChild,
-  ViewChildren,
-  WritableSignal,
-} from '@angular/core';
+import {Component,ElementRef,Input,OnInit,
+  QueryList,ViewChild,ViewChildren,WritableSignal} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PostService } from '../../../../../services/post.service';
 import { DisplayedPostComponent } from './displayed-post/displayed-post.component';
 import { PostInterface } from '../../../../../shared/models/post.interface';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
-  catchError,
-  combineLatest,
-  defer,
-  distinctUntilChanged,
-  map,
-  Observable,
-  of,
-  shareReplay,
-  startWith,
-  Subject,
-  takeUntil,
-} from 'rxjs';
+  catchError,combineLatest,defer,distinctUntilChanged,
+  map,Observable,of,shareReplay,startWith,
+  Subject,takeUntil,} from 'rxjs';
 import { ConversationActiveRouterService } from '../../../../../services/conversation-active-router.service';
 import { ChatService } from '../../../../../services/chat.service';
 import { DashboardState } from '../../../../../shared/types/dashboard-state.type';
@@ -65,9 +48,9 @@ export class WindowDisplayComponent implements OnInit {
   @ViewChildren('messageElement', { read: ElementRef })
   messageElements!: QueryList<ElementRef>;
   loadingOlderMessages = false;
-  private previousScrollHeight = 0; // sagve scrollHeight for loading
-  // Localized days of the week for displaying timestamps
-  days = DAYS;
+  lastconversationId: string | undefined;
+  private previousScrollHeight = 0; // save scrollHeight for loading
+  days = DAYS;  // Localized days of the week for displaying timestamps
   @Input() conversationWindowState?: 'conversation' | 'thread';
   private pendingScrollTo?: string; // Stores a post ID to scroll to once available
   private destroy$ = new Subject<void>(); // Used to clean up subscriptions
@@ -76,7 +59,7 @@ export class WindowDisplayComponent implements OnInit {
   isLoaded$!: Observable<boolean>;
 
   constructor(
-    private el: ElementRef,
+    // private el: ElementRef,
     private route: ActivatedRoute,
     private router: Router,
     public postService: PostService,
@@ -93,9 +76,7 @@ export class WindowDisplayComponent implements OnInit {
    * messages, and scroll requests.
    */
   ngOnInit() {
-    this.channelTyp$ =
-      this.conversationActiveRouterService.getConversationType$(this.route);
-
+    this.channelTyp$ = this.conversationActiveRouterService.getConversationType$(this.route);
     this.route.params.pipe(takeUntil(this.destroy$)).subscribe((params) => {
       this.currentConversationId = params['conversationId'];
       this.currentConversationType = params['conversationType'];
@@ -122,26 +103,34 @@ export class WindowDisplayComponent implements OnInit {
           this.postAnswered = null;
         }
       });
-
-    // Hauptmessages abonnieren
+  /**
+   * Subscribes to the messages observable for the current conversation.
+   * 
+   * Behavior:
+   * 1. Calls `onContentChange` whenever new messages arrive.
+   * 2. If older messages are being loaded, adjusts scroll position to maintain view.
+   * 3. Otherwise, on first load, scrolls to the last message.
+   * 4. Uses `takeUntil(this.destroy$)` to automatically unsubscribe on component destroy.
+   */
     this.messages$.pipe(takeUntil(this.destroy$)).subscribe((data) => {
       this.onContentChange(this.currentConversationId, data);
-      // if (this.loadingOlderMessages) {
-        const offset = 150;
-        const el = this.messagesContainer.nativeElement;
+      const el = this.messagesContainer.nativeElement;
+      if (this.loadingOlderMessages) {
+        const offset = 20;
         const newScrollHeight = el.scrollHeight;
-        el.scrollTop = newScrollHeight - this.previousScrollHeight + offset; // menține poziția
+        el.scrollTop = newScrollHeight - this.previousScrollHeight + offset;
         this.loadingOlderMessages = false;
-      // } else if (!this.initialScrollDone) {
-      //   setTimeout(() => this.scrollToLastMessage());
-      // }
+      } else if (!this.initialScrollDone) {
+        setTimeout(() => this.scrollToLastMessage());
+        this.initialScrollDone = true;
+      }
     });
 
     // Scroll-Handling
     this.postService.selected$
       .pipe(takeUntil(this.destroy$))
       .subscribe((postId) => {
-        this.handleScrollRequest(postId);
+        this.handleScrollRequest(postId, this.currentConversationId);
       });
 
     // Scroll-to QueryParams
@@ -149,17 +138,16 @@ export class WindowDisplayComponent implements OnInit {
       .pipe(takeUntil(this.destroy$))
       .subscribe((params) => {
         const id = params['scrollTo'];
-        if (id) this.handleScrollRequest(id);
+        if (id) this.handleScrollRequest(id, this.currentConversationId);
       });
 
     this.isLoaded$ = defer(() => {
-      if (!this.messages$) return of(true); // Kein Stream vorhanden → gilt als geladen
-
+      if (!this.messages$) return of(true);
       return combineLatest([this.messages$, this.channelTyp$ ?? of(true)]).pipe(
         map(([messages]) => messages !== undefined && messages !== null),
         distinctUntilChanged(),
         startWith(false),
-        catchError(() => of(true)), // Falls Firestore-Error, trotzdem UI anzeigen
+        catchError(() => of(true)), 
         shareReplay({ bufferSize: 1, refCount: true })
       );
     });
@@ -170,43 +158,28 @@ export class WindowDisplayComponent implements OnInit {
    * Used to scroll to posts once DOM elements are available.
    */
   ngAfterViewInit() {
-    setTimeout(() => {
-      if (!this.initialScrollDone) {
-        this.scrollToLastMessage();
-      }
-    }, 0);
-
-    this.messageElements.changes
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(() => {
-        if (!this.initialScrollDone) {
-          // this.scrollToLastMessage();
-        }
-      });
-
     // Retry pending scroll requests when ViewChildren change
     this.postElements.changes.pipe(takeUntil(this.destroy$)).subscribe(() => {
       if (this.pendingScrollTo) {
-        this.handleScrollRequest(this.pendingScrollTo);
+        this.handleScrollRequest(this.pendingScrollTo, this.currentConversationId);
       }
     });
-
     // Handle initial scrollTo param (on first load)
     const initial = this.route.snapshot.queryParams['scrollTo'];
-    if (initial) this.handleScrollRequest(initial);
+    if (initial) this.handleScrollRequest(initial, this.currentConversationId);
   }
 
+  /**
+ * Scrolls the chat container to the last message and marks initial scroll as done.
+ */
   private scrollToLastMessage() {
     const messagesArray = this.messageElements?.toArray();
     if (!messagesArray?.length) return;
-
     const lastMessage = messagesArray[messagesArray.length - 1].nativeElement;
-
     lastMessage.scrollIntoView({
-      block: 'end', // align message on the end of container
-      behavior: 'auto', // auto | smoth
+      block: 'end',
+      behavior: 'auto', 
     });
-
     this.initialScrollDone = true;
   }
 
@@ -240,12 +213,13 @@ export class WindowDisplayComponent implements OnInit {
    */
   onContentChange(newChatId?: string, newMessages: PostInterface[] = []) {
     const previousChatId = this.currentConversationId;
-
     this.currentConversationId = newChatId;
     this.postInfo = newMessages;
-
     if (previousChatId && previousChatId !== newChatId) {
-      this.tryDeleteEmptyChat(previousChatId);
+    this.initialScrollDone = false;
+    this.loadingOlderMessages = false;
+    this.tryDeleteEmptyChat(previousChatId);
+    
     }
   }
 
@@ -254,23 +228,29 @@ export class WindowDisplayComponent implements OnInit {
    * Highlights the post, scrolls to it, and clears the URL param.
    * @param postId - ID of the post to scroll to
    */
-  private handleScrollRequest(postId: string) {
+  private async handleScrollRequest(postId: string, conversationId?:string) {
     if (!postId) return;
     this.pendingScrollTo = postId;
+    const maxRetries = 20; 
+    const retryDelay = 300; 
+    for (let i = 0; i < maxRetries; i++) {
+      const maybe = this.postElements?.find(
+        (e) => (e.nativeElement as HTMLElement).id === postId)
+      if(maybe){
+        this.handleFoundPost(maybe);
+        break;
+      }
+        this.conversationActiveRouterService.loadMore(conversationId!);
+        await new Promise((resolve) => setTimeout(resolve, retryDelay));
+    };
+  }
 
-    const maybe = this.postElements?.find(
-      (e) => (e.nativeElement as HTMLElement).id === postId
-    );
-    if (!maybe) return; // Not yet in DOM
-
+  handleFoundPost(maybe: ElementRef<HTMLElement>){
     this.pendingScrollTo = undefined;
     const el = maybe.nativeElement as HTMLElement;
-
     this.triggerHighlight(el);
     this.scrollIfNeeded(el);
-
-    this.router.navigate([], {
-      queryParams: { scrollTo: null },
+    this.router.navigate([], {queryParams: { scrollTo: null },
       queryParamsHandling: 'merge',
       replaceUrl: true,
     });
@@ -319,10 +299,7 @@ export class WindowDisplayComponent implements OnInit {
    * @param el - The element to check
    * @param container - The scroll container
    */
-  private isFullyVisibleInContainer(
-    el: HTMLElement,
-    container: HTMLElement
-  ): boolean {
+  private isFullyVisibleInContainer(el: HTMLElement, container: HTMLElement): boolean {
     const elRect = el.getBoundingClientRect();
     const containerRect = container.getBoundingClientRect();
     if (
@@ -330,9 +307,7 @@ export class WindowDisplayComponent implements OnInit {
       container === document.documentElement ||
       container === document.body
     ) {
-      return (
-        elRect.top >= 0 &&
-        elRect.bottom <=
+      return (elRect.top >= 0 && elRect.bottom <=
           (window.innerHeight || document.documentElement.clientHeight)
       );
     } else {
@@ -350,7 +325,6 @@ export class WindowDisplayComponent implements OnInit {
   private scrollIfNeeded(el: HTMLElement) {
     const scrollParent = this.getScrollParent(el);
     const alreadyVisible = this.isFullyVisibleInContainer(el, scrollParent);
-
     if (alreadyVisible) return;
 
     setTimeout(() => {
@@ -394,6 +368,27 @@ export class WindowDisplayComponent implements OnInit {
    */
   shouldShowDate(index: number): boolean {
     if (index > 0) {
+      let currentPostDate:string = this.currentPostDate(index);
+      let previousPostDate: string = this.previousPostDate(index);
+      return currentPostDate !== previousPostDate;
+    }
+    return true;
+  }
+
+  previousPostDate(index:number){
+    let previousPostDate: string;
+    if (!this.postInfo[index - 1].createdAt) {
+      previousPostDate = new Date().toISOString().split('T')[0];
+    } else {
+      previousPostDate = this.postInfo[index - 1].createdAt
+        .toDate()
+        .toISOString()
+        .split('T')[0];
+    }
+    return previousPostDate;
+  }
+
+  currentPostDate(index:number){
       let currentPostDate;
       if (!this.postInfo[index].createdAt) {
         currentPostDate = new Date().toISOString().split('T')[0];
@@ -403,29 +398,23 @@ export class WindowDisplayComponent implements OnInit {
           .toISOString()
           .split('T')[0];
       }
-
-      let previousPostDate: string;
-      if (!this.postInfo[index - 1].createdAt) {
-        previousPostDate = new Date().toISOString().split('T')[0];
-      } else {
-        previousPostDate = this.postInfo[index - 1].createdAt
-          .toDate()
-          .toISOString()
-          .split('T')[0];
-      }
-
-      return currentPostDate !== previousPostDate;
-    }
-    return true;
+    return currentPostDate;
   }
 
+/**
+ * Handles scroll events to implement infinite scroll for chat messages.
+ * Loads older messages when the user scrolls near the top of the container.
+ * Prevents duplicate loads and stops if all messages are already loaded.
+ */
   onScroll() {
     const el = this.messagesContainer.nativeElement;
     const threshold = 20;
     if (el.scrollTop <= threshold && !this.loadingOlderMessages) {
-      this.previousScrollHeight = el.scrollHeight; // salvează înainte
+      if (this.conversationActiveRouterService.allMessagesLoaded.get(this.currentConversationId!)) 
+        return;
+      this.previousScrollHeight = el.scrollHeight;
       this.loadingOlderMessages = true;
-      this.conversationActiveRouterService.loadMore();
+      this.conversationActiveRouterService.loadMore(this.currentConversationId!);
     }
   }
 }
