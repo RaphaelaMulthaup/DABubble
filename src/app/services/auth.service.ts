@@ -370,7 +370,7 @@ export class AuthService {
   async resetMessagesExampleChannel(guestUserId: string) {
     await this.deleteGuestsMessagesInExampleChannel(guestUserId);
     await this.filterMessagesWithReactions(guestUserId);
-    // const messagesWithReactionsQuery = query(
+    // const messagesWithAnswersQuery = query(
     //   this.messagesChannelEntwicklerteamDocRef,
     //   where('hasReactions', '==', true)
     // );
@@ -430,7 +430,6 @@ export class AuthService {
     guestUserId: string
   ) {
     const localBatch = writeBatch(this.firestore);
-    //ist hier eine Forschleife nötig. Ich bin doch schon bei der reaction
     for (const reactionDoc of reactionNamesSnap.docs) {
       await this.deleteGuestReactionIfExists(
         reactionDoc.ref,
@@ -446,10 +445,13 @@ export class AuthService {
     guestUserId: string,
     batch: WriteBatch
   ) {
-    const userDocRef = doc(reactionDocRef, 'users', guestUserId);
-    const userSnap = await getDoc(userDocRef);
-    if (userSnap.exists()) {
-      batch.delete(userDocRef);
+    const reactionSnap = await getDoc(reactionDocRef);
+    if (!reactionSnap.exists()) return;
+    const reactionData = reactionSnap.data();
+    const users = reactionData['users'] as string[] | undefined;
+    if (users && users.includes(guestUserId)) {
+      const updatedUsers = users.filter((id) => id !== guestUserId);
+      batch.update(reactionDocRef, { users: updatedUsers });
     }
   }
 
@@ -457,9 +459,9 @@ export class AuthService {
     reactionNamesSnap: QuerySnapshot<DocumentData>
   ) {
     for (const reactionDoc of reactionNamesSnap.docs) {
-      const usersColRef = collection(reactionDoc.ref, 'users');
-      const usersSnap = await getDocs(query(usersColRef, limit(1)));
-      if (usersSnap.empty) {
+      const reactionData = reactionDoc.data();
+      const users = reactionData['users'] as string[] | undefined;
+      if (!users || users.length === 0) {
         await deleteDoc(reactionDoc.ref);
       }
     }
