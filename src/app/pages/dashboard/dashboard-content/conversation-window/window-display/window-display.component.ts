@@ -423,27 +423,17 @@ export class WindowDisplayComponent implements OnInit {
   }
 
 
-async tryAutoLoadUntilScrollbar() {
-  const el = this.messagesContainer.nativeElement;
-  let iteration = 0;
-
-  // limita de siguranță (ca să nu blocheze aplicația)
-  const maxTries = 20;
-
-  while (el.scrollHeight <= el.clientHeight && iteration < maxTries) {
-    iteration++;
-    console.log('no scrollbar → loading more...', iteration);
-
-    this.loadingOlderMessages = true;
-    await this.conversationActiveRouterService.loadMore(this.currentConversationId!);
-
-    // așteaptă o rundă de re-render
-    await new Promise((resolve) => setTimeout(resolve, 300));
-
-    // actualizează elementul după ce Angular a randat mesajele noi
-    this.loadingOlderMessages = false;
+  async tryAutoLoadUntilScrollbar() {
+    const el = this.messagesContainer.nativeElement;
+    let iteration = 0;
+    const maxTries = 20;
+    while (el.scrollHeight <= el.clientHeight && iteration < maxTries) {
+      iteration++;
+      console.log('no scrollbar → loading more...', iteration);
+      this.loadingOlderMessages = true;
+      await this.conversationActiveRouterService.loadMore(this.currentConversationId!);
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      this.loadingOlderMessages = false;
+    }
   }
-
-  console.log('✅ scrollbar appeared or max tries reached');
-}
 }
