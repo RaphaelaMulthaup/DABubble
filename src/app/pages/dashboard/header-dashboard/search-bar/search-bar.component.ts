@@ -49,7 +49,6 @@ export class SearchBarComponent extends BaseSearchDirective implements OnInit, O
   private searchOverlayRef: any;
   firstFocusHappened: boolean = false;
   searchResultsExisting: boolean = false;
-
   groupedResults = computed(() => {
     const res = this.results();
     const grouped: any[] = [];

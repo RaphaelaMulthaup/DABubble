@@ -55,8 +55,10 @@
                     <input class="input-primary" id="password" type="password" placeholder="Passwort"
                         formControlName="password" name="password" required>
                 </div>
-                <p class="error-message">@if (registerForm.get('password')?.invalid &&
-                    registerForm.get('password')?.touched){Dein Passwort muss min. 6 Zeichen lang sein.}</p>
+                <p class="error-message">
+                    @if (registerForm.get('password')?.invalid &&
+                    registerForm.get('password')?.touched)
+                    {Dein Passwort muss min. 6 Zeichen lang sein.}</p>
             </div>
         </div>
 
@@ -68,8 +70,11 @@
             </div>
             <div class="flex flex-col">
                 <p>Ich stimme der <a class="link">Datenschutzerklärung</a> zu.</p>
-                <p class="error-message">@if (registerForm.get('policyAccepted')?.invalid &&
-                    registerForm.get('policyAccepted')?.touched){Bitte stimme der Datenschutzerklärung zu.}</p>
+                <p class="error-message">^
+                    @if (registerForm.get('policyAccepted')?.invalid &&
+                    registerForm.get('policyAccepted')?.touched)
+                    {Bitte stimme der Datenschutzerklärung zu.}
+                </p>
             </div>
         </div>
         <button class="btn-primary self-end" type="submit" [disabled]="!registerForm.valid">Weiter</button>

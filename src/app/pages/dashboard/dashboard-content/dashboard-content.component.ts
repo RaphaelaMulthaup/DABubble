@@ -88,12 +88,8 @@ export class DashboardContentComponent implements OnInit {
         msgId: params.get('messageId'),
       })),
       filter(({ type, id, msgId }) => !!type && !!id && !!msgId),
-      distinctUntilChanged(
-        (a, b) => a.type === b.type && a.id === b.id && a.msgId === b.msgId
-      ),
-      switchMap(({ type, id, msgId }) =>
-        this.conversationActiveRouterService.getAnswers(type!, id!, msgId!)
-      ),
+      distinctUntilChanged((a, b) => a.type === b.type && a.id === b.id && a.msgId === b.msgId),
+      switchMap(({ type, id, msgId }) => this.conversationActiveRouterService.getAnswers(type!, id!, msgId!)),
       shareReplay({ bufferSize: 1, refCount: true })
     );
   }

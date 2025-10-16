@@ -20,8 +20,8 @@ import { ScreenSize } from '../../shared/types/screen-size.type';
   styleUrl: './search-results.component.scss',
 })
 export class SearchResultsComponent {
-  @Input() results$!: Signal<any[]>; //Signal containing the current array of search results.The results can be of different types (users, channels, posts)and will be rendered dynamically by the corresponding list components.
-  @Input() searchTerm: string = ''; //The search term entered by the user.Used for displaying or highlighting the query in the UI.
+  @Input() results$!: Signal<any[]>;
+  @Input() searchTerm: string = '';
 
   public screenSize$!: Observable<ScreenSize>;
   private subscription!: Subscription;
@@ -34,13 +34,13 @@ export class SearchResultsComponent {
     this.screenSize$ = this.screenService.screenSize$;
   }
 
-  ngOnInit(): void {
+  ngOnInit() {
     this.subscription = this.screenService.screenSize$.subscribe((size) => {
       this.screenSize = size;
     });
   }
 
-  ngOnDestroy(): void {
+  ngOnDestroy() {
     this.subscription.unsubscribe();
   }
 
