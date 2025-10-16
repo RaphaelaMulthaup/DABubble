@@ -431,6 +431,7 @@ export class AuthService {
     guestUserId: string
   ) {
     const localBatch = writeBatch(this.firestore);
+    //ist hier eine Forschleife nötig. Ich bin doch schon bei der reaction
     for (const reactionDoc of reactionNamesSnap.docs) {
       await this.deleteGuestReactionIfExists(
         reactionDoc.ref,
