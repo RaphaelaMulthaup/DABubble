@@ -24,6 +24,7 @@ import { UserInterface } from '../shared/models/user.interface';
 import { ChannelInterface } from '../shared/models/channel.interface';
 import { PostInterface } from '../shared/models/post.interface';
 import { ChatService } from './chat.service';
+import { ChannelsService } from './channels.service';
 
 @Injectable({ providedIn: 'root' })
 export class SearchService {
@@ -98,10 +99,7 @@ export class SearchService {
       filter((user): user is UserInterface => !!user),
       distinctUntilChanged((a, b) => a.uid === b.uid),
       switchMap((user) => {
-        const q = query(
-          collection(this.firestore, 'channels'),
-          where('memberIds', 'array-contains', user.uid)
-        );
+        const q = this.authService.buildUserChannelsQuery(user.uid);
         return collectionData(q, { idField: 'id' }).pipe(
           map((data) => data as ChannelInterface[])
         );

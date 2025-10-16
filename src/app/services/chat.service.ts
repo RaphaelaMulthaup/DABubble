@@ -5,10 +5,15 @@ import {
   collectionSnapshots,
   deleteDoc,
   doc,
+  DocumentData,
+  documentId,
   Firestore,
+  getDocs,
   limit,
   query,
+  QueryDocumentSnapshot,
   setDoc,
+  where,
 } from '@angular/fire/firestore';
 import { ChatInterface } from '../shared/models/chat.interface'; // Interface for chat data
 import {
@@ -19,6 +24,7 @@ import {
   Observable,
   of,
   shareReplay,
+  Subscription,
   take,
 } from 'rxjs';
 import { NavigationEnd, Router } from '@angular/router'; // Router to navigate within the app
@@ -34,7 +40,7 @@ export class ChatService {
    * It is exposed as an observable for other components to subscribe to.
    */
   private chatsCache = new Map<string, Observable<ChatInterface[]>>();
-
+  // private chatSubscriptions: Subscription[] = [];
   private _otherUser$ = new BehaviorSubject<UserInterface | null>(null);
   public otherUser$ = this._otherUser$.asObservable(); // Public observable for other user
   previousUrl = '';
@@ -90,17 +96,17 @@ export class ChatService {
    */
   getChatsForUser(userId: string): Observable<ChatInterface[]> {
     if (!this.chatsCache.has(userId)) {
-      const chatsRef = collection(this.firestore, 'chats'); // Reference to the "chats" collection in Firestore
-
-      const chats$ = collectionSnapshots(chatsRef).pipe(
+      const chats$ = collectionSnapshots(
+        collection(this.firestore, 'chats')
+      ).pipe(
         map((snaps) =>
           snaps
-            // Keep only chats whose ID contains the userId
+            // Filter über die wiederverwendbare Funktion
             .filter((snap) => snap.id.includes(userId))
             .map((snap) => {
-              const data = snap.data() as Omit<ChatInterface, 'id'>; // Extract the data, excluding the 'id' field
-              const id = snap.id; // Document ID consisting of both user IDs
-              return { id, ...data }; // Return the full chat data with the ID
+              const data = snap.data() as Omit<ChatInterface, 'id'>;
+              const id = snap.id;
+              return { id, ...data };
             })
         ),
         distinctUntilChanged(
@@ -109,11 +115,21 @@ export class ChatService {
         ),
         shareReplay({ bufferSize: 1, refCount: true })
       );
+
+      // const sub = chats$.subscribe();
+      // this.chatSubscriptions.push(sub);
       this.chatsCache.set(userId, chats$);
     }
     return this.chatsCache.get(userId)!;
   }
 
+  async getChatRefsForUser(
+    userId: string
+  ): Promise<QueryDocumentSnapshot<DocumentData>[]> {
+    const chatsRef = collection(this.firestore, 'chats');
+    const snaps = await getDocs(chatsRef); // einmalige Abfrage aller Dokumente
+    return snaps.docs.filter((snap) => snap.id.includes(userId)); // filtert nach userId
+  }
   /**
    * Generates a unique chat ID for two users.
    *
@@ -207,4 +223,11 @@ export class ChatService {
   setOtherUser(user: UserInterface) {
     this._otherUser$.next(user); // Update the BehaviorSubject with the new other user
   }
+
+  // unsubscribeAll() {
+  //   this.chatSubscriptions.forEach((sub) => sub.unsubscribe());
+  //   this.chatSubscriptions = [];
+  //   this.chatsCache.clear(); // Cache auch leeren
+  //   this._otherUser$.next(null);
+  // }
 }

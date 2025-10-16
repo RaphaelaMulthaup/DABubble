@@ -3,7 +3,6 @@ import {
   Auth,
   authState,
   createUserWithEmailAndPassword,
-  onAuthStateChanged,
   signOut,
   User,
 } from '@angular/fire/auth';
@@ -18,7 +17,7 @@ import {
 } from 'firebase/auth';
 import {
   Firestore,
-  addDoc,
+  arrayRemove,
   arrayUnion,
   collection,
   deleteDoc,
@@ -51,6 +50,16 @@ import { ScreenService } from './screen.service';
 import { UserToRegisterInterface } from '../shared/models/user.to.register.interface';
 import { PostService } from './post.service';
 import { ChannelInterface } from '../shared/models/channel.interface';
+import {
+  CollectionReference,
+  DocumentData,
+  DocumentReference,
+  orderBy,
+  QueryDocumentSnapshot,
+  QuerySnapshot,
+  WriteBatch,
+  writeBatch,
+} from 'firebase/firestore';
 
 @Injectable({
   providedIn: 'root',
@@ -63,6 +72,8 @@ export class AuthService {
 
   /** Optional synchroner Zugriff */
   private currentUserSnapshot: UserInterface | null = null;
+  channelEntwicklerteamDocRef;
+  messagesChannelEntwicklerteamDocRef;
 
   constructor(
     private auth: Auth,
@@ -96,6 +107,26 @@ export class AuthService {
       distinctUntilChanged((a, b) => a?.uid === b?.uid),
       shareReplay({ bufferSize: 1, refCount: true })
     );
+
+    this.channelEntwicklerteamDocRef = doc(
+      this.firestore,
+      `channels/2TrvdqcsYSbj2ZpWLfvT`
+    );
+    this.messagesChannelEntwicklerteamDocRef = collection(
+      this.channelEntwicklerteamDocRef,
+      'messages'
+    );
+    window.addEventListener('beforeunload', () => {
+      const user = this.auth.currentUser;
+      if (user?.isAnonymous) {
+        try {
+          const userRef = doc(this.firestore, `users/${user.uid}`);
+          this.logoutGuest(user, userRef);
+        } catch (err) {
+          console.warn('Guest logout on unload failed:', err);
+        }
+      }
+    });
   }
 
   /** Synchronously get current Firestore User */
@@ -120,7 +151,7 @@ export class AuthService {
       );
     }
   }
-  
+
   /** Create or update Firestore user document */
   private async createOrUpdateUserInFirestore(
     user: User,
@@ -193,11 +224,10 @@ export class AuthService {
           photoUrl: './assets/img/no-avatar.svg',
         });
         await this.addDirectChatToTeam(user.uid);
-        const channelDocRef = doc(
-          this.firestore,
-          `channels/2TrvdqcsYSbj2ZpWLfvT`
-        );
-        await updateDoc(channelDocRef, { memberIds: arrayUnion(user.uid) });
+
+        await updateDoc(this.channelEntwicklerteamDocRef, {
+          memberIds: arrayUnion(user.uid),
+        });
       })
       .catch((error) => console.error('Guest login error:', error));
     return from(promise) as Observable<void>;
@@ -205,7 +235,7 @@ export class AuthService {
 
   async addDirectChatToTeam(userId: string) {
     const devChats = [
-      'XbsVa8YOj8Nd9vztzX1kAQXrc7Z2',
+      'YMOQBS4sWIQoVbLI2OUphJ7Ruug2',
       '5lntBSrRRUM9JB5AFE14z7lTE6n1',
       'rUnD1S8sHOgwxvN55MtyuD9iwAD2',
       'NxSyGPn1LkPV3bwLSeW94FPKRzm1',
@@ -217,12 +247,13 @@ export class AuthService {
 
       // chatId erneut abrufen
       const chatId = await this.chatService.getChatId(userId, devId);
+      // this.chatsWithGuestsIds.push(chatId);
 
       // Beispielnachrichten vorbereiten
       let messages: { senderId: string; text: string }[] = [];
 
       switch (devId) {
-        case 'XbsVa8YOj8Nd9vztzX1kAQXrc7Z2':
+        case 'YMOQBS4sWIQoVbLI2OUphJ7Ruug2':
           messages = [
             {
               senderId: devId,
@@ -302,7 +333,7 @@ export class AuthService {
   }
 
   /** Logout and update Firestore */
-  logout() {
+  async logout() {
     const user = this.auth.currentUser;
     if (!user) return signOut(this.auth);
 
@@ -310,14 +341,188 @@ export class AuthService {
     const isGuest = user.isAnonymous;
 
     if (isGuest) {
-      return deleteDoc(userRef)
-        .catch(() => {})
-        .then(() => deleteUser(user))
-        .catch((err) => console.error('Failed to delete guest user:', err));
+      await this.logoutGuest(user, userRef);
     } else {
-      return updateDoc(userRef, { active: false }).then(() =>
-        signOut(this.auth)
+      await updateDoc(userRef, { active: false });
+      await signOut(this.auth);
+    }
+  }
+
+  async logoutGuest(user: User, userRef: DocumentReference) {
+    await deleteDoc(userRef)
+      .catch(() => {})
+      .then(() => deleteUser(user))
+      .catch((err) => console.error('Failed to delete guest user:', err));
+    await this.resetExampleChannel(user.uid);
+    await this.handleGuestsChannels(user.uid);
+    await this.deleteChats(user.uid);
+  }
+
+  async resetExampleChannel(guestUserId: string) {
+    await updateDoc(this.channelEntwicklerteamDocRef, {
+      memberIds: arrayRemove(guestUserId),
+      name: 'Entwicklerteam',
+      description:
+        'Hier kannst du dich zusammen mit den EntwicklerInnen über die Chat-App austauschen.',
+    });
+    await this.resetMessagesExampleChannel(guestUserId);
+  }
+
+  async resetMessagesExampleChannel(guestUserId: string) {
+    await this.deleteGuestsMessagesInExampleChannel(guestUserId);
+    await this.filterMessagesWithReactions(guestUserId);
+    // const messagesWithReactionsQuery = query(
+    //   this.messagesChannelEntwicklerteamDocRef,
+    //   where('hasReactions', '==', true)
+    // );
+    // const messagesWithReactionsSnapshot = await getDocs(
+    //   messagesWithReactionsQuery
+    // );
+    // for (const msgDoc of messagesWithReactionsSnapshot.docs) {
+    //   await this.handleMessagesWithReactions(msgDoc, guestUserId);
+    // }
+  }
+
+  async deleteGuestsMessagesInExampleChannel(guestUserId: string) {
+    const messagesQuery = query(
+      this.messagesChannelEntwicklerteamDocRef,
+      where('senderId', '==', guestUserId)
+    );
+    const messagesSnapshot = await getDocs(messagesQuery);
+    let batch = writeBatch(this.firestore);
+
+    for (const msgDoc of messagesSnapshot.docs) {
+      batch.delete(msgDoc.ref);
+    }
+    await batch.commit();
+  }
+
+  async filterMessagesWithReactions(guestUserId: string) {
+    const messagesWithReactionsQuery = query(
+      this.messagesChannelEntwicklerteamDocRef,
+      where('hasReactions', '==', true)
+    );
+    const messagesWithReactionsSnapshot = await getDocs(
+      messagesWithReactionsQuery
+    );
+    for (const msgDoc of messagesWithReactionsSnapshot.docs) {
+      await this.handleMessagesWithReactions(msgDoc, guestUserId);
+    }
+  }
+
+  async handleMessagesWithReactions(
+    msgDoc: QueryDocumentSnapshot<DocumentData>,
+    guestUserId: string
+  ) {
+    const msgRef = msgDoc.ref;
+    const reactionsColRef = collection(msgRef, 'reactions');
+    const reactionNamesSnap = await getDocs(reactionsColRef);
+    //hier bin ich jetzt beim Durchgehen
+    await this.deleteGuestUserIdAsSenderOfReactions(
+      reactionNamesSnap,
+      guestUserId
+    );
+    await this.checkWhetherReactionsAreStillAssigned(reactionNamesSnap);
+    await this.setHasReactions(reactionsColRef, msgRef);
+  }
+
+  async deleteGuestUserIdAsSenderOfReactions(
+    reactionNamesSnap: QuerySnapshot<DocumentData>,
+    guestUserId: string
+  ) {
+    const localBatch = writeBatch(this.firestore);
+    //ist hier eine Forschleife nötig. Ich bin doch schon bei der reaction
+    for (const reactionDoc of reactionNamesSnap.docs) {
+      await this.deleteGuestReactionIfExists(
+        reactionDoc.ref,
+        guestUserId,
+        localBatch
       );
+    }
+    await localBatch.commit();
+  }
+
+  async deleteGuestReactionIfExists(
+    reactionDocRef: DocumentReference<DocumentData>,
+    guestUserId: string,
+    batch: WriteBatch
+  ) {
+    const userDocRef = doc(reactionDocRef, 'users', guestUserId);
+    const userSnap = await getDoc(userDocRef);
+    if (userSnap.exists()) {
+      batch.delete(userDocRef);
+    }
+  }
+
+  async checkWhetherReactionsAreStillAssigned(
+    reactionNamesSnap: QuerySnapshot<DocumentData>
+  ) {
+    for (const reactionDoc of reactionNamesSnap.docs) {
+      const usersColRef = collection(reactionDoc.ref, 'users');
+      const usersSnap = await getDocs(query(usersColRef, limit(1)));
+      if (usersSnap.empty) {
+        await deleteDoc(reactionDoc.ref);
+      }
+    }
+  }
+
+  async setHasReactions(
+    reactionsColRef: CollectionReference<DocumentData>,
+    msgRef: DocumentReference<DocumentData>
+  ) {
+    const remainingReactionNamesSnap = await getDocs(reactionsColRef);
+    if (remainingReactionNamesSnap.empty) {
+      await updateDoc(msgRef, { hasReactions: false });
+    }
+  }
+
+  async handleGuestsChannels(guestUserId: string) {
+    const q = this.buildUserChannelsQuery(guestUserId);
+    const snapshot = await getDocs(q);
+    const batch = writeBatch(this.firestore);
+    for (const docSnap of snapshot.docs) {
+      this.handleChannelBatchUpdate(batch, docSnap, guestUserId);
+    }
+    await batch.commit();
+  }
+
+  private handleChannelBatchUpdate(
+    batch: WriteBatch,
+    docSnap: QueryDocumentSnapshot,
+    guestUserId: string
+  ) {
+    const channel = docSnap.data() as ChannelInterface;
+    const channelRef = doc(this.firestore, 'channels', docSnap.id);
+    if (channel.createdBy === guestUserId) {
+      batch.delete(channelRef);
+    } else {
+      batch.update(channelRef, { memberIds: arrayRemove(guestUserId) });
+    }
+  }
+
+  buildUserChannelsQuery(userId: string) {
+    return query(
+      collection(this.firestore, 'channels'),
+      where('memberIds', 'array-contains', userId)
+    );
+  }
+
+  async deleteChats(userId: string) {
+    const userChats = await this.chatService.getChatRefsForUser(userId);
+    for (const chat of userChats) {
+      const messagesRef = collection(chat.ref, 'messages');
+      const messagesSnap = await getDocs(messagesRef);
+
+      const batch = writeBatch(this.firestore);
+
+      // Alle Nachrichten im Batch löschen
+      messagesSnap.docs.forEach((msg) => batch.delete(msg.ref));
+
+      // Chat-Dokument selbst löschen
+      batch.delete(chat.ref);
+
+      // Batch ausführen
+      await batch.commit();
     }
   }
 
