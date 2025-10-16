@@ -6,9 +6,9 @@
   [ngClass]="{'border-radius-0': (screenSize$ | async) === 'handset'}">
   <app-conversation-header [conversationWindowState]="conversationWindowState"></app-conversation-header>
   @if (data$) {
-  <app-window-display [messages$]="data$" [conversationWindowState]="conversationWindowState" [style.margin-top.px]="(screenSize$ | async) !== 'handset'
-      ? '96'
-      : '0'"></app-window-display>
+  <app-window-display [messages$]="data$" [conversationWindowState]="conversationWindowState" [style.margin-top.px]="(screenSize$ | async) === 'handset'
+      ? '78'
+      : '96'"></app-window-display>
   <app-current-post-input [conversationWindowState]="conversationWindowState"></app-current-post-input>
   }
 </section>

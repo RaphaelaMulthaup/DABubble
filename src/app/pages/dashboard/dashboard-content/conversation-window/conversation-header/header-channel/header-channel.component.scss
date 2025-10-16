@@ -1,3 +1,13 @@
+@import '../../../../../../../styles.scss';
+
+:host {
+  height: 96px;
+
+  @include respond-to('959') {
+    height: 78px;
+  }
+}
+
 .btn-tertiary {
   display: flex;
   align-items: center;
