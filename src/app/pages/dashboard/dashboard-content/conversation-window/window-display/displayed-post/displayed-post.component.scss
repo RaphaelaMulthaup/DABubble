@@ -251,7 +251,7 @@
     }
 
     .answers {
-      width: 100%;
+      width: fit-content;
       white-space: nowrap;
       gap: 20px;
       font-size: 18px;
@@ -259,7 +259,7 @@
   }
 
   .interactions-container {
-    margin-left: 144px;
+    margin-left: 112px;
 
     .interactions {
       .reaction {
@@ -304,7 +304,7 @@
   }
 
   .interactions-container {
-    margin-right: 144px;
+    margin-right: 112px;
   }
 }
 

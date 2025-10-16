@@ -34,6 +34,8 @@
       resize: none;
       overflow: auto;
       scrollbar-width: none;
+      word-break: break-word;
+      
       &::-webkit-scrollbar {
         width: 0;
         height: 0;
