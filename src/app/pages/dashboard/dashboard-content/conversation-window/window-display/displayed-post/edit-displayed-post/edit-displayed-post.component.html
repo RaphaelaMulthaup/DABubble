@@ -6,11 +6,13 @@
     [innerHTML]="postService.textToHtml(post.text)"
   ></div>
   <div class="flex justify-between align-center">
-    <button (click)="$event.preventDefault(); openEmojiPickerOverlay($event)" class="add-emoji btn-tertiary relative"></button>
+    <button (click)="openEmojiPickerOverlay($event)" class="add-emoji btn-tertiary relative"></button>
     <div class="btns-submit flex">
-      <button (click)="endEdit()" class="btn-secondary">Abbrechen</button>
+      <button (click)="endEdit()" class="btn-secondary">
+        <span>Abbrechen</span>
+      </button>
       <button (click)="submitEdit()" class="btn-primary">
-        Speichern
+        <span>Speichern</span>
       </button>
     </div>
   </div>

@@ -2,15 +2,16 @@
   [ngClass]="{'border-radius-0': (screenSize$ | async) === 'handset'}">
   <div class="nav-content flex flex-col">
     @if ((screenSize$|async) !== 'handset') {
-    <div class="new-message" (click)="openNewMessageView()">
-      <button class="btn-tertiary new-message-tablet-web"></button>
-      <span>Neue Nachricht</span>
-    </div>
+      <div class="new-message" (click)="openNewMessageView()">
+        <button class="btn-tertiary new-message-tablet-web"></button>
+        <span>Neue Nachricht</span>
+      </div>
     }
     <app-channel-list></app-channel-list>
     <app-contacts-list></app-contacts-list>
   </div>
 </nav>
+
 @if ((screenSize$|async) === 'handset') {
-<button class="new-message-handset" (click)="openNewMessageView(); overlayService.closeAll()"></button>
+  <button class="new-message-handset" (click)="openNewMessageView(); overlayService.closeAll()"></button>
 }

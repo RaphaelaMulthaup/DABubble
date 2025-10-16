@@ -1,21 +1,13 @@
-import {
-  Component,
-  ElementRef,
-  EventEmitter,
-  inject,
-  Input,
-  OnInit,
-  Output,
-  ViewChild,
-} from '@angular/core';
+import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { PostInterface } from '../../../../../../../shared/models/post.interface';
 import { ConversationActiveRouterService } from '../../../../../../../services/conversation-active-router.service';
 import { ActivatedRoute } from '@angular/router';
 import { PostService } from '../../../../../../../services/post.service';
 import { OverlayService } from '../../../../../../../services/overlay.service';
-import { Subject, take, takeUntil } from 'rxjs';
+import { combineLatest, Subject, take, takeUntil } from 'rxjs';
 import { EMOJIS } from '../../../../../../../shared/constants/emojis';
 import { EmojiPickerComponent } from '../../../../../../../overlay/emoji-picker/emoji-picker.component';
+import { OverlayPositionInterface } from '../../../../../../../shared/models/overlay.position.interface';
 
 @Component({
   selector: 'app-edit-displayed-post',
@@ -26,39 +18,32 @@ import { EmojiPickerComponent } from '../../../../../../../overlay/emoji-picker/
 export class EditDisplayedPostComponent implements OnInit {
   @Input() post!: PostInterface;
   @Input() conversationWindowState?: 'conversation' | 'thread';
+
+  @ViewChild('textareaEdit') postTextInput!: ElementRef;
+  private destroy$ = new Subject<void>();
+  emojis = EMOJIS;
   currentConversationType!: 'channel' | 'chat';
   currentConversationId!: string;
   messageId!: string;
-  emojis = EMOJIS;
-  @ViewChild('textareaEdit') postTextInput!: ElementRef;
-  private destroy$ = new Subject<void>();
 
   constructor(
-    private overlayService: OverlayService,
-    private route: ActivatedRoute,
     private conversationActiveRouterService: ConversationActiveRouterService,
-    public postService: PostService
+    private overlayService: OverlayService,
+    public postService: PostService,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit() {
-    this.conversationActiveRouterService
-      .getParams$(this.route)
+    combineLatest([
+      this.conversationActiveRouterService.getParams$(this.route),
+      this.conversationActiveRouterService.getMessageId$(this.route),
+    ])
       .pipe(takeUntil(this.destroy$))
-      .subscribe(({ conversationType, conversationId }) => {
+      .subscribe(([{ conversationType, conversationId }, messageId]) => {
         this.currentConversationType = conversationType as 'channel' | 'chat';
         this.currentConversationId = conversationId;
-      });
-
-    this.conversationActiveRouterService
-      .getMessageId$(this.route)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((messageId) => {
         this.messageId = messageId;
       });
-
-    setTimeout(() => {
-      this.postService.focusAtEndEditable(this.postTextInput);
-    });
   }
 
   ngAfterViewInit() {
@@ -66,6 +51,7 @@ export class EditDisplayedPostComponent implements OnInit {
     textarea.querySelectorAll('mark.mark').forEach((mark) => {
       mark.setAttribute('contenteditable', 'false');
     });
+    this.postService.focusAtEndEditable(this.postTextInput);
   }
 
   ngOnDestroy() {
@@ -76,7 +62,7 @@ export class EditDisplayedPostComponent implements OnInit {
   /**
    * This function adds the chosen emoji to the input field as an image.
    *
-   * @param emoji the emoji-object from the EMOJIS-array.
+   * @param emoji - The emoji-object from the EMOJIS-array.
    */
   addEmoji(emoji: { token: string; src: string }) {
     this.postService.focusAtEndEditable(this.postTextInput);
@@ -87,16 +73,35 @@ export class EditDisplayedPostComponent implements OnInit {
   }
 
   /**
-   * This functions opens the emoji-picker overlay.
-   * The overlay possibly emits an emoji and this emoji is added to the posts text.
+   * This function opens the EmojiPicker-Overlay.
+   * The overlay possibly emits an emoji and this emoji is used to react to the post.
    *
-   * @param event the user-interaction with an object.
+   * @param event - The user-interaction with an object.
    */
-  openEmojiPickerOverlay(event: MouseEvent) {
+  async openEmojiPickerOverlay(event: MouseEvent) {
+    event.preventDefault();
     const overlay = this.overlayService.openComponent(
       EmojiPickerComponent,
       'cdk-overlay-transparent-backdrop',
-      {
+      await this.resolveEmojiPickerPosition(event),
+      { rightAngleBottomLeft: true }
+    );
+
+    overlay!.ref.instance.selectedEmoji
+      .pipe(take(1))
+      .subscribe((emoji: { token: string; src: string }) => {
+        this.addEmoji(emoji);
+        this.overlayService.closeAll();
+      });
+  }
+  
+  /**
+   * Returns the OverlayPosition for the EmojiPicker-Overlay.
+   *
+   * @param event - The user-interaction with an object.
+   */
+  async resolveEmojiPickerPosition(event: MouseEvent): Promise<OverlayPositionInterface> {
+    return {
         origin: event.currentTarget as HTMLElement,
         originPosition: {
           originX: 'end',
@@ -110,16 +115,7 @@ export class EditDisplayedPostComponent implements OnInit {
           overlayX: 'start',
           overlayY: 'top',
         },
-      },
-      {rightAngleBottomLeft: true}
-    );
-
-    overlay!.ref.instance.selectedEmoji
-      .pipe(take(1))
-      .subscribe((emoji: { token: string; src: string }) => {
-        this.addEmoji(emoji);
-        // this.overlayService.closeAll();
-      });
+      }
   }
 
   /**
@@ -128,6 +124,7 @@ export class EditDisplayedPostComponent implements OnInit {
    */
   endEdit() {
     this.overlayService.editingPostId.set(null);
+    this.overlayService.closeAll();
   }
 
   /**
@@ -138,26 +135,27 @@ export class EditDisplayedPostComponent implements OnInit {
     const postText = this.postService.htmlToText(
       this.postTextInput.nativeElement.innerHTML
     );
-
-    if (postText.trim() == '')
-      return this.postService.focusAtEndEditable(this.postTextInput);
-
-    if (this.conversationWindowState === 'conversation') {
-      this.postService.updatePost(
-        { text: postText },
-        this.currentConversationType,
-        this.currentConversationId,
-        this.post.id!
-      );
-    } else if (this.conversationWindowState === 'thread') {
-      this.postService.updatePost(
-        { text: postText },
-        this.currentConversationType,
-        this.currentConversationId,
-        this.messageId,
-        this.post.id!
-      );
-    }
+    if (postText.trim() == '') return this.postService.focusAtEndEditable(this.postTextInput);
+    this.updateCurrentPost(postText)
     this.endEdit();
+  }
+
+  /**
+   * Updates the current post with new text.
+   * Determines the correct target ID and extra ID based on the conversation window state.
+   *
+   * @param postText - The text to update the post with.
+   */
+  updateCurrentPost(postText: string) {
+    const targetId = this.conversationWindowState === 'thread' ? this.messageId : this.post.id!;
+    const extraId = this.conversationWindowState === 'thread' ? this.post.id! : undefined;
+
+    this.postService.updatePost(
+      { text: postText },
+      this.currentConversationType,
+      this.currentConversationId,
+      targetId,
+      extraId
+    );
   }
 }

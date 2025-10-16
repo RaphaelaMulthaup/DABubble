@@ -93,7 +93,7 @@
       [style.gap]="(visibleReactions$ | async)?.length === 0 ? '0px' : null">
       @for (reaction of (visibleReactions$ | async); track reaction.id) {
       @if(allReactionsVisible || $index <= 4) { <div (mouseenter)="openReactedUsersOverlay($event, reaction)"
-        (mouseleave)="overlayService.closeAll()" (click)="toggleExistingReaction(reaction.emoji)"
+        (mouseleave)="overlayService.closeAll()" (click)="togglePostReaction(reaction.emoji)"
         class="reaction flex place-items-center">
         <img class="reaction-img" [src]="reaction.emoji.src" [alt]="reaction.emoji.token" />
         <p>{{ reaction.users.length }}</p>

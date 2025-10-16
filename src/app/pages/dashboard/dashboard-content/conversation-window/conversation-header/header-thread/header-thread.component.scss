@@ -1,3 +1,14 @@
+@import "../../../../../../../styles.scss";
+
+:host {
+  height: 96px;
+  display: flex;
+
+  @include respond-to("959") {
+    height: 78px;
+  }
+}
+
 span {
   font-weight: 500;
   font-size: 18px;

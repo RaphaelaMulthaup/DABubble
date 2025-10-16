@@ -9,7 +9,7 @@
         <span> Mache dir Notizen, liste deine To-dos auf oder bewahre Links und Dateien griffbereit auf. Du kannst hier auch gerne Dinge mit dir selbst besprechen.</span>
     } @else {
         <span>Diese Unterhaltung findet nur zwischen </span>
-        <span class="link-to-chat" (click)="openProfileOverlay()">@{{(user$ | async)?.name}}</span>
+        <span class="link-to-chat" (click)="openProfileViewOtherUsersOverlay()">@{{(user$ | async)?.name}}</span>
         <span> und dir statt.</span>
     }
   </div>

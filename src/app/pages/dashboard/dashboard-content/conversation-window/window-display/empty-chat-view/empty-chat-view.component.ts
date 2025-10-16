@@ -10,41 +10,50 @@ import { ProfileViewOtherUsersComponent } from '../../../../../../overlay/profil
 
 @Component({
   selector: 'app-empty-chat-view',
-  imports: [CommonModule], // Standalone component imports
+  imports: [CommonModule],
   templateUrl: './empty-chat-view.component.html',
   styleUrl: './empty-chat-view.component.scss',
 })
 export class EmptyChatViewComponent {
-  @Input() currentChatId!: string; // Input property to identify the current chat
-  currentUserId!: string; // Stores the current logged-in user's ID
-  ownChat: boolean = false; // Flag to indicate if the current chat is with the user themself
-  user$!: Observable<UserInterface>; // Observable for the other user's data
+  @Input() currentChatId!: string;
+  user$!: Observable<UserInterface>;
+  ownChat: boolean = false;
+  currentUserId!: string;
 
   constructor(
-    private chatService: ChatService,
     private authService: AuthService,
-    private userService: UserService,
-    private overlayService: OverlayService
+    private chatService: ChatService,
+    private overlayService: OverlayService,
+    private userService: UserService
   ) {}
 
-ngOnInit() {
+  ngOnInit() {
     this.currentUserId = this.authService.getCurrentUserId()!;
-    this.updateUserData(); // initialer Aufruf
+    this.updateUserData();
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes['currentChatId'] && !changes['currentChatId'].firstChange) {
-      this.updateUserData(); // neu laden, wenn Chat-ID sich ändert
-    }
+    if (changes['currentChatId'] && !changes['currentChatId'].firstChange)
+      this.updateUserData();
   }
 
-  private updateUserData() {
-    const userId = this.chatService.getOtherUserId(this.currentChatId, this.currentUserId);
+  /**
+   * Loads the data of the other user in the current chat and updates the local state.
+   * Sets `user$` to an observable of the other user's data and `ownChat` to true if the current user is the other user.
+   */
+  updateUserData() {
+    const userId = this.chatService.getOtherUserId(
+      this.currentChatId,
+      this.currentUserId
+    );
     this.user$ = this.userService.getUserById(userId);
     this.ownChat = this.currentUserId === userId;
   }
 
-  openProfileOverlay() {
+  /**
+   * This function opens the ProfileViewOtherUsers-Overlay.
+   */
+  openProfileViewOtherUsersOverlay() {
     this.overlayService.openComponent(
       ProfileViewOtherUsersComponent,
       'cdk-overlay-dark-backdrop',

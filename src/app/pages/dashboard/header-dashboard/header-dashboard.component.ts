@@ -24,32 +24,26 @@ import { SettingsComponent } from '../../../overlay/settings/settings.component'
   styleUrl: './header-dashboard.component.scss',
 })
 export class HeaderDashboardComponent {
-  // Observable that holds the current user object, or null if not authenticated.
-  currentUser$?: Observable<UserInterface | null>;
-
-  // A writable signal to track the mobile dashboard state.
   dashboardState: WritableSignal<DashboardState>;
-
+  currentUser$?: Observable<UserInterface | null>;
   screenSize$!: Observable<ScreenSize>;
 
   constructor(
-    public screenService: ScreenService,
-    private overlayService: OverlayService, // Inject the OverlayService to handle overlay actions.
-    public authService: AuthService // Inject the AuthService to manage authentication-related data.
+    public authService: AuthService,
+    private overlayService: OverlayService,
+    public screenService: ScreenService
   ) {
-    // Initialize the mobile dashboard state.
-    this.dashboardState = this.screenService.dashboardState;
-
-    // Initialize the current user observable from AuthService.
     this.currentUser$ = this.authService.currentUser$;
-
+    this.dashboardState = this.screenService.dashboardState;
     this.screenSize$ = this.screenService.screenSize$;
   }
 
   /**
-   * Opens a profile overlay using the OverlayService when the profile is clicked.
+   * This function opens the Settings-Overlay.
+   *
+   * @param event - The user-interaction with an object.
    */
-  openSettings(event: MouseEvent) {
+  openSettingsOverlay(event: MouseEvent) {
     this.overlayService.openComponent(
       SettingsComponent,
       'cdk-overlay-dark-backdrop',
@@ -60,7 +54,7 @@ export class HeaderDashboardComponent {
           originY: 'bottom',
           overlayX: 'end',
           overlayY: 'top',
-        }
+        },
       }
     );
   }

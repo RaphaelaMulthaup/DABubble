@@ -7,11 +7,11 @@ import {
   Signal,
   ViewChild,
   OnInit,
-  OnDestroy
+  OnDestroy,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { startWith, map, Observable, takeUntil, Subject, take } from 'rxjs';
+import { ReactiveFormsModule } from '@angular/forms';
+import { Observable, takeUntil, Subject, take } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { SearchService } from '../../../../services/search.service';
 import { JsonPipe } from '@angular/common';
@@ -23,6 +23,7 @@ import { SearchResultsNewMessageComponent } from '../../../../overlay/search-res
 import { ScreenSize } from '../../../../shared/types/screen-size.type';
 import { ScreenService } from '../../../../services/screen.service';
 import { BaseSearchDirective } from '../../../../shared/directives/base-search.directive'; // passe Pfad ggf. an
+import { OverlayPositionInterface } from '../../../../shared/models/overlay.position.interface';
 
 @Component({
   selector: 'app-header-searchbar',
@@ -37,56 +38,46 @@ import { BaseSearchDirective } from '../../../../shared/directives/base-search.d
   templateUrl: './header-searchbar.component.html',
   styleUrls: ['./header-searchbar.component.scss'],
 })
-export class HeaderSearchbarComponent extends BaseSearchDirective implements OnInit, OnDestroy {
-  // FormControl ist bereits in BaseSearchDirective
-  override destroy$ = new Subject<void>();
-
-  results: Signal<SearchResult[]>;
+export class HeaderSearchbarComponent
+  extends BaseSearchDirective
+  implements OnInit, OnDestroy
+{
   @Output() resultsChange = new EventEmitter<SearchResult[]>();
   @Output() hasInputChange = new EventEmitter<boolean>();
+  override destroy$ = new Subject<void>();
+  results: Signal<SearchResult[]>;
   screenSize$!: Observable<ScreenSize>;
   private searchOverlayRef: any;
-
   @ViewChild('headerSearchbar', { static: true })
   headerSearchbar!: ElementRef<HTMLElement>;
-
   override term$: Observable<string>;
 
   constructor(
-    public searchService: SearchService,
     private overlayService: OverlayService,
+    public searchService: SearchService,
     public screenService: ScreenService
   ) {
     super();
     this.screenSize$ = this.screenService.screenSize$;
-
-    // Erzeuge term$ (Base helper) und hole die initialen Ergebnisse via searchHeaderSearch
     this.term$ = this.createTerm$();
-
     this.results = toSignal(this.searchService.searchHeaderSearch(this.term$), {
       initialValue: [],
     });
-
     effect(() => {
       this.resultsChange.emit(this.results());
     });
   }
 
-  ngOnInit(): void {
-    // Setze Fokuslistener (Base helper)
+  ngOnInit() {
     this.setupFocusListener(this.headerSearchbar, () => {
       const term = this.searchControl.value.trim();
-      if (term.length > 0) {
-        this.openOverlay();
-      }
+      if (term.length > 0) this.openSearchResultsNewMessageOverlay();
     });
-
-    // Term-Subscription: öffne/close overlay je nach Eingabe
     this.subscribeToTermChanges((term) => {
       const hasInput = term.length > 0;
       this.hasInputChange.emit(hasInput);
       if (hasInput) {
-        this.openOverlay();
+        this.openSearchResultsNewMessageOverlay();
       } else {
         this.overlayService.closeOne(this.searchOverlayRef?.overlayRef);
         this.searchOverlayRef = null;
@@ -94,55 +85,66 @@ export class HeaderSearchbarComponent extends BaseSearchDirective implements OnI
     });
   }
 
-  override ngOnDestroy(): void {
+  override ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
     super.ngOnDestroy();
   }
 
-  private openOverlay() {
+  /**
+   * This function opens the SearchResultsNewMessage-Overlay.
+   */
+  openSearchResultsNewMessageOverlay() {
     this.screenSize$.pipe(take(1)).subscribe((size) => {
-      if (size !== 'handset') return; // only handset
-
-      // Wenn Overlay schon offen ist, nur Daten aktualisieren
+      if (size !== 'handset') return;
       if (this.searchOverlayRef) {
         this.searchOverlayRef.ref.instance.results = this.results;
         return;
       }
-
-      // Overlay neu öffnen
       this.searchOverlayRef = this.overlayService.openComponent(
         SearchResultsNewMessageComponent,
         'cdk-overlay-transparent-backdrop',
-        {
-          origin: this.headerSearchbar.nativeElement,
-          originPosition: {
-            originX: 'center',
-            originY: 'bottom',
-            overlayX: 'center',
-            overlayY: 'bottom',
-          },
-          originPositionFallback: {
-            originX: 'center',
-            originY: 'bottom',
-            overlayX: 'center',
-            overlayY: 'top',
-          },
-        },
-        {
-          results: this.results,
-        }
+        this.getOverlayPosition(),
+        { results: this.results }
       );
       if (!this.searchOverlayRef) return;
-
-      // BackdropClick schließen
-      this.searchOverlayRef.backdropClick$
-        .pipe(take(1), takeUntil(this.destroy$))
-        .subscribe(() => {
-          this.searchControl.setValue('');
-          this.overlayService.closeOne(this.searchOverlayRef?.overlayRef);
-          this.searchOverlayRef = null;
-        });
+      this.handleOverlayBackdropClick(this.searchOverlayRef);
     });
+  }
+
+  /**
+   * Returns the overlay-position and -position-fallback.
+   */
+  getOverlayPosition(): OverlayPositionInterface {
+    return {
+      origin: this.headerSearchbar.nativeElement,
+      originPosition: {
+        originX: 'center',
+        originY: 'bottom',
+        overlayX: 'center',
+        overlayY: 'bottom',
+      },
+      originPositionFallback: {
+        originX: 'center',
+        originY: 'bottom',
+        overlayX: 'center',
+        overlayY: 'top',
+      },
+    };
+  }
+
+  /**
+   * Handles the overlays behavior on backdrop-click.
+   *
+   * @param overlayRef - The SearchResultsNewMessage-Overlay.
+   */
+  handleOverlayBackdropClick(overlayRef: any) {
+    overlayRef.backdropClick$
+      .pipe(take(1), takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.searchControl.setValue('');
+        this.overlayService.closeOne(this.searchOverlayRef?.overlayRef);
+        this.searchOverlayRef = null;
+      });
   }
 }

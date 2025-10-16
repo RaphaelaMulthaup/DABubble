@@ -16,7 +16,6 @@ import { PostInterface } from '../../../shared/models/post.interface';
 import { SearchResult } from '../../../shared/types/search-result.type';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
-import { AuthService } from '../../../services/auth.service';
 import { OverlayService } from '../../../services/overlay.service';
 import { ConversationActiveRouterService } from '../../../services/conversation-active-router.service';
 import { HeaderSearchbarComponent } from './header-searchbar/header-searchbar.component';
@@ -44,7 +43,6 @@ export class DashboardContentComponent implements OnInit {
   hasInput: boolean = false;
 
   constructor(
-    private authService: AuthService,
     private conversationActiveRouterService: ConversationActiveRouterService,
     public overlayService: OverlayService,
     private route: ActivatedRoute,
@@ -55,71 +53,65 @@ export class DashboardContentComponent implements OnInit {
   }
 
   ngOnInit() {
-    // Initialize dashboardState with the value from the MobileService
-    // Set up the observable for fetching messages from the active conversation
-    this.messages$ = this.route.paramMap.pipe(
-      map((params) => ({
-        conversationType: params.get('conversationType'),
-        conversationId: params.get('conversationId'),
-      })),
-      // Ensure conversation type and ID are distinct before triggering the fetch
-      distinctUntilChanged(
-        (a, b) =>
-          a.conversationType === b.conversationType &&
-          a.conversationId === b.conversationId
-      ),
-      // Ensure valid conversationType and conversationId
-      filter(
-        ({ conversationType, conversationId }) =>
-          !!conversationType && !!conversationId
-      ),
-      // Fetch messages for the active conversation from the service
-      switchMap(({ conversationType, conversationId }) => {
-        return this.conversationActiveRouterService.getMessages(
-          conversationType!,
-          conversationId!
-        );
-      }),
-      // Share the last value and maintain a reference count to avoid multiple fetches
-      shareReplay({ bufferSize: 1, refCount: true })
-    );
+    this.messages$ = this.initMessagesStream();
+    this.answers$ = this.initAnswersStream();
+  }
 
-    // Set up the observable for fetching answers to a particular message in the conversation
-    this.answers$ = this.route.paramMap.pipe(
+  /**
+   * Initializes the message stream based on the active route parameters.
+   * Reacts to changes in conversation type or ID and fetches messages accordingly.
+   */
+  initMessagesStream(): Observable<any[]> {
+    return this.route.paramMap.pipe(
       map((params) => ({
-        conversationType: params.get('conversationType'),
-        conversationId: params.get('conversationId'),
-        messageId: params.get('messageId'),
+        type: params.get('conversationType'),
+        id: params.get('conversationId'),
       })),
-      // Ensure conversation and message IDs are distinct before triggering the fetch
-      distinctUntilChanged(
-        (a, b) =>
-          a.conversationType === b.conversationType &&
-          a.conversationId === b.conversationId &&
-          a.messageId === b.messageId
+      filter(({ type, id }) => !!type && !!id),
+      distinctUntilChanged((a, b) => a.type === b.type && a.id === b.id),
+      switchMap(({ type, id }) =>
+        this.conversationActiveRouterService.getMessages(type!, id!)
       ),
-      // Ensure valid conversationType, conversationId, and messageId
-      filter(
-        ({ conversationType, conversationId, messageId }) =>
-          !!conversationType && !!conversationId && !!messageId
-      ),
-      // Fetch answers to a particular message
-      switchMap(({ conversationType, conversationId, messageId }) =>
-        this.conversationActiveRouterService.getAnswers(
-          conversationType!,
-          conversationId!,
-          messageId!
-        )
-      ),
-      // Share the last value and maintain a reference count to avoid multiple fetches
       shareReplay({ bufferSize: 1, refCount: true })
     );
   }
 
+  /**
+   * Initializes the answer stream based on the active route parameters.
+   * Reacts to changes in conversation type, ID, or message ID and fetches answers accordingly.
+   */
+  initAnswersStream(): Observable<any[]> {
+    return this.route.paramMap.pipe(
+      map((params) => ({
+        type: params.get('conversationType'),
+        id: params.get('conversationId'),
+        msgId: params.get('messageId'),
+      })),
+      filter(({ type, id, msgId }) => !!type && !!id && !!msgId),
+      distinctUntilChanged(
+        (a, b) => a.type === b.type && a.id === b.id && a.msgId === b.msgId
+      ),
+      switchMap(({ type, id, msgId }) =>
+        this.conversationActiveRouterService.getAnswers(type!, id!, msgId!)
+      ),
+      shareReplay({ bufferSize: 1, refCount: true })
+    );
+  }
+
+  /**
+   * Updates the search results stream with new result data.
+   *
+   * @param results - Array with search results.
+   */
   onResultsChanged(results: SearchResult[]) {
     this.results$.next(results);
   }
 
+  /**
+   * Toggles the hasInput-variable.
+   *
+   * @param hasInput - a boolean indicating whether an input is there or not.
+   */
   onHasInputChange(hasInput: boolean) {
     this.hasInput = hasInput;
   }

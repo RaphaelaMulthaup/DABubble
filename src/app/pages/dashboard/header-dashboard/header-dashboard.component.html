@@ -15,7 +15,7 @@
 
     @if ((authService.currentUser$ | async) && (screenSize$|async) !== 'handset') { <app-search-bar></app-search-bar>}
 
-    <div (click)="openSettings($event)" class="current-user flex justify-end items-center h-full">
+    <div (click)="openSettingsOverlay($event)" class="current-user flex justify-end items-center h-full">
       @if((screenSize$|async) === 'web'){<h1>{{ (currentUser$ | async)?.name }}</h1>}
       <img class="profil-img" [src]="(currentUser$ | async)?.photoUrl" alt="Profilbild"/>
       @if((screenSize$|async) !== 'handset'){<button class="arrow-btn"></button>}

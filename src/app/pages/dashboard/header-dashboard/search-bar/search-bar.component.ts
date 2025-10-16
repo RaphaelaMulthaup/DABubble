@@ -6,10 +6,10 @@ import {
   ViewChild,
   OnInit,
   OnDestroy,
-  ChangeDetectionStrategy
+  ChangeDetectionStrategy,
 } from '@angular/core';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { map, startWith, Observable, Subject, takeUntil } from 'rxjs';
+import { ReactiveFormsModule } from '@angular/forms';
+import { Observable, Subject, take, takeUntil } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { SearchService } from '../../../../services/search.service';
 import { JsonPipe, CommonModule } from '@angular/common';
@@ -23,8 +23,8 @@ import { UserInterface } from '../../../../shared/models/user.interface';
 import { ChannelInterface } from '../../../../shared/models/channel.interface';
 import { ScreenSize } from '../../../../shared/types/screen-size.type';
 import { ScreenService } from '../../../../services/screen.service';
-import { ConnectedPosition } from '@angular/cdk/overlay';
 import { BaseSearchDirective } from '../../../../shared/directives/base-search.directive'; // passe Pfad ggf. an
+import { OverlayPositionInterface } from '../../../../shared/models/overlay.position.interface';
 
 @Component({
   selector: 'app-search-bar',
@@ -41,198 +41,185 @@ import { BaseSearchDirective } from '../../../../shared/directives/base-search.d
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./search-bar.component.scss'],
 })
-export class SearchBarComponent
-  extends BaseSearchDirective
-  implements OnInit, OnDestroy
-{
-  // Reactive form control ist bereits in BaseSearchDirective vorhanden
-  firstFocusHappened = false; // Tracks if input was focused for the first time
-  override destroy$ = new Subject<void>(); // für lokale subscriptions (zusätzlich zur base destroy$)
-
+export class SearchBarComponent extends BaseSearchDirective implements OnInit, OnDestroy {
   @ViewChild('searchbar', { static: true }) searchbar!: ElementRef<HTMLElement>;
+  results: Signal<SearchResult[]>;
+  screenSize$!: Observable<ScreenSize>;
+  override destroy$ = new Subject<void>();
+  private searchOverlayRef: any;
+  firstFocusHappened: boolean = false;
+  searchResultsExisting: boolean = false;
 
-  results: Signal<SearchResult[]>; // Reactive signal of search results
-  screenSize$!: Observable<ScreenSize>; // Observable for screen size detection
-  searchResultsExisting = false; // Flag to check if results exist
-  private searchOverlayRef: any; // Reference to the overlay component
+  groupedResults = computed(() => {
+    const res = this.results();
+    const grouped: any[] = [];
+    const chatMap = this.groupChatMessages(res);
+    const channelMap = this.groupChannelMessages(res);
+    for (const item of res) {
+      if (item.type !== 'chatMessage' && item.type !== 'channelMessage')
+        grouped.push(item);
+    }
+    chatMap.forEach((value) => grouped.push({ type: 'chatGroup', ...value }));
+    channelMap.forEach((value) =>
+      grouped.push({ type: 'channelGroup', ...value })
+    );
+    return grouped;
+  });
 
   constructor(
-    public screenService: ScreenService,
     private overlayService: OverlayService,
+    public screenService: ScreenService,
     public searchService: SearchService
   ) {
     super();
-    this.screenSize$ = this.screenService.screenSize$;
-    // Initialize results as an empty array (Service liefert die BehaviorSubject-Quelle)
     this.results = toSignal(this.searchService.results$, { initialValue: [] });
+    this.screenSize$ = this.screenService.screenSize$;
   }
 
-  ngOnInit(): void {
+  ngOnInit() {
     this.setupFocusListener(this.searchbar, () => {
       const term = this.searchControl.value.trim();
-      if (term.length > 0) {
-        this.openOverlay(term);
-      }
+      if (term.length > 0) this.openSearchResultsOverlay(term);
     });
   }
 
+  override ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+    super.ngOnDestroy();
+  }
+
   /**
-   * Wird beim ersten Focus aufgerufen (wie vorher in deinem Code - onFocus).
-   * Legt term$ an, startet updateResults und subscribes zur Steuerung des Overlays.
+   * Triggered when the search input gains focus for the first time.
+   * Initializes the term stream, updates initial search results,
+   * and subscribes to term changes to open or close the search overlay dynamically.
    */
   onFocus() {
     if (!this.firstFocusHappened) {
       this.firstFocusHappened = true;
-
-      // Stream of search terms (Base bietet createTerm$)
       const term$ = this.createTerm$();
-
-      // Pass search term stream to the search service
       this.searchService.updateResults(term$);
-
-      // Subscribe to search terms to manage overlay visibility
       this.subscribeToTermChanges((term) => {
         if (term.length > 0) {
           this.searchResultsExisting = true;
           this.searchService.overlaySearchResultsOpen = true;
-          this.openOverlay(term);
-        } else {
-          // Close overlay when input is cleared
-          this.overlayService.closeOne(this.searchOverlayRef?.overlayRef);
-          this.searchOverlayRef = null;
-          this.searchResultsExisting = false;
-          this.searchService.overlaySearchResultsOpen = false;
-        }
+          this.openSearchResultsOverlay(term);
+        } else this.closeOverlayForEmptyInput();
       });
     }
   }
 
   /**
-   * Öffnet das Overlay — Overlay-Logik bleibt in der concrete Komponente.
+   * Closes the SearchResults-Overlay when the input is cleared.
    */
-  private openOverlay(term: string) {
-    // Wenn overlay bereits offen, aktualisiere Inputs
-    if (this.searchOverlayRef) {
-      this.searchOverlayRef.ref.instance.results$ = this.groupedResults;
-      this.searchOverlayRef.ref.instance.searchTerm = term;
-      return;
-    }
-
-    // Determine overlay position based on screen size (mobile or desktop)
-    let positionOverlay: {
-      origin: HTMLElement;
-      originPosition: ConnectedPosition;
-      originPositionFallback?: ConnectedPosition;
-    };
-
-    this.screenSize$.pipe(takeUntil(this.destroy$)).subscribe((screenSize) => {
-      positionOverlay =
-        screenSize === 'handset'
-          ? {
-              origin: this.searchbar.nativeElement,
-              originPosition: {
-                originX: 'center',
-                originY: 'bottom',
-                overlayX: 'center',
-                overlayY: 'bottom',
-              },
-              originPositionFallback: {
-                originX: 'center',
-                originY: 'bottom',
-                overlayX: 'center',
-                overlayY: 'top',
-              },
-            }
-          : {
-              origin: this.searchbar.nativeElement,
-              originPosition: {
-                originX: 'start',
-                originY: 'bottom',
-                overlayX: 'start',
-                overlayY: 'top',
-              },
-            };
-
-      // Open overlay with initial data
-      this.searchOverlayRef = this.overlayService.openComponent(
-        SearchResultsComponent,
-        'cdk-overlay-transparent-backdrop',
-        positionOverlay,
-        {
-          results$: this.groupedResults,
-          searchTerm: term,
-        }
-      );
-
-      if (!this.searchOverlayRef) return;
-
-      // Allgemeines "afterClosed"-Abonnement
-      this.searchOverlayRef.overlayRef
-        .detachments() // detachments() feuert, wenn Overlay entfernt wird
-        .pipe(takeUntil(this.destroy$))
-        .subscribe(() => {
-          this.searchControl.setValue('');
-          this.searchResultsExisting = false;
-          this.searchService.overlaySearchResultsOpen = false;
-          this.searchOverlayRef = null;
-        });
-
-      // Nur backdropClick zusätzlich, falls du spezielle Logik dafür willst
-      this.searchOverlayRef.backdropClick$
-        .pipe(takeUntil(this.destroy$))
-        .subscribe(() => {
-          this.overlayService.closeOne(this.searchOverlayRef?.overlayRef);
-        });
-    });
+  closeOverlayForEmptyInput() {
+    this.overlayService.closeOne(this.searchOverlayRef?.overlayRef);
+    this.searchOverlayRef = null;
+    this.searchResultsExisting = false;
+    this.searchService.overlaySearchResultsOpen = false;
   }
 
   /**
-   * Gruppiert chat- / channel messages wie vorher für die Darstellung im Overlay.
+   * This function opens the SearchResults-Overlay.
+   *
+   * @param term - The search-term used to show fitting results.
    */
-  groupedResults = computed(() => {
-    const res = this.results();
-    const grouped: any[] = [];
-
-    const chatMap = new Map<string, { user: UserInterface; posts: any[] }>();
-    const channelMap = new Map<
-      string,
-      { channel: ChannelInterface; posts: any[] }
-    >();
-
-    for (const item of res) {
-      if (item.type === 'chatMessage' && item.user) {
-        if (!chatMap.has(item.user.uid))
-          chatMap.set(item.user.uid, { user: item.user, posts: [] });
-        chatMap.get(item.user.uid)!.posts.push(item);
-      } else if (item.type === 'channelMessage') {
-        const channelId = item.channelId!;
-        if (!channelMap.has(channelId))
-          channelMap.set(channelId, { channel: item.channel, posts: [] });
-        channelMap.get(channelId)!.posts.push(item);
-      } else {
-        grouped.push(item);
+  openSearchResultsOverlay(term: string) {
+    if (this.searchOverlayRef) return this.updateResults(term);
+    this.searchOverlayRef = this.overlayService.openComponent(
+      SearchResultsComponent,
+      'cdk-overlay-transparent-backdrop',
+      this.resolveOverlayPosition(),
+      {
+        results$: this.groupedResults,
+        searchTerm: term,
       }
+    );
+    if (!this.searchOverlayRef) return;
+    this.handleOverlayLifecycle(this.searchOverlayRef);
+  }
+
+  /**
+   * Updates the search-results if the input changed.
+   *
+   * @param term - The search-term used to show fitting results.
+   */
+  updateResults(term: string) {
+    this.searchOverlayRef.ref.instance.results$ = this.groupedResults;
+    this.searchOverlayRef.ref.instance.searchTerm = term;
+    return;
+  }
+
+  /**
+   * Checks the screenSize and returns the according overlay-position.
+   */
+  resolveOverlayPosition() {
+    let positionOverlay: OverlayPositionInterface;
+    let screenSize;
+    this.screenSize$
+      .pipe(take(1))
+      .subscribe((currentScreenSize) => (screenSize = currentScreenSize));
+    if (screenSize === 'handset') {
+      return (positionOverlay = this.getOverlayPositionHandset());
+    } else {
+      return (positionOverlay = this.getOverlayPositionTabletWeb());
     }
+  }
 
-    chatMap.forEach((value) =>
-      grouped.push({ type: 'chatGroup', user: value.user, posts: value.posts })
-    );
-    channelMap.forEach((value) =>
-      grouped.push({
-        type: 'channelGroup',
-        channel: value.channel,
-        posts: value.posts,
-      })
-    );
+  /**
+   * Returns the overlay-position for handset.
+   */
+  getOverlayPositionHandset(): OverlayPositionInterface {
+    return {
+      origin: this.searchbar.nativeElement,
+      originPosition: {
+        originX: 'center',
+        originY: 'bottom',
+        overlayX: 'center',
+        overlayY: 'bottom',
+      },
+      originPositionFallback: {
+        originX: 'center',
+        originY: 'bottom',
+        overlayX: 'center',
+        overlayY: 'top',
+      },
+    };
+  }
 
-    return grouped;
-  });
+  /**
+   * Returns the overlay-position for tablet and web.
+   */
+  getOverlayPositionTabletWeb(): OverlayPositionInterface {
+    return {
+      origin: this.searchbar.nativeElement,
+      originPosition: {
+        originX: 'start',
+        originY: 'bottom',
+        overlayX: 'start',
+        overlayY: 'top',
+      },
+    };
+  }
 
-  override ngOnDestroy(): void {
-    // lokale und Basisklassen Aufräumarbeiten
-    this.destroy$.next();
-    this.destroy$.complete();
-    super.ngOnDestroy();
+  /**
+   * Handles the overlays lifecylcle by closing it on overlay-detach and backdrop-click.
+   *
+   * @param overlayRef - The SearchResults-Overlay.
+   */
+  handleOverlayLifecycle(overlayRef: any) {
+    overlayRef.overlayRef
+      .detachments()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.searchControl.setValue('');
+        this.searchResultsExisting = false;
+        this.searchService.overlaySearchResultsOpen = false;
+        this.searchOverlayRef = null;
+      });
+    overlayRef.backdropClick$.pipe(takeUntil(this.destroy$)).subscribe(() => {
+      this.overlayService.closeOne(overlayRef.overlayRef);
+    });
   }
 
   /**
@@ -242,4 +229,76 @@ export class SearchBarComponent
     this.searchControl.setValue('');
     this.overlayService.closeAll();
   }
+
+  /**
+   * Groups all chat message results by user.
+   * Each user ID is mapped to an object containing the user and their associated chat messages.
+   *
+   * @param res - Array of result items to process.
+   */
+  groupChatMessages(res: any[]) {
+    const map = new Map<string, { user: UserInterface; posts: any[] }>();
+    for (const item of res) {
+      if (item.type === 'chatMessage' && item.user) {
+        if (!map.has(item.user.uid))
+          map.set(item.user.uid, { user: item.user, posts: [] });
+        map.get(item.user.uid)!.posts.push(item);
+      }
+    }
+    return map;
+  }
+
+  /**
+   * Groups all channel message results by channel.
+   * Each channel ID is mapped to an object containing the channel and its associated channel messages.
+   *
+   * @param res - Array of result items to process.
+   */
+  groupChannelMessages(res: any[]) {
+    const map = new Map<string, { channel: ChannelInterface; posts: any[] }>();
+    for (const item of res) {
+      if (item.type === 'channelMessage') {
+        const channelId = item.channelId!;
+        if (!map.has(channelId))
+          map.set(channelId, { channel: item.channel, posts: [] });
+        map.get(channelId)!.posts.push(item);
+      }
+    }
+    return map;
+  }
+
+  // groupedResults = computed(() => {
+  //   const res = this.results();
+  //   const grouped: any[] = [];
+  //   const chatMap = new Map<string, { user: UserInterface; posts: any[] }>();
+  //   const channelMap = new Map<
+  //     string,
+  //     { channel: ChannelInterface; posts: any[] }
+  //   >();
+  //   for (const item of res) {
+  //     if (item.type === 'chatMessage' && item.user) {
+  //       if (!chatMap.has(item.user.uid))
+  //         chatMap.set(item.user.uid, { user: item.user, posts: [] });
+  //       chatMap.get(item.user.uid)!.posts.push(item);
+  //     } else if (item.type === 'channelMessage') {
+  //       const channelId = item.channelId!;
+  //       if (!channelMap.has(channelId))
+  //         channelMap.set(channelId, { channel: item.channel, posts: [] });
+  //       channelMap.get(channelId)!.posts.push(item);
+  //     } else {
+  //       grouped.push(item);
+  //     }
+  //   }
+  //   chatMap.forEach((value) =>
+  //     grouped.push({ type: 'chatGroup', user: value.user, posts: value.posts })
+  //   );
+  //   channelMap.forEach((value) =>
+  //     grouped.push({
+  //       type: 'channelGroup',
+  //       channel: value.channel,
+  //       posts: value.posts,
+  //     })
+  //   );
+  //   return grouped;
+  // });
 }
