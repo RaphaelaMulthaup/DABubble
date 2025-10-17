@@ -249,8 +249,8 @@ export class PostService {
       const span = mark.querySelector('span');
       if (img && span) {
         const name = span.textContent;
-        const alt = img.getAttribute('alt');
-        const typeOfResult = alt?.includes('user') ? '@' : '#';
+        const typeOfResult = img.getAttribute('src')?.includes('email') ? '@' : '#';
+        console.log(typeOfResult)
         const textNode = doc.createTextNode(`{${typeOfResult}${name}}`);
         mark.replaceWith(textNode);
       }
