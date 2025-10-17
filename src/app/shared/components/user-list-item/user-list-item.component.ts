@@ -4,6 +4,7 @@ import {
   Input,
   Output,
   OnDestroy,
+  WritableSignal,
 } from '@angular/core';
 import { BehaviorSubject, Observable, Subject, timer } from 'rxjs';
 import {
@@ -25,6 +26,7 @@ import { ConversationActiveRouterService } from '../../../services/conversation-
 import { ScreenService } from '../../../services/screen.service';
 import { ScreenSize } from '../../types/screen-size.type';
 import { OverlayService } from '../../../services/overlay.service';
+import { DashboardState } from '../../types/dashboard-state.type';
 
 @Component({
   selector: 'app-user-list-item',
@@ -49,6 +51,7 @@ export class UserListItemComponent implements OnDestroy {
 
   private userUid$ = new BehaviorSubject<string | null>(null);
   private destroy$ = new Subject<void>();
+  public dashboardState!: WritableSignal<DashboardState>;
   public screenSize$!: Observable<ScreenSize>;
   public user$: Observable<UserInterface | null>;
   public currentUserId$: Observable<string | null>;
@@ -64,6 +67,7 @@ export class UserListItemComponent implements OnDestroy {
     public screenService: ScreenService,
     private userService: UserService
   ) {
+    this.dashboardState = this.screenService.dashboardState;
     this.screenSize$ = this.screenService.screenSize$;
 
     this.user$ = this.userUid$.pipe(

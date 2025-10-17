@@ -7,7 +7,7 @@
       ? ['/dashboard', 'channel', channel.id]
       : null
   " [ngClass]="{ 'related-to-search-result-post': relatedToSearchResultPost }"
-  [class.active]="(screenSize$|async) !== 'handset' && conversationActiveRouterService.currentConversation() === channel.id">
+  [class.active]="(screenSize$|async) !== 'handset' && dashboardState() !== 'new-message-view' && conversationActiveRouterService.currentConversation() === channel.id && !isInChannelHeader">
 
   @if(isInChannelHeader){
     <div class="tag"></div>

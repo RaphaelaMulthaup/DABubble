@@ -5,7 +5,7 @@
     'related-to-search-result-post': relatedToSearchResultPost,
     'in-header-chat': inHeaderChat
   }"
-  [class.active]="(screenSize$|async) !== 'handset' && !inHeaderChat && !relatedToSearchResultPost && conversationActiveRouterService.currentConversation() === lastUserSnapshot?.uid"
+  [class.active]="(screenSize$|async) !== 'handset' && dashboardState() !== 'new-message-view' &&  !inHeaderChat && !relatedToSearchResultPost && conversationActiveRouterService.currentConversation() === lastUserSnapshot?.uid"
 >
   @if (user$ | async; as user) {
     <div class="profil-img-and-status">

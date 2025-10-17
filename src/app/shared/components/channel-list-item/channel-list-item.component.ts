@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, WritableSignal } from '@angular/core';
 import { ChannelInterface } from '../../models/channel.interface';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -6,6 +6,7 @@ import { ScreenService } from '../../../services/screen.service';
 import { ScreenSize } from '../../types/screen-size.type';
 import { Observable } from 'rxjs';
 import { ConversationActiveRouterService } from '../../../services/conversation-active-router.service';
+import { DashboardState } from '../../types/dashboard-state.type';
 
 @Component({
   selector: 'app-channel-list-item',
@@ -24,6 +25,7 @@ export class ChannelListItemComponent {
   @Input() isInChannelHeader = false;
   @Output() channelSelected = new EventEmitter<ChannelInterface>();
 
+  dashboardState!: WritableSignal<DashboardState>;
   screenSize$!: Observable<ScreenSize>;
   channelId!: string;
 
@@ -31,6 +33,7 @@ export class ChannelListItemComponent {
     public conversationActiveRouterService: ConversationActiveRouterService,
     public screenService: ScreenService
   ) {
+    this.dashboardState = this.screenService.dashboardState;
     this.screenSize$ = this.screenService.screenSize$;
   }
 
