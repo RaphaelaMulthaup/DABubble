@@ -479,21 +479,20 @@ export class AuthService {
     msgDoc: QueryDocumentSnapshot<DocumentData>,
     guestUserId: string
   ) {
-    const msgRef = msgDoc.ref;
+    const msgRef = msgDoc.ref; //eine message mit answers
     const answersColRef = collection(msgRef, 'answers');
-    const answersIdsSnap = await getDocs(answersColRef);
-    // diese Fumktion jetzt schreiben
+    const answersIdsSnap = await getDocs(answersColRef); //alle answers einer message
     await this.deleteAnswerfromGuestUserId(answersIdsSnap, guestUserId);
-    // await this.checkWhetherAnswersAreStillAssigned(answersIdsSnap);
     await this.setAnsCounter(answersColRef, msgRef);
   }
 
   async deleteAnswerfromGuestUserId(
-    answersIdsSnap: QuerySnapshot<DocumentData>,
+    answersIdsSnap: QuerySnapshot<DocumentData>, //alle answers einer message
     guestUserId: string
   ) {
     const localBatch = writeBatch(this.firestore);
     for (const answerDoc of answersIdsSnap.docs) {
+      //eine answer
       await this.deleteGuestsAnswerIfExists(
         answerDoc.ref,
         guestUserId,
@@ -517,20 +516,33 @@ export class AuthService {
     }
   }
 
-  // async checkWhetherAnswersAreStillAssigned(
-  //   answersIdsSnap: QuerySnapshot<DocumentData>
-  // ) {
-
-  // }
+  async setAnsLastCreatedAt() {}
 
   async setAnsCounter(
-    answersColRef: CollectionReference<DocumentData>,
+    answersColRef: CollectionReference<DocumentData>, //alle answers einer message
     msgRef: DocumentReference<DocumentData>
   ) {
     const remainingAnswerSnap = await getDocs(answersColRef);
     if (remainingAnswerSnap.empty) {
       await updateDoc(msgRef, {
         ansCounter: deleteField(),
+        ansLastCreatedAt: deleteField(),
+      });
+    } else {
+      // Alle createdAt-Werte sammeln
+      const createdAts = remainingAnswerSnap.docs.map(
+        (doc) => doc.data()['createdAt']
+      );
+
+      // Das neueste Datum finden
+      const newestCreatedAt = createdAts.reduce((latest, current) => {
+        return current.toMillis() > latest.toMillis() ? current : latest;
+      });
+
+      // Nachricht aktualisieren
+      await updateDoc(msgRef, {
+        ansCounter: remainingAnswerSnap.size,
+        ansLastCreatedAt: newestCreatedAt,
       });
     }
   }
