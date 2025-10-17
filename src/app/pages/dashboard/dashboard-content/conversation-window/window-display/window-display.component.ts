@@ -426,7 +426,8 @@ export class WindowDisplayComponent implements OnInit {
   async tryAutoLoadUntilScrollbar() {
     const el = this.messagesContainer.nativeElement;
     let iteration = 0;
-    const maxTries = 20;
+    const maxTries = 5;
+    if (iteration === 5) return;
     while (el.scrollHeight <= el.clientHeight && iteration < maxTries) {
       iteration++;
       console.log('no scrollbar → loading more...', iteration);
