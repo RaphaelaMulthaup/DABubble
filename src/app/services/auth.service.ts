@@ -49,18 +49,17 @@ import { UserService } from './user.service';
 import { ChatService } from './chat.service';
 import { ScreenService } from './screen.service';
 import { UserToRegisterInterface } from '../shared/models/user.to.register.interface';
-import { PostService } from './post.service';
 import { ChannelInterface } from '../shared/models/channel.interface';
 import {
   CollectionReference,
   DocumentData,
   DocumentReference,
-  orderBy,
   QueryDocumentSnapshot,
   QuerySnapshot,
   WriteBatch,
   writeBatch,
 } from 'firebase/firestore';
+import { UserDemoSetupService } from './user-demo-setup.service';
 
 @Injectable({
   providedIn: 'root',
@@ -81,8 +80,8 @@ export class AuthService {
     private chatService: ChatService,
     private firestore: Firestore,
     private userService: UserService,
+    private userDemoSetupService: UserDemoSetupService,
     private screenService: ScreenService,
-    private postService: PostService
   ) {
     // 🔥 Reaktives Observable mit Absicherung, dass User-Dokument existiert
     this.currentUser$ = authState(this.auth).pipe(
@@ -219,104 +218,19 @@ export class AuthService {
     const promise = signInAnonymously(this.auth)
       .then(async (credential) => {
         await this.screenService.setInitDashboardState();
-        const user = credential.user;
-        await this.createOrUpdateUserInFirestore(user, 'anonymous', 'Guest');
-        await this.userService.updateUser(user.uid, {
+        const guest = credential.user;
+        await this.createOrUpdateUserInFirestore(guest, 'anonymous', 'Guest');
+        await this.userService.updateUser(guest.uid, {
           photoUrl: './assets/img/no-avatar.svg',
         });
-        await this.addDirectChatToTeam(user.uid);
+        await this.userDemoSetupService.addDirectChatToTeam(guest.uid);
+        //hier die referenz raus
         await updateDoc(this.channelEntwicklerteamDocRef, {
-          memberIds: arrayUnion(user.uid),
+          memberIds: arrayUnion(guest.uid),
         });
       })
       .catch((error) => console.error('Guest login error:', error));
     return from(promise) as Observable<void>;
-  }
-
-  async addDirectChatToTeam(userId: string) {
-    const devChats = [
-      'YMOQBS4sWIQoVbLI2OUphJ7Ruug2',
-      '5lntBSrRRUM9JB5AFE14z7lTE6n1',
-      'rUnD1S8sHOgwxvN55MtyuD9iwAD2',
-      'NxSyGPn1LkPV3bwLSeW94FPKRzm1',
-    ];
-
-    for (const devId of devChats) {
-      // Chat erstellen (gibt keine chatId zurück)
-      await this.chatService.createChat(userId, devId);
-
-      // chatId erneut abrufen
-      const chatId = await this.chatService.getChatId(userId, devId);
-      // this.chatsWithGuestsIds.push(chatId);
-
-      // Beispielnachrichten vorbereiten
-      let messages: { senderId: string; text: string }[] = [];
-
-      switch (devId) {
-        case 'YMOQBS4sWIQoVbLI2OUphJ7Ruug2':
-          messages = [
-            {
-              senderId: devId,
-              text: 'Hey! Schön, dass du unseren Chat ausprobierst 😊',
-            },
-            { senderId: userId, text: 'Hi! Sieht alles sehr gut aus!' },
-            {
-              senderId: devId,
-              text: 'Freut mich! Probier ruhig ein paar Funktionen aus.',
-            },
-          ];
-          break;
-
-        case '5lntBSrRRUM9JB5AFE14z7lTE6n1':
-          messages = [
-            {
-              senderId: devId,
-              text: 'Hallo! Schön, dass du dir unsere App anschaust.',
-            },
-            {
-              senderId: userId,
-              text: 'Hi! Ja, ich gucke mich gerade ein bisschen um. Was war dein Beitrag zur Chat-App?',
-            },
-            {
-              senderId: devId,
-              text: 'Ich habe zum Beispiel die Suchfunktion umgesetzt. Such doch mal nach dem Channel #Entwicklerteam. Du kannst ihn natürlich auch direkt in der Sidenav anklicken.',
-            },
-          ];
-          break;
-
-        case 'rUnD1S8sHOgwxvN55MtyuD9iwAD2':
-          messages = [
-            { senderId: devId, text: 'Hi! Willkommen im Demo-Chat 🎨' },
-            { senderId: userId, text: 'Danke! Alles wirkt sehr aufgeräumt.' },
-            {
-              senderId: devId,
-              text: 'Freut mich! Schau dich ruhig noch weiter um.',
-            },
-          ];
-          break;
-
-        case 'NxSyGPn1LkPV3bwLSeW94FPKRzm1':
-          messages = [
-            { senderId: devId, text: 'Hey! Schön, dass du hier bist 🧠' },
-            { senderId: userId, text: 'Hi! Die App reagiert richtig flüssig.' },
-            {
-              senderId: devId,
-              text: 'Super! Dann viel Spaß beim Ausprobieren 🚀',
-            },
-          ];
-          break;
-      }
-
-      // Nachrichten erstellen
-      for (const msg of messages) {
-        await this.postService.createMessage(
-          chatId,
-          msg.senderId,
-          msg.text,
-          'chat'
-        );
-      }
-    }
   }
 
   /** Login with Google */
@@ -353,11 +267,12 @@ export class AuthService {
       .catch(() => {})
       .then(() => deleteUser(user))
       .catch((err) => console.error('Failed to delete guest user:', err));
+      //die drei raus
     await this.resetExampleChannel(user.uid);
     await this.handleGuestsChannels(user.uid);
     await this.deleteChats(user.uid);
   }
-
+//raus
   async resetExampleChannel(guestUserId: string) {
     await updateDoc(this.channelEntwicklerteamDocRef, {
       memberIds: arrayRemove(guestUserId),
@@ -367,7 +282,7 @@ export class AuthService {
     });
     await this.resetMessagesExampleChannel(guestUserId);
   }
-
+//raus
   async resetMessagesExampleChannel(guestUserId: string) {
     await this.deleteGuestsMessagesInExampleChannel(guestUserId);
     await this.filterMessagesWithReactions(guestUserId);
@@ -380,7 +295,7 @@ export class AuthService {
       await this.handleMessagesWithAnswers(msgDoc, guestUserId);
     }
   }
-
+//raus
   async deleteGuestsMessagesInExampleChannel(guestUserId: string) {
     const messagesQuery = query(
       this.messagesChannelEntwicklerteamDocRef,
@@ -394,7 +309,7 @@ export class AuthService {
     }
     await batch.commit();
   }
-
+//raus
   async filterMessagesWithReactions(guestUserId: string) {
     const messagesWithReactionsQuery = query(
       this.messagesChannelEntwicklerteamDocRef,
@@ -407,7 +322,7 @@ export class AuthService {
       await this.handleMessagesWithReactions(msgDoc, guestUserId);
     }
   }
-
+//raus
   async handleMessagesWithReactions(
     msgDoc: QueryDocumentSnapshot<DocumentData>,
     guestUserId: string
@@ -422,7 +337,7 @@ export class AuthService {
     await this.checkWhetherReactionsAreStillAssigned(reactionNamesSnap);
     await this.setHasReactions(reactionsColRef, msgRef);
   }
-
+//raus
   async deleteGuestUserIdAsSenderOfReactions(
     reactionNamesSnap: QuerySnapshot<DocumentData>,
     guestUserId: string
@@ -437,7 +352,7 @@ export class AuthService {
     }
     await localBatch.commit();
   }
-
+//raus
   async deleteGuestReactionIfExists(
     reactionDocRef: DocumentReference<DocumentData>,
     guestUserId: string,
@@ -452,7 +367,7 @@ export class AuthService {
       batch.update(reactionDocRef, { users: updatedUsers });
     }
   }
-
+//raus
   async checkWhetherReactionsAreStillAssigned(
     reactionNamesSnap: QuerySnapshot<DocumentData>
   ) {
@@ -464,7 +379,7 @@ export class AuthService {
       }
     }
   }
-
+//raus
   async setHasReactions(
     reactionsColRef: CollectionReference<DocumentData>,
     msgRef: DocumentReference<DocumentData>
@@ -474,7 +389,7 @@ export class AuthService {
       await updateDoc(msgRef, { hasReactions: false });
     }
   }
-
+//raus
   async handleMessagesWithAnswers(
     msgDoc: QueryDocumentSnapshot<DocumentData>,
     guestUserId: string
@@ -485,7 +400,7 @@ export class AuthService {
     await this.deleteAnswerfromGuestUserId(answersIdsSnap, guestUserId);
     await this.setAnsCounter(answersColRef, msgRef);
   }
-
+//raus
   async deleteAnswerfromGuestUserId(
     answersIdsSnap: QuerySnapshot<DocumentData>, //alle answers einer message
     guestUserId: string
@@ -501,7 +416,7 @@ export class AuthService {
     }
     await localBatch.commit();
   }
-
+//raus
   async deleteGuestsAnswerIfExists(
     answerDocRef: DocumentReference<DocumentData>,
     guestUserId: string,
@@ -515,7 +430,7 @@ export class AuthService {
       localBatch.delete(answerDocRef);
     }
   }
-
+//raus
   async setAnsCounter(
     answersColRef: CollectionReference<DocumentData>,
     msgRef: DocumentReference<DocumentData>
@@ -530,7 +445,7 @@ export class AuthService {
       await this.handleRemainingAnswers(remainingAnswerSnap, msgRef);
     }
   }
-
+//raus
   async handleRemainingAnswers(
     remainingAnswerSnap: QuerySnapshot<DocumentData>,
     msgRef: DocumentReference<DocumentData>
@@ -546,7 +461,7 @@ export class AuthService {
       ansLastCreatedAt: newestCreatedAt,
     });
   }
-
+//raus
   async handleGuestsChannels(guestUserId: string) {
     const q = this.buildUserChannelsQuery(guestUserId);
     const snapshot = await getDocs(q);
@@ -556,7 +471,7 @@ export class AuthService {
     }
     await batch.commit();
   }
-
+//raus
   handleChannelBatchUpdate(
     batch: WriteBatch,
     docSnap: QueryDocumentSnapshot,
@@ -570,14 +485,14 @@ export class AuthService {
       batch.update(channelRef, { memberIds: arrayRemove(guestUserId) });
     }
   }
-
+//raus
   buildUserChannelsQuery(userId: string) {
     return query(
       collection(this.firestore, 'channels'),
       where('memberIds', 'array-contains', userId)
     );
   }
-
+//raus
   async deleteChats(userId: string) {
     const userChats = await this.chatService.getChatRefsForUser(userId);
     for (const chat of userChats) {
