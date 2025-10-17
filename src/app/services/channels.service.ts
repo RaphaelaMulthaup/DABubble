@@ -26,10 +26,7 @@ import { ScreenService } from './screen.service';
   providedIn: 'root',
 })
 export class ChannelsService {
-  private channelCache = new Map<
-    string,
-    Observable<ChannelInterface | undefined>
-  >();
+  private channelCache = new Map<string,Observable<ChannelInterface | undefined>>();
 
   constructor(
     private authService: AuthService,
@@ -40,62 +37,70 @@ export class ChannelsService {
   ) {}
 
   /**
-   * This function returns an Channel-Interface-Observable of the current channel.
+   * Returns a channel observable by ID, optionally in realtime.
    *
-   * @param channelId - Name of the channel (check is channel-name already taken)
-   * @param realtime - whether the channel should be fetched a single time or should be watched live
+   * @param channelId - The ID of the channel.
+   * @param realtime - Whether to subscribe to realtime updates.
    */
-  getCurrentChannel(
-    channelId: string,
-    realtime: boolean = false
-  ): Observable<ChannelInterface | undefined> {
-    if (realtime && this.channelCache.has(channelId))
-      return this.channelCache.get(channelId)!;
-    const channelRef = doc(this.firestore, `channels/${channelId}`);
-    const source$ = realtime
-      ? docData(channelRef, { idField: 'id' })
-      : from(getDoc(channelRef)).pipe(
-          map((snap) =>
-            snap.exists() ? { id: snap.id, ...snap.data() } : undefined
-          )
-        );
-    const channel$ = source$.pipe(
-      map((data) => data as ChannelInterface | undefined),
-      shareReplay({ bufferSize: 1, refCount: false })
-    );
+  getCurrentChannel( channelId: string, realtime: boolean = false): Observable<ChannelInterface | undefined> {
+    if (realtime && this.channelCache.has(channelId)) return this.channelCache.get(channelId)!;
+    const channel$ = this.fetchChannelFromFirestore(channelId, realtime);
     if (realtime) this.channelCache.set(channelId, channel$);
     return channel$;
   }
 
   /**
-   * Creates a new channel with the current user as the creator and first member and returns the according observable.
+   * Fetches a channel from Firestore, either as a single snapshot or realtime.
    *
-   * @param name - Name of the channel (check is channel-name already taken)
-   * @param description - Optional description of the channel
+   * @param channelId - The ID of the channel.
+   * @param realtime - Whether to subscribe to realtime updates.
    */
-  createChannel(
-    name: string,
-    description?: string
-  ): Observable<ChannelInterface | undefined> {
+  fetchChannelFromFirestore(channelId: string, realtime: boolean): Observable<ChannelInterface | undefined> {
+    const channelRef = doc(this.firestore, `channels/${channelId}`);
+    const source$ = realtime
+      ? docData(channelRef, { idField: 'id' })
+      : from(getDoc(channelRef)).pipe(map((snap) => snap.exists() ? { id: snap.id, ...snap.data() } : undefined));
+    return source$.pipe(
+      map((data) => data as ChannelInterface | undefined),
+      shareReplay({ bufferSize: 1, refCount: false })
+    );
+  }
+
+  /**
+   * Creates a new channel if the name is available.
+   *
+   * @param name - Name of the new channel.
+   * @param description - Optional description.
+   */
+  createChannel( name: string, description?: string): Observable<ChannelInterface | undefined> {
     const user = this.authService.currentUser;
     if (!user) throw new Error('User not logged in');
-    let channelRef = collection(this.firestore, 'channels');
-    let q = query(channelRef, where('name', '==', name), limit(1));
+    const channelRef = collection(this.firestore, 'channels');
+    const q = query(channelRef, where('name', '==', name), limit(1));
     return from(getDocs(q)).pipe(
-      switchMap((querySnapshot) => {
-        if (!querySnapshot.empty) throw new Error('name vergeben');
-        const channelData: ChannelInterface = {
-          createdBy: user.uid,
-          description: description ?? '',
-          memberIds: [user.uid],
-          name,
-          createdAt: new Date(),
-        };
-        return from(addDoc(channelRef, channelData)).pipe(
-          switchMap((docRef) => this.getCurrentChannel(docRef.id))
-        );
+      switchMap((snap) => {
+        if (!snap.empty) throw new Error('name vergeben');
+        return from(addDoc(channelRef, this.buildChannelData(user.uid, name, description)))
+        .pipe(switchMap((docRef) => this.getCurrentChannel(docRef.id)));
       })
     );
+  }
+
+  /**
+   * Builds a channel object for creation.
+   *
+   * @param userId - ID of the creator.
+   * @param name - Channel name.
+   * @param description - Optional description.
+   */
+  buildChannelData(userId: string, name: string, description?: string): Omit<ChannelInterface, 'id'> {
+    return {
+      createdBy: userId,
+      description: description ?? '',
+      memberIds: [userId],
+      name,
+      createdAt: new Date(),
+    };
   }
 
   /**

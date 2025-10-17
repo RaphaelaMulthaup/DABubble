@@ -108,9 +108,7 @@ export class ReactionsService {
     const users: string[] = data!['users'] || [];
     if (users.includes(userId)) {
       await this.removeUserFromReaction(postRef, reactionRef, userId);
-    } else {
-      await this.addUserToReaction(postRef, reactionRef, userId);
-    }
+    } else await this.addUserToReaction(postRef, reactionRef, userId);
   }
 
   /**
@@ -194,17 +192,9 @@ export class ReactionsService {
   ): Observable<ReactionInterface[]> {
     const cacheKey = `${parentPath}/${subcollectionName}/${postId}`;
     if (!this.reactionCache.has(cacheKey)) {
-      const reactionsRef = collection(
-        this.firestore,
-        `${parentPath}/${subcollectionName}/${postId}/reactions`
-      );
-      const reactions$ = collectionData(reactionsRef, { idField: 'id' }).pipe(
-        shareReplay({ bufferSize: 1, refCount: true })
-      );
-      this.reactionCache.set(
-        cacheKey,
-        reactions$ as Observable<ReactionInterface[]>
-      );
+      const reactionsRef = collection(this.firestore,`${parentPath}/${subcollectionName}/${postId}/reactions`);
+      const reactions$ = collectionData(reactionsRef, { idField: 'id' }).pipe(shareReplay({ bufferSize: 1, refCount: true }));
+      this.reactionCache.set(cacheKey, reactions$ as Observable<ReactionInterface[]>);
     }
     return this.reactionCache.get(cacheKey)!;
   }
@@ -215,9 +205,7 @@ export class ReactionsService {
    *
    * @param senderIsCurrentUser - whether the posts sender is the current user or not.
    */
-  async checkEmojiPickerPosition(
-    senderIsCurrentUser: boolean
-  ): Promise<boolean> {
+  async checkEmojiPickerPosition(senderIsCurrentUser: boolean): Promise<boolean> {
     return new Promise((resolve) => {
       this.screenSize$.pipe(take(1)).subscribe((size) => {
         if (size !== 'handset') {
@@ -226,9 +214,7 @@ export class ReactionsService {
           } else {
             resolve(false);
           }
-        } else {
-          resolve(senderIsCurrentUser);
-        }
+        } else resolve(senderIsCurrentUser);
       });
     });
   }
@@ -239,9 +225,7 @@ export class ReactionsService {
    *
    * @param senderIsCurrentUser whether the posts sender is the current user or not.
    */
-  async resolveEmojiPickerPosition(
-    senderIsCurrentUser: boolean
-  ): Promise<ConnectedPosition> {
+  async resolveEmojiPickerPosition(senderIsCurrentUser: boolean): Promise<ConnectedPosition> {
     if (await this.checkEmojiPickerPosition(senderIsCurrentUser)) {
       return {
         originX: 'start',

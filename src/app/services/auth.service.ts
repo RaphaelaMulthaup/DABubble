@@ -54,7 +54,6 @@ import {
   CollectionReference,
   DocumentData,
   DocumentReference,
-  orderBy,
   QueryDocumentSnapshot,
   QuerySnapshot,
   WriteBatch,

@@ -64,7 +64,7 @@ export class DashboardContentComponent implements OnInit {
   initMessagesStream() {
     return this.route.paramMap.pipe(
       map((params) => ({
-        type: params.get('conversationType'),
+        type: params.get('conversationType') as 'chat' | 'channel',
         id: params.get('conversationId'),
       })),
       filter(({ type, id }) => !!type && !!id),
@@ -84,7 +84,7 @@ export class DashboardContentComponent implements OnInit {
   initAnswersStream(): Observable<any[]> {
     return this.route.paramMap.pipe(
       map((params) => ({
-        type: params.get('conversationType'),
+        type: params.get('conversationType') as 'chat' | 'channel',
         id: params.get('conversationId'),
         msgId: params.get('messageId'),
       })),

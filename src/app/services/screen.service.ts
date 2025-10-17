@@ -20,11 +20,7 @@ export class ScreenService {
     private router: Router
   ) {
     this.screenSize$ = this.breakpointObserver
-      .observe([
-        this.breakpoints.Handset,
-        this.breakpoints.Tablet,
-        this.breakpoints.Web,
-      ])
+      .observe([ this.breakpoints.Handset, this.breakpoints.Tablet, this.breakpoints.Web])
       .pipe(
         map((result) => {
           if (result.breakpoints[this.breakpoints.Handset]) return 'handset';
@@ -34,13 +30,13 @@ export class ScreenService {
         }),
         shareReplay({ bufferSize: 1, refCount: true })
       );
-      this.setInitDashboardState();
+    this.setInitDashboardState();
   }
 
   /**
    * This function sets a new dashboard-state.
    * If the set state is 'sidenav' the active route is set to the default-state.
-   * 
+   *
    * @param state - the dashboard-state-type
    */
   setDashboardState(state: DashboardState) {
@@ -54,11 +50,9 @@ export class ScreenService {
    */
   async setInitDashboardState() {
     const currentScreenSize = await firstValueFrom(this.screenSize$);
-    if (currentScreenSize === 'handset') {
-      this.setDashboardState('sidenav');
-    } else {
-      this.router.navigate(['/dashboard', 'new-message']);
-      this.setDashboardState('new-message-view');
-    };
+    currentScreenSize === 'handset'
+      ? this.setDashboardState('sidenav')
+      : this.router.navigate(['/dashboard', 'new-message']);
+        this.setDashboardState('new-message-view');
   }
 }

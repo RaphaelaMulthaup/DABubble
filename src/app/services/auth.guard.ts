@@ -9,7 +9,6 @@ import { Auth } from "@angular/fire/auth";
 export const AuthGuard: CanActivateFn = async () => {
     const auth = inject(Auth);
     const router = inject(Router);
-
     return new Promise<boolean>((resolve) => {
         auth.onAuthStateChanged(user => {
             if (user) {

@@ -192,11 +192,7 @@ export class PostService {
    * @param conversationType - The type of the conversation ('channel' or 'chat').
    * @param conversationId - The ID of the conversation.
    */
-  openAnswers(
-    postId: string,
-    conversationType: 'channel' | 'chat',
-    conversationId: string
-  ) {
+  openAnswers( postId: string, conversationType: 'channel' | 'chat', conversationId: string) {
     this.screenService.setDashboardState('thread-window');
     this.router.navigate([
       '/dashboard',

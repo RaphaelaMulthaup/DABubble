@@ -2,9 +2,7 @@ import { Injectable } from '@angular/core';
 import {
   Firestore,
   collection,
-  collectionData,
-  query,
-  where,
+  collectionData
 } from '@angular/fire/firestore';
 import {
   combineLatest,
@@ -24,66 +22,58 @@ import { UserInterface } from '../shared/models/user.interface';
 import { ChannelInterface } from '../shared/models/channel.interface';
 import { PostInterface } from '../shared/models/post.interface';
 import { ChatService } from './chat.service';
-import { ChannelsService } from './channels.service';
 
 @Injectable({ providedIn: 'root' })
 export class SearchService {
-  // Public Observables for Components
-  public users$: Observable<UserInterface[]>; // Observable for user data
-  public allChannels$: Observable<ChannelInterface[]>; // Observable for all available channels
-  public userChannels$: Observable<ChannelInterface[]>; // Observable for channels the current user is a member of
-  public chatPosts$: Observable<PostInterface[]>; // Observable for posts in the user's chats
-  public channelPosts$: Observable<PostInterface[]>; // Observable for posts in the user's channels
-  public results$ = new BehaviorSubject<SearchResult[]>([]);
+  users$: Observable<UserInterface[]>;
+  allChannels$: Observable<ChannelInterface[]>;
+  userChannels$: Observable<ChannelInterface[]>;
+  chatPosts$: Observable<PostInterface[]>;
+  channelPosts$: Observable<PostInterface[]>;
+  results$ = new BehaviorSubject<SearchResult[]>([]);
 
   overlaySearchResultsOpen = false;
   overlaySearchResultsNewMessageOpen = false;
 
   constructor(
-    private authService: AuthService, // AuthService to manage authentication
-    private chatService: ChatService, // ChatService to manage chat-related logic
-    private firestore: Firestore // Firestore service to interact with the database
+    private authService: AuthService,
+    private chatService: ChatService,
+    private firestore: Firestore
   ) {
-    // Initialize all data streams (Observables)
-    this.users$ = this.getUsers$(); // Fetch users
-    this.allChannels$ = this.getAllChannels$(); // Fetch all channels
-    this.userChannels$ = this.getUserChannels$(); // Fetch channels the current user belongs to
-    this.chatPosts$ = this.getChatPosts$(); // Fetch chat posts for the user
-    this.channelPosts$ = this.getChannelPosts$(); // Fetch channel posts for the user
+    this.users$ = this.getUsers$();
+    this.allChannels$ = this.getAllChannels$();
+    this.userChannels$ = this.getUserChannels$();
+    this.chatPosts$ = this.getChatPosts$();
+    this.channelPosts$ = this.getChannelPosts$();
   }
 
   /**
-   * Subscribes to the provided search term Observable and updates the results$ BehaviorSubject.
-   * This method triggers a new search whenever the search term changes and pushes the
-   * resulting array of SearchResult objects into the results$ stream for components to consume.
+   * Subscribes to a search term observable and updates the internal results stream.
    *
-   * @param term$ An Observable that emits the current search term entered by the user.
+   * @param term$ - Observable emitting the search term strings.
    */
   updateResults(term$: Observable<string>) {
-    this.search(term$).subscribe((results) => {
-      this.results$.next(results);
-    });
+    this.search(term$).subscribe((results) => {this.results$.next(results);});
   }
 
   /**
    * Fetches the list of all users from Firestore.
-   * @returns An observable array of UserInterface objects.
+   * Returns an Observable array of UserInterface objects.
    */
-  private getUsers$(): Observable<UserInterface[]> {
-    const usersCol = collection(this.firestore, 'users'); // Reference to the "users" collection in Firestore
+  getUsers$(): Observable<UserInterface[]> {
+    const usersCol = collection(this.firestore, 'users');
     return collectionData(usersCol, { idField: 'id' }).pipe(
-      // Fetch data and include 'id' as an additional field
       map((data) => data as UserInterface[]),
-      shareReplay({ bufferSize: 1, refCount: true }) // Cache the latest emitted value for new subscribers
+      shareReplay({ bufferSize: 1, refCount: true })
     );
   }
 
   /**
    * Fetches the list of all channels from Firestore.
-   * @returns An observable array of ChannelInterface objects.
+   * Returns an Observable array of ChannelInterface objects.
    */
-  private getAllChannels$(): Observable<ChannelInterface[]> {
-    const channelsCol = collection(this.firestore, 'channels'); // Reference to "channels" collection
+  getAllChannels$(): Observable<ChannelInterface[]> {
+    const channelsCol = collection(this.firestore, 'channels');
     return collectionData(channelsCol, { idField: 'id' }).pipe(
       map((data) => data as ChannelInterface[]),
       shareReplay({ bufferSize: 1, refCount: true })
@@ -92,7 +82,7 @@ export class SearchService {
 
   /**
    * Fetches channels that the current authenticated user is a member of.
-   * @returns An observable array of ChannelInterface objects.
+   * Returns an Observable array of ChannelInterface objects.
    */
   getUserChannels$(): Observable<ChannelInterface[]> {
     return this.authService.currentUser$.pipe(
@@ -110,38 +100,34 @@ export class SearchService {
 
   /**
    * Fetches chat posts for the current user.
-   * @returns An observable array of PostInterface objects representing the chat posts.
+   * Returns an Observable array of PostInterface objects representing the chat posts.
    */
-  private getChatPosts$(): Observable<PostInterface[]> {
+  getChatPosts$(): Observable<PostInterface[]> {
     return this.authService.currentUser$.pipe(
       filter((user): user is UserInterface => !!user),
       switchMap((user) => {
-        const chatsCol = collection(this.firestore, 'chats'); // Reference to the "chats" collection
+        const chatsCol = collection(this.firestore, 'chats');
         return collectionData(chatsCol, { idField: 'id' }).pipe(
           switchMap((chats: any[]) => {
-            // Filter chats where the current user is a participant
             const userChats = chats.filter((chat) => {
-              const [user1, user2] = chat.id.split('_'); // Split the chat ID to get the two users
-              return user1 === user.uid || user2 === user.uid; // Check if the user is part of the chat
+              const [user1, user2] = chat.id.split('_');
+              return user1 === user.uid || user2 === user.uid;
             });
 
-            if (!userChats.length) return of([]); // Return empty if user has no chats
-            // Create an observable for each chat's messages
+            if (!userChats.length) return of([]);
             const chatMessages$ = userChats.map((chat) => {
               const msgCol = collection(
                 this.firestore,
                 `chats/${chat.id}/messages`
-              ); // Reference to messages in the chat
+              );
               return collectionData(msgCol, { idField: 'id' }).pipe(
                 switchMap((msgs: any[]) => {
-                  // Map the messages and add the chat ID
                   const messages = msgs.map((m) => ({
                     ...(m as PostInterface),
                     chatId: chat.id,
                   }));
 
                   if (!msgs.length) return of(messages);
-                  // Get the answers to each message in the chat
                   const answers$ = msgs.map((msg) => {
                     const ansCol = collection(
                       this.firestore,
@@ -152,8 +138,8 @@ export class SearchService {
                         ans.map((a) => ({
                           ...(a as PostInterface),
                           chatId: chat.id,
-                          answer: true, // Mark this as an answer
-                          parentMessageId: msg.id, // Link the answer to its parent message
+                          answer: true,
+                          parentMessageId: msg.id,
                         }))
                       )
                     );
@@ -167,33 +153,30 @@ export class SearchService {
             });
 
             return combineLatest(chatMessages$).pipe(
-              map((arrays) => arrays.flat()) // Flatten the array of arrays into a single array
+              map((arrays) => arrays.flat())
             );
           })
         );
       }),
-      shareReplay({ bufferSize: 1, refCount: true }) // Share the subscription for multiple consumers
+      shareReplay({ bufferSize: 1, refCount: true })
     );
   }
 
   /**
    * Fetches posts from channels the user is a member of.
-   * @returns An observable array of PostInterface objects representing the posts in the channels.
+   * Returns an Observable array of PostInterface objects representing the posts in the channels.
    */
-  private getChannelPosts$(): Observable<PostInterface[]> {
+  getChannelPosts$(): Observable<PostInterface[]> {
     return this.userChannels$.pipe(
-      // Use the userChannels$ observable
       switchMap((channels) => {
-        if (!channels.length) return of([]); // Return empty if no user channels
-        // Create an observable for each channel's messages
+        if (!channels.length) return of([]);
         const channelMessages$ = channels.map((channel) => {
           const msgCol = collection(
             this.firestore,
             `channels/${channel.id}/messages`
-          ); // Reference to the channel's messages
+          );
           return collectionData(msgCol, { idField: 'id' }).pipe(
             switchMap((msgs: any[]) => {
-              // Map the messages and add the channel details
               const messages = msgs.map((m) => ({
                 ...m,
                 channelId: channel.id,
@@ -201,7 +184,6 @@ export class SearchService {
               }));
 
               if (!msgs.length) return of(messages);
-              // Get the answers to each message in the channel
               const answers$ = msgs.map((msg) => {
                 const ansCol = collection(
                   this.firestore,
@@ -212,8 +194,8 @@ export class SearchService {
                     ans.map((a) => ({
                       ...(a as PostInterface),
                       channelId: channel.id,
-                      answer: true, // Mark this as an answer
-                      parentMessageId: msg.id, // Link the answer to its parent message
+                      answer: true,
+                      parentMessageId: msg.id,
                     }))
                   )
                 );
@@ -227,17 +209,14 @@ export class SearchService {
         });
 
         return combineLatest(channelMessages$).pipe(
-          map((arrays) => arrays.flat()) // Flatten the array of arrays into a single array
+          map((arrays) => arrays.flat())
         );
       }),
-      shareReplay({ bufferSize: 1, refCount: true }) // Share the subscription for multiple consumers
+      shareReplay({ bufferSize: 1, refCount: true })
     );
   }
 
-  search(
-    term$: Observable<string>,
-    opts?: { includeAllChannels?: boolean }
-  ): Observable<SearchResult[]> {
+  search( term$: Observable<string>, opts?: { includeAllChannels?: boolean }): Observable<SearchResult[]> {
     return combineLatest([
       term$.pipe(
         throttleTime(300, undefined, { leading: true, trailing: true }),
@@ -310,7 +289,6 @@ export class SearchService {
    * This method is specifically used for header search, focusing only on users and user channels.
    *
    * @param term$ An observable that emits the search term.
-   * @returns An observable array of search results (users and channels).
    */
   searchHeaderSearch(term$: Observable<string>): Observable<SearchResult[]> {
     return combineLatest([
@@ -323,9 +301,8 @@ export class SearchService {
     ]).pipe(
       map(([term, users, channels]) => {
         const t = (term ?? '').trim().toLowerCase();
-        if (!t) return [] as SearchResult[]; // Return an empty array if the search term is empty
+        if (!t) return [] as SearchResult[];
 
-        // If the search term is "@" or "#", return all users or channels respectively
         if (t === '@') {
           return users.map((u) => ({ type: 'user' as const, ...u }));
         }
@@ -334,7 +311,6 @@ export class SearchService {
           return channels.map((c) => ({ type: 'channel' as const, ...c }));
         }
 
-        // Search for users or channels starting with "@" or "#"
         if (t.startsWith('@')) {
           const query = t.slice(1);
           return users
@@ -349,7 +325,6 @@ export class SearchService {
             .map((c) => ({ type: 'channel' as const, ...c }));
         }
 
-        // Search for users by email
         return users
           .filter((u) => u.email?.toLowerCase().includes(t))
           .map((u) => ({ type: 'user' as const, ...u }));

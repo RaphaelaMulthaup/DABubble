@@ -95,14 +95,13 @@ export class OverlayService {
 
   /**
    * Opens a component inside an overlay with configurable backdrop and positioning options.
+   * Returns an `OpenComponentResult` containing the component reference, overlay reference and observables for closure and backdrop clicks, or `undefined` if opening failed.
    *
    * @template T - The component type to be opened.
    * @param component - The component class to render inside the overlay.
    * @param backdropType - Defines the backdrop style: with backdrop (dark/transparent) or without (close-on-scroll/null).
    * @param position - Configuration for overlay placement.
    * @param data - Optional partial data object to assign to the component instance.
-   * @returns An `OpenComponentResult` containing the component reference, overlay reference,
-   *          and observables for closure and backdrop clicks, or `undefined` if opening failed.
    */
   openComponent<T extends Object>(
     component: Type<T>,
@@ -113,9 +112,7 @@ export class OverlayService {
     const destroy$ = new Subject<void>();
     const backdropClick$ = new Subject<void>();
     const afterClosed$ = new Subject<void>();
-    this.overlayRef = this.overlay.create(
-      this.getOverlayConfig(backdropType, this.getPositionStrategy(position))
-    );
+    this.overlayRef = this.overlay.create(this.getOverlayConfig(backdropType, this.getPositionStrategy(position)));
     this.overlayRefs.push(this.overlayRef!);
     if (this.overlayRefs.length > 0) this.toggleBodyScroll(true);
     this.handleBackdropClick(this.overlayRef, destroy$, backdropClick$);

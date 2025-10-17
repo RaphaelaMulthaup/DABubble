@@ -88,9 +88,7 @@ export class UserService {
         collection(this.firestore, 'users'),
         where('uid', 'in', batchIds)
       );
-      batches.push(
-        collectionData(q, { idField: 'uid' }) as Observable<UserInterface[]>
-      );
+      batches.push(collectionData(q, { idField: 'uid' }) as Observable<UserInterface[]>);
     }
     return batches.length > 1
       ? combineLatest(batches).pipe(map((arrs) => arrs.flat()))
@@ -104,19 +102,17 @@ export class UserService {
    * @param currentUserId - the ID of the current user
    */
   openProfileOverlay(userId: string, currentUserId: string) {
-    if (userId === currentUserId) {
+    userId === currentUserId?
       this.overlayService.openComponent(
         ProfileViewMainComponent,
         'cdk-overlay-dark-backdrop',
         { globalPosition: 'center' }
-      );
-    } else {
-      this.overlayService.openComponent(
+      )
+      :this.overlayService.openComponent(
         ProfileViewOtherUsersComponent,
         'cdk-overlay-dark-backdrop',
         { globalPosition: 'center' },
         { user$: this.getUserById(userId) }
-      );
-    }
+      )
   }
 }
