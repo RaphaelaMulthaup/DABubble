@@ -78,6 +78,7 @@ export class NonAuthComponent {
     collectionData(usersRef).pipe(
       map((users: any[]) => users.map((user) => user.name))
     );
+    this.addMaxWidth();
   }
 
   /**
@@ -111,6 +112,16 @@ export class NonAuthComponent {
   showLogo() {
     let shownLogo = document.querySelector('.logo');
     shownLogo?.classList.add('show-logo');
+  }
+
+  /**
+   * Adds max-width to intro content.
+   */
+  addMaxWidth() {
+    setTimeout(() => {
+      let intro = document.querySelector('.intro');
+      intro?.classList.add('intro-max-width');
+    }, 3500);
   }
 
   /**
