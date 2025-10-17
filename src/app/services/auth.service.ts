@@ -21,6 +21,7 @@ import {
   arrayUnion,
   collection,
   deleteDoc,
+  deleteField,
   doc,
   docData,
   getDoc,
@@ -483,7 +484,7 @@ export class AuthService {
     const answersIdsSnap = await getDocs(answersColRef);
     // diese Fumktion jetzt schreiben
     await this.deleteAnswerfromGuestUserId(answersIdsSnap, guestUserId);
-    await this.checkWhetherAnswersAreStillAssigned(answersIdsSnap);
+    // await this.checkWhetherAnswersAreStillAssigned(answersIdsSnap);
     await this.setAnsCounter(answersColRef, msgRef);
   }
 
@@ -516,6 +517,24 @@ export class AuthService {
     }
   }
 
+  // async checkWhetherAnswersAreStillAssigned(
+  //   answersIdsSnap: QuerySnapshot<DocumentData>
+  // ) {
+
+  // }
+
+  async setAnsCounter(
+    answersColRef: CollectionReference<DocumentData>,
+    msgRef: DocumentReference<DocumentData>
+  ) {
+    const remainingAnswerSnap = await getDocs(answersColRef);
+    if (remainingAnswerSnap.empty) {
+      await updateDoc(msgRef, {
+        ansCounter: deleteField(),
+      });
+    }
+  }
+
   async handleGuestsChannels(guestUserId: string) {
     const q = this.buildUserChannelsQuery(guestUserId);
     const snapshot = await getDocs(q);
@@ -526,7 +545,7 @@ export class AuthService {
     await batch.commit();
   }
 
-  private handleChannelBatchUpdate(
+  handleChannelBatchUpdate(
     batch: WriteBatch,
     docSnap: QueryDocumentSnapshot,
     guestUserId: string
