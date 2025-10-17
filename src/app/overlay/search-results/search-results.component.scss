@@ -9,6 +9,8 @@
 }
 
 :host.overlay-web {
+  max-width: clamp(36.25rem, 13.7500rem + 37.5000vw, 58.75rem);
+  max-height: clamp(43.75rem, 30.0000rem + 22.9167vw, 57.5rem);
   border-radius: 0 30px 30px 30px;
   box-shadow: 0px 2px 10px 0px #00000014;
   margin-top: -15px;
@@ -22,8 +24,8 @@
 }
 
 .results-list-web {
-  max-height: calc(100vh - 300px);
-  max-width: calc(100vw - 489px);
+  max-width: 100%;
+  margin-right: 48px;
 }
 
 :host.overlay-web {
