@@ -370,16 +370,14 @@ export class AuthService {
   async resetMessagesExampleChannel(guestUserId: string) {
     await this.deleteGuestsMessagesInExampleChannel(guestUserId);
     await this.filterMessagesWithReactions(guestUserId);
-    // const messagesWithAnswersQuery = query(
-    //   this.messagesChannelEntwicklerteamDocRef,
-    //   where('hasReactions', '==', true)
-    // );
-    // const messagesWithReactionsSnapshot = await getDocs(
-    //   messagesWithReactionsQuery
-    // );
-    // for (const msgDoc of messagesWithReactionsSnapshot.docs) {
-    //   await this.handleMessagesWithReactions(msgDoc, guestUserId);
-    // }
+    const messagesWithAnswersQuery = query(
+      this.messagesChannelEntwicklerteamDocRef,
+      where('ansCounter', '>', 0)
+    );
+    const messagesWithAnswersSnapshot = await getDocs(messagesWithAnswersQuery);
+    for (const msgDoc of messagesWithAnswersSnapshot.docs) {
+      await this.handleMessagesWithAnswers(msgDoc, guestUserId);
+    }
   }
 
   async deleteGuestsMessagesInExampleChannel(guestUserId: string) {
@@ -416,7 +414,6 @@ export class AuthService {
     const msgRef = msgDoc.ref;
     const reactionsColRef = collection(msgRef, 'reactions');
     const reactionNamesSnap = await getDocs(reactionsColRef);
-    //hier bin ich jetzt beim Durchgehen
     await this.deleteGuestUserIdAsSenderOfReactions(
       reactionNamesSnap,
       guestUserId
@@ -474,6 +471,48 @@ export class AuthService {
     const remainingReactionNamesSnap = await getDocs(reactionsColRef);
     if (remainingReactionNamesSnap.empty) {
       await updateDoc(msgRef, { hasReactions: false });
+    }
+  }
+
+  async handleMessagesWithAnswers(
+    msgDoc: QueryDocumentSnapshot<DocumentData>,
+    guestUserId: string
+  ) {
+    const msgRef = msgDoc.ref;
+    const answersColRef = collection(msgRef, 'answers');
+    const answersIdsSnap = await getDocs(answersColRef);
+    // diese Fumktion jetzt schreiben
+    await this.deleteAnswerfromGuestUserId(answersIdsSnap, guestUserId);
+    await this.checkWhetherAnswersAreStillAssigned(answersIdsSnap);
+    await this.setAnsCounter(answersColRef, msgRef);
+  }
+
+  async deleteAnswerfromGuestUserId(
+    answersIdsSnap: QuerySnapshot<DocumentData>,
+    guestUserId: string
+  ) {
+    const localBatch = writeBatch(this.firestore);
+    for (const answerDoc of answersIdsSnap.docs) {
+      await this.deleteGuestsAnswerIfExists(
+        answerDoc.ref,
+        guestUserId,
+        localBatch
+      );
+    }
+    await localBatch.commit();
+  }
+
+  async deleteGuestsAnswerIfExists(
+    answerDocRef: DocumentReference<DocumentData>,
+    guestUserId: string,
+    localBatch: WriteBatch
+  ) {
+    const answerSnap = await getDoc(answerDocRef);
+    if (!answerSnap.exists()) return;
+    const answerData = answerSnap.data();
+    const users = answerData['senderId'];
+    if (users === guestUserId) {
+      localBatch.delete(answerDocRef);
     }
   }
 
