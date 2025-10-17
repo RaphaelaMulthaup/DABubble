@@ -516,10 +516,8 @@ export class AuthService {
     }
   }
 
-  async setAnsLastCreatedAt() {}
-
   async setAnsCounter(
-    answersColRef: CollectionReference<DocumentData>, //alle answers einer message
+    answersColRef: CollectionReference<DocumentData>,
     msgRef: DocumentReference<DocumentData>
   ) {
     const remainingAnswerSnap = await getDocs(answersColRef);
@@ -529,22 +527,24 @@ export class AuthService {
         ansLastCreatedAt: deleteField(),
       });
     } else {
-      // Alle createdAt-Werte sammeln
-      const createdAts = remainingAnswerSnap.docs.map(
-        (doc) => doc.data()['createdAt']
-      );
-
-      // Das neueste Datum finden
-      const newestCreatedAt = createdAts.reduce((latest, current) => {
-        return current.toMillis() > latest.toMillis() ? current : latest;
-      });
-
-      // Nachricht aktualisieren
-      await updateDoc(msgRef, {
-        ansCounter: remainingAnswerSnap.size,
-        ansLastCreatedAt: newestCreatedAt,
-      });
+      await this.handleRemainingAnswers(remainingAnswerSnap, msgRef);
     }
+  }
+
+  async handleRemainingAnswers(
+    remainingAnswerSnap: QuerySnapshot<DocumentData>,
+    msgRef: DocumentReference<DocumentData>
+  ) {
+    const createdAts = remainingAnswerSnap.docs.map(
+      (doc) => doc.data()['createdAt']
+    );
+    const newestCreatedAt = createdAts.reduce((latest, current) => {
+      return current.toMillis() > latest.toMillis() ? current : latest;
+    });
+    await updateDoc(msgRef, {
+      ansCounter: remainingAnswerSnap.size,
+      ansLastCreatedAt: newestCreatedAt,
+    });
   }
 
   async handleGuestsChannels(guestUserId: string) {
