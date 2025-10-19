@@ -43,6 +43,7 @@ import { ScreenService } from './screen.service';
 import { UserToRegisterInterface } from '../shared/models/user.to.register.interface';
 import { DocumentReference } from 'firebase/firestore';
 import { UserDemoSetupService } from './user-demo-setup.service';
+import { ResetDemoChannelService } from './reset-demo-channel.service';
 
 @Injectable({
   providedIn: 'root',
@@ -61,6 +62,7 @@ export class AuthService {
     private firestore: Firestore,
     private userService: UserService,
     private userDemoSetupService: UserDemoSetupService,
+    private resetDemoChannelService: ResetDemoChannelService,
     private screenService: ScreenService
   ) {
     // 🔥 Reaktives Observable mit Absicherung, dass User-Dokument existiert
@@ -147,7 +149,7 @@ export class AuthService {
       await setDoc(userRef, userData);
       await Promise.allSettled([
         this.userDemoSetupService.addDirectChatToTeam(user.uid),
-        updateDoc(this.userDemoSetupService.channelEntwicklerteamDocRef, {
+        updateDoc(this.resetDemoChannelService.channelEntwicklerteamDocRef, {
           memberIds: arrayUnion(user.uid),
         }),
       ]);
@@ -239,7 +241,7 @@ export class AuthService {
       .catch(() => {})
       .then(() => deleteUser(user))
       .catch((err) => console.error('Failed to delete guest user:', err));
-    await this.userDemoSetupService.resetExampleChannel(user.uid);
+    await this.resetDemoChannelService.resetExampleChannel(user.uid);
     await this.userDemoSetupService.handleGuestsChannels(user.uid);
     await this.userDemoSetupService.deleteChats(user.uid);
   }
