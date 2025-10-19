@@ -145,6 +145,12 @@ export class AuthService {
         role: 'user',
       };
       await setDoc(userRef, userData);
+      await Promise.allSettled([
+        this.userDemoSetupService.addDirectChatToTeam(user.uid),
+        updateDoc(this.userDemoSetupService.channelEntwicklerteamDocRef, {
+          memberIds: arrayUnion(user.uid),
+        }),
+      ]);
     } else {
       await updateDoc(userRef, { active: true });
     }
@@ -191,15 +197,9 @@ export class AuthService {
         await this.screenService.setInitDashboardState();
         const guest = credential.user;
         await this.createOrUpdateUserInFirestore(guest, 'anonymous', 'Guest');
-        void Promise.allSettled([
-          this.userService.updateUser(guest.uid, {
-            photoUrl: './assets/img/no-avatar.svg',
-          }),
-          this.userDemoSetupService.addDirectChatToTeam(guest.uid),
-          updateDoc(this.userDemoSetupService.channelEntwicklerteamDocRef, {
-            memberIds: arrayUnion(guest.uid),
-          }),
-        ]);
+        this.userService.updateUser(guest.uid, {
+          photoUrl: './assets/img/no-avatar.svg',
+        });
       })
       .catch((error) => console.error('Guest login error:', error));
     return from(promise) as Observable<void>;
