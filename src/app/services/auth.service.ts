@@ -191,13 +191,15 @@ export class AuthService {
         await this.screenService.setInitDashboardState();
         const guest = credential.user;
         await this.createOrUpdateUserInFirestore(guest, 'anonymous', 'Guest');
-        await this.userService.updateUser(guest.uid, {
-          photoUrl: './assets/img/no-avatar.svg',
-        });
-        await this.userDemoSetupService.addDirectChatToTeam(guest.uid);
-        await updateDoc(this.userDemoSetupService.channelEntwicklerteamDocRef, {
-          memberIds: arrayUnion(guest.uid),
-        });
+        void Promise.allSettled([
+          this.userService.updateUser(guest.uid, {
+            photoUrl: './assets/img/no-avatar.svg',
+          }),
+          this.userDemoSetupService.addDirectChatToTeam(guest.uid),
+          updateDoc(this.userDemoSetupService.channelEntwicklerteamDocRef, {
+            memberIds: arrayUnion(guest.uid),
+          }),
+        ]);
       })
       .catch((error) => console.error('Guest login error:', error));
     return from(promise) as Observable<void>;

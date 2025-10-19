@@ -110,13 +110,14 @@ export class UserDemoSetupService {
   }
 
   async addDirectChatToTeam(guestId: string) {
-    for (const devId of this.devIds) {
+    const tasks = this.devIds.map(async (devId) => {
       const { chatId, messages } = await this.createChatsAndProvideMessages(
         guestId,
         devId
       );
-      await this.createMessagesForChat(chatId, messages);
-    }
+      return this.createMessagesForChat(chatId, messages);
+    });
+    await Promise.all(tasks);
   }
 
   async createChatsAndProvideMessages(guestId: string, devId: string) {
@@ -133,14 +134,11 @@ export class UserDemoSetupService {
     chatId: string,
     messages: Pick<PostInterface, 'senderId' | 'text'>[]
   ) {
-    for (const msg of messages) {
-      await this.postService.createMessage(
-        chatId,
-        msg.senderId,
-        msg.text,
-        'chat'
-      );
-    }
+    await Promise.all(
+      messages.map((msg) =>
+        this.postService.createMessage(chatId, msg.senderId, msg.text, 'chat')
+      )
+    );
   }
 
   async resetExampleChannel(guestUserId: string) {
