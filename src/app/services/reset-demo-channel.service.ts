@@ -142,11 +142,11 @@ export class ResetDemoChannelService {
     this.applyReactionChange(reactionDocRef, updatedUsers, batch);
   }
 
-  private removeGuestFromUsersArray(users: string[], guestUserId: string) {
+  removeGuestFromUsersArray(users: string[], guestUserId: string) {
     return users.filter((id) => id !== guestUserId);
   }
 
-  private applyReactionChange(
+  applyReactionChange(
     reactionDocRef: DocumentReference<DocumentData>,
     updatedUsers: string[],
     batch: WriteBatch
