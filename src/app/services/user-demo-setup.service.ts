@@ -171,11 +171,25 @@ export class UserDemoSetupService {
     );
     const messagesSnapshot = await getDocs(messagesQuery);
     let batch = writeBatch(this.firestore);
-
     for (const msgDoc of messagesSnapshot.docs) {
-      batch.delete(msgDoc.ref);
+      await this.deleteAnswersReactionsAndMessage(batch, msgDoc);
     }
     await batch.commit();
+  }
+
+  async deleteAnswersReactionsAndMessage(
+    batch: WriteBatch,
+    msgDoc: QueryDocumentSnapshot<DocumentData>
+  ) {
+    const answersCol = collection(msgDoc.ref, 'answers');
+    const reactionsCol = collection(msgDoc.ref, 'reactions');
+    const [answersSnap, reactionsSnap] = await Promise.all([
+      getDocs(answersCol),
+      getDocs(reactionsCol),
+    ]);
+    for (const a of answersSnap.docs) batch.delete(a.ref);
+    for (const r of reactionsSnap.docs) batch.delete(r.ref);
+    batch.delete(msgDoc.ref);
   }
 
   async filterMessagesWithReactions(guestUserId: string) {
