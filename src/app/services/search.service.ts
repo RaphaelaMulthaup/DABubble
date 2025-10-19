@@ -25,6 +25,7 @@ import { ChannelInterface } from '../shared/models/channel.interface';
 import { PostInterface } from '../shared/models/post.interface';
 import { ChatService } from './chat.service';
 import { ChannelsService } from './channels.service';
+import { UserDemoSetupService } from './user-demo-setup.service';
 
 @Injectable({ providedIn: 'root' })
 export class SearchService {
@@ -42,6 +43,7 @@ export class SearchService {
   constructor(
     private authService: AuthService, // AuthService to manage authentication
     private chatService: ChatService, // ChatService to manage chat-related logic
+    private userDemoSetupService: UserDemoSetupService,
     private firestore: Firestore // Firestore service to interact with the database
   ) {
     // Initialize all data streams (Observables)
@@ -99,7 +101,7 @@ export class SearchService {
       filter((user): user is UserInterface => !!user),
       distinctUntilChanged((a, b) => a.uid === b.uid),
       switchMap((user) => {
-        const q = this.authService.buildUserChannelsQuery(user.uid);
+        const q = this.userDemoSetupService.buildUserChannelsQuery(user.uid);
         return collectionData(q, { idField: 'id' }).pipe(
           map((data) => data as ChannelInterface[])
         );
