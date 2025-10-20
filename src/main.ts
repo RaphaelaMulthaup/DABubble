@@ -14,6 +14,8 @@ import { provideRouter } from '@angular/router';
 import { routes } from './app/app.routes';
 import { importProvidersFrom } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
+import { provideDatabase, getDatabase } from '@angular/fire/database';
+
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -27,6 +29,7 @@ bootstrapApplication(AppComponent, {
       })
     ),
     provideAuth(() => getAuth()),
+    provideDatabase(() => getDatabase(getApp(), environment.firebaseConfig.databaseURL)),
     importProvidersFrom(HttpClientModule),
   ],
 })

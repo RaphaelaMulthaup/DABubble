@@ -25,6 +25,7 @@ import { ConversationActiveRouterService } from '../../../services/conversation-
 import { ScreenService } from '../../../services/screen.service';
 import { ScreenSize } from '../../types/screen-size.type';
 import { OverlayService } from '../../../services/overlay.service';
+import { PresenceService } from '../../../services/presence.service';
 
 @Component({
   selector: 'app-user-list-item',
@@ -46,6 +47,8 @@ export class UserListItemComponent implements OnDestroy {
   @Input() showProfile = false;
   @Input() inHeaderChat = false;
   @Output() userSelected = new EventEmitter<UserInterface>();
+  userStatus$: Observable<any> | undefined;
+
 
   private userUid$ = new BehaviorSubject<string | null>(null);
   private destroy$ = new Subject<void>();
@@ -62,7 +65,8 @@ export class UserListItemComponent implements OnDestroy {
     public conversationActiveRouterService: ConversationActiveRouterService,
     private overlayService: OverlayService,
     public screenService: ScreenService,
-    private userService: UserService
+    private userService: UserService,
+    public presenceService: PresenceService
   ) {
     this.screenSize$ = this.screenService.screenSize$;
 
@@ -93,6 +97,10 @@ export class UserListItemComponent implements OnDestroy {
     this.currentUserId$
       .pipe(takeUntil(this.destroy$))
       .subscribe((id) => (this.currentUserId = id));
+  }
+
+  ngOnInit(){
+
   }
 
   ngOnDestroy() {
