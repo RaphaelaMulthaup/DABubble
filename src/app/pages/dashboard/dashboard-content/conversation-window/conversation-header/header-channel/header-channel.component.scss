@@ -1,9 +1,9 @@
-@import '../../../../../../../styles.scss';
+@import "../../../../../../../styles.scss";
 
 :host {
   height: 96px;
 
-  @include respond-to('959') {
+  @include respond-to("959") {
     height: 78px;
   }
 }
@@ -29,4 +29,22 @@
       background-image: url("../../../../../../../assets/img/person-add-hover.svg");
     }
   }
+}
+
+.header-channel-handset {
+  height: 78px;
+  padding: clamp(0rem, -0.3125rem + 1.5625vw, 0.625rem)
+    clamp(0rem, -0.5rem + 2.5vw, 1rem);
+  padding-right: clamp(0.5rem, 0.25rem + 1.25vw, 1rem);
+
+  @include respond-to("430") {
+    app-channel-list-item {
+      max-width: 80%;
+    }
+  }
+}
+
+.header-channel-tablet-web {
+  height: 96px;
+  padding: 25px 45px;
 }

@@ -47,6 +47,14 @@
   }
 }
 
+.channel-header-handset {  
+  padding: 0 4px !important;
+  gap: 4px !important;
+  h2 {
+    font-size: clamp(1.25rem, 1.1250rem + 0.6250vw, 1.5rem);
+  }
+}
+
 .active {
   .tag {
     background-image: url("./../../../../assets/img/tag-blue.svg") !important;

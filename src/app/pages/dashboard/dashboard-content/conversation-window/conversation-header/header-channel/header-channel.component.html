@@ -1,8 +1,7 @@
 @if(channelDetails$ | async; as channel) {
 <section
   class="flex justify-between w-screen"
-  [ngStyle]="{height: (screenSize$ | async) === 'handset'? '78px': '96px'}"
-  [ngStyle]="{padding: (screenSize$ | async) === 'handset'? '10px 16px': '25px 45px'}"
+  [ngClass]="(screenSize$ | async) === 'handset' ? 'header-channel-handset':'header-channel-tablet-web'"
 >
   <div
     class="flex fit-content items-center"

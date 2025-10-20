@@ -36,7 +36,7 @@ header {
 
   .header-content {
     height: 80px;
-    padding: 15px 16px;
+    padding: clamp(0.25rem, -0.1250rem + 1.8750vw, 1rem) clamp(0.5rem, 0.2500rem + 1.2500vw, 1rem);
     justify-content: space-between;
   }
 

@@ -1,19 +1,18 @@
 @if(channelWithUsers$ | async; as data) {
-@if(data.channel && data.users) {
-    @if((screenSize$|async) === 'handset'){
-        <button class="btn">
-            <div class="add-person"></div>
-        </button>
-    }@else {
-        <div class="flex relative items-center gap-[10px] list-item contact-list-item">
-            @for(user of data.users.slice(0,3); track $index) {
-            <div class="flex" [ngClass]="$index === 0 ? '' : '-ml-[10px]'">
-                <img class="profil-img" [src]="user.photoUrl" alt="Profilbild" />
+    @if(data.channel && data.users) {
+        @if((screenSize$|async) === 'handset'){
+            <button class="btn">
+                <div class="add-person"></div>
+            </button>
+        } @else {
+            <div class="flex relative items-center gap-[10px] list-item contact-list-item">
+                @for(user of data.users.slice(0,3); track $index) {
+                <div class="flex" [ngClass]="$index === 0 ? '' : '-ml-[10px]'">
+                    <img class="profil-img" [src]="user.photoUrl" alt="Profilbild" />
+                </div>
+                }
+                <span>{{data.channel.memberIds!.length}}</span>
             </div>
-            }
-            <span>{{data.channel.memberIds!.length}}</span>
-        </div>
+        }
     }
-
-}
 }

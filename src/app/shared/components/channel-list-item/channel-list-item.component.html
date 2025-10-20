@@ -1,12 +1,12 @@
-<li class="list-item channel-list-item" (click)="
-    !isInSearchResultsCurrentPostInput
+<li class="list-item channel-list-item" 
+  (click)="!isInSearchResultsCurrentPostInput
       ? screenService.setDashboardState('message-window')
-      : emitChannel()
-  " [routerLink]="
-    !isInSearchResultsCurrentPostInput
+      : emitChannel()"
+  [routerLink]="!isInSearchResultsCurrentPostInput
       ? ['/dashboard', 'channel', channel.id]
-      : null
-  " [ngClass]="{ 'related-to-search-result-post': relatedToSearchResultPost }"
+      : null"
+  [ngClass]="{'related-to-search-result-post': relatedToSearchResultPost }"
+  [ngClass]="{'channel-header-handset': isInChannelHeader && (screenSize$|async)==='handset' }"
   [class.active]="(screenSize$|async) !== 'handset' && dashboardState() !== 'new-message-view' && conversationActiveRouterService.currentConversation() === channel.id && !isInChannelHeader">
 
   @if(isInChannelHeader){
