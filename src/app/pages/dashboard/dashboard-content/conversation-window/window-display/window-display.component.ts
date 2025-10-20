@@ -14,7 +14,6 @@ import { DAYS } from '../../../../../shared/constants/days';
 import { EmptyChatViewComponent } from './empty-chat-view/empty-chat-view.component';
 import { EmptyChannelViewComponent } from './empty-channel-view/empty-channel-view.component';
 import { EmptyThreadViewComponent } from './empty-thread-view/empty-thread-view.component';
-import { ScrollService } from '../../../../../services/scroll.service';
 
 @Component({
   selector: 'app-window-display',
@@ -54,8 +53,7 @@ export class WindowDisplayComponent implements OnInit {
     public postService: PostService,
     private route: ActivatedRoute,
     private router: Router,
-    public screenService: ScreenService,
-    public scrollService: ScrollService
+    public screenService: ScreenService
   ) {
     this.dashboardState = this.screenService.dashboardState;
     this.screenSize$ = this.screenService.screenSize$;
