@@ -40,8 +40,8 @@ export class ScreenService {
    * @param state - the dashboard-state-type
    */
   setDashboardState(state: DashboardState) {
-    this.dashboardState.set(state);
     if (state === 'sidenav') this.router.navigate(['/dashboard']);
+    this.dashboardState.set(state);
   }
 
   /**
@@ -50,9 +50,11 @@ export class ScreenService {
    */
   async setInitDashboardState() {
     const currentScreenSize = await firstValueFrom(this.screenSize$);
-    currentScreenSize === 'handset'
-      ? this.setDashboardState('sidenav')
-      : this.router.navigate(['/dashboard', 'new-message']);
-        this.setDashboardState('new-message-view');
+    if (currentScreenSize === 'handset') {
+      this.setDashboardState('sidenav')
+    } else {
+      this.router.navigate(['/dashboard', 'new-message']);
+      this.setDashboardState('new-message-view');
+    }
   }
 }

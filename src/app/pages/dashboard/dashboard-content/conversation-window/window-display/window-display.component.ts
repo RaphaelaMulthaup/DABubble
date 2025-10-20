@@ -1,14 +1,31 @@
-import {Component,ElementRef,Input,OnInit,
-  QueryList,ViewChild,ViewChildren,WritableSignal} from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  Input,
+  OnInit,
+  QueryList,
+  ViewChild,
+  ViewChildren,
+  WritableSignal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PostService } from '../../../../../services/post.service';
 import { DisplayedPostComponent } from './displayed-post/displayed-post.component';
 import { PostInterface } from '../../../../../shared/models/post.interface';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
-  catchError,combineLatest,defer,distinctUntilChanged,
-  map,Observable,of,shareReplay,startWith,
-  Subject,takeUntil,} from 'rxjs';
+  catchError,
+  combineLatest,
+  defer,
+  distinctUntilChanged,
+  map,
+  Observable,
+  of,
+  shareReplay,
+  startWith,
+  Subject,
+  takeUntil,
+} from 'rxjs';
 import { ConversationActiveRouterService } from '../../../../../services/conversation-active-router.service';
 import { ChatService } from '../../../../../services/chat.service';
 import { DashboardState } from '../../../../../shared/types/dashboard-state.type';
@@ -20,7 +37,7 @@ import { EmptyChannelViewComponent } from './empty-channel-view/empty-channel-vi
 import { EmptyThreadViewComponent } from './empty-thread-view/empty-thread-view.component';
 
 @Component({
-  selector: 'app-window-display', // Component selector used in parent templates
+  selector: 'app-window-display',
   imports: [
     DisplayedPostComponent,
     CommonModule,
@@ -28,90 +45,111 @@ import { EmptyThreadViewComponent } from './empty-thread-view/empty-thread-view.
     EmptyChannelViewComponent,
     EmptyThreadViewComponent,
   ],
-  templateUrl: './window-display.component.html', // External HTML template
-  styleUrl: './window-display.component.scss', // External SCSS styles
+  templateUrl: './window-display.component.html',
+  styleUrl: './window-display.component.scss',
 })
 export class WindowDisplayComponent implements OnInit {
-  @Input() messages$!: import('rxjs').Observable<PostInterface[]>;
-  currentConversationType?: 'channel' | 'chat';
-  postAnsweredId!: string | null;
-  postAnswered!: PostInterface | null;
-  dashboardState: WritableSignal<DashboardState>;
-  // Observable stream of all posts in the current conversation
-  postInfo: PostInterface[] = []; // Cached list of posts
-  currentConversationId?: string; // Current conversation ID
+  @Input() messages$!: Observable<PostInterface[]>;
+  @Input() conversationWindowState?: 'conversation' | 'thread';
+
   @ViewChildren(DisplayedPostComponent, { read: ElementRef })
-  postElements!: QueryList<ElementRef>; // References to all rendered posts
-  channelTyp$?: Observable<string>; // Observable for channel type (chat or channel)
+  postElements!: QueryList<ElementRef>;
   @ViewChild('messagesContainer')
   messagesContainer!: ElementRef<HTMLDivElement>;
   @ViewChildren('messageElement', { read: ElementRef })
   messageElements!: QueryList<ElementRef>;
-  loadingOlderMessages = false;
-  lastconversationId: string | undefined;
-  private previousScrollHeight = 0; // save scrollHeight for loading
-  days = DAYS;  // Localized days of the week for displaying timestamps
-  @Input() conversationWindowState?: 'conversation' | 'thread';
-  private pendingScrollTo?: string; // Stores a post ID to scroll to once available
-  private destroy$ = new Subject<void>(); // Used to clean up subscriptions
+
+  dashboardState: WritableSignal<DashboardState>;
+  channelTyp$?: Observable<string>;
   screenSize$!: Observable<ScreenSize>;
-  private initialScrollDone = false;
   isLoaded$!: Observable<boolean>;
+  destroy$ = new Subject<void>();
+  days = DAYS;
+
+  postAnsweredId!: string | null;
+  postAnswered!: PostInterface | null;
+  postInfo: PostInterface[] = [];
+  currentConversationType?: 'channel' | 'chat';
+  loadingOlderMessages = false;
+  initialScrollDone = false;
+  previousScrollHeight = 0;
+  currentConversationId?: string;
+  lastconversationId?: string;
+  pendingScrollTo?: string;
 
   constructor(
-    // private el: ElementRef,
+    private chatService: ChatService,
+    private conversationActiveRouterService: ConversationActiveRouterService,
+    public postService: PostService,
     private route: ActivatedRoute,
     private router: Router,
-    public postService: PostService,
-    private chatService: ChatService,
-    public screenService: ScreenService,
-    private conversationActiveRouterService: ConversationActiveRouterService
+    public screenService: ScreenService
   ) {
     this.dashboardState = this.screenService.dashboardState;
     this.screenSize$ = this.screenService.screenSize$;
   }
 
-  /**
-   * Lifecycle hook: initializes subscriptions to route params,
-   * messages, and scroll requests.
-   */
   ngOnInit() {
+    this.initConversationRouteParams();
+    this.initAnsweredPostTracking();
+    this.initMessageSubscription();
+    this.initScrollHandlers();
+    this.initLoadingState();
+  }
+
+  ngAfterViewInit() {
+    this.postElements.changes.pipe(takeUntil(this.destroy$)).subscribe(() => {
+      if (this.pendingScrollTo)
+        this.handleScrollRequest(
+          this.pendingScrollTo,
+          this.currentConversationId
+        );
+    });
+    const initial = this.route.snapshot.queryParams['scrollTo'];
+    if (initial) this.handleScrollRequest(initial, this.currentConversationId);
+  }
+
+  ngOnDestroy() {
+    this.tryDeleteEmptyChat(this.currentConversationId);
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  /**
+   * Subscribes to route params and updates conversation type and ID.
+   */
+  initConversationRouteParams() {
     this.channelTyp$ = this.conversationActiveRouterService.getConversationType$(this.route);
     this.route.params.pipe(takeUntil(this.destroy$)).subscribe((params) => {
       this.currentConversationId = params['conversationId'];
       this.currentConversationType = params['conversationType'];
     });
+  }
 
+  /**
+   * Tracks the 'messageId' route param and loads the answered post if present.
+   */
+  initAnsweredPostTracking() {
     this.route.params
       .pipe(
         map((params) => params['messageId'] ?? null),
         distinctUntilChanged(),
-        takeUntil(this.destroy$)
-      )
+        takeUntil(this.destroy$))
       .subscribe((messageId) => {
         this.postAnsweredId = messageId;
         if (this.postAnsweredId) {
           this.postService
-            .getPostById(
-              this.currentConversationType!,
-              this.currentConversationId!,
-              this.postAnsweredId!
-            )
+            .getPostById( this.currentConversationType!, this.currentConversationId!, this.postAnsweredId!)
             .pipe(takeUntil(this.destroy$))
             .subscribe((post) => (this.postAnswered = post));
-        } else {
-          this.postAnswered = null;
-        }
+        } else this.postAnswered = null;
       });
+  }
+
   /**
-   * Subscribes to the messages observable for the current conversation.
-   * 
-   * Behavior:
-   * 1. Calls `onContentChange` whenever new messages arrive.
-   * 2. If older messages are being loaded, adjusts scroll position to maintain view.
-   * 3. Otherwise, on first load, scrolls to the last message.
-   * 4. Uses `takeUntil(this.destroy$)` to automatically unsubscribe on component destroy.
+   * Subscribes to messages and handles scroll restoration or auto-scroll.
    */
+  initMessageSubscription() {
     this.messages$.pipe(takeUntil(this.destroy$)).subscribe((data) => {
       this.onContentChange(this.currentConversationId, data);
       const el = this.messagesContainer.nativeElement;
@@ -125,78 +163,83 @@ export class WindowDisplayComponent implements OnInit {
         this.initialScrollDone = true;
       }
     });
+  }
 
-    // Scroll-Handling
+  /**
+   * Handles automatic scrolling based on selected post or query params.
+   */
+  initScrollHandlers() {
     this.postService.selected$
       .pipe(takeUntil(this.destroy$))
-      .subscribe((postId) => {
-        this.handleScrollRequest(postId, this.currentConversationId);
-      });
-
-    // Scroll-to QueryParams
+      .subscribe((postId) => {this.handleScrollRequest(postId, this.currentConversationId)});
     this.route.queryParams
       .pipe(takeUntil(this.destroy$))
       .subscribe((params) => {
         const id = params['scrollTo'];
         if (id) this.handleScrollRequest(id, this.currentConversationId);
       });
+  }
 
+  /**
+   * Initializes observable that tracks whether messages and channel are loaded.
+   */
+  initLoadingState() {
     this.isLoaded$ = defer(() => {
       if (!this.messages$) return of(true);
       return combineLatest([this.messages$, this.channelTyp$ ?? of(true)]).pipe(
         map(([messages]) => messages !== undefined && messages !== null),
         distinctUntilChanged(),
         startWith(false),
-        catchError(() => of(true)), 
+        catchError(() => of(true)),
         shareReplay({ bufferSize: 1, refCount: true })
       );
     });
   }
 
   /**
-   * Lifecycle hook: runs after view init.
-   * Used to scroll to posts once DOM elements are available.
+   * Handles scroll events to implement infinite scroll for chat messages.
+   * Loads older messages when the user scrolls near the top of the container.
+   * Prevents duplicate loads and stops if all messages are already loaded.
    */
-  ngAfterViewInit() {
-    // Retry pending scroll requests when ViewChildren change
-    this.postElements.changes.pipe(takeUntil(this.destroy$)).subscribe(() => {
-      if (this.pendingScrollTo) {
-        this.handleScrollRequest(this.pendingScrollTo, this.currentConversationId);
-      }
-    });
-    // Handle initial scrollTo param (on first load)
-    const initial = this.route.snapshot.queryParams['scrollTo'];
-    if (initial) this.handleScrollRequest(initial, this.currentConversationId);
+  onScroll() {
+    const el = this.messagesContainer.nativeElement;
+    const threshold = 20;
+    if (el.scrollTop <= threshold && !this.loadingOlderMessages) {
+      if (
+        this.conversationActiveRouterService.allMessagesLoaded.get(
+          this.currentConversationId!
+        )
+      )
+        return;
+      this.previousScrollHeight = el.scrollHeight;
+      this.loadingOlderMessages = true;
+      this.conversationActiveRouterService.loadMore(
+        this.currentConversationId!
+      );
+    }
   }
 
   /**
- * Scrolls the chat container to the last message and marks initial scroll as done.
- */
-  private scrollToLastMessage() {
+   * Scrolls the view to the last message element in the message list.
+   * Marks that the initial scroll has been performed.
+   */
+  scrollToLastMessage() {
     const messagesArray = this.messageElements?.toArray();
     if (!messagesArray?.length) return;
     const lastMessage = messagesArray[messagesArray.length - 1].nativeElement;
     lastMessage.scrollIntoView({
       block: 'end',
-      behavior: 'auto', 
+      behavior: 'auto',
     });
     this.initialScrollDone = true;
   }
 
   /**
-   * Lifecycle hook: cleanup when component is destroyed.
-   */
-  ngOnDestroy() {
-    this.tryDeleteEmptyChat(this.currentConversationId);
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
-  /**
    * Try to delete the chat if it has no messages.
+   *
    * @param chatId - ID of the chat to delete
    */
-  private tryDeleteEmptyChat(chatId?: string): void {
+  tryDeleteEmptyChat(chatId?: string) {
     if (chatId && this.postInfo.length === 0) {
       this.chatService
         .deleteChat(chatId)
@@ -208,6 +251,7 @@ export class WindowDisplayComponent implements OnInit {
   /**
    * Called whenever a new conversation or messages arrive.
    * Updates internal state and deletes old empty chats if needed.
+   *
    * @param newChatId - ID of the new conversation
    * @param newMessages - Array of new posts
    */
@@ -216,50 +260,62 @@ export class WindowDisplayComponent implements OnInit {
     this.currentConversationId = newChatId;
     this.postInfo = newMessages;
     if (previousChatId && previousChatId !== newChatId) {
-    this.initialScrollDone = false;
-    this.loadingOlderMessages = false;
-    this.tryDeleteEmptyChat(previousChatId);
-    
+      this.initialScrollDone = false;
+      this.loadingOlderMessages = false;
+      this.tryDeleteEmptyChat(previousChatId);
     }
   }
 
   /**
-   * Handles a scroll request to a specific post ID.
-   * Highlights the post, scrolls to it, and clears the URL param.
+   * Attempts to scroll to a specific post by its ID, retrying if the element is not yet rendered.
+   * Loads more messages from the conversation if needed.
+   *
    * @param postId - ID of the post to scroll to
+   * @param conversationId - Optional ID of the conversation containing the post
    */
-  private async handleScrollRequest(postId: string, conversationId?:string) {
+  async handleScrollRequest(postId: string, conversationId?: string) {
     if (!postId) return;
     this.pendingScrollTo = postId;
-    const maxRetries = 20; 
-    const retryDelay = 300; 
+    const maxRetries = 20;
+    const retryDelay = 300;
     for (let i = 0; i < maxRetries; i++) {
-      const maybe = this.postElements?.find(
-        (e) => (e.nativeElement as HTMLElement).id === postId)
-      if(maybe){
-        this.handleFoundPost(maybe);
+      const foundPost = this.postElements?.find(
+        (e) => (e.nativeElement as HTMLElement).id === postId
+      );
+      if (foundPost) {
+        this.handleFoundPost(foundPost);
         break;
       }
-        this.conversationActiveRouterService.loadMore(conversationId!);
-        await new Promise((resolve) => setTimeout(resolve, retryDelay));
-    };
+      this.conversationActiveRouterService.loadMore(conversationId!);
+      await new Promise((resolve) => setTimeout(resolve, retryDelay));
+    }
   }
 
-  handleFoundPost(maybe: ElementRef<HTMLElement>){
+  /**
+   * Handles a post element once it has been found for scrolling.
+   * Highlights the element, scrolls to it if necessary, and clears the scroll query parameter.
+   *
+   * @param foundPost - The ElementRef of the post to handle
+   */
+  handleFoundPost(foundPost: ElementRef<HTMLElement>) {
     this.pendingScrollTo = undefined;
-    const el = maybe.nativeElement as HTMLElement;
+    const el = foundPost.nativeElement as HTMLElement;
     this.triggerHighlight(el);
     this.scrollIfNeeded(el);
-    this.router.navigate([], {queryParams: { scrollTo: null },
+    this.router.navigate([], {
+      queryParams: { scrollTo: null },
       queryParamsHandling: 'merge',
       replaceUrl: true,
     });
   }
 
   /**
-   * Triggers a highlight animation on a given post element.
+   * Temporarily highlights an element by adding a CSS class.
+   * The highlight is automatically removed after 2 seconds.
+   *
+   * @param el - The HTML element to highlight
    */
-  private triggerHighlight(el: HTMLElement) {
+  triggerHighlight(el: HTMLElement) {
     el.classList.remove('highlight');
     void el.offsetWidth; // force reflow
     el.classList.add('highlight');
@@ -267,15 +323,34 @@ export class WindowDisplayComponent implements OnInit {
   }
 
   /**
-   * Finds the scrollable parent element for a given node.
-   * @param node - The child element
-   * @returns The nearest scrollable parent
+   * Scrolls the element into view if it is not fully visible.
+   *
+   * @param el - The element to scroll to
    */
-  private getScrollParent(node: HTMLElement | null): HTMLElement {
+  scrollIfNeeded(el: HTMLElement) {
+    const scrollParent = this.getScrollParent(el);
+    if (this.isFullyVisibleInContainer(el, scrollParent)) return;
+    setTimeout(() => {
+      if (
+        scrollParent === document.scrollingElement ||
+        scrollParent === document.documentElement ||
+        scrollParent === document.body
+      ) {
+        this.scrollWindowToElement(el);
+      } else this.scrollContainerToElement(el, scrollParent);
+    }, 0);
+  }
+
+  /**
+   * Finds the scrollable parent element for a given node.
+   * Returns the nearest scrollable parent.
+   *
+   * @param node - The child element
+   */
+  getScrollParent(node: HTMLElement | null): HTMLElement {
     if (!node)
       return (document.scrollingElement ||
         document.documentElement) as HTMLElement;
-
     let parent = node.parentElement;
     while (parent) {
       const style = getComputedStyle(parent);
@@ -296,10 +371,11 @@ export class WindowDisplayComponent implements OnInit {
 
   /**
    * Checks if an element is fully visible in a scroll container.
+   *
    * @param el - The element to check
    * @param container - The scroll container
    */
-  private isFullyVisibleInContainer(el: HTMLElement, container: HTMLElement): boolean {
+  isFullyVisibleInContainer(el: HTMLElement, container: HTMLElement): boolean {
     const elRect = el.getBoundingClientRect();
     const containerRect = container.getBoundingClientRect();
     if (
@@ -307,75 +383,76 @@ export class WindowDisplayComponent implements OnInit {
       container === document.documentElement ||
       container === document.body
     ) {
-      return (elRect.top >= 0 && elRect.bottom <=
+      return (
+        elRect.top >= 0 &&
+        elRect.bottom <=
           (window.innerHeight || document.documentElement.clientHeight)
       );
-    } else {
+    } else
       return (
         elRect.top >= containerRect.top && elRect.bottom <= containerRect.bottom
       );
-    }
   }
 
   /**
-   * Scrolls an element into view if it's not already visible.
-   * Smooth scrolls and centers the element in the container.
-   * @param el - Element to scroll to
+   * Smoothly scrolls the window to center the target element.
+   *
+   * @param el - The element to scroll to.
    */
-  private scrollIfNeeded(el: HTMLElement) {
-    const scrollParent = this.getScrollParent(el);
-    const alreadyVisible = this.isFullyVisibleInContainer(el, scrollParent);
-    if (alreadyVisible) return;
+  scrollWindowToElement(el: HTMLElement) {
+    const elRect = el.getBoundingClientRect();
+    const absoluteTarget =
+      window.pageYOffset +
+      elRect.top -
+      (window.innerHeight / 2 - el.offsetHeight / 2);
+    window.scrollTo({ top: Math.max(0, absoluteTarget), behavior: 'smooth' });
+  }
 
-    setTimeout(() => {
-      const elRect = el.getBoundingClientRect();
-      const parentRect = scrollParent.getBoundingClientRect();
-
-      if (
-        scrollParent === document.scrollingElement ||
-        scrollParent === document.documentElement ||
-        scrollParent === document.body
-      ) {
-        const absoluteTarget =
-          window.pageYOffset +
-          elRect.top -
-          (window.innerHeight / 2 - el.offsetHeight / 2);
-        window.scrollTo({
-          top: Math.max(0, absoluteTarget),
-          behavior: 'smooth',
-        });
-      } else {
-        const offset = elRect.top - parentRect.top;
-        const target = Math.max(
-          0,
-          scrollParent.scrollTop +
-            offset -
-            (scrollParent.clientHeight / 2 - el.offsetHeight / 2)
-        );
-        try {
-          scrollParent.scrollTo({ top: target, behavior: 'smooth' });
-        } catch {
-          scrollParent.scrollTop = target;
-        }
-      }
-    }, 0);
+  /**
+   * Smoothly scrolls a container to center the target element.
+   * Falls back to direct scrollTop assignment if smooth scrolling fails.
+   *
+   * @param el - The element to scroll to.
+   * @param container - The scrollable container.
+   */
+  scrollContainerToElement(el: HTMLElement, container: HTMLElement) {
+    const elRect = el.getBoundingClientRect();
+    const parentRect = container.getBoundingClientRect();
+    const target = Math.max(
+      0,
+      container.scrollTop +
+        (elRect.top - parentRect.top) -
+        (container.clientHeight / 2 - el.offsetHeight / 2)
+    );
+    try {
+      container.scrollTo({ top: target, behavior: 'smooth' });
+    } catch {
+      container.scrollTop = target;
+    }
   }
 
   /**
    * Returns true if the current post has a different creation date
    * than the previous one. Ensures dates are only displayed once per day.
+   *
    * @param index - Index of the current post
    */
   shouldShowDate(index: number): boolean {
     if (index > 0) {
-      let currentPostDate:string = this.currentPostDate(index);
+      let currentPostDate: string = this.currentPostDate(index);
       let previousPostDate: string = this.previousPostDate(index);
       return currentPostDate !== previousPostDate;
     }
     return true;
   }
 
-  previousPostDate(index:number){
+  /**
+   * Returns the date (YYYY-MM-DD) of the previous post in the list.
+   * If the previous post has no creation date, uses today's date.
+   *
+   * @param index - The index of the current post
+   */
+  previousPostDate(index: number): string {
     let previousPostDate: string;
     if (!this.postInfo[index - 1].createdAt) {
       previousPostDate = new Date().toISOString().split('T')[0];
@@ -388,33 +465,22 @@ export class WindowDisplayComponent implements OnInit {
     return previousPostDate;
   }
 
-  currentPostDate(index:number){
-      let currentPostDate;
-      if (!this.postInfo[index].createdAt) {
-        currentPostDate = new Date().toISOString().split('T')[0];
-      } else {
-        currentPostDate = this.postInfo[index].createdAt
-          .toDate()
-          .toISOString()
-          .split('T')[0];
-      }
-    return currentPostDate;
-  }
-
-/**
- * Handles scroll events to implement infinite scroll for chat messages.
- * Loads older messages when the user scrolls near the top of the container.
- * Prevents duplicate loads and stops if all messages are already loaded.
- */
-  onScroll() {
-    const el = this.messagesContainer.nativeElement;
-    const threshold = 20;
-    if (el.scrollTop <= threshold && !this.loadingOlderMessages) {
-      if (this.conversationActiveRouterService.allMessagesLoaded.get(this.currentConversationId!)) 
-        return;
-      this.previousScrollHeight = el.scrollHeight;
-      this.loadingOlderMessages = true;
-      this.conversationActiveRouterService.loadMore(this.currentConversationId!);
+  /**
+   * Returns the date (YYYY-MM-DD) of the current post.
+   * If the post has no creation date, uses today's date.
+   *
+   * @param index - The index of the current post
+   */
+  currentPostDate(index: number): string {
+    let currentPostDate;
+    if (!this.postInfo[index].createdAt) {
+      currentPostDate = new Date().toISOString().split('T')[0];
+    } else {
+      currentPostDate = this.postInfo[index].createdAt
+        .toDate()
+        .toISOString()
+        .split('T')[0];
     }
+    return currentPostDate;
   }
 }
