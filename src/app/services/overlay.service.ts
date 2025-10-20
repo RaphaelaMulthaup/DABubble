@@ -87,6 +87,7 @@ export class OverlayService {
         window.innerWidth - document.documentElement.clientWidth;
       document.body.style.paddingRight = `${scrollbarWidth}px`;
       document.body.style.overflow = 'hidden';
+      console.log(1)
     } else {
       document.body.style.paddingRight = '';
       document.body.style.overflow = '';
