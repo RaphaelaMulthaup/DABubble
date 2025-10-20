@@ -247,15 +247,6 @@ h4 {
   font-weight: 700;
 }
 
-.link {
-  color: var(--color-purple-light);
-  cursor: pointer;
-
-  &:hover {
-    color: var(--color-purple-medium);
-  }
-}
-
 .overlay {
   background-color: var(--color-white);
   border-radius: 30px;
