@@ -8,13 +8,13 @@
     type="text"
     class="input-secondary"
     [ngClass]="
-      searchResultsExisting ? 'inputWithCloseIcon' : 'inputWithSearchIcon'
+      (searchResultsExisting$|async) ? 'inputWithCloseIcon' : 'inputWithSearchIcon'
     "
     [placeholder]="(screenSize$|async) === 'handset' ? 'Gehe zu...' : 'Devspace durchsuchen'"
     [formControl]="searchControl"
     (focus)="onFocus()"
   />
-  @if ( searchResultsExisting ) {
+  @if ( (searchResultsExisting$|async) ) {
   <div class="close z-index-1001" (click)="closeOverlayAndEmptyInput()"></div>
   } @else {<img
     class="search-icon"

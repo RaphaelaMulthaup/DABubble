@@ -9,7 +9,7 @@ import {
   ChangeDetectionStrategy,
 } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { Observable, Subject, take, takeUntil } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, take, takeUntil } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { SearchService } from '../../../../services/search.service';
 import { JsonPipe, CommonModule } from '@angular/common';
@@ -48,7 +48,7 @@ export class SearchBarComponent extends BaseSearchDirective implements OnInit, O
   override destroy$ = new Subject<void>();
   private searchOverlayRef: any;
   firstFocusHappened: boolean = false;
-  searchResultsExisting: boolean = false;
+  searchResultsExisting$ = new BehaviorSubject<boolean>(true);
   groupedResults = computed(() => {
     const res = this.results();
     const grouped: any[] = [];
@@ -100,7 +100,7 @@ export class SearchBarComponent extends BaseSearchDirective implements OnInit, O
       this.searchService.updateResults(term$);
       this.subscribeToTermChanges((term) => {
         if (term.length > 0) {
-          this.searchResultsExisting = true;
+          this.searchResultsExisting$.next(true);
           this.searchService.overlaySearchResultsOpen = true;
           this.openSearchResultsOverlay(term);
         } else this.closeOverlayForEmptyInput();
@@ -114,7 +114,7 @@ export class SearchBarComponent extends BaseSearchDirective implements OnInit, O
   closeOverlayForEmptyInput() {
     this.overlayService.closeOne(this.searchOverlayRef?.overlayRef);
     this.searchOverlayRef = null;
-    this.searchResultsExisting = false;
+    this.searchResultsExisting$.next(false);
     this.searchService.overlaySearchResultsOpen = false;
   }
 
@@ -212,11 +212,12 @@ export class SearchBarComponent extends BaseSearchDirective implements OnInit, O
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
         this.searchControl.setValue('');
-        this.searchResultsExisting = false;
+        this.searchResultsExisting$.next(false);
         this.searchService.overlaySearchResultsOpen = false;
         this.searchOverlayRef = null;
       });
     overlayRef.backdropClick$.pipe(takeUntil(this.destroy$)).subscribe(() => {
+      this.searchResultsExisting$.next(false);
       this.overlayService.closeOne(overlayRef.overlayRef);
     });
   }
@@ -225,6 +226,7 @@ export class SearchBarComponent extends BaseSearchDirective implements OnInit, O
    * Closes the search overlay and clears the search input.
    */
   closeOverlayAndEmptyInput() {
+    this.searchResultsExisting$.next(false);
     this.searchControl.setValue('');
     this.overlayService.closeAll();
   }
@@ -265,39 +267,4 @@ export class SearchBarComponent extends BaseSearchDirective implements OnInit, O
     }
     return map;
   }
-
-  // groupedResults = computed(() => {
-  //   const res = this.results();
-  //   const grouped: any[] = [];
-  //   const chatMap = new Map<string, { user: UserInterface; posts: any[] }>();
-  //   const channelMap = new Map<
-  //     string,
-  //     { channel: ChannelInterface; posts: any[] }
-  //   >();
-  //   for (const item of res) {
-  //     if (item.type === 'chatMessage' && item.user) {
-  //       if (!chatMap.has(item.user.uid))
-  //         chatMap.set(item.user.uid, { user: item.user, posts: [] });
-  //       chatMap.get(item.user.uid)!.posts.push(item);
-  //     } else if (item.type === 'channelMessage') {
-  //       const channelId = item.channelId!;
-  //       if (!channelMap.has(channelId))
-  //         channelMap.set(channelId, { channel: item.channel, posts: [] });
-  //       channelMap.get(channelId)!.posts.push(item);
-  //     } else {
-  //       grouped.push(item);
-  //     }
-  //   }
-  //   chatMap.forEach((value) =>
-  //     grouped.push({ type: 'chatGroup', user: value.user, posts: value.posts })
-  //   );
-  //   channelMap.forEach((value) =>
-  //     grouped.push({
-  //       type: 'channelGroup',
-  //       channel: value.channel,
-  //       posts: value.posts,
-  //     })
-  //   );
-  //   return grouped;
-  // });
 }
