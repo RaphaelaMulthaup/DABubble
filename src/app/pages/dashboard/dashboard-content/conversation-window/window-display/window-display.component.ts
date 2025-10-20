@@ -1,31 +1,10 @@
-import {
-  Component,
-  ElementRef,
-  Input,
-  OnInit,
-  QueryList,
-  ViewChild,
-  ViewChildren,
-  WritableSignal,
-} from '@angular/core';
+import { Component, ElementRef, Input, OnInit, QueryList, ViewChild, ViewChildren, WritableSignal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PostService } from '../../../../../services/post.service';
 import { DisplayedPostComponent } from './displayed-post/displayed-post.component';
 import { PostInterface } from '../../../../../shared/models/post.interface';
 import { ActivatedRoute, Router } from '@angular/router';
-import {
-  catchError,
-  combineLatest,
-  defer,
-  distinctUntilChanged,
-  map,
-  Observable,
-  of,
-  shareReplay,
-  startWith,
-  Subject,
-  takeUntil,
-} from 'rxjs';
+import { catchError, combineLatest, defer, distinctUntilChanged, map, Observable, of, shareReplay, startWith, Subject, takeUntil } from 'rxjs';
 import { ConversationActiveRouterService } from '../../../../../services/conversation-active-router.service';
 import { ChatService } from '../../../../../services/chat.service';
 import { DashboardState } from '../../../../../shared/types/dashboard-state.type';
@@ -35,16 +14,11 @@ import { DAYS } from '../../../../../shared/constants/days';
 import { EmptyChatViewComponent } from './empty-chat-view/empty-chat-view.component';
 import { EmptyChannelViewComponent } from './empty-channel-view/empty-channel-view.component';
 import { EmptyThreadViewComponent } from './empty-thread-view/empty-thread-view.component';
+import { ScrollService } from '../../../../../services/scroll.service';
 
 @Component({
   selector: 'app-window-display',
-  imports: [
-    DisplayedPostComponent,
-    CommonModule,
-    EmptyChatViewComponent,
-    EmptyChannelViewComponent,
-    EmptyThreadViewComponent,
-  ],
+  imports: [ DisplayedPostComponent, CommonModule, EmptyChatViewComponent, EmptyChannelViewComponent, EmptyThreadViewComponent ],
   templateUrl: './window-display.component.html',
   styleUrl: './window-display.component.scss',
 })
@@ -52,12 +26,9 @@ export class WindowDisplayComponent implements OnInit {
   @Input() messages$!: Observable<PostInterface[]>;
   @Input() conversationWindowState?: 'conversation' | 'thread';
 
-  @ViewChildren(DisplayedPostComponent, { read: ElementRef })
-  postElements!: QueryList<ElementRef>;
-  @ViewChild('messagesContainer')
-  messagesContainer!: ElementRef<HTMLDivElement>;
-  @ViewChildren('messageElement', { read: ElementRef })
-  messageElements!: QueryList<ElementRef>;
+  @ViewChildren(DisplayedPostComponent, { read: ElementRef }) postElements!: QueryList<ElementRef>;
+  @ViewChild('messagesContainer') messagesContainer!: ElementRef<HTMLDivElement>;
+  @ViewChildren('messageElement', { read: ElementRef }) messageElements!: QueryList<ElementRef>;
 
   dashboardState: WritableSignal<DashboardState>;
   channelTyp$?: Observable<string>;
@@ -83,7 +54,8 @@ export class WindowDisplayComponent implements OnInit {
     public postService: PostService,
     private route: ActivatedRoute,
     private router: Router,
-    public screenService: ScreenService
+    public screenService: ScreenService,
+    public scrollService: ScrollService
   ) {
     this.dashboardState = this.screenService.dashboardState;
     this.screenSize$ = this.screenService.screenSize$;
@@ -99,11 +71,7 @@ export class WindowDisplayComponent implements OnInit {
 
   ngAfterViewInit() {
     this.postElements.changes.pipe(takeUntil(this.destroy$)).subscribe(() => {
-      if (this.pendingScrollTo)
-        this.handleScrollRequest(
-          this.pendingScrollTo,
-          this.currentConversationId
-        );
+      if (this.pendingScrollTo) this.handleScrollRequest( this.pendingScrollTo, this.currentConversationId);
     });
     const initial = this.route.snapshot.queryParams['scrollTo'];
     if (initial) this.handleScrollRequest(initial, this.currentConversationId);
@@ -135,10 +103,8 @@ export class WindowDisplayComponent implements OnInit {
         map((params) => params['messageId'] ?? null),
         distinctUntilChanged(),
         takeUntil(this.destroy$))
-      .subscribe((messageId) => {
-        this.postAnsweredId = messageId;
-        if (this.postAnsweredId) {
-          this.postService
+      .subscribe((messageId) => { this.postAnsweredId = messageId;
+        if (this.postAnsweredId) { this.postService
             .getPostById( this.currentConversationType!, this.currentConversationId!, this.postAnsweredId!)
             .pipe(takeUntil(this.destroy$))
             .subscribe((post) => (this.postAnswered = post));
@@ -205,17 +171,10 @@ export class WindowDisplayComponent implements OnInit {
     const el = this.messagesContainer.nativeElement;
     const threshold = 20;
     if (el.scrollTop <= threshold && !this.loadingOlderMessages) {
-      if (
-        this.conversationActiveRouterService.allMessagesLoaded.get(
-          this.currentConversationId!
-        )
-      )
-        return;
+      if ( this.conversationActiveRouterService.allMessagesLoaded.get( this.currentConversationId!)) return;
       this.previousScrollHeight = el.scrollHeight;
       this.loadingOlderMessages = true;
-      this.conversationActiveRouterService.loadMore(
-        this.currentConversationId!
-      );
+      this.conversationActiveRouterService.loadMore(this.currentConversationId!);
     }
   }
 
@@ -227,10 +186,7 @@ export class WindowDisplayComponent implements OnInit {
     const messagesArray = this.messageElements?.toArray();
     if (!messagesArray?.length) return;
     const lastMessage = messagesArray[messagesArray.length - 1].nativeElement;
-    lastMessage.scrollIntoView({
-      block: 'end',
-      behavior: 'auto',
-    });
+    lastMessage.scrollIntoView({ block: 'end', behavior: 'auto' });
     this.initialScrollDone = true;
   }
 
@@ -279,9 +235,7 @@ export class WindowDisplayComponent implements OnInit {
     const maxRetries = 20;
     const retryDelay = 300;
     for (let i = 0; i < maxRetries; i++) {
-      const foundPost = this.postElements?.find(
-        (e) => (e.nativeElement as HTMLElement).id === postId
-      );
+      const foundPost = this.postElements?.find((e) => (e.nativeElement as HTMLElement).id === postId);
       if (foundPost) {
         this.handleFoundPost(foundPost);
         break;
@@ -317,7 +271,7 @@ export class WindowDisplayComponent implements OnInit {
    */
   triggerHighlight(el: HTMLElement) {
     el.classList.remove('highlight');
-    void el.offsetWidth; // force reflow
+    void el.offsetWidth;
     el.classList.add('highlight');
     window.setTimeout(() => el.classList.remove('highlight'), 2000);
   }
@@ -331,11 +285,7 @@ export class WindowDisplayComponent implements OnInit {
     const scrollParent = this.getScrollParent(el);
     if (this.isFullyVisibleInContainer(el, scrollParent)) return;
     setTimeout(() => {
-      if (
-        scrollParent === document.scrollingElement ||
-        scrollParent === document.documentElement ||
-        scrollParent === document.body
-      ) {
+      if ( scrollParent === document.scrollingElement || scrollParent === document.documentElement || scrollParent === document.body) {
         this.scrollWindowToElement(el);
       } else this.scrollContainerToElement(el, scrollParent);
     }, 0);
@@ -348,25 +298,15 @@ export class WindowDisplayComponent implements OnInit {
    * @param node - The child element
    */
   getScrollParent(node: HTMLElement | null): HTMLElement {
-    if (!node)
-      return (document.scrollingElement ||
-        document.documentElement) as HTMLElement;
+    if (!node) return (document.scrollingElement || document.documentElement) as HTMLElement;
     let parent = node.parentElement;
     while (parent) {
       const style = getComputedStyle(parent);
       const overflowY = style.overflowY;
-      if (
-        (overflowY === 'auto' ||
-          overflowY === 'scroll' ||
-          overflowY === 'overlay') &&
-        parent.scrollHeight > parent.clientHeight
-      ) {
-        return parent;
-      }
+      if ((overflowY === 'auto' || overflowY === 'scroll' || overflowY === 'overlay') && parent.scrollHeight > parent.clientHeight) return parent
       parent = parent.parentElement;
     }
-    return (document.scrollingElement ||
-      document.documentElement) as HTMLElement;
+    return (document.scrollingElement || document.documentElement) as HTMLElement;
   }
 
   /**
@@ -378,20 +318,9 @@ export class WindowDisplayComponent implements OnInit {
   isFullyVisibleInContainer(el: HTMLElement, container: HTMLElement): boolean {
     const elRect = el.getBoundingClientRect();
     const containerRect = container.getBoundingClientRect();
-    if (
-      container === document.scrollingElement ||
-      container === document.documentElement ||
-      container === document.body
-    ) {
-      return (
-        elRect.top >= 0 &&
-        elRect.bottom <=
-          (window.innerHeight || document.documentElement.clientHeight)
-      );
-    } else
-      return (
-        elRect.top >= containerRect.top && elRect.bottom <= containerRect.bottom
-      );
+    if ( container === document.scrollingElement || container === document.documentElement || container === document.body) {
+      return ( elRect.top >= 0 && elRect.bottom <= (window.innerHeight || document.documentElement.clientHeight));
+    } else return (elRect.top >= containerRect.top && elRect.bottom <= containerRect.bottom);
   }
 
   /**
@@ -401,10 +330,7 @@ export class WindowDisplayComponent implements OnInit {
    */
   scrollWindowToElement(el: HTMLElement) {
     const elRect = el.getBoundingClientRect();
-    const absoluteTarget =
-      window.pageYOffset +
-      elRect.top -
-      (window.innerHeight / 2 - el.offsetHeight / 2);
+    const absoluteTarget = window.pageYOffset + elRect.top - (window.innerHeight / 2 - el.offsetHeight / 2);
     window.scrollTo({ top: Math.max(0, absoluteTarget), behavior: 'smooth' });
   }
 
@@ -418,37 +344,26 @@ export class WindowDisplayComponent implements OnInit {
   scrollContainerToElement(el: HTMLElement, container: HTMLElement) {
     const elRect = el.getBoundingClientRect();
     const parentRect = container.getBoundingClientRect();
-    const target = Math.max(
-      0,
-      container.scrollTop +
-        (elRect.top - parentRect.top) -
-        (container.clientHeight / 2 - el.offsetHeight / 2)
-    );
-    try {
-      container.scrollTo({ top: target, behavior: 'smooth' });
-    } catch {
-      container.scrollTop = target;
-    }
+    const target = Math.max( 0, container.scrollTop + (elRect.top - parentRect.top) - (container.clientHeight / 2 - el.offsetHeight / 2));
+    try { container.scrollTo({ top: target, behavior: 'smooth' }) }
+    catch { container.scrollTop = target }
   }
 
   /**
-   * Returns true if the current post has a different creation date
-   * than the previous one. Ensures dates are only displayed once per day.
+   * Returns true if the current post has a different creation date than the previous one. Ensures dates are only displayed once per day.
    *
    * @param index - Index of the current post
    */
   shouldShowDate(index: number): boolean {
     if (index > 0) {
-      let currentPostDate: string = this.currentPostDate(index);
-      let previousPostDate: string = this.previousPostDate(index);
+      const currentPostDate: string = this.currentPostDate(index);
+      const previousPostDate: string = this.previousPostDate(index);
       return currentPostDate !== previousPostDate;
-    }
-    return true;
+    } else return true;
   }
 
   /**
-   * Returns the date (YYYY-MM-DD) of the previous post in the list.
-   * If the previous post has no creation date, uses today's date.
+   * Returns the date (YYYY-MM-DD) of the previous post in the list. If the previous post has no creation date, uses today's date.
    *
    * @param index - The index of the current post
    */
@@ -466,8 +381,7 @@ export class WindowDisplayComponent implements OnInit {
   }
 
   /**
-   * Returns the date (YYYY-MM-DD) of the current post.
-   * If the post has no creation date, uses today's date.
+   * Returns the date (YYYY-MM-DD) of the current post. If the post has no creation date, uses today's date.
    *
    * @param index - The index of the current post
    */
