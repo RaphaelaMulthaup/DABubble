@@ -22,22 +22,22 @@ import {
   providedIn: 'root',
 })
 export class ResetDemoChannelService {
-  channelEntwicklerteamDocRef;
-  messagesChannelEntwicklerteamDocRef;
+  channelEntwicklerteamGuestsDocRef: DocumentReference<DocumentData>;
+  messagesChannelEntwicklerteamGuestDocRef: CollectionReference<DocumentData>;
 
   constructor(private firestore: Firestore) {
-    this.channelEntwicklerteamDocRef = doc(
+    this.channelEntwicklerteamGuestsDocRef = doc(
       this.firestore,
       `channels/2TrvdqcsYSbj2ZpWLfvT`
     );
-    this.messagesChannelEntwicklerteamDocRef = collection(
-      this.channelEntwicklerteamDocRef,
+    this.messagesChannelEntwicklerteamGuestDocRef = collection(
+      this.channelEntwicklerteamGuestsDocRef,
       'messages'
     );
   }
 
   async resetExampleChannel(guestUserId: string) {
-    await updateDoc(this.channelEntwicklerteamDocRef, {
+    await updateDoc(this.channelEntwicklerteamGuestsDocRef, {
       memberIds: arrayRemove(guestUserId),
       name: 'Entwicklerteam',
       description:
@@ -50,7 +50,7 @@ export class ResetDemoChannelService {
     await this.deleteGuestsMessagesInExampleChannel(guestUserId);
     await this.filterMessagesWithReactions(guestUserId);
     const messagesWithAnswersQuery = query(
-      this.messagesChannelEntwicklerteamDocRef,
+      this.messagesChannelEntwicklerteamGuestDocRef,
       where('ansCounter', '>', 0)
     );
     const messagesWithAnswersSnapshot = await getDocs(messagesWithAnswersQuery);
@@ -61,7 +61,7 @@ export class ResetDemoChannelService {
 
   async deleteGuestsMessagesInExampleChannel(guestUserId: string) {
     const messagesQuery = query(
-      this.messagesChannelEntwicklerteamDocRef,
+      this.messagesChannelEntwicklerteamGuestDocRef,
       where('senderId', '==', guestUserId)
     );
     const messagesSnapshot = await getDocs(messagesQuery);
@@ -89,7 +89,7 @@ export class ResetDemoChannelService {
 
   async filterMessagesWithReactions(guestUserId: string) {
     const messagesWithReactionsQuery = query(
-      this.messagesChannelEntwicklerteamDocRef,
+      this.messagesChannelEntwicklerteamGuestDocRef,
       where('hasReactions', '==', true)
     );
     const messagesWithReactionsSnapshot = await getDocs(

@@ -41,7 +41,7 @@ import { UserInterface } from '../shared/models/user.interface';
 import { UserService } from './user.service';
 import { ScreenService } from './screen.service';
 import { UserToRegisterInterface } from '../shared/models/user.to.register.interface';
-import { DocumentReference } from 'firebase/firestore';
+import { DocumentData, DocumentReference } from 'firebase/firestore';
 import { UserDemoSetupService } from './user-demo-setup.service';
 import { ResetDemoChannelService } from './reset-demo-channel.service';
 
@@ -56,7 +56,7 @@ export class AuthService {
 
   /** Optional synchroner Zugriff */
   private currentUserSnapshot: UserInterface | null = null;
-
+  channelEntwicklerteamDocRef: DocumentReference<DocumentData>;
   constructor(
     private auth: Auth,
     private firestore: Firestore,
@@ -67,6 +67,10 @@ export class AuthService {
   ) {
     this.currentUser$ = this.initCurrentUserStream();
     this.setupGuestLogoutOnUnload();
+    this.channelEntwicklerteamDocRef = doc(
+      this.firestore,
+      `channels/nZmkj8G288La1CqafnLP`
+    );
   }
 
   initCurrentUserStream() {
@@ -171,12 +175,23 @@ export class AuthService {
   }
 
   async setupDemoEnvironment(uid: string) {
-    await Promise.allSettled([
-      this.userDemoSetupService.addDirectChatToTeam(uid),
-      updateDoc(this.resetDemoChannelService.channelEntwicklerteamDocRef, {
-        memberIds: arrayUnion(uid),
-      }),
-    ]);
+    const userData = await this.getUserData(uid);
+    await this.addUserToCorrectChannel(uid, userData.authProvider);
+    await this.userDemoSetupService.addDirectChatToTeam(uid);
+  }
+
+  private async getUserData(uid: string): Promise<UserInterface> {
+    const userRef = doc(this.firestore, `users/${uid}`);
+    const snap = await getDoc(userRef);
+    return snap.data() as UserInterface;
+  }
+
+  private async addUserToCorrectChannel(uid: string, authProvider: string) {
+    const ref =
+      authProvider === 'anonymous'
+        ? this.resetDemoChannelService.channelEntwicklerteamGuestsDocRef
+        : this.channelEntwicklerteamDocRef;
+    await updateDoc(ref, { memberIds: arrayUnion(uid) });
   }
 
   async reactivateExistingUser(userRef: DocumentReference) {
