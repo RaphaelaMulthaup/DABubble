@@ -10,7 +10,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../../../../services/auth.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { ConversationActiveRouterService } from '../../../../../services/conversation-active-router.service';
 import { PostService } from '../../../../../services/post.service';
 import {
@@ -79,6 +79,7 @@ export class CurrentPostInput implements OnInit, OnDestroy {
     private chatService: ChatService,
     private userService: UserService,
     private route: ActivatedRoute,
+    private router: Router,
     private conversationActiveRouterService: ConversationActiveRouterService
   ) {
     this.screenSize$ = this.screenService.screenSize$;
@@ -117,6 +118,22 @@ export class CurrentPostInput implements OnInit, OnDestroy {
             this.postService.focusAtEndEditable(this.textareaConversation);
           }
         });
+      });
+
+    this.router.events
+      .pipe(
+        filter(
+          (event): event is NavigationEnd => event instanceof NavigationEnd
+        ),
+        takeUntil(this.destroy$)
+      )
+      .subscribe(() => {
+        if (this.textareaConversation) {
+          this.textareaConversation.nativeElement.innerHTML = '';
+        }
+        if (this.textareaThread) {
+          this.textareaThread.nativeElement.innerHTML = '';
+        }
       });
   }
 
