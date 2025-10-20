@@ -1,5 +1,6 @@
 <section   
     [ngClass]="{
+    'dashboard-web-thread-without-sidenav': (screenSize$ | async) === 'web' && dashboardState() === 'thread-window' && !(screenService.sidenavVisible$|async),
     'dashboard-web': (screenSize$ | async) === 'web',
     'dashboard-tablet': (screenSize$ | async) === 'tablet',
     'dashboard-handset': (screenSize$ | async) === 'handset'
@@ -25,7 +26,7 @@
         }
         @case('thread-window') {
             @if ((screenSize$ | async) === 'web') {
-                <app-conversation-window [data$]="messages$" [conversationWindowState]="'conversation'" class="max-w-[989px]"></app-conversation-window>
+                <app-conversation-window [data$]="messages$" [conversationWindowState]="'conversation'" class="conversation-window max-w-[989px]"></app-conversation-window>
                 <app-conversation-window [data$]="answers$" [conversationWindowState]="'thread'" class="thread-window"></app-conversation-window>
             } @else {
                 <app-conversation-window [data$]="answers$" [conversationWindowState]="'thread'"></app-conversation-window>

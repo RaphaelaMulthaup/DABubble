@@ -26,6 +26,17 @@
   }
 }
 
+.dashboard-web-thread-without-sidenav {
+  .conversation-window {
+    width: 1245px !important;
+    max-width: 1245px !important;
+  }
+  .thread-window {
+    width: 610px !important;
+    max-width: 610px !important;
+  }
+}
+
 .dashboard-tablet {
   height: calc(100vh - 135px);
   background-color: var(--color-purple-white);

@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 import { BreakpointObserver } from '@angular/cdk/layout';
-import { firstValueFrom, map, Observable, shareReplay } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, map, Observable, shareReplay } from 'rxjs';
 import { ScreenSize } from '../shared/types/screen-size.type';
 import { BREAKPOINTS } from '../shared/constants/breakpoints';
 import { DashboardState } from '../shared/types/dashboard-state.type';
@@ -13,7 +13,7 @@ export class ScreenService {
   screenSize$: Observable<ScreenSize>;
   dashboardState = signal<DashboardState>('sidenav');
   breakpoints = BREAKPOINTS;
-  sidenavVisible: boolean = true;
+  sidenavVisible$ = new BehaviorSubject<boolean>(true);
 
   constructor(
     private breakpointObserver: BreakpointObserver,

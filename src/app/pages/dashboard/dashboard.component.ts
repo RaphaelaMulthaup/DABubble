@@ -42,6 +42,11 @@ export class DashboardComponent {
     this.screenSize$ = this.screenService.screenSize$;
   }
 
+  toggleSidenavVisibility() {
+    const current = this.screenService.sidenavVisible$.value;
+    this.screenService.sidenavVisible$.next(!current);
+  }
+
   /**
    * Ends editing the current post by resetting the `editingPostId` in the OverlayService.
    */

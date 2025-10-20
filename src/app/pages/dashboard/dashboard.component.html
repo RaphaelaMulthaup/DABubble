@@ -12,8 +12,8 @@
     </div>
   } @else {
     <div class="dashboard-{{(screenSize$|async)}} flex h-full"
-    [ngStyle]="{'margin-left': (screenSize$|async) !== 'handset' && screenService.sidenavVisible? '0px': '-10px'}">
-      @if(screenService.sidenavVisible) {
+    [ngStyle]="{'margin-left': (screenSize$|async) !== 'handset' && (screenService.sidenavVisible$|async)? '0px': '-10px'}">
+      @if((screenService.sidenavVisible$|async)) {
         <app-sidenav class="relative"></app-sidenav>
       }
       <router-outlet></router-outlet>
@@ -22,9 +22,9 @@
 </section>
 
 @if ((screenSize$ | async) !== 'handset') {
-  <section (click)="screenService.sidenavVisible = !screenService.sidenavVisible" class="collapsible">
-    <p>Workspace-Menü {{ screenService.sidenavVisible ? "schließen" : "öffnen" }}</p>
-    <div class="toggle-navigation-img" [ngClass]="screenService.sidenavVisible ? 'hide-navigation' : 'show-navigation'"></div>
+  <section (click)="toggleSidenavVisibility()" class="collapsible">
+    <p>Workspace-Menü {{ (screenService.sidenavVisible$|async) ? "schließen" : "öffnen" }}</p>
+    <div class="toggle-navigation-img" [ngClass]="(screenService.sidenavVisible$|async)? 'hide-navigation' : 'show-navigation'"></div>
   </section>
 }
 
