@@ -34,6 +34,7 @@ export class SettingsComponent {
    * This function opens the ProfileViewMain-Overlay.
    */
   openProfileViewMainOverlay() {
+    this.overlayService.closeAll();
     const overlay = this.overlayService.openComponent(
       ProfileViewMainComponent,
       'cdk-overlay-dark-backdrop',
