@@ -73,7 +73,7 @@ export class AuthService {
     return authState(this.auth).pipe(
       switchMap((firebaseUser) => this.handleAuthState(firebaseUser)),
       tap((user) => (this.currentUserSnapshot = user)),
-      distinctUntilChanged((a, b) => a?.uid === b?.uid),
+      distinctUntilChanged((a, b) => JSON.stringify(a) === JSON.stringify(b)),
       shareReplay({ bufferSize: 1, refCount: true })
     );
   }
@@ -190,9 +190,7 @@ export class AuthService {
     );
   }
 
-  createUserInAuth(
-    userData: UserToRegisterInterface
-  ): Observable<User> {
+  createUserInAuth(userData: UserToRegisterInterface): Observable<User> {
     const { email, password } = userData;
     return from(
       createUserWithEmailAndPassword(this.auth, email, password)
