@@ -76,26 +76,6 @@ $breakpoints: (
   border-radius: 5px;
 }
 
-@include respond-to(xs) {
-  button:hover,
-  .btn-dropdown,
-  .btn-dropdown div {
-    color: inherit !important;
-    background-color: inherit !important;
-    background-image: inherit !important;
-  }
-}
-
-@media (hover: none) {
-  button:hover,
-  .btn-dropdown,
-  .btn-dropdown div {
-    color: inherit !important;
-    background-color: inherit !important;
-    background-image: inherit !important;
-  }
-}
-
 body {
   height: 100dvh;
 }
@@ -421,6 +401,36 @@ h4 {
 
 .border-radius-0 {
   border-radius: 0 !important;
+}
+
+@include respond-to('959') {
+  button:hover,
+  .btn-primary:hover,
+  .btn-secondary:hover,
+  .btn-tertiary:hover,
+  .minimize:hover,
+  .btn-dropdown,
+  .btn-dropdown div,
+  .add-reaction-btn:hover {
+    color: inherit !important;
+    background-color: inherit !important;
+    //background-image: inherit !important;
+  }
+}
+
+@media (hover: none) {
+  button:hover,
+  .btn-primary:hover,
+  .btn-secondary:hover,
+  .btn-tertiary:hover,
+  .minimize:hover,
+  .btn-dropdown,
+  .btn-dropdown div,
+  .add-reaction-btn:hover {
+    color: inherit !important;
+    background-color: inherit !important;
+    //background-image: inherit !important;
+  }
 }
 
 @font-face {
