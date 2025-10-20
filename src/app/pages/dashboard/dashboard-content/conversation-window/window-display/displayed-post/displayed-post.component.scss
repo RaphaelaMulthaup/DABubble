@@ -68,8 +68,9 @@
   }
 
   .interactions-container {
-    margin-left: clamp(4.375rem, 4rem + 1.875vw, 5.125rem);
+    margin-left: clamp(3rem, 1.5000rem + 7.5000vw, 6rem);
     padding-top: 2px;
+
     .interactions {
       display: grid;
       grid-template-columns: repeat(3, max-content);
@@ -110,6 +111,7 @@
 
     .add-reaction {
       gap: 3px;
+      gap: 0px;
 
       .toggle-reactions-btn {
         border: 2px solid var(--color-purple-white);
@@ -144,6 +146,11 @@
         &:hover {
           background-image: url("./../../../../../../../assets/img/add-reaction-hover.svg");
         }
+      }
+
+      @media (max-width: 960px) {
+        max-width: clamp(3.688rem, 3.1255rem + 2.8125vw, 4.813rem);
+        overflow-x: visible;
       }
     }
   }
@@ -196,7 +203,7 @@
 
   .interactions-container {
     margin-left: 0;
-    margin-right: clamp(4.375rem, 4rem + 1.875vw, 5.125rem);
+    margin-right: clamp(3rem, 1.5000rem + 7.5000vw, 6rem);
     justify-content: end;
 
     .interactions {
