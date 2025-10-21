@@ -1,70 +1,82 @@
 import { Injectable, NgZone } from '@angular/core';
-import { doc, Firestore,updateDoc } from '@angular/fire/firestore';
-import {ref, onDisconnect, set, serverTimestamp as rtdbTimestamp, serverTimestamp} from 'firebase/database';
+import { doc, Firestore, updateDoc } from '@angular/fire/firestore';
+import {
+  ref,
+  onDisconnect,
+  set,
+  serverTimestamp as rtdbTimestamp,
+  serverTimestamp,
+} from 'firebase/database';
 import { Database, get, onValue } from '@angular/fire/database';
 import { Observable } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class PresenceService {
   private ONLINE_TIMEOUT = 5000;
-  constructor(private firestore: Firestore , private db: Database,  private zone: NgZone){}
+  constructor(
+    private firestore: Firestore,
+    private db: Database,
+    private zone: NgZone
+  ) {}
 
-  async initPresence(user:any){
-    if(!user) return;
-
+  async initPresence(user: any) {
+    if (!user) return;
 
     const statusRef = ref(this.db, `/status/${user.uid}`);
     const userRef = doc(this.firestore, `users/${user.uid}`);
 
-
     // const snapshot = await get(statusRef);
     // const forcedClose = snapshot.exists() && snapshot.val().forcedClose === true;
 
-    // if (forcedClose) return; 
+    // if (forcedClose) return;
     await set(statusRef, {
       state: 'online',
       forcedClose: false,
-      lastChanged: Date.now()
+      lastChanged: Date.now(),
     });
 
-        await updateDoc(userRef, {
+    await updateDoc(userRef, {
       active: true,
-      lastActive: serverTimestamp()
+      lastActive: serverTimestamp(),
     });
 
     onDisconnect(statusRef).set({
       state: 'offline',
       forcedClose: true,
-      lastChanged: Date.now()
+      lastChanged: Date.now(),
     });
   }
 
-  async setOffline(user:any){
-    if(!user) return;
+  async setOffline(user: any) {
+    if (!user) return;
     const statusRef = ref(this.db, `/status/${user.uid}`);
     const userRef = doc(this.firestore, `users/${user.uid}`);
 
-    await set(statusRef, { state: 'offline', forcedClose: false, lastChanged: Date.now() });
+    await set(statusRef, {
+      state: 'offline',
+      forcedClose: false,
+      lastChanged: Date.now(),
+    });
     await updateDoc(userRef, { active: false, lastActive: serverTimestamp() });
   }
 
-   isUserOnline(status:any){
-    if(!status) return false;
-    return Date.now() -status.lastChanged < this.ONLINE_TIMEOUT;
-   }
+  isUserOnline(status: any) {
+    if (!status) return false;
+    return Date.now() - status.lastChanged < this.ONLINE_TIMEOUT;
+  }
 
-async checkForcedClose(user: any): Promise<boolean> {
-  if (!user) return false;
-  const statusRef = ref(this.db, `/status/${user.uid}`);
-  const snapshot = await get(statusRef);
-  if(!snapshot.exists()) return false;
+  async checkForcedClose(user: any): Promise<boolean> {
+    if (!user) return false;
+    const statusRef = ref(this.db, `/status/${user.uid}`);
+    const snapshot = await get(statusRef);
+    if (!snapshot.exists()) return false;
 
-  const val = snapshot.val();
-  const now = Date.now();
-  return val.forcedClose && now - val.lastChanged > 5000;
-}
+    const val = snapshot.val();
+    const now = Date.now();
+    return val.forcedClose && now - val.lastChanged > 300000;
+  }
 
   getUserStatus(uid: string): Observable<any> {
     const statusRef = ref(this.db, `/status/${uid}`);
@@ -79,5 +91,4 @@ async checkForcedClose(user: any): Promise<boolean> {
       return () => unsubscribe();
     });
   }
-
 }

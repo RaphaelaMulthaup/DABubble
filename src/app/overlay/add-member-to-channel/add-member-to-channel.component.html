@@ -30,7 +30,7 @@
       <ul class="cont">
         @for(user of membersList; track $index){
         <li class="container">
-          <img class="profil-img" src="{{ user.photoUrl }}" alt="Profilbild" />
+          <img class="profil-img" src="{{ user.photoUrl || 'assets/img/no-avatar.svg' }}" alt="Profilbild" />
           <span>{{ getFirstWord(user.name) }}</span>
           <button (click)="removeFromList($index)">
             <div class="close"></div>

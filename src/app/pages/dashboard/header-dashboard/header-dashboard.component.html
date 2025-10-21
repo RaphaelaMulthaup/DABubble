@@ -17,7 +17,7 @@
 
     <div (click)="openSettingsOverlay($event)" class="current-user flex justify-end items-center h-full">
       @if((screenSize$|async) === 'web'){<h1>{{ (currentUser$ | async)?.name }}</h1>}
-      <img class="profil-img" [src]="(currentUser$ | async)?.photoUrl" alt="Profilbild"/>
+      <img class="profil-img" [src]="(currentUser$ | async)?.photoUrl || 'assets/img/no-avatar.svg'" alt="Profilbild"/>
       @if((screenSize$|async) !== 'handset'){<button class="arrow-btn"></button>}
     </div>
   </section>

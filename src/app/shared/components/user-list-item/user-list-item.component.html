@@ -9,7 +9,7 @@
 >
   @if (user$ | async; as user) {
     <div class="profil-img-and-status">
-      <img class="profil-img" src="{{ user.photoUrl }}" alt="Profilbild" />
+      <img class="profil-img" src="{{ user.photoUrl || 'assets/img/no-avatar.svg' }}" alt="Profilbild" />
       @if (!relatedToSearchResultPost) {
 
       @if(currentStatus$ | async; as status){
