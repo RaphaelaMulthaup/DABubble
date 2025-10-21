@@ -1,7 +1,7 @@
-<section [ngClass]="overlay" class="flex w-full justify-center max-h-[411px]">
+<section [ngClass]="overlay" class="flex flex-col w-full justify-center max-h-[411px]">
   @if(!clickedAddMember){
   <div
-    class="flex flex-col items-start gap-[15px] overflowYAuto relative w-full"
+    class="flex flex-col items-start gap-[15px] overflowYAuto relative w-full pl-[16px] pr-[16px]"
     [class.show]="!clickedAddMember"
   >
     <div class="flex w-full">
@@ -14,19 +14,19 @@
         }
       </div>
     </div>
-
-    <div class="btn-container flex w-full">
-      <button
-        class="list-item user-list-item btn"
-        (click)="choiceBetweenComponentAndHeader($event)"
-      >
-        <div class="add-person"></div>
-        <span> Mitglieder hinzufügen</span>
-      </button>
-    </div>
   </div>
+  <div class="btn-container flex w-full pl-[24px] pr-[16px] rounded-b-[10px]">
+    <button
+      class="list-item user-list-item btn"
+      (click)="choiceBetweenComponentAndHeader($event)"
+    >
+      <div class="add-person"></div>
+      <span> Mitglieder hinzufügen</span>
+    </button>
+  </div>
+
   }@else {
-  <app-add-member-to-channel
+  <app-add-member-to-channel class="pl-[16px] pr-[16px]"
     [channelDetails$]="channelDetails$"
     [class.show]="clickedAddMember"
   />

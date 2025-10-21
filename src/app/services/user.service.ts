@@ -102,6 +102,7 @@ export class UserService {
    * @param currentUserId - the ID of the current user
    */
   openProfileOverlay(userId: string, currentUserId: string) {
+    this.overlayService.closeAll();
     userId === currentUserId?
       this.overlayService.openComponent(
         ProfileViewMainComponent,
