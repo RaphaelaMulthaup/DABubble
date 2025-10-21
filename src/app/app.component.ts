@@ -48,7 +48,7 @@ export class AppComponent {
         await this.authService.logout();
         return;
       }
-      this.checkingPresence = false; 
+        this.checkingPresence = false; 
 
       await this.presenceService.initPresence(user);
     });
