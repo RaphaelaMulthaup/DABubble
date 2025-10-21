@@ -1,9 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Auth, onAuthStateChanged } from '@angular/fire/auth';
-import { doc, Firestore, onSnapshot, updateDoc } from '@angular/fire/firestore';
-import {ref, onDisconnect, set, serverTimestamp as rtdbTimestamp, serverTimestamp, onValue} from 'firebase/database';
+import { doc, Firestore,updateDoc } from '@angular/fire/firestore';
+import {ref, onDisconnect, set, serverTimestamp as rtdbTimestamp, serverTimestamp} from 'firebase/database';
 import { Database, get } from '@angular/fire/database';
-import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -16,28 +14,22 @@ export class PresenceService {
   async initPresence(user:any){
     if(!user) return;
     const statusRef = ref(this.db, `/status/${user.uid}`);
-    
-
-        // verifică dacă user a fost forțat să se deconecteze
     const snapshot = await get(statusRef);
     const forcedClose = snapshot.exists() && snapshot.val().forcedClose === true;
-    if (forcedClose) return; // skip initPresence dacă e forcedClose
-    
-    // setează user online
+    if (forcedClose) return; 
+
     await set(statusRef, {
       state: 'online',
       forcedClose: false,
       lastChanged: rtdbTimestamp()
     });
 
-    // când pierde conexiunea, să se seteze offline cu forcedClose true
     onDisconnect(statusRef).set({
       state: 'offline',
       forcedClose: true,
       lastChanged: rtdbTimestamp()
     });
 
-    // Optional: Mirror to Firestore
     const userRef = doc(this.firestore, `users/${user.uid}`);
     updateDoc(userRef, {
       active: true,
