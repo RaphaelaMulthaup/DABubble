@@ -27,10 +27,7 @@ export abstract class BaseSearchDirective implements OnDestroy {
    * @param el - the element that should get the foucs-listener
    * @param onFocus - the function called onfocus
    */
-  protected setupFocusListener(
-    el: ElementRef<HTMLElement>,
-    onFocus: () => void
-  ): void {
+  protected setupFocusListener( el: ElementRef<HTMLElement>, onFocus: () => void) {
     if (this._focusListener) {
       try {
         el.nativeElement.removeEventListener('focus', this._focusListener);
@@ -52,7 +49,7 @@ export abstract class BaseSearchDirective implements OnDestroy {
     this.term$.pipe(takeUntil(this.destroy$)).subscribe(handler);
   }
 
-  ngOnDestroy(): void {
+  ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
   }

@@ -32,7 +32,7 @@ export class NewAvatarSelectionComponent {
    * 
    * @param avatarOption - the chosen avatar-index
    */
-  selectAvatar(avatarOption: number): void {
+  selectAvatar(avatarOption: number) {
     this.selectedAvatar = avatarOption;
   }
 

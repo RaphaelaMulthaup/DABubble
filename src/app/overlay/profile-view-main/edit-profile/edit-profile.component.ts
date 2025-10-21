@@ -35,7 +35,7 @@ export class EditProfileComponent implements OnInit {
     this.user$= this.authService.currentUser$;
   }
 
-  ngOnInit(): void {
+  ngOnInit() {
     this.user$.pipe(takeUntil(this.destroy$)).subscribe((user) => {
       if (user) {
         this.userName = user.name;
@@ -43,7 +43,7 @@ export class EditProfileComponent implements OnInit {
     });
   }
 
-  ngAfterViewInit(): void {
+  ngAfterViewInit() {
     setTimeout(() => this.userNameInput.nativeElement.focus(), 0);
   }
 

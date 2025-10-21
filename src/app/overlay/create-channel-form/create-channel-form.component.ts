@@ -67,7 +67,7 @@ export class CreateChannelFormComponent {
   /**
    * Check if name is taken on interaction.
    */
-  onNameInput(): void {
+  onNameInput() {
     const nameControl = this.createChannel.get('name');
     const value = nameControl?.value.trim();
     if (this.showErrorMessage && value && value !== '') {
@@ -79,7 +79,7 @@ export class CreateChannelFormComponent {
   /**
    * Handles form submission.
    */
-  onSubmit(): void {
+  onSubmit() {
     if (this.createChannel.invalid) {
       this.errorMessage = 'Please fill in all required fields correctly.';
       return;
@@ -99,7 +99,7 @@ export class CreateChannelFormComponent {
    * @param name - the channel-name
    * @param description - the channel-description
    */
-  tryCreateChannel(name: string, description?: string): void {
+  tryCreateChannel(name: string, description?: string) {
     if (this.createSub) this.createSub.unsubscribe();
     this.createSub = this.channelService
       .createChannel(name, description)
@@ -114,7 +114,7 @@ export class CreateChannelFormComponent {
    *
    * @param channel - the created channel
    */
-  handleSuccessfulChannelCreation(channel: ChannelInterface): void {
+  handleSuccessfulChannelCreation(channel: ChannelInterface) {
     this.errorMessage = null;
     this.createChannel.reset();
     this.channel = channel;
@@ -154,7 +154,7 @@ export class CreateChannelFormComponent {
    *
    * @param error - the error occured
    */
-  handleChannelCreationError(error: any): void {
+  handleChannelCreationError(error: any) {
     if (error.message === 'name vergeben') {
       this.showErrorMessage = true;
     } else {

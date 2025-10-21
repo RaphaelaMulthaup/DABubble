@@ -42,7 +42,7 @@ export class OverlayService {
    *
    * @param users - an array with the users in the users signal
    */
-  setUsers(users: UserInterface[]): void {
+  setUsers(users: UserInterface[]) {
     this.users.set(users);
   }
 
@@ -260,7 +260,7 @@ export class OverlayService {
   /**
    * Closes all open overlays
    */
-  closeAll(): void {
+  closeAll() {
     this.overlayRefs.forEach((ref) => ref.dispose());
     this.overlayRefs = [];
     this.toggleBodyScroll(false);
@@ -270,7 +270,7 @@ export class OverlayService {
    * Closes a specific overlay by its reference.
    * @param ref The reference to the overlay to be closed.
    */
-  closeOne(ref: OverlayRef): void {
+  closeOne(ref: OverlayRef) {
     const index = this.overlayRefs.indexOf(ref);
     if (index !== -1) {
       ref.dispose();

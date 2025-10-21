@@ -9,7 +9,7 @@ import { Component, OnInit } from '@angular/core';
 export class IntroComponent implements OnInit {
   constructor() {}
 
-  ngOnInit(): void {
+  ngOnInit() {
     this.introAnimation();
   }
 

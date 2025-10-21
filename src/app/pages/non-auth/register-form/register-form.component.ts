@@ -71,7 +71,7 @@ export class RegisterFormComponent implements OnInit {
    * Handles form submission.
    * On submit, the userToRegister-data is set to the input values.
    */
-  onSubmit(): void {
+  onSubmit() {
     const thisForm = this.registerForm.value;
     this.userToRegister.displayName = thisForm.displayName;
     this.userToRegister.email = thisForm.email;

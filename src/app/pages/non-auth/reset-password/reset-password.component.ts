@@ -35,7 +35,7 @@ export class ResetPasswordComponent implements OnInit {
     this.uid = navigation?.extras.state?.['uid'];
   }
 
-  ngOnInit(): void {
+  ngOnInit() {
     this.oobCode = this.route.snapshot.queryParams['oobCode'] ?? '';
     this.registerForm = new FormGroup({
       password: new FormControl('', [
