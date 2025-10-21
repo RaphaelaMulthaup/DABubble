@@ -9,6 +9,7 @@ import { PostInterface } from '../../../../../../shared/models/post.interface';
 import { AuthService } from '../../../../../../services/auth.service';
 import { UserService } from '../../../../../../services/user.service';
 import {
+  BehaviorSubject,
   distinctUntilChanged,
   filter,
   firstValueFrom,
@@ -72,7 +73,7 @@ export class DisplayedPostComponent implements OnInit {
   currentConversationId!: string;
   senderIsCurrentUser: boolean | null = null;
   allReactionsVisible: boolean = false;
-  postClicked: boolean = false;
+  postClicked$ = new BehaviorSubject<boolean>(false);
   isThreadTheme: boolean = false;
 
   constructor(
@@ -320,7 +321,7 @@ export class DisplayedPostComponent implements OnInit {
    * @param event the user-interaction with an object.
    */
   openPostInteractionOverlay(event: MouseEvent) {
-    this.postClicked = true;
+    this.postClicked$.next(true);
     const overlay = this.overlayService.openComponent(
       PostInteractionOverlayComponent,
       'cdk-overlay-transparent-backdrop',
@@ -336,7 +337,7 @@ export class DisplayedPostComponent implements OnInit {
         conversationWindowState: this.conversationWindowState,
       }
     );
-    overlay?.afterClosed$.pipe(take(1)).subscribe(() => { this.postClicked = false });
+    overlay!.afterClosed$.pipe(take(1)).subscribe(() => this.postClicked$.next(false))
   }
 
   /**

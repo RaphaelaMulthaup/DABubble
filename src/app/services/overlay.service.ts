@@ -81,13 +81,11 @@ export class OverlayService {
    *
    * @param lock - whether the body scroll should be locked or not
    */
-  private toggleBodyScroll(lock: boolean) {
+  toggleBodyScroll(lock: boolean) {
     if (lock) {
-      const scrollbarWidth =
-        window.innerWidth - document.documentElement.clientWidth;
+      const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
       document.body.style.paddingRight = `${scrollbarWidth}px`;
       document.body.style.overflow = 'hidden';
-      console.log(1)
     } else {
       document.body.style.paddingRight = '';
       document.body.style.overflow = '';
@@ -116,12 +114,12 @@ export class OverlayService {
     this.overlayRef = this.overlay.create(this.getOverlayConfig(backdropType, this.getPositionStrategy(position)));
     this.overlayRefs.push(this.overlayRef!);
     if (this.overlayRefs.length > 0) this.toggleBodyScroll(true);
-    this.handleBackdropClick(this.overlayRef, destroy$, backdropClick$);
+    this.handleBackdropClick(this.overlayRef, destroy$, backdropClick$, afterClosed$);
     const portal = new ComponentPortal(component, null, this.injector);
     const componentRef = this.overlayRef?.attach(portal)!;
     if (data) Object.assign(componentRef.instance, data);
     this.handleDetach(this.overlayRef, destroy$, afterClosed$, backdropClick$);
-    fromEvent(window, 'resize')
+    // fromEvent(window, 'resize')
       // .pipe(debounceTime(150), takeUntil(this.overlayRef.detachments()))
       // .subscribe(() => this.closeAll());
     return {
@@ -137,7 +135,7 @@ export class OverlayService {
    *
    * @param position - Configuration for overlay placement.
    */
-  private getPositionStrategy(position: OverlayPositionInterface) {
+  getPositionStrategy(position: OverlayPositionInterface) {
     if (position.origin) {
       return this.getOriginPositionStrategy(position);
     } else if (position.globalPosition === 'bottom') {
@@ -150,7 +148,7 @@ export class OverlayService {
    *
    * @param position - Configuration for overlay placement.
    */
-  private getOriginPositionStrategy(position: OverlayPositionInterface) {
+  getOriginPositionStrategy(position: OverlayPositionInterface) {
     return this.overlay
       .position()
       .flexibleConnectedTo(position.origin!)
@@ -163,14 +161,14 @@ export class OverlayService {
   /**
    * This function sets the positionStrategy for an overlay that is placed at the bottom of the page.
    */
-  private getBottomPositionStrategy() {
+  getBottomPositionStrategy() {
     return this.overlay.position().global().centerHorizontally().bottom('0px');
   }
 
   /**
    * This function sets the positionStrategy for an overlay that is centered.
    */
-  private getCenterPositionStrategy() {
+  getCenterPositionStrategy() {
     return this.overlay
       .position()
       .global()
@@ -185,7 +183,7 @@ export class OverlayService {
    * @param backdropType - Defines the backdrop style (`dark`, `transparent`) or disables it (`null`).
    * @param positionStrategy - the positionStrategy returned from the getPositionStrategy()-function
    */
-  private getOverlayConfig(
+  getOverlayConfig(
     backdropType: BackdropType,
     positionStrategy: PositionStrategy
   ): OverlayConfig {
@@ -212,17 +210,21 @@ export class OverlayService {
    * @param overlayRef - the overlay reference that was created
    * @param destroy$ - the subject that triggers cleanup and unsubscribes from observables
    * @param backdropClick$ - the subject that handles backdrop-clicks
+   * @param afterClosed$ - the subject that emits when the overlay has been fully closed
    */
-  private handleBackdropClick(
+  handleBackdropClick(
     overlayRef: OverlayRef,
     destroy$: Subject<void>,
-    backdropClick$: Subject<void>
+    backdropClick$: Subject<void>,
+    afterClosed$?: Subject<void>
   ) {
     overlayRef
       .backdropClick()
       .pipe(takeUntil(destroy$))
       .subscribe(() => {
         backdropClick$.next();
+        afterClosed$?.next();
+        afterClosed$?.complete();
         this.closeAll();
       });
   }
@@ -237,7 +239,7 @@ export class OverlayService {
    * @param afterClosed$ - the subject that emits when the overlay has been fully closed
    * @param backdropClick$ - the subject that handles backdrop clicks
    */
-  private handleDetach(
+  handleDetach(
     overlayRef: OverlayRef | undefined,
     destroy$: Subject<void>,
     afterClosed$: Subject<void>,
