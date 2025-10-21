@@ -42,17 +42,13 @@ export class AppComponent {
         this.checkingPresence = false;
         return 
       };
-
-      // 1️⃣ Verifică dacă user a fost forțat să se deconecteze
       const forcedClose = await this.presenceService.checkForcedClose(user);
       if (forcedClose) {
-        await this.presenceService.setOfflineSync(user); // resetează flag-ul
+        await this.presenceService.setOfflineSync(user);
         await this.authService.logout();
         return;
       }
-
-      // 2️⃣ Inițializează prezența normală
-          this.checkingPresence = false; // acum putem arăta aplicația
+          this.checkingPresence = false; 
 
       await this.presenceService.initPresence(user);
     });
@@ -67,12 +63,10 @@ export class AppComponent {
         if(user.isAnonymous){
           this.visibilityTimeout = setTimeout( async ()=> {
             await this.presenceService.setOffline(user);
-            // await signOut(this.auth);
           },5000);
         }else{
           this.visibilityTimeout = setTimeout( async () =>{
             await this.presenceService.setOffline(user);
-            // await signOut(this.auth);
           }, 5000);
         }
       }else if(document.visibilityState === 'visible'){

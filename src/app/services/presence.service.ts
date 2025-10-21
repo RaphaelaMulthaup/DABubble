@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Auth, onAuthStateChanged } from '@angular/fire/auth';
-import { doc, Firestore, updateDoc } from '@angular/fire/firestore';
+import { doc, Firestore, onSnapshot, updateDoc } from '@angular/fire/firestore';
 import {ref, onDisconnect, set, serverTimestamp as rtdbTimestamp, serverTimestamp, onValue} from 'firebase/database';
 import { Database, get } from '@angular/fire/database';
 import { Observable } from 'rxjs';
@@ -82,18 +82,4 @@ async checkForcedClose(user: any): Promise<boolean> {
   return false;
 }
 
-
-  getUserStatus(uid: string): Observable<any> {
-    return new Observable((observer) => {
-      const statusRef = ref(this.db, `/status/${uid}`);
-      const unsubscribe = onValue(statusRef, (snapshot) => {
-        observer.next(snapshot.val());
-      }, (error) => {
-        observer.error(error);
-      });
-
-      // cleanup la unsubscribe
-      return () => unsubscribe();
-    });
-  }
 }
