@@ -47,7 +47,8 @@ export class PostService {
       this.firestore,
       `${parentPath}/${subcollectionName}`
     );
-    await this.createPost(postsRef, post);
+    const id = await this.createPost(postsRef, post);
+    return id;
   }
 
   /**
@@ -60,7 +61,7 @@ export class PostService {
   async createPost(
     postsRef: CollectionReference,
     post: Omit<PostInterface, 'createdAt' | 'id'>
-  ) {
+  ): Promise<string> {
     const newDocRef = doc(postsRef);
     await setDoc(newDocRef, {
       ...post,
@@ -85,11 +86,15 @@ export class PostService {
     text: string,
     conversationType: string
   ) {
-    await this.sendPost(`${conversationType}s/${conversationId}`, 'messages', {
-      senderId: senderId,
-      text,
-    });
-    return of([]);
+    const messageId = await this.sendPost(
+      `${conversationType}s/${conversationId}`,
+      'messages',
+      {
+        senderId: senderId,
+        text,
+      }
+    );
+    return messageId;
   }
 
   /**
@@ -192,7 +197,11 @@ export class PostService {
    * @param conversationType - The type of the conversation ('channel' or 'chat').
    * @param conversationId - The ID of the conversation.
    */
-  openAnswers( postId: string, conversationType: 'channel' | 'chat', conversationId: string) {
+  openAnswers(
+    postId: string,
+    conversationType: 'channel' | 'chat',
+    conversationId: string
+  ) {
     this.screenService.setDashboardState('thread-window');
     this.router.navigate([
       '/dashboard',
@@ -249,8 +258,10 @@ export class PostService {
       const span = mark.querySelector('span');
       if (img && span) {
         const name = span.textContent;
-        const typeOfResult = img.getAttribute('src')?.includes('email') ? '@' : '#';
-        console.log(typeOfResult)
+        const typeOfResult = img.getAttribute('src')?.includes('email')
+          ? '@'
+          : '#';
+        console.log(typeOfResult);
         const textNode = doc.createTextNode(`{${typeOfResult}${name}}`);
         mark.replaceWith(textNode);
       }

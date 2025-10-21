@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import {
+  addDoc,
   arrayRemove,
   collection,
   doc,
@@ -15,6 +16,7 @@ import { ChatService } from './chat.service';
 import { PostService } from './post.service';
 import { PostInterface } from '../shared/models/post.interface';
 import { ChannelInterface } from '../shared/models/channel.interface';
+import { async } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -119,6 +121,97 @@ export class UserDemoSetupService {
         this.postService.createMessage(chatId, msg.senderId, msg.text, 'chat')
       )
     );
+  }
+
+  async createDemoChannel(guestId: string) {
+    const channelRef = collection(this.firestore, 'channels');
+
+    // Channel existiert noch nicht, also erstellen
+    const channelData: ChannelInterface = {
+      name: 'Entwicklerteam',
+      description:
+        'Hier kannst du dich zusammen mit den EntwicklerInnen über die Chat-App austauschen.',
+      memberIds: [...this.devIds, guestId],
+      createdBy: 'NxSyGPn1LkPV3bwLSeW94FPKRzm1',
+      createdAt: new Date(),
+    };
+
+    // Channel anlegen
+    const channelDocRef = await addDoc(channelRef, channelData);
+
+    // Die gesamte Unterhaltung als Nachrichten im Channel einfügen
+    const messages = [
+      {
+        senderId: 'XbsVa8YOj8Nd9vztzX1kAQXrc7Z2',
+        text: 'Wie wäre es, wenn wir beim eigenen User-List-Item noch ein "(Du)" hinzufügen, um den aktuellen Nutzer zu kennzeichnen?',
+      },
+      {
+        senderId: 'rUnD1S8sHOgwxvN55MtyuD9iwAD2',
+        text: 'Das fände ich super! So sieht man direkt, dass es der eigene Account ist. Besonders für neue Nutzer ist das eine tolle Orientierung.',
+      },
+      {
+        senderId: '5lntBSrRRUM9JB5AFE14z7lTE6n1',
+        text: 'Wir könnten eine kleine Abfrage einbauen, um zu prüfen, ob der User, der angezeigt wird, der aktuelle Nutzer ist. In dem Fall fügen wir das "(Du)" hinzu.',
+      },
+      {
+        senderId: 'rUnD1S8sHOgwxvN55MtyuD9iwAD2',
+        text: 'Ich kann das umsetzen! Wir schauen dann, ob der User in `currentUser$` dem angezeigten User entspricht. Wenn ja, fügen wir das "(Du)" hinzu.',
+      },
+      {
+        senderId: 'NxSyGPn1LkPV3bwLSeW94FPKRzm1',
+        text: 'Ich würde noch vorschlagen, dass wir darauf achten, dass das "Du" auch bei einem gekürzten Namen in einem kleineren Layout sichtbar bleibt. Der Name kann sich den Platz nehmen, bis er mit "..." gekürzt wird, aber das "(Du)" sollte immer daneben erscheinen.',
+      },
+      {
+        senderId: '5lntBSrRRUM9JB5AFE14z7lTE6n1',
+        text: 'Super Idee! Dann ist es auch bei kleinen Bildschirmen klar, wer der eigene Account ist. Danke für den Vorschlag!',
+      },
+      {
+        senderId: 'NxSyGPn1LkPV3bwLSeW94FPKRzm1',
+        text: 'Wie sieht es aus? Treffen wir uns am Montag zum Mergen?',
+      },
+    ];
+
+    // Nachrichten im Channel erstellen
+    let lastMessageId: string | null = null;
+    for (const [index, msg] of messages.entries()) {
+      const messageId  = await this.postService.createMessage(
+        channelDocRef.id,
+        msg.senderId,
+        msg.text,
+        'channel'
+      );
+
+      // ID der letzten Nachricht merken
+      if (index === messages.length - 1) {
+        lastMessageId = messageId;
+      }
+    }
+    if (lastMessageId) {
+      const answers = [
+        {
+          senderId: '5lntBSrRRUM9JB5AFE14z7lTE6n1',
+          text: 'Montag klingt gut, wie viel Uhr?',
+        },
+        {
+          senderId: 'rUnD1S8sHOgwxvN55MtyuD9iwAD2',
+          text: 'Ich wäre ab 10 Uhr dabei!',
+        },
+        {
+          senderId: 'XbsVa8YOj8Nd9vztzX1kAQXrc7Z2',
+          text: 'Perfekt, dann planen wir 10 Uhr fest ein.',
+        },
+      ];
+
+      for (const answer of answers) {
+        await this.postService.createAnswer(
+          channelDocRef.id,
+          lastMessageId,
+          answer.senderId,
+          answer.text,
+          'channel'
+        );
+      }
+    }
   }
 
   async handleGuestsChannels(guestUserId: string) {
