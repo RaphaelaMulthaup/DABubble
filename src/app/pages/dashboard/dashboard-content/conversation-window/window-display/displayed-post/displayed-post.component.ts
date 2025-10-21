@@ -263,7 +263,7 @@ export class DisplayedPostComponent implements OnInit {
       .subscribe((emoji: { token: string; src: string }) => this.togglePostReaction(emoji));
   }
 
-    /**
+  /**
    * This function toggles the users reaction, if the users clicks on an already chosen emoji (by any user) in the reactions-div
    *
    *  @param emoji - the image-path for the chosen emoji.
