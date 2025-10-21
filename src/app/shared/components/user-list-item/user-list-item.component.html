@@ -11,17 +11,18 @@
     <div class="profil-img-and-status">
       <img class="profil-img" src="{{ user.photoUrl }}" alt="Profilbild" />
       @if (!relatedToSearchResultPost) {
-      <img
-        class="status"
-        [src]="
-          (currentUserId$ | async) === user.uid
-            ? 'assets/img/online-with-white-circle.svg'
-            : user.active
-            ? 'assets/img/online-with-white-circle.svg'
-            : 'assets/img/offline-with-white-circle.svg'
-        "
-        alt="Status"
+
+      @if(currentStatus$ | async; as status){
+             <img
+    class="status"
+    [src]="
+      status?.state === 'online'
+        ? 'assets/img/online-with-white-circle.svg'
+        : 'assets/img/offline-with-white-circle.svg'
+    "
+    alt="Status"
       />
+      }
       }
     </div>
     <div>

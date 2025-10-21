@@ -59,6 +59,8 @@ export class UserListItemComponent implements OnDestroy {
   public lastUserSnapshot: UserInterface | null = null;
   private currentUserId: string | null = null;
 
+  currentStatus$!: Observable<any>;
+
 
   constructor(
     private authService: AuthService,
@@ -66,7 +68,8 @@ export class UserListItemComponent implements OnDestroy {
     public conversationActiveRouterService: ConversationActiveRouterService,
     private overlayService: OverlayService,
     public screenService: ScreenService,
-    private userService: UserService
+    private userService: UserService,
+    private presenceService: PresenceService
   ) {
     this.screenSize$ = this.screenService.screenSize$;
 
@@ -99,6 +102,13 @@ export class UserListItemComponent implements OnDestroy {
       .subscribe((id) => (this.currentUserId = id));
 
   }
+
+ngOnInit() {
+  this.currentStatus$ = this.userUid$.pipe(
+    filter((uid): uid is string => !!uid),
+    switchMap((uid) => this.presenceService.getUserStatus(uid))
+  );
+}
 
 
   ngOnDestroy() {

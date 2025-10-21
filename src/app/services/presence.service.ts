@@ -1,39 +1,34 @@
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { doc, Firestore,updateDoc } from '@angular/fire/firestore';
 import {ref, onDisconnect, set, serverTimestamp as rtdbTimestamp, serverTimestamp} from 'firebase/database';
-import { Database, get } from '@angular/fire/database';
+import { Database, get, onValue } from '@angular/fire/database';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PresenceService {
-  constructor(private firestore: Firestore , private db: Database){
-
-  }
+  constructor(private firestore: Firestore , private db: Database,  private zone: NgZone){}
 
   async initPresence(user:any){
+    const userRef = doc(this.firestore, `users/${user.uid}`);
+
     if(!user) return;
     const statusRef = ref(this.db, `/status/${user.uid}`);
     const snapshot = await get(statusRef);
     const forcedClose = snapshot.exists() && snapshot.val().forcedClose === true;
     if (forcedClose) return; 
 
-    await set(statusRef, {
+        await set(statusRef, {
       state: 'online',
       forcedClose: false,
       lastChanged: rtdbTimestamp()
     });
-
-    onDisconnect(statusRef).set({
+    
+          onDisconnect(statusRef).set({
       state: 'offline',
       forcedClose: true,
       lastChanged: rtdbTimestamp()
-    });
-
-    const userRef = doc(this.firestore, `users/${user.uid}`);
-    updateDoc(userRef, {
-      active: true,
-      lastActive: serverTimestamp()
     });
 
   }
@@ -52,8 +47,10 @@ export class PresenceService {
   set(statusRef, {
     state: 'offline',
     forcedClose: false,
-    lastChanged: serverTimestamp()
+    lastChanged: rtdbTimestamp()
   });
+      const userRef = doc(this.firestore, `users/${user.uid}`);
+      updateDoc(userRef, { active: false, lastActive: serverTimestamp() });
   }
 
 
@@ -73,5 +70,19 @@ async checkForcedClose(user: any): Promise<boolean> {
   }
   return false;
 }
+
+  getUserStatus(uid: string): Observable<any> {
+    const statusRef = ref(this.db, `/status/${uid}`);
+    return new Observable((observer) => {
+      const unsubscribe = onValue(
+        statusRef,
+        (snapshot) => {
+          this.zone.run(() => observer.next(snapshot.val()));
+        },
+        (error) => this.zone.run(() => observer.error(error))
+      );
+      return () => unsubscribe();
+    });
+  }
 
 }
