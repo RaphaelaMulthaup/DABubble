@@ -3,19 +3,28 @@
 :host {
   display: block;
   width: 100%;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+  height: fit-content;
+  overflow: hidden;
   background-color: var(--color-white);
 }
 
 :host.overlay-web {
   max-width: clamp(36.25rem, 13.75rem + 37.5vw, 58.75rem);
-  max-height: clamp(43.75rem, 30rem + 22.9167vw, 57.5rem);
   border-radius: 0 30px 30px 30px;
   box-shadow: 0px 2px 10px 0px #00000014;
   margin-top: -15px;
   margin-left: 43px;
   border: 1px solid var(--color-purple-light-lines);
+
+  .scroll-container {
+    max-height: clamp(43.75rem, 30rem + 22.9167vw, 57.5rem);
+    margin-right: 10px;
+  }
+}
+
+.scroll-container {
+  overflow-y: auto !important;
+  overflow-x: hidden;
 }
 
 .results-list-handset {
