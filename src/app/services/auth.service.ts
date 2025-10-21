@@ -243,7 +243,7 @@ export class AuthService {
       .then(async (credential) => {
         await this.screenService.setInitDashboardState();
         const guest = credential.user;
-        await this.createOrUpdateUserInFirestore(guest, 'anonymous', 'Guest');
+        await this.createOrUpdateUserInFirestore(guest, 'anonymous', 'Gast');
         this.userService.updateUser(guest.uid, {
           photoUrl: './assets/img/no-avatar.svg',
         });
