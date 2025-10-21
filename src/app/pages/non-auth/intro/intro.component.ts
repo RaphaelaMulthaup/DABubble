@@ -18,8 +18,14 @@ export class IntroComponent implements OnInit {
    * Handles intro-animation
    */
   introAnimation() {
-    let logoContainer = document.querySelector('.logo-container');
+    this.animationBlockFirst();
+    this.animationBlockSecond();
+  }
 
+  /**
+   * Handles first animation functions
+   */
+  animationBlockFirst() {
     setTimeout(() => {
       this.moveLogo();
     }, 500);
@@ -31,6 +37,13 @@ export class IntroComponent implements OnInit {
     setTimeout(() => {
       this.changeColor();
     }, 2500);
+  }
+
+  /**
+   * Handles following animation functions
+   */
+  animationBlockSecond() {
+    let logoContainer = document.querySelector('.logo-container');
 
     setTimeout(() => {
       logoContainer?.classList.add('container-transperent');
