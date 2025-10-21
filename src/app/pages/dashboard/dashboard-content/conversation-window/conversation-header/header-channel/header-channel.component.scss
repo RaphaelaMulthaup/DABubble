@@ -39,7 +39,7 @@
 
   @include respond-to("430") {
     app-channel-list-item {
-      max-width: 80%;
+      max-width: 80vw;
     }
   }
 }
