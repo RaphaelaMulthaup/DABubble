@@ -22,8 +22,9 @@ export class LoginFormComponent {
   showLogin: boolean = true;
   isSubmittingWithGoogleOrAsGuest: boolean = false;
   showErrorMessage: boolean = false;
-  loginForm: FormGroup;                             
-  
+  loginForm: FormGroup;
+  resetPasswordTouched: boolean = false;
+
   constructor(private authService: AuthService) {
     this.loginForm = new FormGroup({
       email: new FormControl('', [Validators.required, Validators.email]),
@@ -85,5 +86,11 @@ export class LoginFormComponent {
           this.showErrorMessage = true;
         },
       });
+  }
+
+  onTouchOrClickEnd(event: Event) {
+    event.preventDefault();
+    this.resetPasswordTouched = false;
+    this.onForgotPassword();
   }
 }

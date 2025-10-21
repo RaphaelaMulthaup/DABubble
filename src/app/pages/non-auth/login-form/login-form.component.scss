@@ -17,7 +17,14 @@
   border-radius: 100px;
   background-color: var(--color-purple-white);
   color: var(--color-purple-dark);
-
+  transition: all 100ms ease-in;
+  &:hover {
+    border: 1px solid var(--color-purple-dark);
+    font-weight: bold;
+  }
+  &:active {
+    border-color: var(--color-gray);
+  }
   img {
     height: 38px;
   }
@@ -35,9 +42,22 @@
   cursor: pointer;
   padding: 5px 15px;
   border-radius: 30px;
-  &:hover {
+  transition: all 100ms ease-in;
+  // &:hover {
+  //   color: var(--color-purple-medium);
+  //   font-weight: 500;
+  //   background-color: var(--color-purple-white);
+  // }
+  
+//   &:active,
+//   &.touching {
+//     color: var(--color-purple-medium);
+//     font-weight: 500;
+//     background-color: var(--color-purple-white);
+//   }
+}
+.resetPasswordTouched {
     color: var(--color-purple-medium);
     font-weight: 500;
     background-color: var(--color-purple-white);
   }
-}

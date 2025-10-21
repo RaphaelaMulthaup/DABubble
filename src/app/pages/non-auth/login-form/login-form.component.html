@@ -64,12 +64,21 @@
           </p>
         </div>
         <p class="error-message">
-          @if (showErrorMessage && !isSubmittingWithGoogleOrAsGuest){E-Mail und Passwort
-          stimmen nicht überein.}
+          @if (showErrorMessage && !isSubmittingWithGoogleOrAsGuest){E-Mail und
+          Passwort stimmen nicht überein.}
         </p>
       </div>
 
-      <button type="button" class="resetPasswordLink" (click)="onForgotPassword()">
+      <button
+        type="button"
+        class="resetPasswordLink"
+        (mousedown)="resetPasswordTouched = true"
+        (mouseup)="onTouchOrClickEnd($event)"
+        (mouseleave)="resetPasswordTouched = false"
+        (touchstart)="resetPasswordTouched = true"
+        (touchend)="onTouchOrClickEnd($event)"
+        [ngClass]="{ resetPasswordTouched: resetPasswordTouched }"
+      >
         Passwort vergessen?
       </button>
 
