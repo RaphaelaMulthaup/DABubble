@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { OverlayService } from '../../../../../../services/overlay.service';
 import { EditChannelComponent } from '../../../../../../overlay/edit-channel/edit-channel.component';
@@ -25,17 +25,17 @@ import { ScreenService } from '../../../../../../services/screen.service';
   styleUrl: './header-channel.component.scss',
 })
 export class HeaderChannelComponent {
-  channelId!: string;
+  screenSize$!: Observable<ScreenSize>;
   channelDetails$!: Observable<ChannelInterface | undefined>;
   memberIds?: string[];
-  screenSize$!: Observable<ScreenSize>;
+  channelId!: string;
 
   constructor(
-    public screenService: ScreenService,
-    private overlayService: OverlayService,
+    private channelService: ChannelsService,
     private conversationActiveRouterService: ConversationActiveRouterService,
+    private overlayService: OverlayService,
     private route: ActivatedRoute,
-    private channelService: ChannelsService
+    public screenService: ScreenService
   ) {
     this.screenSize$ = this.screenService.screenSize$;
   }
@@ -51,36 +51,36 @@ export class HeaderChannelComponent {
       );
   }
 
-  openEditChannelFormOverlay(event: MouseEvent) {
+  /**
+   * This function opens the EditChannel-Overlay.
+   *
+   * @param event - The user-interaction with an object.
+   */
+  openEditChannelOverlay(event: MouseEvent) {
     this.overlayService.openComponent(
       EditChannelComponent,
       'cdk-overlay-dark-backdrop',
       {
         origin: event.currentTarget as HTMLElement,
-        originPosition: {
-          originX: 'start',
-          originY: 'bottom',
-          overlayX: 'start',
-          overlayY: 'top',
-        },
+        originPosition: { originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top' },
       },
 
       { channelDetails$: this.channelDetails$ as Observable<ChannelInterface> }
     );
   }
 
+  /**
+   * This function opens the ChannelMembers-Overlay.
+   *
+   * @param event - The user-interaction with an object.
+   */
   openChannelMembers(event: MouseEvent) {
     this.overlayService.openComponent(
       ChannelMembersComponent,
       'cdk-overlay-dark-backdrop',
       {
         origin: event.currentTarget as HTMLElement,
-        originPosition: {
-          originX: 'center',
-          originY: 'bottom',
-          overlayX: 'end',
-          overlayY: 'top',
-        },
+        originPosition: { originX: 'center', originY: 'bottom', overlayX: 'end', overlayY: 'top' },
       },
       {
         channelDetails$: this.channelDetails$ as Observable<ChannelInterface>,
@@ -90,18 +90,18 @@ export class HeaderChannelComponent {
     );
   }
 
+  /**
+   * This function opens the AddMemberToChannel-Overlay.
+   *
+   * @param event - The user-interaction with an object.
+   */
   openAddMembersToChannel(event: MouseEvent) {
     this.overlayService.openComponent(
       AddMemberToChannelComponent,
       'cdk-overlay-dark-backdrop',
       {
         origin: event.currentTarget as HTMLElement,
-        originPosition: {
-          originX: 'center',
-          originY: 'bottom',
-          overlayX: 'end',
-          overlayY: 'top',
-        },
+        originPosition: { originX: 'center', originY: 'bottom', overlayX: 'end', overlayY: 'top' },
       },
       {
         channelDetails$: this.channelDetails$ as Observable<ChannelInterface>,

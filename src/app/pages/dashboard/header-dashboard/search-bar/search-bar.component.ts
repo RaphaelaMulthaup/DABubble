@@ -23,7 +23,7 @@ import { UserInterface } from '../../../../shared/models/user.interface';
 import { ChannelInterface } from '../../../../shared/models/channel.interface';
 import { ScreenSize } from '../../../../shared/types/screen-size.type';
 import { ScreenService } from '../../../../services/screen.service';
-import { BaseSearchDirective } from '../../../../shared/directives/base-search.directive'; // passe Pfad ggf. an
+import { BaseSearchDirective } from '../../../../shared/directives/base-search.directive';
 import { OverlayPositionInterface } from '../../../../shared/models/overlay.position.interface';
 
 @Component({

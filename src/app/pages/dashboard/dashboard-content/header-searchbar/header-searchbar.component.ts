@@ -22,7 +22,7 @@ import { OverlayService } from '../../../../services/overlay.service';
 import { SearchResultsNewMessageComponent } from '../../../../overlay/search-results-new-message/search-results-new-message.component';
 import { ScreenSize } from '../../../../shared/types/screen-size.type';
 import { ScreenService } from '../../../../services/screen.service';
-import { BaseSearchDirective } from '../../../../shared/directives/base-search.directive'; // passe Pfad ggf. an
+import { BaseSearchDirective } from '../../../../shared/directives/base-search.directive';
 import { OverlayPositionInterface } from '../../../../shared/models/overlay.position.interface';
 
 @Component({

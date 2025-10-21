@@ -14,7 +14,7 @@ import { UserInterface } from '../shared/models/user.interface';
 import { combineLatest, map, Observable, of, shareReplay } from 'rxjs';
 import { docData } from '@angular/fire/firestore';
 import { OverlayService } from './overlay.service';
-import { ProfileViewOtherUsersComponent } from '../overlay/profile-view-other-users/profile-view-other-users.component'; // Importing the profile view component for users
+import { ProfileViewOtherUsersComponent } from '../overlay/profile-view-other-users/profile-view-other-users.component';
 import { ProfileViewMainComponent } from '../overlay/profile-view-main/profile-view-main.component';
 
 @Injectable({
