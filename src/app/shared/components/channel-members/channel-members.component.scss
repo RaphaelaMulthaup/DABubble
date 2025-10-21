@@ -1,10 +1,15 @@
 section {
   padding-left: 0 !important;
   padding-right: 0 !important;
+  width: clamp(17.5rem, 16rem + 7.5vw, 25rem);
 }
 
 .overlay-right {
-  padding: 20px 16px;
+  padding: 20px 0;
+
+  app-user-list-item {
+    padding: 0 clamp(0.5rem, 0.4rem + 0.5vw, 1rem);
+  }
 }
 
 .overflowYAuto {
@@ -28,11 +33,13 @@ section {
 }
 
 .btn-container {
-  padding-top: 8px;
+  padding: 8px 16px 0 24px;
   background-color: var(--color-white);
   position: sticky;
   bottom: -1px;
   box-shadow: 0px -4px 6px 0px rgba(0, 0, 0, 0.08);
+  border-bottom-right-radius: 10px;
+  border-bottom-left-radius: 10px;
 }
 
 .btn {
@@ -69,7 +76,6 @@ section {
 .overlay,
 .overlay-right,
 .overlay-left {
-  // width: clamp(17.5rem, 6.3889rem + 55.5556vw, 23.75rem);
   max-width: 510px;
 }
 
@@ -77,4 +83,14 @@ section {
   opacity: 1;
   transform: translateY(0);
   display: block;
+}
+
+.in-handset-edit-channel {
+  max-width: 100%;
+  .btn-container {
+    padding: 0;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+    box-shadow: none;
+  }
 }
