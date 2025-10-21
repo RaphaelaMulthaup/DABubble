@@ -18,7 +18,9 @@
 .overlay,
 .overlay-right,
 .overlay-left {
-  width: clamp(17.5rem, 6.3889rem + 55.5556vw, 23.75rem);
+  // width: clamp(17.5rem, 6.3889rem + 55.5556vw, 23.75rem);
+  width: 100vw;
+  max-width: 510px;
 }
 
 .closing {
@@ -52,8 +54,9 @@ input {
   max-width: fit-content;
   gap: 15px;
   border-radius: 35px;
-  background-color: var(--color-purple-light-lines);
+  background-color: var(--color-purple-white);
   padding: 3px 15px;
+  max-height: 40px;
 }
 
 .cont {

@@ -47,6 +47,8 @@ export class WindowDisplayComponent implements OnInit {
   lastconversationId?: string;
   pendingScrollTo?: string;
 
+  hasScrollbar = false;
+
   constructor(
     private chatService: ChatService,
     private conversationActiveRouterService: ConversationActiveRouterService,
@@ -68,6 +70,7 @@ export class WindowDisplayComponent implements OnInit {
   }
 
   ngAfterViewInit() {
+    this.tryAutoLoadUntilScrollbar()
     this.postElements.changes.pipe(takeUntil(this.destroy$)).subscribe(() => {
       if (this.pendingScrollTo) this.handleScrollRequest( this.pendingScrollTo, this.currentConversationId);
     });
@@ -158,6 +161,25 @@ export class WindowDisplayComponent implements OnInit {
         shareReplay({ bufferSize: 1, refCount: true })
       );
     });
+  }
+
+  /**
+   * Attempts to automatically load more messages until a scrollbar appears
+   * or the maximum number of tries is reached.
+   */
+  async tryAutoLoadUntilScrollbar() {
+    const el = this.messagesContainer.nativeElement;
+    let iteration = 0;
+    const maxTries = 5;
+    if (iteration === 5) return;
+    while (el.scrollHeight <= el.clientHeight && iteration < maxTries) {
+      iteration++;
+      console.log('no scrollbar → loading more...', iteration);
+      this.loadingOlderMessages = true;
+      await this.conversationActiveRouterService.loadMore(this.currentConversationId!);
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      this.loadingOlderMessages = false;
+    }
   }
 
   /**

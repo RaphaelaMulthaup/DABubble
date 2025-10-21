@@ -27,6 +27,7 @@ import { ScreenService } from '../../../services/screen.service';
 import { ScreenSize } from '../../types/screen-size.type';
 import { OverlayService } from '../../../services/overlay.service';
 import { DashboardState } from '../../types/dashboard-state.type';
+import { PresenceService } from '../../../services/presence.service';
 
 @Component({
   selector: 'app-user-list-item',
@@ -38,10 +39,7 @@ import { DashboardState } from '../../types/dashboard-state.type';
   ],
 })
 export class UserListItemComponent implements OnDestroy {
-  @Input()
-  set user(value: UserInterface | undefined) {
-    this.userUid$.next(value?.uid ?? null);
-  }
+  @Input() set user(value: UserInterface | undefined) {this.userUid$.next(value?.uid ?? null);}
   @Input() relatedToSearchResultPost = false;
   @Input() isInSearchResultsCurrentPostInput = false;
   @Input() doNothing = false;
@@ -49,13 +47,14 @@ export class UserListItemComponent implements OnDestroy {
   @Input() inHeaderChat = false;
   @Output() userSelected = new EventEmitter<UserInterface>();
 
+  userStatus$: Observable<any> | undefined;
+  currentStatus$!: Observable<any>;
   private userUid$ = new BehaviorSubject<string | null>(null);
   private destroy$ = new Subject<void>();
   public dashboardState!: WritableSignal<DashboardState>;
   public screenSize$!: Observable<ScreenSize>;
   public user$: Observable<UserInterface | null>;
   public currentUserId$: Observable<string | null>;
-
   public lastUserSnapshot: UserInterface | null = null;
   private currentUserId: string | null = null;
 
@@ -65,11 +64,11 @@ export class UserListItemComponent implements OnDestroy {
     public conversationActiveRouterService: ConversationActiveRouterService,
     private overlayService: OverlayService,
     public screenService: ScreenService,
-    private userService: UserService
+    private userService: UserService,
+    private presenceService: PresenceService
   ) {
     this.dashboardState = this.screenService.dashboardState;
     this.screenSize$ = this.screenService.screenSize$;
-
     this.user$ = this.userUid$.pipe(
       filter((uid): uid is string => !!uid),
       switchMap((uid) =>
@@ -79,24 +78,24 @@ export class UserListItemComponent implements OnDestroy {
               delayWhen(() => timer(100)),
               takeWhile((_, i) => i < 4)
             )
-          ),
-          filter((user): user is UserInterface => !!user)
+          ), filter((user): user is UserInterface => !!user)
         )
-      ),
-      shareReplay({ bufferSize: 1, refCount: true })
+      ), shareReplay({ bufferSize: 1, refCount: true })
     );
-
-    this.currentUserId$ = this.authService.currentUser$.pipe(
-      map((u) => u?.uid ?? null)
-    );
-
+    this.currentUserId$ = this.authService.currentUser$.pipe(map((u) => u?.uid ?? null));
     this.user$
       .pipe(takeUntil(this.destroy$))
       .subscribe((u) => (this.lastUserSnapshot = u));
-
     this.currentUserId$
       .pipe(takeUntil(this.destroy$))
       .subscribe((id) => (this.currentUserId = id));
+  }
+
+  ngOnInit() {
+    this.currentStatus$ = this.userUid$.pipe(
+      filter((uid): uid is string => !!uid),
+      switchMap((uid) => this.presenceService.getUserStatus(uid))
+    );
   }
 
   ngOnDestroy() {
@@ -120,7 +119,7 @@ export class UserListItemComponent implements OnDestroy {
    * - Opens the profile overlay if `showProfile` or `inHeaderChat` is true.
    * - Otherwise, navigates to the chat with the selected user.
    * Does nothing if the current user ID is not set, `doNothing` is true, or the last user snapshot is missing.
-   */ 
+   */
   async choiceBetweenNavigateAndProfile() {
     if (!this.currentUserId || this.doNothing || !this.lastUserSnapshot) return;
     if (this.isInSearchResultsCurrentPostInput) {
@@ -130,8 +129,6 @@ export class UserListItemComponent implements OnDestroy {
         this.lastUserSnapshot.uid,
         this.currentUserId
       );
-    } else {
-      this.pickOutAndNavigateToChat();
-    }
+    } else this.pickOutAndNavigateToChat();
   }
 }

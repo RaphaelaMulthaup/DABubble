@@ -69,7 +69,8 @@ section {
 .overlay,
 .overlay-right,
 .overlay-left {
-  width: clamp(17.5rem, 6.3889rem + 55.5556vw, 23.75rem);
+  // width: clamp(17.5rem, 6.3889rem + 55.5556vw, 23.75rem);
+  max-width: 510px;
 }
 
 .overlay.show {
