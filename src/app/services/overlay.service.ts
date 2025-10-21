@@ -14,6 +14,7 @@ import { OverlayData } from '../shared/models/overlay.data.interface';
 import { debounceTime, fromEvent, Subject, takeUntil } from 'rxjs';
 import { BackdropType } from '../shared/types/overlay-backdrop.type';
 import { OverlayPositionInterface } from '../shared/models/overlay.position.interface';
+import { ScreenService } from './screen.service';
 
 @Injectable({
   providedIn: 'root',
@@ -119,9 +120,7 @@ export class OverlayService {
     const componentRef = this.overlayRef?.attach(portal)!;
     if (data) Object.assign(componentRef.instance, data);
     this.handleDetach(this.overlayRef, destroy$, afterClosed$, backdropClick$);
-    // fromEvent(window, 'resize')
-      // .pipe(debounceTime(150), takeUntil(this.overlayRef.detachments()))
-      // .subscribe(() => this.closeAll());
+    this.handleWindowResize(this.overlayRef!);
     return {
       ref: componentRef,
       overlayRef: this.overlayRef,
@@ -257,6 +256,23 @@ export class OverlayService {
         destroy$.next();
         destroy$.complete();
       });
+  }
+
+  /**
+   * Handles window resize events and closes all overlays on non-touch devices.
+   * 
+   * @param overlayRef - The overlay reference to monitor for detachment
+   */
+  handleWindowResize(overlayRef: OverlayRef) {
+    fromEvent(window, 'resize')
+      .pipe(debounceTime(150), takeUntil(overlayRef.detachments()))
+      .subscribe(() => {
+        const isTouchDevice =
+          'ontouchstart' in window ||
+          navigator.maxTouchPoints > 0 ||
+          (navigator as any).msMaxTouchPoints > 0;
+        if (!isTouchDevice) this.closeAll();
+    });
   }
 
   /**
