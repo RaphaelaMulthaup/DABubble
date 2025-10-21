@@ -48,15 +48,14 @@ export class SearchBarComponent extends BaseSearchDirective implements OnInit, O
   override destroy$ = new Subject<void>();
   private searchOverlayRef: any;
   firstFocusHappened: boolean = false;
-  searchResultsExisting$ = new BehaviorSubject<boolean>(true);
+  searchResultsExisting$ = new BehaviorSubject<boolean>(false);
   groupedResults = computed(() => {
     const res = this.results();
     const grouped: any[] = [];
     const chatMap = this.groupChatMessages(res);
     const channelMap = this.groupChannelMessages(res);
     for (const item of res) {
-      if (item.type !== 'chatMessage' && item.type !== 'channelMessage')
-        grouped.push(item);
+      if (item.type !== 'chatMessage' && item.type !== 'channelMessage') grouped.push(item);
     }
     chatMap.forEach((value) => grouped.push({ type: 'chatGroup', ...value }));
     channelMap.forEach((value) =>

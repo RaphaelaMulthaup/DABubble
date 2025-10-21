@@ -256,6 +256,15 @@ h4 {
   box-shadow: 0px 6px 10px 0px #00000033;
 }
 
+.link {
+  color: var(--color-purple-light);
+  cursor: pointer;
+
+  &:hover {
+    color: var(--color-purple-medium);
+  }
+}
+
 .name-tag {
   font-weight: 600;
   font-size: 18px;
@@ -403,13 +412,11 @@ h4 {
   .btn-primary:hover,
   .btn-secondary:hover,
   .btn-tertiary:hover,
-  .minimize:hover,
   .btn-dropdown,
-  .btn-dropdown div,
-  .add-reaction-btn:hover {
+  .btn-dropdown div {
     color: inherit !important;
     background-color: inherit !important;
-    //background-image: inherit !important;
+    background-image: inherit !important;
   }
 }
 
@@ -418,13 +425,10 @@ h4 {
   .btn-primary:hover,
   .btn-secondary:hover,
   .btn-tertiary:hover,
-  .minimize:hover,
   .btn-dropdown,
-  .btn-dropdown div,
-  .add-reaction-btn:hover {
+  .btn-dropdown div {
     color: inherit !important;
     background-color: inherit !important;
-    //background-image: inherit !important;
+    background-image: inherit !important;
   }
 }
-

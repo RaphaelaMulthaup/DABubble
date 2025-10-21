@@ -31,12 +31,9 @@
 
 .reset-password-link {
   margin: 0px 0px 13px 0px;
-  color: var(--color-purple-light);
-  cursor: pointer;
   padding: 5px 15px;
   border-radius: 30px;
   &:hover {
-    color: var(--color-purple-medium);
     font-weight: 500;
     background-color: var(--color-purple-white);
   }

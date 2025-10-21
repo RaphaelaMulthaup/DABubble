@@ -36,7 +36,7 @@ export class IntroComponent implements OnInit {
 
     setTimeout(() => {
       this.changeColor();
-    }, 2500);
+    }, 3500);
   }
 
   /**
