@@ -5,7 +5,6 @@ import { OverlayService } from './services/overlay.service';
 
 import { PresenceService } from './services/presence.service';
 import { Auth, onAuthStateChanged } from '@angular/fire/auth';
-import { signOut } from '@angular/fire/auth';
 import { AuthService } from './services/auth.service';
 
 @Component({
@@ -44,13 +43,13 @@ export class AppComponent {
       };
       const forcedClose = await this.presenceService.checkForcedClose(user);
       if (forcedClose) {
-        await this.presenceService.setOfflineSync(user);
+        await this.presenceService.setOffline(user);
         await this.authService.logout();
         return;
       }
         this.checkingPresence = false; 
-
       await this.presenceService.initPresence(user);
+
     });
 }
 
