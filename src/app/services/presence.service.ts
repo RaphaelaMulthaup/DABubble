@@ -8,51 +8,52 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class PresenceService {
+  private ONLINE_TIMEOUT = 5000;
   constructor(private firestore: Firestore , private db: Database,  private zone: NgZone){}
 
   async initPresence(user:any){
+    if(!user) return;
+
+
+    const statusRef = ref(this.db, `/status/${user.uid}`);
     const userRef = doc(this.firestore, `users/${user.uid}`);
 
-    if(!user) return;
-    const statusRef = ref(this.db, `/status/${user.uid}`);
-    const snapshot = await get(statusRef);
-    const forcedClose = snapshot.exists() && snapshot.val().forcedClose === true;
-    if (forcedClose) return; 
 
-        await set(statusRef, {
+    // const snapshot = await get(statusRef);
+    // const forcedClose = snapshot.exists() && snapshot.val().forcedClose === true;
+
+    // if (forcedClose) return; 
+    await set(statusRef, {
       state: 'online',
       forcedClose: false,
-      lastChanged: rtdbTimestamp()
+      lastChanged: Date.now()
     });
-    
-          onDisconnect(statusRef).set({
+
+        await updateDoc(userRef, {
+      active: true,
+      lastActive: serverTimestamp()
+    });
+
+    onDisconnect(statusRef).set({
       state: 'offline',
       forcedClose: true,
-      lastChanged: rtdbTimestamp()
+      lastChanged: Date.now()
     });
-
   }
 
-  setOffline(user:any){
+  async setOffline(user:any){
     if(!user) return;
     const statusRef = ref(this.db, `/status/${user.uid}`);
-    set(statusRef, { state: 'offline', forcedClose: false, lastChanged: rtdbTimestamp() });
     const userRef = doc(this.firestore, `users/${user.uid}`);
-    updateDoc(userRef, { active: false, lastActive: serverTimestamp() });
+
+    await set(statusRef, { state: 'offline', forcedClose: false, lastChanged: Date.now() });
+    await updateDoc(userRef, { active: false, lastActive: serverTimestamp() });
   }
 
-  setOfflineSync(user: any) {
-  if (!user) return;
-  const statusRef = ref(this.db, `/status/${user.uid}`);
-  set(statusRef, {
-    state: 'offline',
-    forcedClose: false,
-    lastChanged: rtdbTimestamp()
-  });
-      const userRef = doc(this.firestore, `users/${user.uid}`);
-      updateDoc(userRef, { active: false, lastActive: serverTimestamp() });
-  }
-
+   isUserOnline(status:any){
+    if(!status) return false;
+    return Date.now() -status.lastChanged < this.ONLINE_TIMEOUT;
+   }
 
 async checkForcedClose(user: any): Promise<boolean> {
   if (!user) return false;
@@ -61,14 +62,8 @@ async checkForcedClose(user: any): Promise<boolean> {
   if(!snapshot.exists()) return false;
 
   const val = snapshot.val();
-
-  const lastChanged = val.lastChanged;
   const now = Date.now();
-
-  if(val.forcedClose && now - lastChanged > 5000){
-    return true;
-  }
-  return false;
+  return val.forcedClose && now - val.lastChanged > 5000;
 }
 
   getUserStatus(uid: string): Observable<any> {

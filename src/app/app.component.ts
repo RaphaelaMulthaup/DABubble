@@ -40,13 +40,13 @@ export class AppComponent {
       };
       const forcedClose = await this.presenceService.checkForcedClose(user);
       if (forcedClose) {
-        await this.presenceService.setOfflineSync(user);
+        await this.presenceService.setOffline(user);
         await this.authService.logout();
         return;
       }
-      this.checkingPresence = false; 
-
+        this.checkingPresence = false; 
       await this.presenceService.initPresence(user);
+
     });
 }
 
