@@ -31,8 +31,8 @@ import { DashboardState } from '../../shared/types/dashboard-state.type';
   styleUrl: './create-channel-form.component.scss',
 })
 export class CreateChannelFormComponent {
-  @Output() close = new EventEmitter<void>(); // Event emitter to notify parent to close the form
-  @Output() submitForm = new EventEmitter<any>(); // Event emitter to notify parent when the form is submitted
+  @Output() close = new EventEmitter<void>();
+  @Output() submitForm = new EventEmitter<any>();
 
   createSub: any;
   dashboardState!: WritableSignal<DashboardState>;

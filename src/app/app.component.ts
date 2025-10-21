@@ -1,8 +1,7 @@
-import { Component, HostListener } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterOutlet, Router, NavigationStart } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { OverlayService } from './services/overlay.service';
-import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -14,21 +13,13 @@ export class AppComponent {
   title = 'DABubble';
 
   constructor(
-    private authService: AuthService,
-    private router: Router,
-    private overlayService: OverlayService
+    private overlayService: OverlayService,
+    private router: Router
   ) {}
 
   ngOnInit() {
     this.router.events.subscribe((event) => {
-      if (event instanceof NavigationStart) {
-        this.overlayService.closeAll();
-      }
+      if (event instanceof NavigationStart) this.overlayService.closeAll();
     });
   }
-
-  // @HostListener('window:beforeunload', ['$event'])
-  // onBeforeUnload(event: Event) {
-  //   this.authService.logout();
-  // }
 }

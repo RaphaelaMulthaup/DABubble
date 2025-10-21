@@ -7,7 +7,7 @@ import { HeaderSearchbarComponent } from '../../../dashboard-content/header-sear
 import { HeaderChatComponent } from './header-chat/header-chat.component';
 import { DashboardState } from '../../../../../shared/types/dashboard-state.type';
 import { HeaderThreadComponent } from './header-thread/header-thread.component';
-import { Observable, Subject, takeUntil } from 'rxjs';
+import { combineLatest, Observable, Subject, takeUntil } from 'rxjs';
 import { ScreenSize } from '../../../../../shared/types/screen-size.type';
 import { ScreenService } from '../../../../../services/screen.service';
 
@@ -24,69 +24,50 @@ import { ScreenService } from '../../../../../services/screen.service';
   styleUrl: './conversation-header.component.scss',
 })
 export class ConversationHeaderComponent {
-  dashboardState: WritableSignal<DashboardState>; // Holds the state for mobile dashboard
-  conversationType!: string; // Holds the type of conversation (e.g., chat, channel)
-  conversationId!: string; // Holds the ID of the current conversation
-  messageToReplyId: string | null = null; // Holds the ID of the message to reply to (if any)
   @Input() conversationWindowState?: 'conversation' | 'thread';
+  dashboardState: WritableSignal<DashboardState>;
   screenSize$!: Observable<ScreenSize>;
-  private destroy$ = new Subject<void>(); // Subject to handle unsubscribe logic on component destruction
+  destroy$ = new Subject<void>();
+  messageToReplyId: string | null = null;
+  conversationType!: string;
+  conversationId!: string;
 
   constructor(
-    public screenService: ScreenService,
-    private route: ActivatedRoute, // Angular route service to access route parameters
-    private router: Router, // Angular router service to navigate between routes
-    private conversationActiveRouterService: ConversationActiveRouterService // Custom service for handling active chat/router state
+    private conversationActiveRouterService: ConversationActiveRouterService,
+    private route: ActivatedRoute,
+    private router: Router,
+    public screenService: ScreenService
   ) {
-    this.dashboardState = this.screenService.dashboardState; // Inject the mobile state from the service
+    this.dashboardState = this.screenService.dashboardState;
     this.screenSize$ = this.screenService.screenSize$;
   }
 
-  /**
-   * ngOnInit lifecycle hook
-   * Subscribes to the route parameters (conversation type, conversation ID, message ID) and updates the component state.
-   */
   ngOnInit() {
-    // Subscribe to the conversation type from the route and update the component's state
-    this.conversationActiveRouterService
-      .getConversationType$(this.route)
-      .pipe(takeUntil(this.destroy$)) // Unsubscribe on component destroy
-      .subscribe((t) => {
-        this.conversationType = t; // Update the conversation type state
-      });
-
-    // Subscribe to the conversation ID from the route and update the component's state
-    this.conversationActiveRouterService
-      .getConversationId$(this.route)
-      .pipe(takeUntil(this.destroy$)) // Unsubscribe on component destroy
-      .subscribe((id) => {
-        this.conversationId = id; // Update the conversation ID state
-      });
-
-    // Subscribe to the message ID from the route and update the component's state
-    this.conversationActiveRouterService
-      .getMessageId$(this.route)
-      .pipe(takeUntil(this.destroy$)) // Unsubscribe on component destroy
-      .subscribe((msgId) => {
-        this.messageToReplyId = msgId; // Update the message reply ID state
+    combineLatest([
+      this.conversationActiveRouterService.getConversationType$(this.route),
+      this.conversationActiveRouterService.getConversationId$(this.route),
+      this.conversationActiveRouterService.getMessageId$(this.route),
+    ])
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(([type, id, msgId]) => {
+        this.conversationType = type;
+        this.conversationId = id;
+        this.messageToReplyId = msgId;
       });
   }
 
-  /**
-   * ngOnDestroy lifecycle hook
-   * Cleans up the subscriptions to prevent memory leaks.
-   */
   ngOnDestroy() {
-    this.destroy$.next(); // Notify all subscriptions to complete
-    this.destroy$.complete(); // Complete the subject to clean up resources
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   /**
-   * Redirects the user to a specific conversation based on the conversation type and ID
+   * Redirects the user to a specific conversation based on the conversation type and ID.
+   *
    * @param conversationType - Type of the conversation (e.g., 'chat', 'channel')
    * @param id - ID of the conversation to redirect to
    */
   redirectTo(conversationType: string, id: string) {
-    this.router.navigate(['/dashboard', conversationType, id]); // Navigate to the specified conversation
+    this.router.navigate(['/dashboard', conversationType, id]);
   }
 }
