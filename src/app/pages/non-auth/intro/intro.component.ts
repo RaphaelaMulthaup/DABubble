@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { count } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-intro',
@@ -14,68 +15,99 @@ export class IntroComponent implements OnInit {
   }
 
   /**
-   * Handles the intro-animation.
+   * Handles intro-animation
    */
   introAnimation() {
-    let logoContainer = document.querySelector('.logo-container');
-    this.moveLogo();
+    this.animationBlockFirst();
+    this.animationBlockSecond();
+  }
+
+  /**
+   * Handles first animation functions
+   */
+  animationBlockFirst() {
     setTimeout(() => {
-      logoContainer?.classList.add('container-transperent');
-      this.moveUp();
-      this.getFinalForm();
+      this.moveLogo();
+    }, 500);
+
+    setTimeout(() => {
+      this.moveSpan();
+    }, 1500);
+
+    setTimeout(() => {
+      this.changeColor();
     }, 2500);
   }
 
   /**
-   * Moves logo to the left and calls function "moveSpan"
+   * Handles following animation functions
    */
-  moveLogo() {
-    let animatedLogo = document.querySelector('.animated-logo');
-    setTimeout(() => {
-      animatedLogo?.classList.add('expand');
-      this.moveSpan();
-    }, 500);
-  }
-
-  /**
-   * Name span appers from the left side
-   */
-  moveSpan() {
-    let animatName = document.querySelector('.animat-name');
-
-    setTimeout(() => {
-      animatName?.classList.add('show');
-    }, 1000);
-  }
-
-  /**
-   * Moves the now complete logo to the final position
-   */
-  moveUp() {
-    let animatedLogo = document.querySelector('.animated-logo');
-    animatedLogo?.classList.add('moveUp');
-    animatedLogo?.classList.add('addMargin');
-
-    this.changeColor();
-  }
-
-  /**
-   * Let logo stay in final position.
-   */
-  getFinalForm() {
+  animationBlockSecond() {
     let logoContainer = document.querySelector('.logo-container');
 
     setTimeout(() => {
-      logoContainer?.classList.add('logo-container-final');
-      logoContainer?.classList.add('final-container');
-    }, 1000);
+      logoContainer?.classList.add('container-transperent');
+      this.addMaxWidth();
+    }, 3500);
+
+    setTimeout(() => {
+      this.moveUp();
+    }, 3500);
+    
+    setTimeout(() => {
+      this.finalForm();
+    }, 5000);
   }
 
   /**
-   * Changes span color from white to black
+   * Moves logo aside and generates space for name span
+   */
+  moveLogo() {
+    let animatedLogo = document.querySelector('.animated-logo');
+    animatedLogo?.classList.add('expand');
+  }
+
+  /**
+   * Moves span from left in place
+   */
+  moveSpan() {
+    let animatName = document.querySelector('.animat-name');
+    animatName?.classList.add('show');
+  }
+
+  /**
+   * Changes name span color for final apperence
    */
   changeColor() {
-    let name = document.querySelector('.animat-name');
-    name?.classList.add('name-black');
+    let animatName = document.querySelector('.animat-name');
+    animatName?.classList.add('name-black');
+  }
+
+  /**
+   * Moves logo&span to the final position
+   */
+  moveUp() {
+    let animatedLogo = document.querySelector('.animated-logo');
+
+    animatedLogo?.classList.add('moveUp');
+    animatedLogo?.classList.add('addMargin');
+  }
+
+  /**
+   * Adds max width 
+   */
+  addMaxWidth() {
+    let logoContainer = document.querySelector('.logo-container');
+    logoContainer?.classList.add('addMaxWidth');
+  }
+
+  /**
+   * Adds final apperence of logo&span. Size fits final form.
+   */
+  finalForm() {
+    let logoContainer = document.querySelector('.logo-container');
+
+    logoContainer?.classList.add('logo-container-final');
+    logoContainer?.classList.add('final-container');
   }
 }

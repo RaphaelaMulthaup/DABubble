@@ -1,4 +1,5 @@
 @use "tailwindcss" as *;
+@import "./app/shared/styles/fonts.scss";
 
 @mixin dFlex($jc: center, $ai: center, $g: 0) {
   display: flex;
@@ -76,26 +77,6 @@ $breakpoints: (
   border-radius: 5px;
 }
 
-@include respond-to(xs) {
-  button:hover,
-  .btn-dropdown,
-  .btn-dropdown div {
-    color: inherit !important;
-    background-color: inherit !important;
-    background-image: inherit !important;
-  }
-}
-
-@media (hover: none) {
-  button:hover,
-  .btn-dropdown,
-  .btn-dropdown div {
-    color: inherit !important;
-    background-color: inherit !important;
-    background-image: inherit !important;
-  }
-}
-
 body {
   height: 100dvh;
 }
@@ -115,6 +96,7 @@ button {
   background-color: var(--color-purple-dark);
   font-size: 18px;
   font-weight: 700;
+  transition: 0.2s;
   @include dFlex($g: 10px);
 
   &:hover {
@@ -135,6 +117,7 @@ button {
   background-color: var(--color-white);
   font-size: 18px;
   font-weight: 700;
+  transition: 0.2s;
 
   &:hover {
     color: var(--color-white);
@@ -156,6 +139,7 @@ button {
   width: 40px;
   height: 40px;
   border-radius: 50%;
+  transition: 0.2s;
 
   &:hover {
     background-color: var(--color-purple-white);
@@ -423,130 +407,33 @@ h4 {
   border-radius: 0 !important;
 }
 
-@font-face {
-  font-display: swap;
-  font-family: "Nunito";
-  font-style: normal;
-  font-weight: 200;
-  src: url("./assets/fonts/nunito-v31-latin-200.woff2") format("woff2");
+@include respond-to('959') {
+  button:hover,
+  .btn-primary:hover,
+  .btn-secondary:hover,
+  .btn-tertiary:hover,
+  .minimize:hover,
+  .btn-dropdown,
+  .btn-dropdown div,
+  .add-reaction-btn:hover {
+    color: inherit !important;
+    background-color: inherit !important;
+    //background-image: inherit !important;
+  }
 }
 
-@font-face {
-  font-display: swap;
-  font-family: "Nunito";
-  font-style: italic;
-  font-weight: 200;
-  src: url("./assets/fonts/nunito-v31-latin-200italic.woff2") format("woff2");
+@media (hover: none) {
+  button:hover,
+  .btn-primary:hover,
+  .btn-secondary:hover,
+  .btn-tertiary:hover,
+  .minimize:hover,
+  .btn-dropdown,
+  .btn-dropdown div,
+  .add-reaction-btn:hover {
+    color: inherit !important;
+    background-color: inherit !important;
+    //background-image: inherit !important;
+  }
 }
 
-@font-face {
-  font-display: swap;
-  font-family: "Nunito";
-  font-style: normal;
-  font-weight: 300;
-  src: url("./assets/fonts/nunito-v31-latin-300.woff2") format("woff2");
-}
-
-@font-face {
-  font-display: swap;
-  font-family: "Nunito";
-  font-style: italic;
-  font-weight: 300;
-  src: url("./assets/fonts/nunito-v31-latin-300italic.woff2") format("woff2");
-}
-
-@font-face {
-  font-display: swap;
-  font-family: "Nunito";
-  font-style: normal;
-  font-weight: 400;
-  src: url("./assets/fonts/nunito-v31-latin-regular.woff2") format("woff2");
-}
-
-@font-face {
-  font-display: swap;
-  font-family: "Nunito";
-  font-style: italic;
-  font-weight: 400;
-  src: url("./assets/fonts/nunito-v31-latin-italic.woff2") format("woff2");
-}
-
-@font-face {
-  font-display: swap;
-  font-family: "Nunito";
-  font-style: normal;
-  font-weight: 500;
-  src: url("./assets/fonts/nunito-v31-latin-500.woff2") format("woff2");
-}
-
-@font-face {
-  font-display: swap;
-  font-family: "Nunito";
-  font-style: italic;
-  font-weight: 500;
-  src: url("./assets/fonts/nunito-v31-latin-500italic.woff2") format("woff2");
-}
-
-@font-face {
-  font-display: swap;
-  font-family: "Nunito";
-  font-style: normal;
-  font-weight: 600;
-  src: url("./assets/fonts/nunito-v31-latin-600.woff2") format("woff2");
-}
-
-@font-face {
-  font-display: swap;
-  font-family: "Nunito";
-  font-style: italic;
-  font-weight: 600;
-  src: url("./assets/fonts/nunito-v31-latin-600italic.woff2") format("woff2");
-}
-
-@font-face {
-  font-display: swap;
-  font-family: "Nunito";
-  font-style: normal;
-  font-weight: 700;
-  src: url("./assets/fonts/nunito-v31-latin-700.woff2") format("woff2");
-}
-
-@font-face {
-  font-display: swap;
-  font-family: "Nunito";
-  font-style: italic;
-  font-weight: 700;
-  src: url("./assets/fonts/nunito-v31-latin-700italic.woff2") format("woff2");
-}
-
-@font-face {
-  font-display: swap;
-  font-family: "Nunito";
-  font-style: normal;
-  font-weight: 800;
-  src: url("./assets/fonts/nunito-v31-latin-800.woff2") format("woff2");
-}
-
-@font-face {
-  font-display: swap;
-  font-family: "Nunito";
-  font-style: italic;
-  font-weight: 800;
-  src: url("./assets/fonts/nunito-v31-latin-800italic.woff2") format("woff2");
-}
-
-@font-face {
-  font-display: swap;
-  font-family: "Nunito";
-  font-style: normal;
-  font-weight: 900;
-  src: url("./assets/fonts/nunito-v31-latin-900.woff2") format("woff2");
-}
-
-@font-face {
-  font-display: swap;
-  font-family: "Nunito";
-  font-style: italic;
-  font-weight: 900;
-  src: url("./assets/fonts/nunito-v31-latin-900italic.woff2") format("woff2");
-}
