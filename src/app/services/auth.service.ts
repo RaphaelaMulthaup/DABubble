@@ -1,42 +1,8 @@
 import { Injectable } from '@angular/core';
-import {
-  Auth,
-  authState,
-  createUserWithEmailAndPassword,
-  signOut,
-  User,
-} from '@angular/fire/auth';
-import {
-  signInWithEmailAndPassword,
-  signInAnonymously,
-  deleteUser,
-  getAuth,
-  signInWithPopup,
-  GoogleAuthProvider,
-  sendPasswordResetEmail,
-} from 'firebase/auth';
-import {
-  Firestore,
-  arrayUnion,
-  deleteDoc,
-  doc,
-  docData,
-  getDoc,
-  setDoc,
-  updateDoc,
-} from '@angular/fire/firestore';
-import {
-  catchError,
-  distinctUntilChanged,
-  concatMap,
-  from,
-  map,
-  Observable,
-  of,
-  shareReplay,
-  switchMap,
-  tap,
-} from 'rxjs';
+import { Auth, authState, createUserWithEmailAndPassword, signOut, User } from '@angular/fire/auth';
+import { signInWithEmailAndPassword, signInAnonymously, deleteUser, getAuth, signInWithPopup, GoogleAuthProvider, sendPasswordResetEmail } from 'firebase/auth';
+import { Firestore, arrayUnion, deleteDoc, doc, docData, getDoc, setDoc, updateDoc } from '@angular/fire/firestore';
+import { catchError, distinctUntilChanged, concatMap, from, map, Observable, of, shareReplay, switchMap, tap } from 'rxjs';
 import { UserInterface } from '../shared/models/user.interface';
 import { UserService } from './user.service';
 import { ScreenService } from './screen.service';
@@ -49,30 +15,41 @@ import { ResetDemoChannelService } from './reset-demo-channel.service';
   providedIn: 'root',
 })
 export class AuthService {
-  private provider = new GoogleAuthProvider();
-
-  /** Reaktives Observable für den aktuellen Firestore-User */
-  public currentUser$: Observable<UserInterface | null>;
-
-  /** Optional synchroner Zugriff */
-  private currentUserSnapshot: UserInterface | null = null;
+  provider = new GoogleAuthProvider();
+  currentUser$: Observable<UserInterface | null>;
+  currentUserSnapshot: UserInterface | null = null;
   channelEntwicklerteamDocRef: DocumentReference<DocumentData>;
+
   constructor(
     private auth: Auth,
     private firestore: Firestore,
-    private userService: UserService,
-    private userDemoSetupService: UserDemoSetupService,
     private resetDemoChannelService: ResetDemoChannelService,
-    private screenService: ScreenService
+    private screenService: ScreenService,
+    private userDemoSetupService: UserDemoSetupService,
+    private userService: UserService
   ) {
     this.currentUser$ = this.initCurrentUserStream();
     this.setupGuestLogoutOnUnload();
-    this.channelEntwicklerteamDocRef = doc(
-      this.firestore,
-      `channels/nZmkj8G288La1CqafnLP`
-    );
+    this.channelEntwicklerteamDocRef = doc( this.firestore, `channels/nZmkj8G288La1CqafnLP` );
   }
 
+  /**
+   * Gets the current authenticated user snapshot.
+   */
+  get currentUser(): UserInterface | null {
+    return this.currentUserSnapshot;
+  }
+
+  /**
+   * Gets the current user ID or null if not authenticated.
+   */
+  getCurrentUserId(): string | null {
+    return this.currentUserSnapshot?.uid ?? null;
+  }
+
+  /**
+   * Initializes a reactive stream for the current user based on auth state.
+   */
   initCurrentUserStream() {
     return authState(this.auth).pipe(
       switchMap((firebaseUser) => this.handleAuthState(firebaseUser)),
@@ -82,6 +59,11 @@ export class AuthService {
     );
   }
 
+  /**
+   * Handles Firebase authentication state changes.
+   *
+   * @param firebaseUser - The current Firebase user or null
+   */
   handleAuthState(firebaseUser: User | null) {
     if (!firebaseUser) return of(null);
     const userRef = doc(this.firestore, `users/${firebaseUser.uid}`);
@@ -95,6 +77,9 @@ export class AuthService {
     );
   }
 
+  /**
+   * Sets up automatic guest logout when the window unloads.
+   */
   setupGuestLogoutOnUnload() {
     window.addEventListener('beforeunload', () => {
       const user = this.auth.currentUser;
@@ -107,30 +92,25 @@ export class AuthService {
       }
     });
   }
-
-  /** Synchronously get current Firestore User */
-  get currentUser(): UserInterface | null {
-    return this.currentUserSnapshot;
-  }
-
-  /** Get current Firebase Auth user ID or null */
-  getCurrentUserId(): string | null {
-    return this.currentUserSnapshot?.uid ?? null;
-  }
-
-  /** Ensure Firestore document for user exists */
+  /**
+   * Ensures that a Firestore user document exists for the given Firebase user.
+   *
+   * @param user - The Firebase user
+   */
   async ensureUserDocExists(user: User): Promise<void> {
     const userRef = doc(this.firestore, `users/${user.uid}`);
     const snap = await getDoc(userRef);
-
-    if (!snap.exists()) {
-      await this.createOrUpdateUserInFirestore(
-        user,
-        (user.providerData[0]?.providerId as any) ?? 'password'
-      );
-    }
+    if (!snap.exists()) await this.createOrUpdateUserInFirestore( user, (user.providerData[0]?.providerId as any) ?? 'password' );
   }
 
+  /**
+   * Creates or updates a user document in Firestore.
+   *
+   * @param user - The Firebase user
+   * @param provider T- he authentication provider used
+   * @param name - Optional display name
+   * @param photo - Optional photo URL
+   */
   async createOrUpdateUserInFirestore(
     user: User,
     provider: 'google.com' | 'password' | 'anonymous',
@@ -144,6 +124,15 @@ export class AuthService {
       : await this.createNewUser(user, provider, name, photo, ref);
   }
 
+  /**
+   * Creates a new user document and sets up demo environment.
+   *
+   * @param user - The Firebase user
+   * @param provider - The authentication provider used
+   * @param name - Optional display name
+   * @param photo - Optional photo URL
+   * @param ref - Optional Firestore document reference
+   */
   async createNewUser(
     user: User,
     provider: 'google.com' | 'password' | 'anonymous',
@@ -156,6 +145,14 @@ export class AuthService {
     await this.setupDemoEnvironment(user.uid);
   }
 
+  /**
+   * Builds the user data object to store in Firestore.
+   *
+   * @param user - The Firebase user
+   * @param provider - The authentication provider used
+   * @param name - Optional display name
+   * @param photo - Optional photo URL
+   */
   buildUserData(
     user: User,
     provider: 'google.com' | 'password' | 'anonymous',
@@ -174,30 +171,55 @@ export class AuthService {
     };
   }
 
+  /**
+   * Sets up the demo environment for a user.
+   *
+   * @param uid - The user ID
+   */
   async setupDemoEnvironment(uid: string) {
     const userData = await this.getUserData(uid);
     await this.addUserToCorrectChannel(uid, userData.authProvider);
     await this.userDemoSetupService.addDirectChatToTeam(uid);
   }
 
-  private async getUserData(uid: string): Promise<UserInterface> {
+  /**
+   * Retrieves user data from Firestore.
+   *
+   * @param uid - The user ID
+   */
+  async getUserData(uid: string): Promise<UserInterface> {
     const userRef = doc(this.firestore, `users/${uid}`);
     const snap = await getDoc(userRef);
     return snap.data() as UserInterface;
   }
 
-  private async addUserToCorrectChannel(uid: string, authProvider: string) {
-    const ref =
-      authProvider === 'anonymous'
+  /**
+   * Adds a user to the correct demo or regular channel.
+   *
+   * @param uid - The user ID
+   * @param authProvider - The authentication provider used
+   */
+  async addUserToCorrectChannel(uid: string, authProvider: string) {
+    const ref = authProvider === 'anonymous'
         ? this.resetDemoChannelService.channelEntwicklerteamGuestsDocRef
         : this.channelEntwicklerteamDocRef;
     await updateDoc(ref, { memberIds: arrayUnion(uid) });
   }
 
+  /**
+   * Reactivates an existing user by setting them active.
+   *
+   * @param userRef - Firestore document reference for the user
+   */
   async reactivateExistingUser(userRef: DocumentReference) {
     await updateDoc(userRef, { active: true });
   }
-  /** Register new user */
+
+  /**
+   * Registers a new user account.
+   *
+   * @param userData - The user registration data
+   */
   register(userData: UserToRegisterInterface): Observable<void> {
     return this.createUserInAuth(userData).pipe(
       concatMap((user) => this.saveRegisteredUser(user, userData)),
@@ -205,6 +227,11 @@ export class AuthService {
     );
   }
 
+  /**
+   * Creates a new user in Firebase Authentication.
+   *
+   * @param userData - The user registration data
+   */
   createUserInAuth(userData: UserToRegisterInterface): Observable<User> {
     const { email, password } = userData;
     return from(
@@ -212,10 +239,13 @@ export class AuthService {
     ).pipe(map((res) => res.user));
   }
 
-  saveRegisteredUser(
-    user: User,
-    data: UserToRegisterInterface
-  ): Observable<void> {
+  /**
+   * Saves a registered user's data in Firestore.
+   *
+   * @param user - The Firebase user
+   * @param data - The user registration data
+   */
+  saveRegisteredUser( user: User, data: UserToRegisterInterface): Observable<void> {
     return from(
       this.createOrUpdateUserInFirestore(
         user,
@@ -226,7 +256,12 @@ export class AuthService {
     ).pipe(map(() => void 0));
   }
 
-  /** Login with email/password */
+  /**
+   * Logs in a user with email and password.
+   *
+   * @param email - The user's email
+   * @param password -  The user's password
+   */
   login(email: string, password: string): Observable<void> {
     const promise = signInWithEmailAndPassword(this.auth, email, password).then(
       async (response) => {
@@ -237,7 +272,9 @@ export class AuthService {
     return from(promise);
   }
 
-  /** Login as guest */
+  /**
+   * Logs in as a guest user.
+   */
   loginAsGuest(): Observable<void> {
     const promise = signInAnonymously(this.auth)
       .then(async (credential) => {
@@ -252,7 +289,9 @@ export class AuthService {
     return from(promise) as Observable<void>;
   }
 
-  /** Login with Google */
+  /**
+   * Logs in a user using Google authentication.
+   */
   loginWithGoogle(): Observable<void> {
     const auth = getAuth();
     const promise = signInWithPopup(auth, this.provider)
@@ -265,7 +304,9 @@ export class AuthService {
     return from(promise) as Observable<void>;
   }
 
-  /** Logout and update Firestore */
+  /**
+   * Logs out the current user, deleting guest data if necessary.
+   */
   async logout() {
     const user = this.auth.currentUser;
     if (!user) return signOut(this.auth);
@@ -279,6 +320,12 @@ export class AuthService {
     }
   }
 
+  /**
+   * Logs out and deletes a guest user account.
+   *
+   * @param user - The guest user
+   * @param userRef - Firestore document reference for the user
+   */
   async logoutGuest(user: User, userRef: DocumentReference) {
     await deleteDoc(userRef)
       .catch(() => {})
@@ -289,20 +336,32 @@ export class AuthService {
     await this.userDemoSetupService.deleteChats(user.uid);
   }
 
-  /** Send password reset email */
+  /**
+   * Sends a password reset email.
+   *
+   * @param email - The user's email
+   */
   sendPasswordResetEmail(email: string): Promise<void> {
     const auth = getAuth();
     return sendPasswordResetEmail(auth, email);
   }
 
-  /** Update user profile picture */
+  /**
+   * Updates the user's photo URL in Firestore.
+   *
+   * @param photoUrl - The new photo URL
+   */
   updateUserPhotoUrl(photoUrl: string): Promise<void> {
     const user = this.auth.currentUser;
     const userRef = doc(this.firestore, `users/${user?.uid}`);
     return updateDoc(userRef, { photoUrl });
   }
 
-  /** Update user name */
+  /**
+   * Updates the user's display name in Firestore.
+   *
+   * @param newName - The new display name
+   */
   updateUserName(newName: string): Promise<void> {
     const user = this.auth.currentUser;
     const userRef = doc(this.firestore, `users/${user?.uid}`);
