@@ -92,6 +92,7 @@ export class AuthService {
       }
     });
   }
+  
   /**
    * Ensures that a Firestore user document exists for the given Firebase user.
    *
@@ -100,14 +101,13 @@ export class AuthService {
   async ensureUserDocExists(user: User): Promise<void> {
     const userRef = doc(this.firestore, `users/${user.uid}`);
     const snap = await getDoc(userRef);
-    if (!snap.exists()) await this.createOrUpdateUserInFirestore( user, (user.providerData[0]?.providerId as any) ?? 'password' );
   }
 
   /**
    * Creates or updates a user document in Firestore.
    *
    * @param user - The Firebase user
-   * @param provider T- he authentication provider used
+   * @param provider - The authentication provider used
    * @param name - Optional display name
    * @param photo - Optional photo URL
    */
