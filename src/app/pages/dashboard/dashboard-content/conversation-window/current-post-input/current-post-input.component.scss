@@ -91,6 +91,10 @@
       &:hover {
         background-image: url("./../../../../../../assets/img/send-icon-hover.svg");
       }
+      
+      @include respond-to('959') {
+        background-image: url("./../../../../../../assets/img/send-icon-hover.svg") !important;
+      }
     }
   }
 }

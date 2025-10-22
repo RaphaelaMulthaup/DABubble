@@ -38,6 +38,13 @@
       transform: scale(1.05);
     }
   }
+
+  @include respond-to('959') {
+    &:hover{
+      background-color: var(--color-purple-white) !important;
+      color: var(--color-purple-dark) !important;
+    }
+  }
 }
 
 .submit-btns {
@@ -55,4 +62,11 @@
     font-weight: 500;
     background-color: var(--color-purple-white);
   }
+
+  @include respond-to('959') {
+    font-weight: 400 !important;
+    color: inherit !important;
+    background-color: inherit !important;
+  }
 }
+

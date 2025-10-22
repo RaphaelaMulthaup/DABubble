@@ -106,6 +106,17 @@ button {
   &:disabled {
     background-color: var(--color-gray);
   }
+
+  @include respond-to('959') {
+
+    &:hover{
+      background-color: var(--color-purple-dark) !important;
+    }
+
+    &:disabled {
+      background-color: var(--color-gray) !important;
+    }
+  }
 }
 
 .btn-secondary {
@@ -133,6 +144,23 @@ button {
     color: var(--color-white);
     background-color: var(--color-purple-dark);
   }
+
+  @include respond-to('959') {
+    
+    &:disabled{
+      border: 1px var(--color-white) !important;
+    }
+
+    &:focus{
+      color: var(--color-white) !important;
+      background-color: var(--color-purple-dark) !important;
+    }
+
+    &:hover{
+      background-color: var(--color-white) !important;
+      color: var(--color-purple-dark) !important;
+    }
+  }
 }
 
 .btn-tertiary {
@@ -147,6 +175,10 @@ button {
 
   img {
     justify-self: center;
+  }
+
+  @include respond-to('959') {
+    background-color: inherit !important;
   }
 }
 
@@ -170,6 +202,7 @@ input {
   padding: clamp(0.5rem, 0.1875rem + 1.5625vw, 1.125rem)
     clamp(1rem, 0.5rem + 2.5vw, 2rem);
   background-color: var(--color-purple-white);
+  transition: 0.2s;
 
   &:hover {
     border: 1px solid var(--color-gray);
@@ -265,6 +298,10 @@ h4 {
 
   &:hover {
     color: var(--color-purple-medium);
+  }
+
+  @include respond-to('959') {
+    color: inherit !important;
   }
 }
 
@@ -412,10 +449,16 @@ h4 {
 }
 
 // @include respond-to('959') {
-//   button:hover,
-//   .btn-primary:hover,
-//   .btn-secondary:hover,
-//   .btn-tertiary:hover,
+//   .btn-dropdown,
+//   .btn-dropdown div,
+//   .channel-list-item {
+//     color: inherit !important;
+//     background-color: inherit !important;
+//     background-image: inherit !important;
+//   }
+// }
+
+// @media (hover: none) {
 //   .btn-dropdown,
 //   .btn-dropdown div {
 //     color: inherit !important;
@@ -423,16 +466,3 @@ h4 {
 //     background-image: inherit !important;
 //   }
 // }
-
-@media (hover: none) {
-  button:hover,
-  .btn-primary:hover,
-  .btn-secondary:hover,
-  .btn-tertiary:hover,
-  .btn-dropdown,
-  .btn-dropdown div {
-    color: inherit !important;
-    background-color: inherit !important;
-    background-image: inherit !important;
-  }
-}
