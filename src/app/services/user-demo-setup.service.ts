@@ -8,6 +8,7 @@ import {
   getDocs,
   query,
   QueryDocumentSnapshot,
+  setDoc,
   updateDoc,
   where,
   writeBatch,
@@ -18,6 +19,7 @@ import { PostService } from './post.service';
 import { PostInterface } from '../shared/models/post.interface';
 import { ChannelInterface } from '../shared/models/channel.interface';
 import { async } from 'rxjs';
+import { ReactionsService } from './reactions.service';
 
 @Injectable({
   providedIn: 'root',
@@ -241,7 +243,28 @@ export class UserDemoSetupService {
           );
         }
       } else if (forthMessageId) {
+        const emoji = {
+          token: ':folded-hands:',
+          src: 'assets/img/emojis/folded-hands.svg',
+        };
+        const reactionRef = doc(
+          this.firestore,
+          `channels/${channelDocRef.id}/messages/${forthMessageId}/reactions/folded-hands`
+        );
 
+        await setDoc(reactionRef, {
+          emoji: { token: ':folded-hands:', src: 'assets/img/emojis/folded-hands.svg' },
+          users: ['5lntBSrRRUM9JB5AFE14z7lTE6n1'],
+        });
+
+        // Optional: hasReactions auf der Nachricht setzen
+        await updateDoc(
+          doc(
+            this.firestore,
+            `channels/${channelDocRef.id}/messages/${forthMessageId}`
+          ),
+          { hasReactions: true }
+        );
       }
     }
   }
