@@ -21,17 +21,13 @@ import { async, take } from 'rxjs';
 import { CHANNELANSWERS } from '../shared/constants/demo-channel-answers';
 import { CHANNELMESSAGES } from '../shared/constants/demo-channel-messages';
 import { CHATMESSAGES } from '../shared/constants/demo-chat-messages';
+import { DEVIDS } from '../shared/constants/demo-dev-ids';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserDemoSetupService {
-  devIds = [
-    'YMOQBS4sWIQoVbLI2OUphJ7Ruug2',
-    '5lntBSrRRUM9JB5AFE14z7lTE6n1',
-    'rUnD1S8sHOgwxvN55MtyuD9iwAD2',
-    'NxSyGPn1LkPV3bwLSeW94FPKRzm1',
-  ];
+  devIds = DEVIDS;
 
   directChatMessages: Record<
     string,
@@ -134,7 +130,10 @@ export class UserDemoSetupService {
         );
 
         await updateDoc(
-          doc( this.firestore, `channels/${channelDocRef.id}/messages/${lastMessageId}/answers/${answerId}`),
+          doc(
+            this.firestore,
+            `channels/${channelDocRef.id}/messages/${lastMessageId}/answers/${answerId}`
+          ),
           { createdAt: answer.createdAt }
         );
       }

@@ -1,0 +1,6 @@
+export const DEVIDS = [
+  'YMOQBS4sWIQoVbLI2OUphJ7Ruug2',
+  '5lntBSrRRUM9JB5AFE14z7lTE6n1',
+  'rUnD1S8sHOgwxvN55MtyuD9iwAD2',
+  'NxSyGPn1LkPV3bwLSeW94FPKRzm1',
+];
