@@ -17,7 +17,7 @@
 
     &:hover {
         filter: brightness(1);
-        @include respond-to('959') {
+        @media screen and (pointer: coarse) {
             filter: brightness(0);
         }
     }

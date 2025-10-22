@@ -39,11 +39,9 @@
     }
   }
 
-  @include respond-to('959') {
-    &:hover{
-      background-color: var(--color-purple-white) !important;
-      color: var(--color-purple-dark) !important;
-    }
+  @media screen and (pointer: coarse) {
+    background-color: var(--color-purple-white) !important;
+    color: var(--color-purple-dark) !important;
   }
 }
 
@@ -63,9 +61,9 @@
     background-color: var(--color-purple-white);
   }
 
-  @include respond-to('959') {
+  @media screen and (pointer: coarse) {
     font-weight: 400 !important;
-    color: inherit !important;
+    //color: inherit !important;
     background-color: inherit !important;
   }
 }
