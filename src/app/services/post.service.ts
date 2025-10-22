@@ -113,7 +113,7 @@ export class PostService {
     text: string,
     conversationType: string
   ) {
-    await this.sendPost(
+     const answerId = await this.sendPost(
       `${conversationType}s/${conversationId}/messages/${messageId}`,
       'answers',
       {
@@ -130,7 +130,7 @@ export class PostService {
       conversationId,
       messageId
     );
-    return of([]);
+    return answerId;
   }
 
   /**

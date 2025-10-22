@@ -17,7 +17,7 @@ import { ChatService } from './chat.service';
 import { PostService } from './post.service';
 import { PostInterface } from '../shared/models/post.interface';
 import { ChannelInterface } from '../shared/models/channel.interface';
-import { async } from 'rxjs';
+import { async, take } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -143,7 +143,7 @@ export class UserDemoSetupService {
     // Die gesamte Unterhaltung als Nachrichten im Channel einfügen
     const messages = [
       {
-        senderId: 'XbsVa8YOj8Nd9vztzX1kAQXrc7Z2',
+        senderId: 'YMOQBS4sWIQoVbLI2OUphJ7Ruug2',
         text: 'Wie wäre es, wenn wir beim eigenen User-List-Item noch ein "(Du)" hinzufügen, um den aktuellen Nutzer zu kennzeichnen?',
         createdAt: new Date('2025-10-24T09:05:00'),
       },
@@ -179,9 +179,9 @@ export class UserDemoSetupService {
       },
     ];
 
-    // Nachrichten im Channel erstellen
     let lastMessageId: string | null = null;
     let forthMessageId: string | null = null;
+
     for (const [index, msg] of messages.entries()) {
       const messageId = await this.postService.createMessage(
         channelDocRef.id,
@@ -204,44 +204,40 @@ export class UserDemoSetupService {
       } else if (index === 3) {
         forthMessageId = messageId;
       }
-      if (lastMessageId) {
-        const answers = [
-          {
-            senderId: '5lntBSrRRUM9JB5AFE14z7lTE6n1',
-            text: 'Montag klingt gut, wie viel Uhr?',
-            createdAt: new Date('2025-10-24T09:40:00'),
-          },
-          {
-            senderId: 'rUnD1S8sHOgwxvN55MtyuD9iwAD2',
-            text: 'Ich wäre ab 10 Uhr dabei!',
-            createdAt: new Date('2025-10-24T09:45:00'),
-          },
-          {
-            senderId: 'XbsVa8YOj8Nd9vztzX1kAQXrc7Z2',
-            text: 'Perfekt, dann planen wir 10 Uhr fest ein.',
-            createdAt: new Date('2025-10-24T09:50:00'),
-          },
-        ];
+    }
 
-        for (const answer of answers) {
-          const answerId = await this.postService.createAnswer(
-            channelDocRef.id,
-            lastMessageId,
-            answer.senderId,
-            answer.text,
-            'channel'
-          );
+    if (lastMessageId) {
+      const answers = [
+        {
+          senderId: '5lntBSrRRUM9JB5AFE14z7lTE6n1',
+          text: 'Montag klingt gut, wie viel Uhr?',
+          createdAt: new Date('2025-10-24T09:40:00'),
+        },
+        {
+          senderId: 'rUnD1S8sHOgwxvN55MtyuD9iwAD2',
+          text: 'Ich wäre ab 10 Uhr dabei!',
+          createdAt: new Date('2025-10-24T09:45:00'),
+        },
+        {
+          senderId: 'YMOQBS4sWIQoVbLI2OUphJ7Ruug2',
+          text: 'Perfekt, dann planen wir 10 Uhr fest ein.',
+          createdAt: new Date('2025-10-24T09:50:00'),
+        },
+      ];
 
-          await updateDoc(
-            doc(
-              this.firestore,
-              `channels/${channelDocRef.id}/messages/${lastMessageId}/answers/${answerId}`
-            ),
-            { createdAt: answer.createdAt }
-          );
-        }
-      } else if (forthMessageId) {
+      for (const answer of answers) {
+        const answerId = await this.postService.createAnswer(
+          channelDocRef.id,
+          lastMessageId,
+          answer.senderId,
+          answer.text,
+          'channel'
+        );
 
+        await updateDoc(
+          doc( this.firestore, `channels/${channelDocRef.id}/messages/${lastMessageId}/answers/${answerId}`),
+          { createdAt: answer.createdAt }
+        );
       }
     }
   }
