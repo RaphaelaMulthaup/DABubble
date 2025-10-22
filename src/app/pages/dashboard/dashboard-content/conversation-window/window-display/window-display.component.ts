@@ -235,11 +235,24 @@ export class WindowDisplayComponent implements OnInit {
     const previousChatId = this.currentConversationId;
     this.currentConversationId = newChatId;
     this.postInfo = newMessages;
+
     if (previousChatId && previousChatId !== newChatId) {
       this.initialScrollDone = false;
       this.loadingOlderMessages = false;
       this.tryDeleteEmptyChat(previousChatId);
-    }
+          setTimeout(() => this.scrollToLastMessage(), 0);
+             return;
+    } else if (!this.loadingOlderMessages && !this.initialScrollDone) {
+    // prima încărcare → scroll la bottom
+    setTimeout(() => this.scrollToLastMessage(), 0);
+    this.initialScrollDone = true;
+  }
+ const el = this.messagesContainer.nativeElement;
+
+    if (el.scrollTop === 0 && this.postInfo.length > 0 && !this.loadingOlderMessages) {
+    setTimeout(() => this.scrollToLastMessage(), 0);
+  }
+
   }
 
   /**

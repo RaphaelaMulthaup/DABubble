@@ -5,6 +5,7 @@ import { OverlayService } from './services/overlay.service';
 import { PresenceService } from './services/presence.service';
 import { Auth, onAuthStateChanged } from '@angular/fire/auth';
 import { AuthService } from './services/auth.service';
+import { doc } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-root',
@@ -40,6 +41,9 @@ export class AppComponent {
       };
       const forcedClose = await this.presenceService.checkForcedClose(user);
       if (forcedClose) {
+        if(user.isAnonymous){
+          await this.authService.setupGuestLogoutOnUnload();
+        }
         await this.presenceService.setOffline(user);
         await this.authService.logout();
         return;

@@ -38,6 +38,8 @@ app-displayed-post {
   padding-top: 16px;
   overflow-y: auto;
   border-radius: 30px;
+  display: flex;
+  flex-direction: column;
 }
 
 .messages-container-empty-view {

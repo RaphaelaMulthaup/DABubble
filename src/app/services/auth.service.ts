@@ -66,7 +66,7 @@ export class AuthService {
     private screenService: ScreenService
   ) {
     this.currentUser$ = this.initCurrentUserStream();
-    this.setupGuestLogoutOnUnload();
+    // this.setupGuestLogoutOnUnload();
     this.channelEntwicklerteamDocRef = doc(
       this.firestore,
       `channels/nZmkj8G288La1CqafnLP`
@@ -96,16 +96,10 @@ export class AuthService {
   }
 
   setupGuestLogoutOnUnload() {
-    window.addEventListener('beforeunload', () => {
       const user = this.auth.currentUser;
       if (!user?.isAnonymous) return;
-      try {
         const userRef = doc(this.firestore, `users/${user.uid}`);
         this.logoutGuest(user, userRef);
-      } catch (err) {
-        console.warn('Guest logout on unload failed:', err);
-      }
-    });
   }
 
   /** Synchronously get current Firestore User */
