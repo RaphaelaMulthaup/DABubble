@@ -7,11 +7,12 @@
     font-weight: 700;
     color: var(--color-purple-medium);
     filter: brightness(0);
+    transition: 0.2s;
 
     &:hover {
         filter: brightness(1);
 
-        @include respond-to(xs) {
+        @include respond-to('959') {
             filter: brightness(0);
         }
     }

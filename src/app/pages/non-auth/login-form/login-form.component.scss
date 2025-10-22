@@ -21,6 +21,13 @@
   img {
     height: 38px;
   }
+
+  @include respond-to('959') {
+    &:hover{
+      background-color: var(--color-purple-white) !important;
+      color: var(--color-purple-dark) !important;
+    }
+  }
 }
 
 .submit-btns {
@@ -33,8 +40,17 @@
   margin: 0px 0px 13px 0px;
   padding: 5px 15px;
   border-radius: 30px;
+  transition: 0.2s;
+
   &:hover {
     font-weight: 500;
     background-color: var(--color-purple-white);
   }
+
+  @include respond-to('959') {
+    font-weight: 400 !important;
+    color: inherit !important;
+    background-color: inherit !important;
+  }
 }
+

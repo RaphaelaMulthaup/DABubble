@@ -49,6 +49,8 @@ app-contacts-list {
   padding: 0 20px 0 12px;
   width: fit-content;
   border-radius: 23.5px;
+  transition: 0.2s;
+
   @include dFlex($jc: flex-start, $g: 4px);
   cursor: pointer;
   span {
