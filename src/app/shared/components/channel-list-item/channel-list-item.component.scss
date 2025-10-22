@@ -5,11 +5,14 @@
   border-radius: 20px;
   padding-top: 4.5px;
   padding-bottom: 4.5px;
+  transition: 0.2s;
+
   .tag {
     background-repeat: no-repeat;
     background-position: center;
     background-size: auto;
   }
+
   .arrow {
     width: 30px;
     height: 30px;
@@ -39,6 +42,8 @@
     }
   }
   &.related-to-search-result-post {
+    transition: 0.2s;
+    
     &:hover {
       .tag {
         background-image: url("./../../../../assets/img/tag-black.svg");

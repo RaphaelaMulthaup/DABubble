@@ -42,12 +42,11 @@ export class WindowDisplayComponent implements OnInit {
   currentConversationType?: 'channel' | 'chat';
   loadingOlderMessages = false;
   initialScrollDone = false;
+  hasScrollbar = false;
   previousScrollHeight = 0;
   currentConversationId?: string;
   lastconversationId?: string;
   pendingScrollTo?: string;
-
-  hasScrollbar = false;
 
   constructor(
     private chatService: ChatService,
@@ -174,7 +173,6 @@ export class WindowDisplayComponent implements OnInit {
     if (iteration === 5) return;
     while (el.scrollHeight <= el.clientHeight && iteration < maxTries) {
       iteration++;
-      console.log('no scrollbar → loading more...', iteration);
       this.loadingOlderMessages = true;
       await this.conversationActiveRouterService.loadMore(this.currentConversationId!);
       await new Promise((resolve) => setTimeout(resolve, 300));

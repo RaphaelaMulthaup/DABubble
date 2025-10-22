@@ -1,6 +1,6 @@
 <div
   class="settings-view-main flex flex-col items-center justify-between overlay overlay-close"
-  [class.mobile-settings-view-main]="(screenSize$|async) === 'handset'"
+  [class.handset-settings-view-main]="(screenSize$|async) === 'handset'"
   [ngClass]="{ closing: isClosing }"
 >
   @if((screenSize$|async) === 'handset'){
@@ -21,7 +21,7 @@
       class="settingsIcon" 
       src="./assets/img/person-profile-view.svg" 
       alt="profile icon"
-      />Profile
+      /><span>Profil</span>
   </button>
   <button
     class="settings-btn flex items-center justify-center"
@@ -31,6 +31,7 @@
       class="settingsIcon"
       src="./assets/img/logout.svg"
       alt="log-out icon"
-    />Log out
+    />
+    <span>Log out</span>
   </button>
 </div>

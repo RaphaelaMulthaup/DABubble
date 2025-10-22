@@ -51,6 +51,8 @@ app-contacts-list {
   border-radius: 23.5px;
   @include dFlex($jc: flex-start, $g: 4px);
   cursor: pointer;
+  transition: 0.2s;
+  
   span {
     font-size: 20px;
     font-weight: bold;

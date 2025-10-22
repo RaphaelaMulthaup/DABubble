@@ -2,6 +2,8 @@ header {
   background-color: var(--color-purple-white);
 
   .current-user {
+    transition: 0.2s;
+
     h1 {
       overflow: hidden;
       text-overflow: ellipsis;
@@ -23,6 +25,7 @@ header {
   .arrow-btn {
     width: 30px;
     aspect-ratio: 1;
+    transition: 0.2s;
     background-image: url("./../../../../assets/img/keyboard-arrow-down-black.svg");
 
     &:hover {

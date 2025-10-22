@@ -8,8 +8,6 @@ import { PostService } from '../../../../../services/post.service';
 import { filter, Subject, takeUntil, of, Observable, take } from 'rxjs';
 import { SearchResult } from '../../../../../shared/types/search-result.type';
 import { SearchService } from '../../../../../services/search.service';
-import { UserListItemComponent } from '../../../../../shared/components/user-list-item/user-list-item.component';
-import { ChannelListItemComponent } from '../../../../../shared/components/channel-list-item/channel-list-item.component';
 import { OverlayService } from '../../../../../services/overlay.service';
 import { EmojiPickerComponent } from '../../../../../overlay/emoji-picker/emoji-picker.component';
 import { EMOJIS } from '../../../../../shared/constants/emojis';
@@ -24,7 +22,7 @@ import { UserService } from '../../../../../services/user.service';
 
 @Component({
   selector: 'app-current-post-input',
-  imports: [ CommonModule, ReactiveFormsModule, UserListItemComponent, ChannelListItemComponent ],
+  imports: [ CommonModule, ReactiveFormsModule ],
   templateUrl: './current-post-input.component.html',
   styleUrl: './current-post-input.component.scss',
 })

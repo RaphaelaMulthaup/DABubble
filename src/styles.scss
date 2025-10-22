@@ -155,6 +155,7 @@ input {
   outline: unset;
   border: 1px solid var(--color-purple-white);
   border-radius: 30px;
+  transition: 0.2s;
 
   &::placeholder {
     color: var(--color-gray);
@@ -198,6 +199,7 @@ input {
   gap: 8px;
   cursor: pointer;
   font-weight: 500;
+  transition: 0.2s;
 
   &:hover {
     color: var(--color-purple-medium);
@@ -259,6 +261,7 @@ h4 {
 .link {
   color: var(--color-purple-light);
   cursor: pointer;
+  transition: 0.2s;
 
   &:hover {
     color: var(--color-purple-medium);
@@ -359,6 +362,7 @@ h4 {
   @include dFlex($jc: flex-start, $ai: flex-start, $g: 13px);
   flex-direction: column;
   overflow-x: hidden;
+  
   li {
     width: 100%;
   }
@@ -407,18 +411,18 @@ h4 {
   border-radius: 0 !important;
 }
 
-@include respond-to('959') {
-  button:hover,
-  .btn-primary:hover,
-  .btn-secondary:hover,
-  .btn-tertiary:hover,
-  .btn-dropdown,
-  .btn-dropdown div {
-    color: inherit !important;
-    background-color: inherit !important;
-    background-image: inherit !important;
-  }
-}
+// @include respond-to('959') {
+//   button:hover,
+//   .btn-primary:hover,
+//   .btn-secondary:hover,
+//   .btn-tertiary:hover,
+//   .btn-dropdown,
+//   .btn-dropdown div {
+//     color: inherit !important;
+//     background-color: inherit !important;
+//     background-image: inherit !important;
+//   }
+// }
 
 @media (hover: none) {
   button:hover,

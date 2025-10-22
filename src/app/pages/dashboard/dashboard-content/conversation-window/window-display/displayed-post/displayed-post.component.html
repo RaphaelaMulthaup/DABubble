@@ -3,7 +3,7 @@
   [class.web-tablet-post-container]="(screenSize$ | async) !== 'handset'" [class.web-tablet-post-current-user]="
      (screenSize$ | async) !== 'handset' && senderIsCurrentUser
    ">
-  <div class="post flex w-full" [class.clicked]="postClicked"
+  <div class="post flex w-full" [class.clicked]="(postClicked$|async)"
     [class.editing]="overlayService.editingPostId() === post.id" [class.web-tablet-editing]="
        overlayService.editingPostId() === post.id &&
        (screenSize$ | async) !== 'handset'
