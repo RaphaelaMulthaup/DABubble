@@ -107,9 +107,8 @@ button {
     background-color: var(--color-gray);
   }
 
-  @include respond-to('959') {
-
-    &:hover{
+  @include respond-to("959") {
+    &:hover {
       background-color: var(--color-purple-dark) !important;
     }
 
@@ -145,18 +144,17 @@ button {
     background-color: var(--color-purple-dark);
   }
 
-  @include respond-to('959') {
-    
-    &:disabled{
+  @include respond-to("959") {
+    &:disabled {
       border: 1px var(--color-white) !important;
     }
 
-    &:focus{
+    &:focus {
       color: var(--color-white) !important;
       background-color: var(--color-purple-dark) !important;
     }
 
-    &:hover{
+    &:hover {
       background-color: var(--color-white) !important;
       color: var(--color-purple-dark) !important;
     }
@@ -177,7 +175,7 @@ button {
     justify-self: center;
   }
 
-  @include respond-to('959') {
+  @include respond-to("959") {
     background-color: inherit !important;
   }
 }
@@ -300,7 +298,7 @@ h4 {
     color: var(--color-purple-medium);
   }
 
-  @include respond-to('959') {
+  @include respond-to("959") {
     color: inherit !important;
   }
 }
@@ -399,7 +397,7 @@ h4 {
   @include dFlex($jc: flex-start, $ai: flex-start, $g: 13px);
   flex-direction: column;
   overflow-x: hidden;
-  
+
   li {
     width: 100%;
   }
@@ -466,3 +464,7 @@ h4 {
 //     background-image: inherit !important;
 //   }
 // }
+
+@media screen and (pointer: coarse) {
+  
+}

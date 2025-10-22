@@ -88,10 +88,12 @@ section {
 
 .in-handset-edit-channel {
   max-width: 100%;
+
   .btn-container {
     padding: 0;
     border-bottom-right-radius: 0;
     border-bottom-left-radius: 0;
     box-shadow: none;
+    position: static;
   }
 }

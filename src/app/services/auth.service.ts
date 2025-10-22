@@ -197,8 +197,7 @@ export class AuthService {
    * @param authProvider - The authentication provider used
    */
   async addUserToCorrectChannel(uid: string, authProvider: string) {
-    const ref =
-      authProvider === 'anonymous'
+    const ref = authProvider === 'anonymous'
         ? this.resetDemoChannelService.channelEntwicklerteamGuestsDocRef
         : this.channelEntwicklerteamDocRef;
     await updateDoc(ref, { memberIds: arrayUnion(uid) });

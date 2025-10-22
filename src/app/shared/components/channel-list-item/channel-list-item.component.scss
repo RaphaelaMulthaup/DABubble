@@ -41,9 +41,10 @@
       color: var(--color-purple-medium);
     }
   }
+
   &.related-to-search-result-post {
     transition: 0.2s;
-    
+
     &:hover {
       .tag {
         background-image: url("./../../../../assets/img/tag-black.svg");
@@ -52,11 +53,11 @@
   }
 }
 
-.channel-header-handset {  
+.channel-header-handset {
   padding: 0 4px !important;
   gap: 4px !important;
   h2 {
-    font-size: clamp(1.25rem, 1.1250rem + 0.6250vw, 1.5rem);
+    font-size: clamp(1.25rem, 1.125rem + 0.625vw, 1.5rem);
   }
 }
 
