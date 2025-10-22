@@ -113,7 +113,7 @@ export class PostService {
     text: string,
     conversationType: string
   ) {
-     const answerId = await this.sendPost(
+     await this.sendPost(
       `${conversationType}s/${conversationId}/messages/${messageId}`,
       'answers',
       {
@@ -130,7 +130,7 @@ export class PostService {
       conversationId,
       messageId
     );
-    return answerId;
+    return of ([]);
   }
 
   /**
@@ -261,7 +261,6 @@ export class PostService {
         const typeOfResult = img.getAttribute('src')?.includes('email')
           ? '@'
           : '#';
-        console.log(typeOfResult);
         const textNode = doc.createTextNode(`{${typeOfResult}${name}}`);
         mark.replaceWith(textNode);
       }
