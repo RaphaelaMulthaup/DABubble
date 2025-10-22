@@ -184,6 +184,7 @@ export class UserDemoSetupService {
     // Nachrichten im Channel erstellen
     let lastMessageId: string | null = null;
     let forthMessageId: string | null = null;
+    let fifthMessageId: string | null = null;
     for (const [index, msg] of messages.entries()) {
       const messageId = await this.postService.createMessage(
         channelDocRef.id,
@@ -205,6 +206,8 @@ export class UserDemoSetupService {
         lastMessageId = messageId;
       } else if (index === 3) {
         forthMessageId = messageId;
+      } else if (index === 4) {
+        fifthMessageId = messageId;
       }
       if (lastMessageId) {
         const answers = [
@@ -242,18 +245,18 @@ export class UserDemoSetupService {
             { createdAt: answer.createdAt }
           );
         }
-      } else if (forthMessageId) {
-        const emoji = {
-          token: ':folded-hands:',
-          src: 'assets/img/emojis/folded-hands.svg',
-        };
+      }
+      if (forthMessageId) {
         const reactionRef = doc(
           this.firestore,
           `channels/${channelDocRef.id}/messages/${forthMessageId}/reactions/folded-hands`
         );
 
         await setDoc(reactionRef, {
-          emoji: { token: ':folded-hands:', src: 'assets/img/emojis/folded-hands.svg' },
+          emoji: {
+            token: ':folded-hands:',
+            src: 'assets/img/emojis/folded-hands.svg',
+          },
           users: ['5lntBSrRRUM9JB5AFE14z7lTE6n1'],
         });
 
@@ -262,6 +265,29 @@ export class UserDemoSetupService {
           doc(
             this.firestore,
             `channels/${channelDocRef.id}/messages/${forthMessageId}`
+          ),
+          { hasReactions: true }
+        );
+      }
+      if (fifthMessageId) {
+
+        const reactionRef = doc(
+          this.firestore,
+          `channels/${channelDocRef.id}/messages/${fifthMessageId}/reactions/thumbs-up`
+        );
+
+        await setDoc(reactionRef, {
+          emoji: {
+            token: ':thumbs-up:',
+            src: 'assets/img/emojis/thumbs-up.svg',
+          },
+          users: ['rUnD1S8sHOgwxvN55MtyuD9iwAD2'], // Nutzer, der reagiert
+        });
+
+        await updateDoc(
+          doc(
+            this.firestore,
+            `channels/${channelDocRef.id}/messages/${fifthMessageId}`
           ),
           { hasReactions: true }
         );
