@@ -14,12 +14,29 @@
 .google-login-btn {
   padding: clamp(0.375rem, 0.1875rem + 0.9375vw, 0.75rem) 32px;
   gap: 20px;
+  border: 1px solid var(--color-purple-white);
   border-radius: 100px;
   background-color: var(--color-purple-white);
   color: var(--color-purple-dark);
+  transition: 0.2s;
 
   img {
-    height: 38px;
+    height: 42px;
+    padding: 2px;
+  }
+
+  &:hover {
+    border: 1px solid var(--color-purple-dark);
+
+    img {
+      height: 42px;
+      padding: 0px;
+    }
+
+    p {
+      font-weight: 700;
+      transform: scale(1.05);
+    }
   }
 }
 
@@ -33,6 +50,7 @@
   margin: 0px 0px 13px 0px;
   padding: 5px 15px;
   border-radius: 30px;
+
   &:hover {
     font-weight: 500;
     background-color: var(--color-purple-white);

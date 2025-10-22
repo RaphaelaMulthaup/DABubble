@@ -59,6 +59,7 @@ section {
     background-size: 24px 24px;
     transition: background-image 0.2s ease;
   }
+  
   &:hover {
     .add-person {
       background-image: url("../../../../assets/img/person-add-hover.svg");

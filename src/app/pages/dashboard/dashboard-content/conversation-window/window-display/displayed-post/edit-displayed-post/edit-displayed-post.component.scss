@@ -31,6 +31,7 @@
 .add-emoji {
   width: 40px;
   aspect-ratio: 1 / 1;
+  transition: 0.2s;
   background-image: url("../../../../../../../../assets/img/emoji-gray.svg");
   background-repeat: no-repeat;
   background-position: center;

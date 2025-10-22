@@ -8,18 +8,22 @@
   background-color: var(--color-purple-white);
   padding-top: 3px;
   padding-bottom: 3px;
+  transition: 0.2s;
+
   .save {
     width: 24px;
     height: 24px;
     background-image: url("../../../../assets/img/check-circle-black.svg");
     transition: background-image 0.2 ease;
   }
+  
   .edit {
     width: 24px;
     height: 24px;
     background-image: url("../../../../assets/img/edit.svg");
     transition: background-image 0.2 ease;
   }
+
   &:hover {
     .save {
       background-image: url("../../../../assets/img/check-circle-blue.svg");

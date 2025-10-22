@@ -32,6 +32,11 @@ h1 {
     aspect-ratio: 1;
     border-radius: 50%;
     cursor: pointer;
+    transition: 0.2s;
+
+    &:hover {
+      transform: scale(1.05);
+    }
   }
 
   @include respond-to("430") {

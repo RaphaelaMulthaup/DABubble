@@ -13,6 +13,7 @@
   font-weight: 700;
   color: var(--color-purple-medium);
   filter: brightness(0);
+  transition: 0.2s;
 
     &:hover {
         filter: brightness(1);
@@ -42,6 +43,7 @@
   padding-bottom: 6px;
   color: var(--color-purple-medium);
   font-weight: 600;
+  transition: 0.2s;
   filter: brightness(0);
 
   &:hover {

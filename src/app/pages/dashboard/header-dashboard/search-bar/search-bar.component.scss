@@ -37,6 +37,8 @@ input {
   background-image: url(../../../../../assets/img/close.svg);
   position: absolute;
   right: 24px;
+  transition: 0.2s;
+
   &:hover {
     background-image: url(../../../../../assets/img/close-hover.svg);
   }

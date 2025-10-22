@@ -11,7 +11,9 @@ h2 {
 }
 
 .close {
+  transition: 0.2s;
   background-image: url("../../../../assets/img/close.svg");
+  
   &:hover {
     background-image: url("../../../../assets/img/close-hover.svg");
   }

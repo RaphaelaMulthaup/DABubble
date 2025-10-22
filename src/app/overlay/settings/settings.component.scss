@@ -45,6 +45,7 @@
 
   .settings-btn {
     justify-content: start !important;
+    transition: 0.2s;
 
     &:hover {
       color: var(--color-black);
@@ -54,6 +55,7 @@
 
   .settingsIcon {
     display: flex !important;
+    transition: 0.2s;
     
     &:hover {
       color: var(--color-black);

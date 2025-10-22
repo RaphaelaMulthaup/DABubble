@@ -8,12 +8,15 @@
   @include dFlex($g: 15px);
   flex-direction: column;
   border: 1px solid var(--color-purple-light-lines);
+  transition: 0.2s;
 
   &:hover {
     border: 1px solid var(--color-purple-light);
+
     .add-emoji {
       background-image: url("./../../../../../../assets/img/emoji-black.svg?v=1");
     }
+
     .add-user-or-channel {
       background-image: url("./../../../../../../assets/img/alternate-email-black.svg?v=1");
     }
@@ -63,14 +66,18 @@
     }
 
     .add-emoji {
+      transition: 0.2s;
       background-image: url("./../../../../../../assets/img/emoji-gray.svg");
+      
       &:hover {
         background-image: url("./../../../../../../assets/img/emoji-purple.svg") !important;
       }
     }
 
     .add-user-or-channel {
+      transition: 0.2s;
       background-image: url("./../../../../../../assets/img/alternate-email-gray.svg");
+      
       &:hover {
         background-image: url("./../../../../../../assets/img/alternate-email-purple.svg") !important;
       }
@@ -78,7 +85,9 @@
 
     .send {
       width: 40px;
+      transition: 0.2s;
       background-image: url("./../../../../../../assets/img/send-icon.svg");
+      
       &:hover {
         background-image: url("./../../../../../../assets/img/send-icon-hover.svg");
       }
