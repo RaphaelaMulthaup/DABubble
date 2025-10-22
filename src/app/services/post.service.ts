@@ -60,7 +60,7 @@ export class PostService {
   async createPost(
     postsRef: CollectionReference,
     post: Omit<PostInterface, 'createdAt' | 'id'>
-  ) {
+  ): Promise<string> {
     const newDocRef = doc(postsRef);
     await setDoc(newDocRef, {
       ...post,
@@ -250,7 +250,6 @@ export class PostService {
       if (img && span) {
         const name = span.textContent;
         const typeOfResult = img.getAttribute('src')?.includes('email') ? '@' : '#';
-        console.log(typeOfResult)
         const textNode = doc.createTextNode(`{${typeOfResult}${name}}`);
         mark.replaceWith(textNode);
       }
