@@ -98,8 +98,12 @@ export class AuthService {
   setupGuestLogoutOnUnload() {
       const user = this.auth.currentUser;
       if (!user?.isAnonymous) return;
+      try {
         const userRef = doc(this.firestore, `users/${user.uid}`);
         this.logoutGuest(user, userRef);
+      } catch (err) {
+        console.warn('Guest logout on unload failed:', err);
+      }
   }
 
   /** Synchronously get current Firestore User */

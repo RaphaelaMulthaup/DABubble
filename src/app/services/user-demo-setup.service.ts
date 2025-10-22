@@ -145,22 +145,27 @@ export class UserDemoSetupService {
     }
   }
 
-  buildUserChannelsQuery(userId: string) {
+
+
+  // async deleteChats(userId: string) {
+  //   const userChats = await this.chatService.getChatRefsForUser(userId);
+  //   for (const chat of userChats) {
+  //     const messagesRef = collection(chat.ref, 'messages');
+  //     const messagesSnap = await getDocs(messagesRef);
+  //     const batch = writeBatch(this.firestore);
+  //     messagesSnap.docs.forEach((msg) => batch.delete(msg.ref));
+  //     batch.delete(chat.ref);
+  //     await batch.commit();
+  //   }
+  // }
+
+    buildUserChannelsQuery(userId: string) {
     return query(
       collection(this.firestore, 'channels'),
       where('memberIds', 'array-contains', userId)
     );
   }
 
-  async deleteChats(userId: string) {
-    const userChats = await this.chatService.getChatRefsForUser(userId);
-    for (const chat of userChats) {
-      const messagesRef = collection(chat.ref, 'messages');
-      const messagesSnap = await getDocs(messagesRef);
-      const batch = writeBatch(this.firestore);
-      messagesSnap.docs.forEach((msg) => batch.delete(msg.ref));
-      batch.delete(chat.ref);
-      await batch.commit();
-    }
-  }
+
+  ////here commentar
 }

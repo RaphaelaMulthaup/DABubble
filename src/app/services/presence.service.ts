@@ -75,7 +75,7 @@ export class PresenceService {
 
     const val = snapshot.val();
     const now = Date.now();
-    return val.forcedClose && now - val.lastChanged > 300000;
+    return val.forcedClose && now - val.lastChanged > 5000;
   }
 
   getUserStatus(uid: string): Observable<any> {
