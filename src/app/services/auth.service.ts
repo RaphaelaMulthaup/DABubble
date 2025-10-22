@@ -178,7 +178,7 @@ export class AuthService {
    */
   async setupDemoEnvironment(uid: string) {
     const userData = await this.getUserData(uid);
-    await this.addUserToCorrectChannel(uid, userData.authProvider);
+    await this.addUserToChannel(uid, userData.authProvider);
     await this.userDemoSetupService.addDirectChatToTeam(uid);
   }
 
@@ -199,11 +199,14 @@ export class AuthService {
    * @param uid - The user ID
    * @param authProvider - The authentication provider used
    */
-  async addUserToCorrectChannel(uid: string, authProvider: string) {
-    const ref = authProvider === 'anonymous'
-        ? this.resetDemoChannelService.channelEntwicklerteamGuestsDocRef
-        : this.channelEntwicklerteamDocRef;
-    await updateDoc(ref, { memberIds: arrayUnion(uid) });
+  async addUserToChannel(uid: string, authProvider: string) {
+    if (authProvider === 'anonymous') {
+      await this.userDemoSetupService.createDemoChannel(uid);
+    } else {
+      await updateDoc(this.channelEntwicklerteamDocRef, {
+        memberIds: arrayUnion(uid),
+      });
+    }
   }
 
   /**
@@ -280,7 +283,7 @@ export class AuthService {
       .then(async (credential) => {
         await this.screenService.setInitDashboardState();
         const guest = credential.user;
-        await this.createOrUpdateUserInFirestore(guest, 'anonymous', 'Guest');
+        await this.createOrUpdateUserInFirestore(guest, 'anonymous', 'Gast');
         this.userService.updateUser(guest.uid, {
           photoUrl: './assets/img/no-avatar.svg',
         });
