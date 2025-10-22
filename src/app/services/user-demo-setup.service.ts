@@ -74,12 +74,12 @@ export class UserDemoSetupService {
     const snapshot = await getDocs(q);
     const batch = writeBatch(this.firestore);
     for (const docSnap of snapshot.docs) {
-      this.handleChannelBatchUpdate(batch, docSnap, guestUserId);
+      await this.handleChannelBatchUpdate(batch, docSnap, guestUserId);
     }
     await batch.commit();
   }
 
-  handleChannelBatchUpdate(
+  async handleChannelBatchUpdate(
     batch: WriteBatch,
     docSnap: QueryDocumentSnapshot,
     guestUserId: string
@@ -87,10 +87,57 @@ export class UserDemoSetupService {
     const channel = docSnap.data() as ChannelInterface;
     const channelRef = doc(this.firestore, 'channels', docSnap.id);
     if (channel.createdBy === guestUserId) {
+      await this.deleteAllMessagesAndNestedSubcollections(channelRef.path);
       batch.delete(channelRef);
     } else {
+      //Hier müssen noch alle Messages, Answers und Reactions des Gastes gelöscht werden
       batch.update(channelRef, { memberIds: arrayRemove(guestUserId) });
     }
+  }
+
+  private async deleteAllMessagesAndNestedSubcollections(channelPath: string) {
+    const messagesRef = collection(this.firestore, `${channelPath}/messages`);
+    const messagesSnap = await getDocs(messagesRef);
+    for (const messageDoc of messagesSnap.docs) {
+      await this.deleteMessageWithSubcollections(
+        messageDoc.ref.path,
+        messageDoc.ref
+      );
+    }
+  }
+
+  private async deleteMessageWithSubcollections(
+    messagePath: string,
+    messageRef: any
+  ) {
+    await this.deleteAllDocsInSubcollection(`${messagePath}/reactions`);
+    const answersRef = collection(this.firestore, `${messagePath}/answers`);
+    const answersSnap = await getDocs(answersRef);
+    for (const answerDoc of answersSnap.docs) {
+      await this.deleteAnswerWithReactions(answerDoc.ref.path, answerDoc.ref);
+    }
+    await this.safeDeleteDoc(messageRef);
+  }
+
+  private async deleteAllDocsInSubcollection(subcollectionPath: string) {
+    const subRef = collection(this.firestore, subcollectionPath);
+    const snap = await getDocs(subRef);
+    const batch = writeBatch(this.firestore);
+    snap.docs.forEach((doc) => batch.delete(doc.ref));
+    if (snap.docs.length > 0) {
+      await batch.commit();
+    }
+  }
+
+  private async deleteAnswerWithReactions(answerPath: string, answerRef: any) {
+    await this.deleteAllDocsInSubcollection(`${answerPath}/reactions`);
+    await this.safeDeleteDoc(answerRef);
+  }
+
+  private async safeDeleteDoc(ref: any) {
+    const batch = writeBatch(this.firestore);
+    batch.delete(ref);
+    await batch.commit();
   }
 
   buildUserChannelsQuery(userId: string) {
