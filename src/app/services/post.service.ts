@@ -1,15 +1,5 @@
 import { ElementRef, Injectable } from '@angular/core';
-import {
-  collection,
-  CollectionReference,
-  doc,
-  docData,
-  Firestore,
-  increment,
-  serverTimestamp,
-  setDoc,
-  updateDoc,
-} from '@angular/fire/firestore';
+import { collection, CollectionReference, doc, docData, Firestore, increment, serverTimestamp, setDoc, updateDoc } from '@angular/fire/firestore';
 import { Observable, of, shareReplay, Subject } from 'rxjs';
 import { PostInterface } from '../shared/models/post.interface';
 import { Router } from '@angular/router';
@@ -38,15 +28,8 @@ export class PostService {
    * @param subcollectionName - Name of the subcollection (e.g. "messages").
    * @param post - post object without `createdAt` (timestamp is added automatically).
    */
-  async sendPost(
-    parentPath: string,
-    subcollectionName: string,
-    post: Omit<PostInterface, 'createdAt' | 'id'>
-  ) {
-    const postsRef = collection(
-      this.firestore,
-      `${parentPath}/${subcollectionName}`
-    );
+  async sendPost( parentPath: string, subcollectionName: string, post: Omit<PostInterface, 'createdAt' | 'id'>) {
+    const postsRef = collection( this.firestore, `${parentPath}/${subcollectionName}`);
     await this.createPost(postsRef, post);
   }
 
@@ -57,10 +40,7 @@ export class PostService {
    * @param postsRef - reference to the subcollection where the post should be saved
    * @param post - post object (message or answer) without `createdAt` (timestamp is added automatically).
    */
-  async createPost(
-    postsRef: CollectionReference,
-    post: Omit<PostInterface, 'createdAt' | 'id'>
-  ): Promise<string> {
+  async createPost( postsRef: CollectionReference, post: Omit<PostInterface, 'createdAt' | 'id'>): Promise<string> {
     const newDocRef = doc(postsRef);
     await setDoc(newDocRef, {
       ...post,
@@ -109,18 +89,11 @@ export class PostService {
     conversationType: string
   ) {
      await this.sendPost(
-      `${conversationType}s/${conversationId}/messages/${messageId}`,
-      'answers',
-      {
-        senderId: senderId,
-        text,
-      }
+      `${conversationType}s/${conversationId}/messages/${messageId}`, 'answers',
+      { senderId: senderId, text }
     );
     this.updatePost(
-      {
-        ansCounter: increment(1),
-        ansLastCreatedAt: new Date(),
-      },
+      { ansCounter: increment(1), ansLastCreatedAt: new Date() },
       conversationType as 'channel' | 'chat',
       conversationId,
       messageId
@@ -146,16 +119,8 @@ export class PostService {
   ) {
     let ref;
     if (answerId) {
-      ref = doc(
-        this.firestore,
-        `${conversationType}s/${conversationId}/messages/${messageId}/answers/${answerId}`
-      );
-    } else {
-      ref = doc(
-        this.firestore,
-        `${conversationType}s/${conversationId}/messages/${messageId}`
-      );
-    }
+      ref = doc( this.firestore, `${conversationType}s/${conversationId}/messages/${messageId}/answers/${answerId}`);
+    } else ref = doc( this.firestore, `${conversationType}s/${conversationId}/messages/${messageId}`);
     await updateDoc(ref, data);
   }
 
@@ -168,9 +133,7 @@ export class PostService {
   isPostCreatedToday(postDate: any): boolean {
     if (postDate === null) {
       postDate = new Date().setHours(0, 0, 0, 0);
-    } else {
-      postDate = postDate.toDate().setHours(0, 0, 0, 0);
-    }
+    } else postDate = postDate.toDate().setHours(0, 0, 0, 0);
     let today = new Date().setHours(0, 0, 0, 0);
     return postDate == today;
   }
@@ -194,13 +157,7 @@ export class PostService {
    */
   openAnswers( postId: string, conversationType: 'channel' | 'chat', conversationId: string) {
     this.screenService.setDashboardState('thread-window');
-    this.router.navigate([
-      '/dashboard',
-      conversationType,
-      conversationId,
-      'answers',
-      postId,
-    ]);
+    this.router.navigate([ '/dashboard', conversationType, conversationId, 'answers', postId ]);
   }
 
   /**
@@ -330,19 +287,10 @@ export class PostService {
    * @param conversationId - the ID of the conversation
    * @param postId - the ID of the post itself
    */
-  getPostById(
-    conversationType: 'channel' | 'chat',
-    conversationId: string,
-    postId: string
-  ): Observable<PostInterface> {
+  getPostById( conversationType: 'channel' | 'chat', conversationId: string, postId: string): Observable<PostInterface> {
     if (!this.postCache.has(postId)) {
-      const ref = doc(
-        this.firestore,
-        `${conversationType}s/${conversationId}/messages/${postId}`
-      );
-      const post$ = docData(ref).pipe(
-        shareReplay({ bufferSize: 1, refCount: true })
-      );
+      const ref = doc( this.firestore, `${conversationType}s/${conversationId}/messages/${postId}`);
+      const post$ = docData(ref).pipe(shareReplay({ bufferSize: 1, refCount: true }));
       this.postCache.set(postId, post$ as Observable<PostInterface>);
     }
     return this.postCache.get(postId)!;
