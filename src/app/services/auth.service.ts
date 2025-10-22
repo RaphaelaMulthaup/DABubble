@@ -232,8 +232,8 @@ export class AuthService {
   createUserInAuth(userData: UserToRegisterInterface): Observable<User> {
     const { email, password } = userData;
     return from(
-      createUserWithEmailAndPassword(this.auth, email, password)
-    ).pipe(map((res) => res.user));
+      createUserWithEmailAndPassword(this.auth, email, password))
+      .pipe(map((res) => res.user));
   }
 
   /**
@@ -244,13 +244,8 @@ export class AuthService {
    */
   saveRegisteredUser( user: User, data: UserToRegisterInterface): Observable<void> {
     return from(
-      this.createOrUpdateUserInFirestore(
-        user,
-        'password',
-        data.displayName,
-        data.photoURL || undefined
-      )
-    ).pipe(map(() => void 0));
+      this.createOrUpdateUserInFirestore( user, 'password', data.displayName, data.photoURL || undefined))
+      .pipe(map(() => void 0));
   }
 
   /**

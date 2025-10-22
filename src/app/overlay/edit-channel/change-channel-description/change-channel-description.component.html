@@ -35,11 +35,11 @@
       }
     </div>
   </div>
-  <span class="separable w-full mt-[10px] mb-[10px]"></span>
-  <div class="flex flex-col w-full gap-[20px]">
-    <h4>Erstellt von</h4>
-    @if(user$ | async; as user){
-    <app-user-list-item [user]="user" [showProfile]="true" />
-    }
-  </div>
+  @if(user$ | async; as user){
+    <span class="separable w-full mt-[10px] mb-[10px]"></span>
+    <div class="flex flex-col w-full gap-[20px]">
+      <h4>Erstellt von</h4>
+      <app-user-list-item [user]="user" [showProfile]="true" />
+    </div> 
+  }
 </div>
