@@ -27,7 +27,7 @@ import { DEVIDS } from '../shared/constants/demo-dev-ids';
   providedIn: 'root',
 })
 export class UserDemoSetupService {
-  devIds = DEVIDS;
+  devIds: string[] = DEVIDS;
 
   directChatMessages: Record<
     string,

@@ -267,10 +267,7 @@ export class OverlayService {
     fromEvent(window, 'resize')
       .pipe(debounceTime(150), takeUntil(overlayRef.detachments()))
       .subscribe(() => {
-        const isTouchDevice =
-          'ontouchstart' in window ||
-          navigator.maxTouchPoints > 0 ||
-          (navigator as any).msMaxTouchPoints > 0;
+        const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || (navigator as any).msMaxTouchPoints > 0;
         if (!isTouchDevice) this.closeAll();
     });
   }

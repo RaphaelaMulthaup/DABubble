@@ -424,15 +424,15 @@ h4 {
 //   }
 // }
 
-// @media (hover: none) {
-//   button:hover,
-//   .btn-primary:hover,
-//   .btn-secondary:hover,
-//   .btn-tertiary:hover,
-//   .btn-dropdown,
-//   .btn-dropdown div {
-//     color: inherit !important;
-//     background-color: inherit !important;
-//     background-image: inherit !important;
-//   }
-// }
+@media (hover: none) {
+  button:hover,
+  .btn-primary:hover,
+  .btn-secondary:hover,
+  .btn-tertiary:hover,
+  .btn-dropdown,
+  .btn-dropdown div {
+    color: inherit !important;
+    background-color: inherit !important;
+    background-image: inherit !important;
+  }
+}
