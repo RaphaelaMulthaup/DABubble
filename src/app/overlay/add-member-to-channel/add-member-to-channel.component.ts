@@ -28,6 +28,7 @@ import { OverlayRef } from '@angular/cdk/overlay';
 import { OverlayService } from '../../services/overlay.service';
 import { UserListItemToChannelComponent } from '../../shared/components/user-list-item-to-channel/user-list-item-to-channel.component';
 import { RectangleDragCloseDirective } from '../../shared/directives/rectangle-drag-close.directive';
+import { UserService } from '../../services/user.service';
 
 @Component({
   selector: 'app-add-member-to-channel',
@@ -64,7 +65,8 @@ export class AddMemberToChannelComponent {
   constructor(
     private channelService: ChannelsService,
     private overlayService: OverlayService,
-    private searchService: SearchService
+    private searchService: SearchService,
+    public userService: UserService
   ) {
     effect(() => {
       if (this.overlayService.searchReset()) {

@@ -1,15 +1,23 @@
 <div class="overlay">
-  <app-header-overlay [overlayHeadline]="'Profil'"/>
+  <app-header-overlay [overlayHeadline]="'Profil'" />
   <div class="profile-view-other-user">
-    <img class="profil-img" [src]="(user$ | async)?.photoUrl || '/assets/img/no-avatar.svg'" alt="Profilbild" />
+    <img
+      class="profil-img"
+      [src]="(user$ | async)?.photoUrl || '/assets/img/no-avatar.svg'"
+      alt="Profilbild"
+      (error)="userService.setDefaultImg($event)"
+    />
     <div class="name-and-status">
       <h1>{{ (user$ | async)?.name }}</h1>
       <div class="status">
-        <img [src]="
-          (user$ | async)?.active
-            ? '/assets/img/online.svg'
-            : '/assets/img/offline.svg'
-        " alt="Status" />
+        <img
+          [src]="
+            (user$ | async)?.active
+              ? '/assets/img/online.svg'
+              : '/assets/img/offline.svg'
+          "
+          alt="Status"
+        />
         <span [ngClass]="(user$ | async)?.active ? 'green' : ''">
           {{ (user$ | async)?.active ? "Aktiv" : "Abwesend" }}
         </span>

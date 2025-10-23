@@ -116,4 +116,12 @@ export class UserService {
         { user$: this.getUserById(userId) }
       )
   }
+
+  /**
+   * Sets the default profile image if the original image fails to load.
+   */
+  setDefaultImg(event: Event) {
+    const target = event.target as HTMLImageElement;
+    target.src = 'assets/img/no-avatar.svg';
+  }
 }

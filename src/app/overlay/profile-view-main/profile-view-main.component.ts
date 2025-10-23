@@ -7,6 +7,7 @@ import { AsyncPipe, CommonModule } from '@angular/common';
 import { EditProfileComponent } from './edit-profile/edit-profile.component';
 import { HeaderOverlayComponent } from '../../shared/components/header-overlay/header-overlay.component';
 import { OverlayRef } from '@angular/cdk/overlay';
+import { UserService } from '../../services/user.service';
 
 @Component({
   selector: 'app-profile-view-main',
@@ -25,7 +26,8 @@ export class ProfileViewMainComponent {
 
   constructor(
     private authService: AuthService,
-    public overlayService: OverlayService
+    public overlayService: OverlayService,
+    public userService: UserService
   ) {
     this.user$ = this.authService.currentUser$;
   }

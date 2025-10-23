@@ -84,7 +84,7 @@ export class DisplayedPostComponent implements OnInit {
     private reactionsService: ReactionsService,
     private route: ActivatedRoute,
     public screenService: ScreenService,
-    private userService: UserService
+    public userService: UserService
   ) {
     this.dashboardState = this.screenService.dashboardState;
     this.screenSize$ = this.screenService.screenSize$;

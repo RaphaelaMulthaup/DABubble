@@ -64,7 +64,7 @@ export class UserListItemComponent implements OnDestroy {
     public conversationActiveRouterService: ConversationActiveRouterService,
     private overlayService: OverlayService,
     public screenService: ScreenService,
-    private userService: UserService,
+    public userService: UserService,
     private presenceService: PresenceService
   ) {
     this.dashboardState = this.screenService.dashboardState;

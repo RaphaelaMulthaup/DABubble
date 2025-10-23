@@ -6,6 +6,7 @@ import { OverlayService } from '../../services/overlay.service';
 import { AuthService } from '../../services/auth.service';
 import { ChatService } from '../../services/chat.service';
 import { HeaderOverlayComponent } from '../../shared/components/header-overlay/header-overlay.component';
+import { UserService } from '../../services/user.service';
 
 @Component({
   selector: 'app-profile-view-other-users',
@@ -21,6 +22,7 @@ export class ProfileViewOtherUsersComponent {
     private authService: AuthService,
     private chatService: ChatService,
     private overlayService: OverlayService,
+    public userService: UserService
   ) {}
 
   /**

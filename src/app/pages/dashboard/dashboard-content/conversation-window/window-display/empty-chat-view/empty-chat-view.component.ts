@@ -24,7 +24,7 @@ export class EmptyChatViewComponent {
     private authService: AuthService,
     private chatService: ChatService,
     private overlayService: OverlayService,
-    private userService: UserService
+    public userService: UserService
   ) {}
 
   ngOnInit() {
