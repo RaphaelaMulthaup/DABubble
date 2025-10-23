@@ -13,16 +13,16 @@ export const CHATMESSAGES = {
     }
   ],
 
-  'rUnD1S8sHOgwxvN55MtyuD9iwAD2': [
+  'IjcUwvUR9wdgsnCubqBbk5GRpUW2': [
     {
-      senderId: 'rUnD1S8sHOgwxvN55MtyuD9iwAD2',
+      senderId: 'IjcUwvUR9wdgsnCubqBbk5GRpUW2',
       text: 'Hallo! In deinen Nachrichten kannst du Emojis verwenden oder auch User und Channel markieren. Außerdem kannst du auf Nachrichten reagieren. :smiling-face-with-sunglasses: \n PS: Wusstest du schon? Du kannst Nachrichten nachträglich noch ändern, wenn du möchtest. Einfach auf deine Nachricht klicken, dann auf die 3 Punkte und dann auf "Nachricht bearbeiten".',
     }
   ],
 
-  'NxSyGPn1LkPV3bwLSeW94FPKRzm1': [
+  'e7SRRoRjNVWPMedzUjD8aLHXj973': [
     {
-      senderId: 'NxSyGPn1LkPV3bwLSeW94FPKRzm1',
+      senderId: 'e7SRRoRjNVWPMedzUjD8aLHXj973',
       text: 'Moin! \n Möchtest du innerhalb von Chats oder Channels auf eine Nachricht antworten, kannst du einen Thread eröffnen oder in einem bestehenden Thread weiter schreiben. Klicke dazu auf eine Nachricht und dann auf die Sprechblase. Probier´ es doch mal aus! :flexed-biceps:',
     }
   ],

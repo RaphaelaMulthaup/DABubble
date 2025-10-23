@@ -277,9 +277,7 @@ export class AuthService {
         await this.screenService.setInitDashboardState();
         const guest = credential.user;
         await this.createOrUpdateUserInFirestore(guest, 'anonymous', 'Gast');
-        this.userService.updateUser(guest.uid, {
-          photoUrl: './assets/img/no-avatar.svg',
-        });
+        await this.userService.updateUser(guest.uid, { photoUrl: './assets/img/no-avatar.svg' });
       })
       .catch((error) => console.error('Guest login error:', error));
     return from(promise) as Observable<void>;
@@ -364,6 +362,4 @@ export class AuthService {
     const userRef = doc(this.firestore, `users/${user?.uid}`);
     return updateDoc(userRef, { name: newName });
   }
-
-
 }
