@@ -326,7 +326,7 @@ export class CurrentPostInput implements OnInit, OnDestroy {
    */
   getMarkTemplate(name: string, typeOfResult?: 'user' | 'channel'): string {
     return `<mark class="mark" contenteditable="false">
-              <img src="/assets/img/${
+              <img src="./assets/img/${
                 typeOfResult == 'user' ? 'alternate-email-purple' : 'tag-blue'
               }.svg" alt="mark-${typeOfResult}">
               <span>${name}</span>

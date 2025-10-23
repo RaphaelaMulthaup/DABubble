@@ -3,7 +3,7 @@
   <div class="profile-view-other-user">
     <img
       class="profil-img"
-      [src]="(user$ | async)?.photoUrl || '/assets/img/no-avatar.svg'"
+      [src]="(user$ | async)?.photoUrl || './assets/img/no-avatar.svg'"
       alt="Profilbild"
       (error)="userService.setDefaultImg($event)"
     />
@@ -13,8 +13,8 @@
         <img
           [src]="
             (user$ | async)?.active
-              ? '/assets/img/online.svg'
-              : '/assets/img/offline.svg'
+              ? './assets/img/online.svg'
+              : './assets/img/offline.svg'
           "
           alt="Status"
         />
@@ -25,13 +25,13 @@
     </div>
     <div class="mail-info">
       <div class="mail-header">
-        <img src="/assets/img/mail-profil-view.svg" alt="mail" />
+        <img src="./assets/img/mail-profil-view.svg" alt="mail" />
         <h3>E-Mail-Adresse</h3>
       </div>
       <span class="mail-address">{{ (user$ | async)?.email }}</span>
     </div>
     <button class="btn-primary" (click)="openChat()">
-      <img src="/assets/img/mode-comment.svg" alt="mode-comment" />
+      <img src="./assets/img/mode-comment.svg" alt="mode-comment" />
       <h4>Nachricht</h4>
     </button>
   </div>
