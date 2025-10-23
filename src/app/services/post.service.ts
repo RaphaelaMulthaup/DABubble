@@ -170,7 +170,8 @@ export class PostService {
   htmlToText(postInput: string): string {
     const postHtml = postInput
       .replaceAll('<div>', '\n')
-      .replaceAll('</div>', '');
+      .replaceAll('</div>', '')
+      .replaceAll('<br>', '\n');
     const parser = new DOMParser();
     const doc = parser.parseFromString(postHtml, 'text/html');
     this.replaceEmojis(doc);
