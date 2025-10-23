@@ -8,8 +8,8 @@
   (scroll)="onScroll()"
 >
 
-  @if (postAnswered && conversationWindowState === 'thread' && (!postAnswered.ansCounter || postAnswered.ansCounter === 0)) {
-    <app-empty-thread-view [post]="postAnswered"></app-empty-thread-view>
+  @if (showThreadTheme()) {
+    <app-empty-thread-view [post]="postAnswered!"></app-empty-thread-view>
   }
 
   @if (isLoaded$ | async; as loaded) {

@@ -14,6 +14,7 @@ import { DAYS } from '../../../../../shared/constants/days';
 import { EmptyChatViewComponent } from './empty-chat-view/empty-chat-view.component';
 import { EmptyChannelViewComponent } from './empty-channel-view/empty-channel-view.component';
 import { EmptyThreadViewComponent } from './empty-thread-view/empty-thread-view.component';
+import { doc, docData, Firestore } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-window-display',
@@ -38,6 +39,7 @@ export class WindowDisplayComponent implements OnInit {
 
   postAnsweredId!: string | null;
   postAnswered!: PostInterface | null;
+  postAnswered$!: Observable <PostInterface | null>;
   postInfo: PostInterface[] = [];
   currentConversationType?: 'channel' | 'chat';
   loadingOlderMessages = false;
@@ -51,6 +53,7 @@ export class WindowDisplayComponent implements OnInit {
   constructor(
     private chatService: ChatService,
     private conversationActiveRouterService: ConversationActiveRouterService,
+    private firestore: Firestore,
     public postService: PostService,
     private route: ActivatedRoute,
     private router: Router,
@@ -58,6 +61,7 @@ export class WindowDisplayComponent implements OnInit {
   ) {
     this.dashboardState = this.screenService.dashboardState;
     this.screenSize$ = this.screenService.screenSize$;
+    if (this.postAnswered) this.postAnswered$ = docData(doc(this.firestore, `channels/${this.currentConversationId}/messages/${this.postAnswered.id}`)) as Observable<PostInterface>;
   }
 
   ngOnInit() {
@@ -160,6 +164,17 @@ export class WindowDisplayComponent implements OnInit {
         shareReplay({ bufferSize: 1, refCount: true })
       );
     });
+  }
+
+  /**
+   * Determines whether the thread theme should be displayed.
+   * Returns `true` only if the current window state is a thread, a `postAnswered` object exists and the post has no answers (`ansCounter` is 0 or undefined).
+   */
+  showThreadTheme():boolean {
+    if (this.conversationWindowState === 'conversation') return false;
+    if (!this.postAnswered) return false;
+    if (this.postAnswered.ansCounter && this.postAnswered.ansCounter > 0) return false;
+    return true;
   }
 
   /**

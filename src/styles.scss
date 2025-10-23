@@ -297,10 +297,6 @@ h4 {
   &:hover {
     color: var(--color-purple-medium);
   }
-
-  @include respond-to("959") {
-    color: inherit !important;
-  }
 }
 
 .name-tag {
