@@ -41,12 +41,12 @@ export const CHATMESSAGES = {
   'NxSyGPn1LkPV3bwLSeW94FPKRzm1': [
     {
       senderId: 'NxSyGPn1LkPV3bwLSeW94FPKRzm1',
-      text: 'Hey! Schön, dass du hier bist 🧠',
+      text: 'Hey, willkommen im Projekt!<br>Ich habe den password-reset-Flow eingebaut. Falls man mal sein Passwort vergisst, bekommt man eine Mail mit einem Link zum Zurücksetzen. Leg dir doch gern einen eigenen Account an und probier’s mal aus!',
     },
-    { senderId: 'guestId', text: 'Hi! Die App reagiert richtig flüssig.' },
+    { senderId: 'guestId', text: 'Klingt super! Ich registriere mich gleich mal und teste das.' },
     {
       senderId: 'NxSyGPn1LkPV3bwLSeW94FPKRzm1',
-      text: 'Super! Dann viel Spaß beim Ausprobieren 🚀',
+      text: 'Perfekt! Und wenn du dich später ausloggst, achte mal auf die Logo-Animation. Die habe ich auch geschrieben.',
     },
   ],
 };
