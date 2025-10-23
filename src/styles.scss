@@ -107,8 +107,9 @@ button {
     background-color: var(--color-gray);
   }
 
-  @include respond-to("959") {
-    &:hover {
+  @media screen and (pointer: coarse) {
+
+    &:hover{
       background-color: var(--color-purple-dark) !important;
     }
 
@@ -144,8 +145,9 @@ button {
     background-color: var(--color-purple-dark);
   }
 
-  @include respond-to("959") {
-    &:disabled {
+  @media screen and (pointer: coarse) {
+    
+    &:disabled{
       border: 1px var(--color-white) !important;
     }
 
@@ -175,7 +177,7 @@ button {
     justify-self: center;
   }
 
-  @include respond-to("959") {
+  @media screen and (pointer: coarse) {
     background-color: inherit !important;
   }
 }
@@ -296,6 +298,10 @@ h4 {
 
   &:hover {
     color: var(--color-purple-medium);
+  }
+
+  @media screen and (pointer: coarse) {
+    color: var(--color-purple-light) !important;
   }
 }
 
@@ -460,7 +466,3 @@ h4 {
 //     background-image: inherit !important;
 //   }
 // }
-
-@media screen and (pointer: coarse) {
-  
-}

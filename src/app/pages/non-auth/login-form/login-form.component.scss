@@ -18,11 +18,12 @@
   border-radius: 100px;
   background-color: var(--color-purple-white);
   color: var(--color-purple-dark);
-  transition: 0.2s;
+  transition: all 0.2s ease;
 
   img {
     height: 42px;
     padding: 2px;
+    transition: all 0.2s ease;
   }
 
   &:hover {
@@ -39,11 +40,13 @@
     }
   }
 
-  @include respond-to('959') {
-    &:hover{
-      background-color: var(--color-purple-white) !important;
-      color: var(--color-purple-dark) !important;
-    }
+  p{
+    transition: all 0.2s ease;
+  }
+
+  @media screen and (pointer: coarse) {
+    background-color: var(--color-purple-white) !important;
+    color: var(--color-purple-dark) !important;
   }
 }
 
@@ -63,9 +66,9 @@
     background-color: var(--color-purple-white);
   }
 
-  @include respond-to('959') {
+  @media screen and (pointer: coarse) {
     font-weight: 400 !important;
-    color: inherit !important;
+    //color: inherit !important;
     background-color: inherit !important;
   }
 }
