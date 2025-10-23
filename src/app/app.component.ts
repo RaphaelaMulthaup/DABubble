@@ -45,7 +45,6 @@ export class AppComponent {
           await this.authService.setupGuestLogoutOnUnload();
         }
         await this.presenceService.setOffline(user);
-        await this.authService.logout();
         return;
       }
         this.checkingPresence = false; 
