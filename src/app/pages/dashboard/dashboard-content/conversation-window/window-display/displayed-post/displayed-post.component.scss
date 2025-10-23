@@ -151,16 +151,16 @@
         }
       }
 
-      @media (max-width: 960px) {
+      @media screen and (pointer: coarse) {
         max-width: clamp(3.688rem, 3.1255rem + 2.8125vw, 4.813rem);
         overflow-x: visible;
 
         .minimize:hover {
-          background-image: url("../../../../../../../assets/img/minimize-hover.svg") !important;
+          background-image: url("../../../../../../../assets/img/minimize.svg") !important;
         }
 
         .add-reaction-btn:hover {
-          background-image: url("./../../../../../../../assets/img/add-reaction-hover.svg") !important;
+          background-image: url("./../../../../../../../assets/img/add-reaction.svg") !important;
         }
       }
     }

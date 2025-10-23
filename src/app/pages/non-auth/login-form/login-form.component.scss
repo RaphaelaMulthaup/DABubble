@@ -18,11 +18,12 @@
   border-radius: 100px;
   background-color: var(--color-purple-white);
   color: var(--color-purple-dark);
-  transition: 0.2s;
+  transition: all 0.2s ease;
 
   img {
     height: 42px;
     padding: 2px;
+    transition: all 0.2s ease;
   }
 
   &:hover {
@@ -37,6 +38,10 @@
       font-weight: 700;
       transform: scale(1.05);
     }
+  }
+
+  p{
+    transition: all 0.2s ease;
   }
 
   @media screen and (pointer: coarse) {
