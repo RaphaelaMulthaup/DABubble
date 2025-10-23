@@ -25,11 +25,15 @@ export class PostService {
   private _select$ = new Subject<string>();
   public selected$ = this._select$.asObservable();
 
+  private newMessageSubject = new Subject<void>();
+  newMessage$ = this.newMessageSubject.asObservable();
+
   constructor(
     private firestore: Firestore,
     private router: Router,
     public screenService: ScreenService
   ) {}
+
 
   /**
    * Sends a post to a given subcollection (e.g. messages of a conversation or thread).
@@ -48,6 +52,7 @@ export class PostService {
       `${parentPath}/${subcollectionName}`
     );
     await this.createPost(postsRef, post);
+      this.newMessageSubject.next();
   }
 
   /**
