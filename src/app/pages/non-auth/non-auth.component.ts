@@ -75,9 +75,7 @@ export class NonAuthComponent {
       const uid = params['uid'];
       if (uid) this.currentState = 'reset-password-confirm';
     });
-    collectionData(usersRef).pipe(
-      map((users: any[]) => users.map((user) => user.name))
-    );
+    collectionData(usersRef).pipe(map((users: any[]) => users.map((user) => user.name)));
     this.addMaxWidth();
   }
 

@@ -81,9 +81,7 @@ export class LoginFormComponent {
     login$
       .pipe(finalize(() => (this.isSubmittingWithGoogleOrAsGuest = false)))
       .subscribe({
-        error: () => {
-          this.showErrorMessage = true;
-        },
+        error: () => this.showErrorMessage = true
       });
   }
 }

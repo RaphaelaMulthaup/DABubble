@@ -4,13 +4,11 @@ import { signInWithEmailAndPassword, signInAnonymously, deleteUser, getAuth, sig
 import { Firestore, arrayUnion, deleteDoc, doc, docData, getDoc, setDoc, updateDoc } from '@angular/fire/firestore';
 import { catchError, distinctUntilChanged, concatMap, from, map, Observable, of, shareReplay, switchMap, tap } from 'rxjs';
 import { UserInterface } from '../shared/models/user.interface';
-import { UserService } from './user.service';
 import { ScreenService } from './screen.service';
 import { UserToRegisterInterface } from '../shared/models/user.to.register.interface';
 import { DocumentData, DocumentReference } from 'firebase/firestore';
 import { UserDemoSetupService } from './user-demo-setup.service';
 import { ResetDemoChannelService } from './reset-demo-channel.service';
-import { PresenceService } from './presence.service';
 
 @Injectable({
   providedIn: 'root',
@@ -26,9 +24,7 @@ export class AuthService {
     private firestore: Firestore,
     private resetDemoChannelService: ResetDemoChannelService,
     private screenService: ScreenService,
-    private userDemoSetupService: UserDemoSetupService,
-    private userService: UserService,
-    private presenceService:PresenceService
+    private userDemoSetupService: UserDemoSetupService
   ) {
     this.currentUser$ = this.initCurrentUserStream();
     this.channelEntwicklerteamDocRef = doc( this.firestore, `channels/nZmkj8G288La1CqafnLP` );
@@ -70,7 +66,7 @@ export class AuthService {
     const userRef = doc(this.firestore, `users/${firebaseUser.uid}`);
     return from(this.ensureUserDocExists(firebaseUser)).pipe(
       catchError((err) => {
-        console.error('ensureUserDocExists failed', err);
+        console.error('ensure UserDoc exists failed', err);
         return of(void 0);
       }),
       switchMap(() => docData(userRef) as Observable<UserInterface | null>),
@@ -99,7 +95,8 @@ export class AuthService {
    */
   async ensureUserDocExists(user: User): Promise<void> {
     const userRef = doc(this.firestore, `users/${user.uid}`);
-    await getDoc(userRef);
+    const snap = await getDoc(userRef);
+    if (!snap.exists()) await this.createOrUpdateUserInFirestore( user, (user.providerData[0]?.providerId as any) ?? 'anonymus' );
   }
 
   /**
@@ -120,7 +117,7 @@ export class AuthService {
     const snap = await getDoc(ref);
     snap.exists()
       ? await this.reactivateExistingUser(ref)
-      : await this.createNewUser(user, provider, name, photo, ref);
+      : await this.createNewUser(user, provider, ref, name, photo);
   }
 
   /**
@@ -128,19 +125,19 @@ export class AuthService {
    *
    * @param user - The Firebase user
    * @param provider - The authentication provider used
+   * @param ref - Firestore document reference
    * @param name - Optional display name
    * @param photo - Optional photo URL
-   * @param ref - Optional Firestore document reference
    */
   async createNewUser(
     user: User,
     provider: 'google.com' | 'password' | 'anonymous',
+    ref: DocumentReference,
     name?: string,
     photo?: string,
-    ref?: DocumentReference
   ) {
     const data = this.buildUserData(user, provider, name, photo);
-    await setDoc(ref!, data);
+    await setDoc(ref, data);
     await this.setupDemoEnvironment(user.uid);
   }
 
@@ -162,7 +159,7 @@ export class AuthService {
       uid: user.uid,
       name: name ?? user.displayName ?? '',
       email: user.email ?? '',
-      photoUrl: photo ?? user.photoURL ?? '',
+      photoUrl: photo ?? user.photoURL ?? './assets/img/no-avatar.svg',
       authProvider: provider,
       contacts: {},
       active: true,
@@ -202,7 +199,7 @@ export class AuthService {
     const ref = authProvider === 'anonymous'
         ? this.resetDemoChannelService.channelEntwicklerteamGuestsDocRef
         : this.channelEntwicklerteamDocRef;
-    await updateDoc(ref, { memberIds: arrayUnion(uid) });
+    updateDoc(ref, { memberIds: arrayUnion(uid) });
   }
 
   /**
@@ -261,8 +258,8 @@ export class AuthService {
       .then(() => signInWithEmailAndPassword(this.auth, email, password))
       .then(
       async (response) => {
-        await this.screenService.setInitDashboardState();
         await this.createOrUpdateUserInFirestore(response.user, 'password');
+        await this.screenService.setInitDashboardState();
       }
     );
     return from(promise);
@@ -274,10 +271,9 @@ export class AuthService {
   loginAsGuest(): Observable<void> {
     const promise = signInAnonymously(this.auth)
       .then(async (credential) => {
-        await this.screenService.setInitDashboardState();
         const guest = credential.user;
         await this.createOrUpdateUserInFirestore(guest, 'anonymous', 'Gast');
-        await this.userService.updateUser(guest.uid, { photoUrl: './assets/img/no-avatar.svg' });
+        await this.screenService.setInitDashboardState();
       })
       .catch((error) => console.error('Guest login error:', error));
     return from(promise) as Observable<void>;
@@ -291,9 +287,9 @@ export class AuthService {
     const promise = setPersistence(this.auth, browserSessionPersistence)
     .then(() => signInWithPopup(auth, this.provider))
       .then(async (response) => {
-        await this.screenService.setInitDashboardState();
         const user = response.user;
         await this.createOrUpdateUserInFirestore(user, 'google.com');
+        await this.screenService.setInitDashboardState();
       })
       .catch((error) => console.error('Google Login Error:', error));
     return from(promise) as Observable<void>;

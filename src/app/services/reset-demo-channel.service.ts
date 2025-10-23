@@ -21,7 +21,7 @@ export class ResetDemoChannelService {
   async resetExampleChannel(guestUserId: string) {
     await updateDoc(this.channelEntwicklerteamGuestsDocRef, {
       memberIds: arrayRemove(guestUserId),
-      name: 'Entwicklerteam',
+      name: 'Developerteam',
       description: 'Hier kannst du dich zusammen mit den EntwicklerInnen über die Chat-App austauschen.',
     });
     await this.resetMessagesExampleChannel(guestUserId);
