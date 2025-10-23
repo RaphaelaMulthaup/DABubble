@@ -3,6 +3,8 @@ import {
   arrayRemove,
   collection,
   doc,
+  DocumentData,
+  DocumentReference,
   Firestore,
   getDocs,
   query,
@@ -19,6 +21,7 @@ import { ReactionsService } from './reactions.service';
 import { async, take } from 'rxjs';
 import { CHATMESSAGES } from '../shared/constants/demo-chat-messages';
 import { DEVIDS } from '../shared/constants/demo-dev-ids';
+import { ResetDemoChannelService } from './reset-demo-channel.service';
 
 @Injectable({
   providedIn: 'root',
@@ -34,6 +37,7 @@ export class UserDemoSetupService {
   constructor(
     private chatService: ChatService,
     private postService: PostService,
+    private resetDemoChannelService: ResetDemoChannelService,
     private firestore: Firestore
   ) {}
 
@@ -90,7 +94,10 @@ export class UserDemoSetupService {
       await this.deleteAllMessagesAndNestedSubcollections(channelRef.path);
       batch.delete(channelRef);
     } else {
-      //Hier müssen noch alle Messages, Answers und Reactions des Gastes gelöscht werden
+      await this.deleteGuestMessagesAnswersAndReactions(
+        channelRef,
+        guestUserId
+      );
       batch.update(channelRef, { memberIds: arrayRemove(guestUserId) });
     }
   }
@@ -138,6 +145,79 @@ export class UserDemoSetupService {
     const batch = writeBatch(this.firestore);
     batch.delete(ref);
     await batch.commit();
+  }
+
+  async deleteGuestMessagesAnswersAndReactions(
+    channelRef: DocumentReference,
+    guestUserId: string
+  ) {
+    const messagesCol = collection(channelRef, 'messages');
+
+    // 1. Nachrichten des Gastes löschen
+    const guestMessagesQuery = query(
+      messagesCol,
+      where('senderId', '==', guestUserId)
+    );
+    const guestMessagesSnap = await getDocs(guestMessagesQuery);
+    const batch = writeBatch(this.firestore);
+
+    for (const msgDoc of guestMessagesSnap.docs) {
+      await this.resetDemoChannelService.deleteAnswersReactionsAndMessage(
+        batch,
+        msgDoc
+      );
+    }
+    await batch.commit();
+
+    // 2. Reaktionen des Gastes entfernen (auch bei fremden Nachrichten)
+    const messagesWithReactionsQuery = query(
+      messagesCol,
+      where('hasReactions', '==', true)
+    );
+    const messagesWithReactionsSnap = await getDocs(messagesWithReactionsQuery);
+    for (const msgDoc of messagesWithReactionsSnap.docs) {
+      await this.resetDemoChannelService.handleMessagesWithReactions(
+        msgDoc,
+        guestUserId
+      );
+    }
+
+    // 3. Antworten des Gastes löschen
+    const messagesWithAnswersQuery = query(
+      messagesCol,
+      where('ansCounter', '>', 0)
+    );
+    const messagesWithAnswersSnap = await getDocs(messagesWithAnswersQuery);
+    for (const msgDoc of messagesWithAnswersSnap.docs) {
+      await this.resetDemoChannelService.handleMessagesWithAnswers(
+        msgDoc,
+        guestUserId
+      );
+    }
+    for (const msgDoc of messagesWithAnswersSnap.docs) {
+      await this.handleAnswersWithReactions(
+        msgDoc,
+        guestUserId
+      );
+    }
+  }
+
+  async handleAnswersWithReactions(
+    msgDoc: QueryDocumentSnapshot<DocumentData>,
+    guestUserId: string
+  ) {
+    const answersColRef = collection(msgDoc.ref, 'answers');
+    const answersSnap = await getDocs(answersColRef);
+
+    for (const ansDoc of answersSnap.docs) {
+      const reactionsColRef = collection(ansDoc.ref, 'reactions');
+      const reactionsSnap = await getDocs(reactionsColRef);
+      await this.resetDemoChannelService.deleteGuestUserIdAsSenderOfReactions(
+        reactionsSnap,
+        guestUserId
+      );
+      await this.resetDemoChannelService.setHasReactions(reactionsColRef, ansDoc.ref);
+    }
   }
 
   buildUserChannelsQuery(userId: string) {
