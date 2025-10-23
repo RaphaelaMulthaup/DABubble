@@ -16,7 +16,6 @@ import { doc } from '@angular/fire/firestore';
 export class AppComponent {
   title = 'DABubble';
   private visibilityTimeout: any;
-  checkingPresence = true;
 
   constructor(
     private router: Router,
@@ -36,8 +35,7 @@ export class AppComponent {
 
     onAuthStateChanged(this.auth, async (user) => {
       if (!user) {        
-        this.checkingPresence = false;
-        return 
+        return;
       };
       const forcedClose = await this.presenceService.checkForcedClose(user);
       if (forcedClose) {
@@ -47,7 +45,6 @@ export class AppComponent {
         await this.presenceService.setOffline(user);
         return;
       }
-        this.checkingPresence = false; 
       await this.presenceService.initPresence(user);
 
     });
