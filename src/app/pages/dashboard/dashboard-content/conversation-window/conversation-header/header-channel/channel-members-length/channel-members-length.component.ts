@@ -36,7 +36,7 @@ export class ChannelMembersLengthComponent {
 
   constructor(
     public screenService: ScreenService,
-    private userService: UserService
+    public userService: UserService
   ) {
     this.screenSize$ = this.screenService.screenSize$;
   }

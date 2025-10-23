@@ -5,35 +5,44 @@
     'related-to-search-result-post': relatedToSearchResultPost,
     'in-header-chat': inHeaderChat
   }"
-  [class.active]="(screenSize$|async) !== 'handset' && dashboardState() !== 'new-message-view' &&  !inHeaderChat && !relatedToSearchResultPost && conversationActiveRouterService.currentConversation() === lastUserSnapshot?.uid"
+  [class.active]="
+    (screenSize$ | async) !== 'handset' &&
+    dashboardState() !== 'new-message-view' &&
+    !inHeaderChat &&
+    !relatedToSearchResultPost &&
+    conversationActiveRouterService.currentConversation() ===
+      lastUserSnapshot?.uid
+  "
 >
   @if (user$ | async; as user) {
-    <div class="profil-img-and-status">
-      <img class="profil-img" src="{{ user.photoUrl || 'assets/img/no-avatar.svg' }}" alt="Profilbild" />
-      @if (!relatedToSearchResultPost) {
-
-      @if(currentStatus$ | async; as status){
-             <img
-    class="status"
-    [src]="
-      status?.state === 'online'
-        ? 'assets/img/online-with-white-circle.svg'
-        : 'assets/img/offline-with-white-circle.svg'
-    "
-    alt="Status"
-      />
-      }@else {
-        <img src="assets/img/offline-with-white-circle.svg" alt="Status">
-      }
-      }
-    </div>
-    <div>
-      <span [ngClass]="{ 'in-header-chat': inHeaderChat }">
-        {{ user.name }}
-      </span>
-      @if ((currentUserId$ | async) == user.uid) {
-      <span [ngClass]="{ 'in-header-chat': inHeaderChat }">(Du)</span>
-      }
-    </div>
+  <div class="profil-img-and-status">
+    <img
+      class="profil-img"
+      src="{{ user.photoUrl || 'assets/img/no-avatar.svg' }}"
+      (error)="userService.setDefaultImg($event)" 
+      alt="Profilbild"
+    />
+    @if (!relatedToSearchResultPost) { @if(currentStatus$ | async; as status){
+    <img
+      class="status"
+      [src]="
+        status?.state === 'online'
+          ? 'assets/img/online-with-white-circle.svg'
+          : 'assets/img/offline-with-white-circle.svg'
+      "
+      alt="Status"
+    />
+    }@else {
+    <img class="status" src="assets/img/offline-with-white-circle.svg" alt="Status" />
+    } }
+  </div>
+  <div>
+    <span [ngClass]="{ 'in-header-chat': inHeaderChat }">
+      {{ user.name }}
+    </span>
+    @if ((currentUserId$ | async) == user.uid) {
+    <span [ngClass]="{ 'in-header-chat': inHeaderChat }">(Du)</span>
+    }
+  </div>
   }
 </li>

@@ -1,16 +1,26 @@
 <section>
   <div class="infos">
-    <img src="{{(user$ | async)?.photoUrl || 'assets/img/no-avatar.svg'}}" alt="Profile">
-    <h2>{{(user$ | async)?.name}}</h2>
+    <img
+      src="{{ (user$ | async)?.photoUrl || 'assets/img/no-avatar.svg' }}"
+      alt="Profile"
+      (error)="userService.setDefaultImg($event)"
+    />
+    <h2>{{ (user$ | async)?.name }}</h2>
   </div>
   <div class="description">
     @if (ownChat) {
-        <span class="font-bold">Dieser Raum ist nur für dich da.</span>
-        <span> Mache dir Notizen, liste deine To-dos auf oder bewahre Links und Dateien griffbereit auf. Du kannst hier auch gerne Dinge mit dir selbst besprechen.</span>
+    <span class="font-bold">Dieser Raum ist nur für dich da.</span>
+    <span>
+      Mache dir Notizen, liste deine To-dos auf oder bewahre Links und Dateien
+      griffbereit auf. Du kannst hier auch gerne Dinge mit dir selbst
+      besprechen.</span
+    >
     } @else {
-        <span>Diese Unterhaltung findet nur zwischen </span>
-        <span class="link-to-chat" (click)="openProfileViewOtherUsersOverlay()">@{{(user$ | async)?.name}}</span>
-        <span> und dir statt.</span>
+    <span>Diese Unterhaltung findet nur zwischen </span>
+    <span class="link-to-chat" (click)="openProfileViewOtherUsersOverlay()"
+      >@{{ (user$ | async)?.name }}</span
+    >
+    <span> und dir statt.</span>
     }
   </div>
 </section>

@@ -1,35 +1,43 @@
 @if (user$ | async) {
-  <div class="profil-view-main overlay flex flex-col items-center justify-between">
-    <app-header-overlay
-      class="flex items-center justifiy-center w-full"
-      [overlayHeadline]="'Profil'"
+<div
+  class="profil-view-main overlay flex flex-col items-center justify-between"
+>
+  <app-header-overlay
+    class="flex items-center justifiy-center w-full"
+    [overlayHeadline]="'Profil'"
+  />
+  <div class="img-area flex items-center justify-center w-full">
+    <img
+      class="user-img"
+      [src]="(user$ | async)?.photoUrl || 'assets/img/no-avatar.svg'"
+      alt="user img"
+      (error)="userService.setDefaultImg($event)"
     />
-    <div class="img-area flex items-center justify-center w-full">
-      <img class="user-img" [src]="(user$ | async)?.photoUrl || 'assets/img/no-avatar.svg'" alt="user img" />
+  </div>
+  <div class="profile-mid-area flex flex-col w-full">
+    <div class="mid-head flex items-center justify-between w-full">
+      <h1 class="user-name">{{ (user$ | async)?.name }}</h1>
+      <button type="button" class="link" (click)="openEditProfileOverlay()">
+        <img class="edit-mobile-icon" src="./assets/img/edit.svg" alt="" />
+        <span class="edit-span">Bearbeiten</span>
+      </button>
+      <app-edit-profile class="edit-view"></app-edit-profile>
     </div>
-    <div class="profile-mid-area flex flex-col w-full">
-      <div class="mid-head flex items-center justify-between w-full">
-        <h1 class="user-name">{{ (user$ | async)?.name }}</h1>
-        <button type="button" class="link" (click)="openEditProfileOverlay()">
-          <img class="edit-mobile-icon" src="./assets/img/edit.svg" alt=""/>
-          <span class="edit-span">Bearbeiten</span>
-        </button>
-        <app-edit-profile class="edit-view"></app-edit-profile>
-      </div>
-      <div class="mid-section flex">
-        <img class="status" src="./assets/img/online.svg" alt="status" />
-        <h3 class="status-txt">Aktiv</h3>
-      </div>
-    </div>
-    <div class="profile-bottom-area flex flex-col w-full">
-      <div class="mail-section flex items-center">
-        <img
-          class="mail-profile-icon"
-          src="./assets/img/mail-profil-view.svg"
-          alt="mail icon"/>
-        <h3 class="profile-h3">E-Mail-Adresse</h3>
-      </div>
-      <a class="mail-link" href="">{{ (user$ | async)?.email }}</a>
+    <div class="mid-section flex">
+      <img class="status" src="./assets/img/online.svg" alt="status" />
+      <h3 class="status-txt">Aktiv</h3>
     </div>
   </div>
+  <div class="profile-bottom-area flex flex-col w-full">
+    <div class="mail-section flex items-center">
+      <img
+        class="mail-profile-icon"
+        src="./assets/img/mail-profil-view.svg"
+        alt="mail icon"
+      />
+      <h3 class="profile-h3">E-Mail-Adresse</h3>
+    </div>
+    <a class="mail-link" href="">{{ (user$ | async)?.email }}</a>
+  </div>
+</div>
 }

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { UserInterface } from '../../models/user.interface';
 import { OverlayService } from '../../../services/overlay.service';
 import { OverlayRef } from '@angular/cdk/overlay';
+import { UserService } from '../../../services/user.service';
 
 @Component({
   selector: 'app-user-list-item-to-channel',
@@ -20,7 +21,10 @@ export class UserListItemToChannelComponent {
   overlay: string = '';
   users: UserInterface[] = [];
 
-  constructor(private overlayService: OverlayService) {
+  constructor(
+    private overlayService: OverlayService,
+    public userService: UserService
+  ) {
     effect(() => {
       this.users = this.results();
     });

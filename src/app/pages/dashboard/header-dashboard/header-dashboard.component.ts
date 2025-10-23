@@ -10,6 +10,7 @@ import { OverlayService } from '../../../services/overlay.service';
 import { ScreenSize } from '../../../shared/types/screen-size.type';
 import { ScreenService } from '../../../services/screen.service';
 import { SettingsComponent } from '../../../overlay/settings/settings.component';
+import { UserService } from '../../../services/user.service';
 
 @Component({
   selector: 'app-header-dashboard',
@@ -31,7 +32,8 @@ export class HeaderDashboardComponent {
   constructor(
     public authService: AuthService,
     private overlayService: OverlayService,
-    public screenService: ScreenService
+    public screenService: ScreenService,
+    public userService: UserService,
   ) {
     this.currentUser$ = this.authService.currentUser$;
     this.dashboardState = this.screenService.dashboardState;
