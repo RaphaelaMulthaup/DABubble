@@ -16,7 +16,7 @@ export const CHATMESSAGES = {
   'IjcUwvUR9wdgsnCubqBbk5GRpUW2': [
     {
       senderId: 'IjcUwvUR9wdgsnCubqBbk5GRpUW2',
-      text: 'Hallo! In deinen Nachrichten kannst du Emojis verwenden oder auch User und Channel markieren. Außerdem kannst du auf Nachrichten reagieren. :smiling-face-with-sunglasses: \n PS: Wusstest du schon? Du kannst Nachrichten nachträglich noch ändern, wenn du möchtest. Einfach auf deine Nachricht klicken, dann auf die 3 Punkte und dann auf "Nachricht bearbeiten".',
+      text: 'Hallo! In deinen Nachrichten kannst du Emojis verwenden oder auch User und Channel markieren. Außerdem ist es möglich, auf Nachrichten mit Emojis zu reagieren. :smiling-face-with-sunglasses: \n PS: Wusstest du schon? Du kannst Nachrichten nachträglich noch ändern. Einfach auf deine Nachricht klicken, dann auf die 3 Punkte und dann auf "Nachricht bearbeiten".',
     }
   ],
 
