@@ -8,7 +8,7 @@
   (scroll)="onScroll()"
 >
 
-  @if (showThreadTheme()) {
+  @if ((showThreadTheme$() | async) && (ansCounter$ |async) === 0) {
     <app-empty-thread-view [post]="postAnswered!"></app-empty-thread-view>
   }
 
@@ -25,9 +25,7 @@
                 @else {
                   {{ days[message.createdAt.toDate().getDay()] }},
                   {{ message.createdAt.toDate().getDate().toString().padStart(2, "0") }}.
-                  {{
-                  message.createdAt.toDate().toLocaleString("de-DE", { month: "long" })
-                  }}
+                  {{ message.createdAt.toDate().toLocaleString("de-DE", { month: "long" })}}
                 }
               </p>
               <div class="seperator"></div>

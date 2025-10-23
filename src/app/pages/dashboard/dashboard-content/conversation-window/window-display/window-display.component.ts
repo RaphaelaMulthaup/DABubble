@@ -4,7 +4,7 @@ import { PostService } from '../../../../../services/post.service';
 import { DisplayedPostComponent } from './displayed-post/displayed-post.component';
 import { PostInterface } from '../../../../../shared/models/post.interface';
 import { ActivatedRoute, Router } from '@angular/router';
-import { catchError, combineLatest, defer, distinctUntilChanged, map, Observable, of, shareReplay, startWith, Subject, takeUntil } from 'rxjs';
+import { BehaviorSubject, catchError, combineLatest, defer, distinctUntilChanged, map, Observable, of, shareReplay, startWith, Subject, takeUntil } from 'rxjs';
 import { ConversationActiveRouterService } from '../../../../../services/conversation-active-router.service';
 import { ChatService } from '../../../../../services/chat.service';
 import { DashboardState } from '../../../../../shared/types/dashboard-state.type';
@@ -14,7 +14,6 @@ import { DAYS } from '../../../../../shared/constants/days';
 import { EmptyChatViewComponent } from './empty-chat-view/empty-chat-view.component';
 import { EmptyChannelViewComponent } from './empty-channel-view/empty-channel-view.component';
 import { EmptyThreadViewComponent } from './empty-thread-view/empty-thread-view.component';
-import { doc, docData, Firestore } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-window-display',
@@ -34,12 +33,12 @@ export class WindowDisplayComponent implements OnInit {
   channelTyp$?: Observable<string>;
   screenSize$!: Observable<ScreenSize>;
   isLoaded$!: Observable<boolean>;
+  ansCounter$ = new BehaviorSubject<number>(0);
   destroy$ = new Subject<void>();
   days = DAYS;
 
   postAnsweredId!: string | null;
   postAnswered!: PostInterface | null;
-  postAnswered$!: Observable <PostInterface | null>;
   postInfo: PostInterface[] = [];
   currentConversationType?: 'channel' | 'chat';
   loadingOlderMessages = false;
@@ -53,7 +52,6 @@ export class WindowDisplayComponent implements OnInit {
   constructor(
     private chatService: ChatService,
     private conversationActiveRouterService: ConversationActiveRouterService,
-    private firestore: Firestore,
     public postService: PostService,
     private route: ActivatedRoute,
     private router: Router,
@@ -61,7 +59,6 @@ export class WindowDisplayComponent implements OnInit {
   ) {
     this.dashboardState = this.screenService.dashboardState;
     this.screenSize$ = this.screenService.screenSize$;
-    if (this.postAnswered) this.postAnswered$ = docData(doc(this.firestore, `channels/${this.currentConversationId}/messages/${this.postAnswered.id}`)) as Observable<PostInterface>;
   }
 
   ngOnInit() {
@@ -70,9 +67,9 @@ export class WindowDisplayComponent implements OnInit {
     this.initMessageSubscription();
     this.initScrollHandlers();
     this.initLoadingState();
-      this.postService.newMessage$.pipe(takeUntil(this.destroy$)).subscribe(() => {
-    setTimeout(() => this.scrollToLastMessage(), 0);
-  });
+    this.postService.newMessage$.pipe(takeUntil(this.destroy$)).subscribe(() => {
+      setTimeout(() => this.scrollToLastMessage(), 0);
+    });
   }
 
   ngAfterViewInit() {
@@ -105,8 +102,7 @@ export class WindowDisplayComponent implements OnInit {
    * Tracks the 'messageId' route param and loads the answered post if present.
    */
   initAnsweredPostTracking() {
-    this.route.params
-      .pipe(
+    this.route.params.pipe(
         map((params) => params['messageId'] ?? null),
         distinctUntilChanged(),
         takeUntil(this.destroy$))
@@ -114,9 +110,10 @@ export class WindowDisplayComponent implements OnInit {
         if (this.postAnsweredId) { this.postService
             .getPostById( this.currentConversationType!, this.currentConversationId!, this.postAnsweredId!)
             .pipe(takeUntil(this.destroy$))
-            .subscribe((post) => (this.postAnswered = post));
-        } else this.postAnswered = null;
-      });
+            .subscribe((post) => {this.postAnswered = post;
+              this.ansCounter$.next(post?.ansCounter ?? 0)});
+        } else {this.postAnswered = null;
+          this.ansCounter$.next(0);}});
   }
 
   /**
@@ -173,11 +170,18 @@ export class WindowDisplayComponent implements OnInit {
    * Determines whether the thread theme should be displayed.
    * Returns `true` only if the current window state is a thread, a `postAnswered` object exists and the post has no answers (`ansCounter` is 0 or undefined).
    */
-  showThreadTheme():boolean {
-    if (this.conversationWindowState === 'conversation') return false;
-    if (!this.postAnswered) return false;
-    if (this.postAnswered.ansCounter && this.postAnswered.ansCounter > 0) return false;
-    return true;
+  showThreadTheme$():Observable<boolean> {
+    return of({
+      postAnswered: this.postAnswered,
+      conversationWindowState: this.conversationWindowState
+    }).pipe(
+      map(({ postAnswered, conversationWindowState }) => {
+        if (conversationWindowState === 'conversation') return false;
+        if (!postAnswered) return false;
+        if (postAnswered.ansCounter && postAnswered.ansCounter > 0) return false;
+        return true;
+      })
+    );
   }
 
   /**
@@ -251,22 +255,18 @@ export class WindowDisplayComponent implements OnInit {
     const previousChatId = this.currentConversationId;
     this.currentConversationId = newChatId;
     this.postInfo = newMessages;
-
     if (previousChatId && previousChatId !== newChatId) {
       this.initialScrollDone = false;
       this.loadingOlderMessages = false;
       this.tryDeleteEmptyChat(previousChatId);
       setTimeout(() => this.scrollToLastMessage(), 0);
-          return;
+      return;
     } else if (!this.loadingOlderMessages && !this.initialScrollDone) {
       setTimeout(() => this.scrollToLastMessage(), 0);
       this.initialScrollDone = true;
     }
-     const el = this.messagesContainer.nativeElement;
-
-    if (el.scrollTop === 0 && this.postInfo.length > 0 && !this.loadingOlderMessages) {
-      setTimeout(() => this.scrollToLastMessage(), 0);
-    }
+    const el = this.messagesContainer.nativeElement;
+    if (el.scrollTop === 0 && this.postInfo.length > 0 && !this.loadingOlderMessages) setTimeout(() => this.scrollToLastMessage(), 0);
   }
 
   /**
