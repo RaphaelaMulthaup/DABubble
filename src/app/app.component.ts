@@ -1,11 +1,10 @@
-import { Component} from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterOutlet, Router, NavigationStart } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { OverlayService } from './services/overlay.service';
 import { PresenceService } from './services/presence.service';
-import { Auth, onAuthStateChanged } from '@angular/fire/auth';
+import { Auth, onAuthStateChanged, User } from '@angular/fire/auth';
 import { AuthService } from './services/auth.service';
-import { doc } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-root',
@@ -15,64 +14,96 @@ import { doc } from '@angular/fire/firestore';
 })
 export class AppComponent {
   title = 'DABubble';
-  private visibilityTimeout: any;
   checkingPresence = true;
+  visibilityTimeout: any;
 
   constructor(
-    private router: Router,
+    private auth: Auth,
+    private authService: AuthService,
     private overlayService: OverlayService,
     private presenceService: PresenceService,
-    private auth: Auth,
-    private authService: AuthService
+    private router: Router
   ) {
     this.handleVisibilityChange();
   }
-  
 
   ngOnInit() {
+    this.handleNavigationEvents();
+    this.handleAuthStateChanges();
+  }
+
+  /**
+   * Closes all overlays whenever a new navigation starts.
+   */
+  handleNavigationEvents() {
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationStart) this.overlayService.closeAll();
     });
+  }
 
+  /**
+   * Subscribes to Firebase authentication state changes and initializes or clears the user's presence accordingly.
+   * If a forced close is detected, it triggers the forced logout handler.
+   */
+  handleAuthStateChanges() {
     onAuthStateChanged(this.auth, async (user) => {
-      if (!user) {        
+      if (!user) {
         this.checkingPresence = false;
-        return 
-      };
-      const forcedClose = await this.presenceService.checkForcedClose(user);
-      if (forcedClose) {
-        if(user.isAnonymous){
-          await this.authService.setupGuestLogoutOnUnload();
-        }
-        await this.presenceService.setOffline(user);
-        await this.authService.logout();
         return;
       }
-        this.checkingPresence = false; 
+      const forcedClose = await this.presenceService.checkForcedClose(user);
+      if (forcedClose) await this.handleForcedClose(user);
+      this.checkingPresence = false;
       await this.presenceService.initPresence(user);
-
     });
-}
+  }
 
-  private handleVisibilityChange(){
-    document.addEventListener('visibilitychange', () =>{
-      const user = this.auth.currentUser
-      if(!user) return;
+  /**
+   * Handles user logout in case of a forced disconnect.
+   * Ensures the user is marked offline and logs out the session.
+   * 
+   * @param user - The currently authenticated user
+   */
+  async handleForcedClose(user: User) {
+    if (user.isAnonymous) this.authService.setupGuestLogoutOnUnload();
+    await this.presenceService.setOffline(user);
+    await this.authService.logout();
+    return;
+  }
 
-      if(document.visibilityState === 'hidden'){
-        if(user.isAnonymous){
-          this.visibilityTimeout = setTimeout( async ()=> {
-            await this.presenceService.setOffline(user);
-          },5000);
-        }else{
-          this.visibilityTimeout = setTimeout( async () =>{
-            await this.presenceService.setOffline(user);
-          }, 5000);
-        }
-      }else if(document.visibilityState === 'visible'){
-          clearTimeout(this.visibilityTimeout);
-          this.presenceService.initPresence(user);
-        }
-    })
+  /**
+   * Handles visibility state changes and updates user presence accordingly.
+   */
+  handleVisibilityChange() {
+    document.addEventListener('visibilitychange', () => {
+      const user = this.auth.currentUser;
+      if (!user) return;
+      if (document.visibilityState === 'hidden') {
+        this.handleTabHidden(user);
+      } else if (document.visibilityState === 'visible') {
+        this.handleTabVisible(user);
+      }
+    });
+  }
+
+  /**
+   * Sets the user offline after a short delay when the tab is hidden.
+   *
+   * @param user - The currently authenticated user
+   */
+  handleTabHidden(user: User) {
+    this.visibilityTimeout = setTimeout(async () => {
+      await this.presenceService.setOffline(user);
+    }, 5000);
+  }
+
+  /**
+   * Cancels any pending offline action and reinitializes presence when the tab becomes visible.
+   *
+   * @param user - The currently authenticated user
+   */
+  handleTabVisible(user: User) {
+    clearTimeout(this.visibilityTimeout);
+    this.presenceService.initPresence(user);
   }
 }
