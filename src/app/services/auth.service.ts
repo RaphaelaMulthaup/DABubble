@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Auth, authState, createUserWithEmailAndPassword, signOut, User } from '@angular/fire/auth';
-import { signInWithEmailAndPassword, signInAnonymously, deleteUser, getAuth, signInWithPopup, GoogleAuthProvider, sendPasswordResetEmail } from 'firebase/auth';
+import { signInWithEmailAndPassword, signInAnonymously, deleteUser, getAuth, signInWithPopup, GoogleAuthProvider, sendPasswordResetEmail, setPersistence, browserSessionPersistence } from 'firebase/auth';
 import { Firestore, arrayUnion, deleteDoc, doc, docData, getDoc, setDoc, updateDoc } from '@angular/fire/firestore';
 import { catchError, distinctUntilChanged, concatMap, from, map, Observable, of, shareReplay, switchMap, tap } from 'rxjs';
 import { UserInterface } from '../shared/models/user.interface';
@@ -10,6 +10,7 @@ import { UserToRegisterInterface } from '../shared/models/user.to.register.inter
 import { DocumentData, DocumentReference } from 'firebase/firestore';
 import { UserDemoSetupService } from './user-demo-setup.service';
 import { ResetDemoChannelService } from './reset-demo-channel.service';
+import { PresenceService } from './presence.service';
 
 @Injectable({
   providedIn: 'root',
@@ -26,7 +27,8 @@ export class AuthService {
     private resetDemoChannelService: ResetDemoChannelService,
     private screenService: ScreenService,
     private userDemoSetupService: UserDemoSetupService,
-    private userService: UserService
+    private userService: UserService,
+    private presenceService:PresenceService
   ) {
     this.currentUser$ = this.initCurrentUserStream();
     this.channelEntwicklerteamDocRef = doc( this.firestore, `channels/nZmkj8G288La1CqafnLP` );
@@ -255,7 +257,9 @@ export class AuthService {
    * @param password -  The user's password
    */
   login(email: string, password: string): Observable<void> {
-    const promise = signInWithEmailAndPassword(this.auth, email, password).then(
+    const promise = setPersistence(this.auth, browserSessionPersistence)
+      .then(() => signInWithEmailAndPassword(this.auth, email, password))
+      .then(
       async (response) => {
         await this.screenService.setInitDashboardState();
         await this.createOrUpdateUserInFirestore(response.user, 'password');
@@ -286,7 +290,8 @@ export class AuthService {
    */
   loginWithGoogle(): Observable<void> {
     const auth = getAuth();
-    const promise = signInWithPopup(auth, this.provider)
+    const promise = setPersistence(this.auth, browserSessionPersistence)
+    .then(() => signInWithPopup(auth, this.provider))
       .then(async (response) => {
         await this.screenService.setInitDashboardState();
         const user = response.user;
@@ -359,4 +364,6 @@ export class AuthService {
     const userRef = doc(this.firestore, `users/${user?.uid}`);
     return updateDoc(userRef, { name: newName });
   }
+
+
 }

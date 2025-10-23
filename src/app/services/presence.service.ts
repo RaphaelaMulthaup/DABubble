@@ -65,7 +65,7 @@ export class PresenceService {
     if (!snapshot.exists()) return false;
     const val = snapshot.val();
     const now = Date.now();
-    return val.forcedClose && now - val.lastChanged > 5000;
+    return val.forcedClose && now - val.lastChanged > 3600000;
   }
 
   /**

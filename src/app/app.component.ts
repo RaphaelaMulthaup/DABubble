@@ -14,7 +14,6 @@ import { AuthService } from './services/auth.service';
 })
 export class AppComponent {
   title = 'DABubble';
-  checkingPresence = true;
   visibilityTimeout: any;
 
   constructor(
@@ -47,13 +46,9 @@ export class AppComponent {
    */
   handleAuthStateChanges() {
     onAuthStateChanged(this.auth, async (user) => {
-      if (!user) {
-        this.checkingPresence = false;
-        return;
-      }
+      if (!user) return;
       const forcedClose = await this.presenceService.checkForcedClose(user);
       if (forcedClose) await this.handleForcedClose(user);
-      this.checkingPresence = false;
       await this.presenceService.initPresence(user);
     });
   }
@@ -67,7 +62,6 @@ export class AppComponent {
   async handleForcedClose(user: User) {
     if (user.isAnonymous) this.authService.setupGuestLogoutOnUnload();
     await this.presenceService.setOffline(user);
-    await this.authService.logout();
     return;
   }
 

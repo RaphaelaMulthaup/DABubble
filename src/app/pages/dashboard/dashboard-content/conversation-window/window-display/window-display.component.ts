@@ -70,6 +70,9 @@ export class WindowDisplayComponent implements OnInit {
     this.initMessageSubscription();
     this.initScrollHandlers();
     this.initLoadingState();
+      this.postService.newMessage$.pipe(takeUntil(this.destroy$)).subscribe(() => {
+    setTimeout(() => this.scrollToLastMessage(), 0);
+  });
   }
 
   ngAfterViewInit() {
