@@ -1,101 +1,119 @@
 # 🗨️ Chat App
 
-## 💡 Überblick
-Unsere **Chat App** ist eine moderne Echtzeit-Chat-Anwendung, entwickelt mit **Angular**.  
-Sie ermöglicht es Nutzer:innen, miteinander zu schreiben, Chats zu erstellen und Nachrichten live zu empfangen – alles in einem übersichtlichen, responsiven Design. 💬✨
+## 💡 Overview
+Our **Chat App** is a modern real-time chat application built with **Angular**.
+It allows users to communicate, create chats, and receive live messages — all within a clean and responsive interface. 💬✨
 
 ---
 
 ## 🚀 Features
-- 🔐 Benutzer-Login und -Registrierung  
-- 💬 Echtzeit-Nachrichten mit automatischer Aktualisierung 
-- 😄 Die Möglichkeit Nachrichten zu bearbeiten, Reaktionen zu vergeben und User, sowie Channels zu markieren
-- 👥 Gruppenchats und Direktnachrichten  
-- 🕓 Anzeige von Online-Status und Zeitstempeln 
-- 🔍 Suchfunktion für User, Channels und Nachrichten
-- 📱 Voll responsive – funktioniert auf Desktop und Smartphone  
+- 🔐 User login and registration  
+- 💬 Real-time messaging with automatic updates 
+- 😄 Ability to edit messages, add reactions, and mention users or channels
+- 👥 Group chats and direct messages  
+- 🕓 Online status and timestamps 
+- 🔍 Search functionality for users, channels, and messages
+- 📱 Fully responsive – works seamlessly on desktop and mobile  
 
 ---
 
-## 🛠️ Technologien
+## 🛠️ Technologies
 - **Frontend:** Angular (Version 20)  
 - **Styling:** SCSS / Tailwind CSS  
-- **Backend:** Firebase (Echtzeitdatenübertragung)
+- **Backend:** Firebase (real-time communication)
 - **Datenbank:** No-SQL Firestore Database
 
 ---
 
 ## ⚙️ Installation & Setup
 
-### Voraussetzungen
+### Prerequisites
 
 - Node.js >= 18
 - npm >= 9
 - Angular CLI >= 17
-- Firebase-Projekt mit aktivierten Diensten:
+- Firebase-Projekt with the following services enabled:
     - Authentication
     - Firestore
     - Realtime Database
-- Zugriff auf eine gültige environment.ts mit Firebase-Konfiguration
-- Tailwindcss
-
-### Schritte
-```bash
-# 1️⃣ Repository klonen
-git clone https://github.com/<https://github.com/RaphaelaMulthaup/DABubble.git>.git
-
-# 2️⃣ Abhängigkeiten installieren
-npm install
-
-# 3️⃣ Entwicklungsserver starten
-ng serve
-
-➡️ Die App ist dann erreichbar unter http://localhost:4200
-
-
-### 🧰 Projektstruktur
-
-src/
- ├── app/
- │   ├── components/      # Wiederverwendbare UI-Komponenten
- │   ├── services/        # Chat-, Auth- & API-Services
- │   ├── models/          # Interfaces und Typdefinitionen
- │   ├── pages/           # Chat-, Login-, Register-Seiten
- │   └── app.module.ts
- ├── assets/              # Bilder, Icons etc.
- ├── environments/        # Umgebungsvariablen (dev/prod)
-
- 👩‍💻 Team
-
-🧠 <PRIVATE_PERSON_1> – Frontend Development
-
-⚡ <PRIVATE_PERSON_2> – Backend & API
-
-🎨 <PRIVATE_PERSON_3> – Design & UX
-
-🌐 Deployment
-
-Die App kann z. B. über Firebase Hosting, Vercel oder Netlify bereitgestellt werden:
-
-ng build --prod
-# anschließend die build-Dateien hochladen
-
-📄 Lizenz
-
-Dieses Projekt steht unter der MIT-Lizenz.
-Feel free to use, share, and improve it! ❤️
-
-💬 Kontakt
-
-Fragen, Feedback oder Ideen?
-➡️ GitHub Issues
-
-oder schreibt uns direkt!
-
+- Access to a valid environment.ts file with Firebase configuration
+- Tailwind CSS
 
 ---
 
-Wenn du willst, kann ich noch eine **erweiterte Version** schreiben, die **Firebase Auth und Firestore direkt integriert** – dann wäre sie direkt einsatzbereit für eure Chat-Funktion.  
-Willst du, dass ich das mache?
+### Steps
+```bash
+# 1️⃣ Clone the repository
+git clone https://github.com/RaphaelaMulthaup/DABubble.git
+
+# 2️⃣ Install dependencies
+npm install
+
+# 3️⃣ Start the development server
+ng serve
+```
+
+➡️ The app will be available at http://localhost:4200
+
+---
+
+## 🧰 Project Structure
+
+src/
+ ├── app/
+ │   ├── overlay/         # Components displayed in overlays
+ │   ├── pages/           # Dashboard and non-auth pages
+ │   ├── services/        
+ │   ├── shared/
+ │   │   ├── components/  # Reusable UI components
+ │   │   ├── constants/   # Extracted constants
+ │   │   ├── directives/
+ │   │   ├── models/      # Interfaces
+ │   │   ├── types/       # Type definitions
+ ├── assets/              # Images, icons, etc.
+ ├── environments/        # Environment variables (dev/prod)
+
+---
+
+## 👩‍💻 Development-Team
+
+👨‍💻 Andrei Buha
+
+👩‍💻 Anne Vollman
+
+👨‍💻 Nicolaus Feldtmann
+
+👩‍💻 Raphaela Multhaup
+
+---
+
+## 🌐 Deployment
+
+```bash
+ng build
+```
+Then upload the build files to your hosting environment.
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License.
+Feel free to use, share, and improve it! ❤️
+
+---
+
+## 💬 Contact
+
+Questions, feedback, or ideas?
+
+Reach out to us directly:
+
+buha2595@gmail.com
+kontakt@anne-vollmann.de
+nicolaus.feldtmann@gmx.de
+kontakt@raphaela-multhaup.de
+
+---
 
 Emojis are from the OpenMoji project (https://openmoji.org/), licensed under CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/).
