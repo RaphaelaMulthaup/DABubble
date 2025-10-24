@@ -51,7 +51,7 @@ export class AddMemberToChannelComponent {
   addMemberSearchBar!: ElementRef<HTMLElement>;
   searchControl = new FormControl<string>('', { nonNullable: true });
   membersIds$ = new BehaviorSubject<string[]>([]);
-  allContactsSelected$ = new BehaviorSubject<boolean>(false);
+  allContactsSelected$ = new BehaviorSubject<boolean>(true);
   results!: Signal<UserInterface[]>;
   private destroy$ = new Subject<void>();
   private term$: Observable<string> = this.searchControl.valueChanges.pipe(
@@ -63,6 +63,7 @@ export class AddMemberToChannelComponent {
   private resultsOverlayRef?: OverlayRef;
   isClosing = false;
   overlay: string = '';
+  addMemberToChannel:boolean = false;
 
   constructor(
     private channelService: ChannelsService,
@@ -133,6 +134,17 @@ export class AddMemberToChannelComponent {
   toggleRadioBtn() {
     const currentRadioBtnState = this.allContactsSelected$.value
     this.allContactsSelected$.next(!currentRadioBtnState);
+  }
+
+
+    selectAllContacts() {
+    this.allContactsSelected$.next(true);
+    this.addMemberToChannel = false; // resetăm pentru claritate
+  }
+
+  selectSpecificContacts() {
+    this.allContactsSelected$.next(false);
+    this.addMemberToChannel = true; // activăm logica pentru al doilea buton
   }
 
   /**
