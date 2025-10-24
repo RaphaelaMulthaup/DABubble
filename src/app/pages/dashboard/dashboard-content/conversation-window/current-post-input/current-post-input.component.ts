@@ -190,7 +190,7 @@ export class CurrentPostInput implements OnInit, OnDestroy {
         ? of(this.searchChar!)
         : of(this.searchText);
     this.searchService
-      .search(term$ as Observable<string>, { includeAllChannels: this.searchText!.length === 1 })
+      .search(term$ as Observable<string>)
       .pipe(take(1))
       .subscribe((results) => {
         if (results.length === 0) return this.overlayService.closeAll();

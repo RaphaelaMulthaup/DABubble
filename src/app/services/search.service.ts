@@ -192,16 +192,14 @@ export class SearchService {
 
   /**
    * Searches for users, channels, chat messages, and channel messages based on a term.
-   * Includes all messages and channels if specified.
    * 
    * @param term$ - Observable emitting the search term entered by the user
-   * @param opts - Optional flags for the search. For example, includeAllChannels: true to include all channels
    */
-  search(term$: Observable<string>, opts?: { includeAllChannels?: boolean }): Observable<SearchResult[]> {
+  search(term$: Observable<string>): Observable<SearchResult[]> {
     return combineLatest([
       this.prepareTerm$(term$),
       this.users$,
-      opts?.includeAllChannels ? this.allChannels$ : this.userChannels$,
+      this.userChannels$,
       this.chatPosts$.pipe(map((posts) => posts.filter((p): p is PostInterface & { chatId: string } => !!p.chatId))),
       this.channelPosts$,
       this.authService.currentUser$.pipe(filter((u): u is UserInterface => !!u))
