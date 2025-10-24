@@ -59,19 +59,19 @@ ng serve
 
 ## 🧰 Project Structure
 
-src/
- ├── app/
- │   ├── overlay/         # Components displayed in overlays
- │   ├── pages/           # Dashboard and non-auth pages
- │   ├── services/        
- │   ├── shared/
- │   │   ├── components/  # Reusable UI components
- │   │   ├── constants/   # Extracted constants
- │   │   ├── directives/
- │   │   ├── models/      # Interfaces
- │   │   ├── types/       # Type definitions
- ├── assets/              # Images, icons, etc.
- ├── environments/        # Environment variables (dev/prod)
+src/<br>
+ ├── app/<br>
+ │   ├── overlay/         # Components displayed in overlays<br>
+ │   ├── pages/           # Dashboard and non-auth pages<br>
+ │   ├── services/        <br>
+ │   ├── shared/<br>
+ │   │   ├── components/  # Reusable UI components<br>
+ │   │   ├── constants/   # Extracted constants<br>
+ │   │   ├── directives/<br>
+ │   │   ├── models/      # Interfaces<br>
+ │   │   ├── types/       # Type definitions<br>
+ ├── assets/              # Images, icons, etc.<br>
+ ├── environments/        # Environment variables (dev/prod)<br>
 
 ---
 
