@@ -15,6 +15,7 @@
 
   @media (min-height: 1080px) {
     height: 100%;
+    align-content: center;
     background-color: var(--color-purple-white);
   }
 }
@@ -41,6 +42,11 @@
   @media (min-width: 1920px) {
     width: 1920px;
     justify-self: center;
+  }
+
+  @media (min-height: 1080px) {
+    height: 945px;
+    padding-bottom: 0;
   }
 }
 
@@ -90,12 +96,13 @@
   }
 
   @media (min-width: 1920px) {
-    left: calc(100vw - 1920px - ((100vw - 1920px)/2));
+    left: calc(100vw - 1920px - ((100vw - 1920px) / 2));
     align-self: center;
   }
 
   @media (min-height: 1080px) {
-    top: 972px;
+    top: calc(100vh - 1080px - ((100vh - 1080px) / 2));
+    margin-top: 972px;
   }
 }
 
@@ -107,4 +114,8 @@
   left: 0;
   z-index: 2;
   background-color: transparent;
+}
+
+body {
+  background-color: var(--color-purple-white);
 }

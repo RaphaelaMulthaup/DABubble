@@ -1,32 +1,33 @@
-<section class="dashboard w-full" 
-      [ngClass]="{'new-message-view-mobile': dashboardState() === 'new-message-view' && (screenSize$ | async) === 'handset'}">
-  <app-header-dashboard />
-
-  @if ((screenSize$|async) === 'handset') {
-    <div class="w-full h-full ">
-      @if (dashboardState() === 'sidenav') {
-        <app-sidenav></app-sidenav>
-      } @else {
+<body>
+  <section class="dashboard w-full" [ngClass]="{'new-message-view-mobile': dashboardState() === 'new-message-view' && (screenSize$ | async) === 'handset'}">
+    <app-header-dashboard />
+  
+    @if ((screenSize$|async) === 'handset') {
+      <div class="w-full h-full ">
+        @if (dashboardState() === 'sidenav') {
+          <app-sidenav></app-sidenav>
+        } @else {
+          <router-outlet></router-outlet>
+        }
+      </div>
+    } @else {
+      <div class="dashboard-{{(screenSize$|async)}} flex"
+      [ngStyle]="{'margin-left': (screenSize$|async) !== 'handset' && (screenService.sidenavVisible$|async)? '0px': '-10px'}">
+        @if((screenService.sidenavVisible$|async)) {
+          <app-sidenav class="relative"></app-sidenav>
+        }
         <router-outlet></router-outlet>
-      }
-    </div>
-  } @else {
-    <div class="dashboard-{{(screenSize$|async)}} flex h-full"
-    [ngStyle]="{'margin-left': (screenSize$|async) !== 'handset' && (screenService.sidenavVisible$|async)? '0px': '-10px'}">
-      @if((screenService.sidenavVisible$|async)) {
-        <app-sidenav class="relative"></app-sidenav>
-      }
-      <router-outlet></router-outlet>
-    </div>
-  } 
-</section>
-
-@if ((screenSize$ | async) !== 'handset') {
-  <section (click)="toggleSidenavVisibility()" class="collapsible">
-    <p>Workspace-Menü {{ (screenService.sidenavVisible$|async) ? "schließen" : "öffnen" }}</p>
-    <div class="toggle-navigation-img" [ngClass]="(screenService.sidenavVisible$|async)? 'hide-navigation' : 'show-navigation'"></div>
+      </div>
+    } 
   </section>
-}
+  
+  @if ((screenSize$ | async) !== 'handset') {
+    <section (click)="toggleSidenavVisibility()" class="collapsible">
+      <p>Workspace-Menü {{ (screenService.sidenavVisible$|async) ? "schließen" : "öffnen" }}</p>
+      <div class="toggle-navigation-img" [ngClass]="(screenService.sidenavVisible$|async)? 'hide-navigation' : 'show-navigation'"></div>
+    </section>
+  }
+</body>
 
 @if(overlayService.editingPostId() !== null) {
   <div (click)="endEditingPost()" class="editing-post-backdrop"></div>
