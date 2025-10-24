@@ -59,3 +59,11 @@ footer {
 body {
   justify-content: center;
 }
+  
+.hideIntro{
+  display: none;
+}
+
+.showIntro{
+  display: flex;
+}
