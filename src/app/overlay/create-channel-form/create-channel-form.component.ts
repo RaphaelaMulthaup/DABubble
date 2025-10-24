@@ -17,6 +17,7 @@ import { Router } from '@angular/router';
 import { ScreenSize } from '../../shared/types/screen-size.type';
 import { ScreenService } from '../../services/screen.service';
 import { DashboardState } from '../../shared/types/dashboard-state.type';
+import { ConversationActiveRouterService } from '../../services/conversation-active-router.service';
 
 @Component({
   selector: 'app-create-channel-form',
@@ -50,6 +51,7 @@ export class CreateChannelFormComponent {
 
   constructor(
     private channelService: ChannelsService,
+    private conversationActiveRouterService: ConversationActiveRouterService,
     public overlayService: OverlayService,
     private router: Router,
     public screenService: ScreenService
@@ -59,9 +61,7 @@ export class CreateChannelFormComponent {
   }
 
   ngOnDestroy() {
-    if (this.createSub) {
-      this.createSub.unsubscribe();
-    }
+    if (this.createSub) this.createSub.unsubscribe();
   }
 
   /**
@@ -85,9 +85,7 @@ export class CreateChannelFormComponent {
       return;
     }
     const name = this.createChannel.get('name')?.value?.trim();
-    const descriptionValue = this.createChannel
-      .get('description')
-      ?.value?.trim();
+    const descriptionValue = this.createChannel.get('description')?.value?.trim();
     const description = descriptionValue ? descriptionValue : undefined;
     this.tryCreateChannel(name);
   }
@@ -118,6 +116,7 @@ export class CreateChannelFormComponent {
     this.errorMessage = null;
     this.createChannel.reset();
     this.channel = channel;
+    this.conversationActiveRouterService.currentConversation.set(channel.id!)
     this.router.navigate(['/dashboard', 'channel', channel?.id]);
     this.screenService.setDashboardState('message-window');
     this.openAddMembersToChannelOverlay();
@@ -130,12 +129,9 @@ export class CreateChannelFormComponent {
     this.overlayService.openComponent(
       AddMemberToChannelComponent,
       'cdk-overlay-dark-backdrop',
+      { globalPosition: 'center' },
       {
-        globalPosition: 'center',
-      },
-      {
-        channelDetails$:
-          this.channelToObservable() as Observable<ChannelInterface>,
+        channelDetails$: this.channelToObservable() as Observable<ChannelInterface>,
         overlay: 'overlay',
       }
     );
@@ -157,8 +153,6 @@ export class CreateChannelFormComponent {
   handleChannelCreationError(error: any) {
     if (error.message === 'name vergeben') {
       this.showErrorMessage = true;
-    } else {
-      this.errorMessage = error.message;
-    }
+    } else this.errorMessage = error.message;
   }
 }

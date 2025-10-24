@@ -1,5 +1,5 @@
 import { Component, WritableSignal } from '@angular/core';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { ChannelInterface } from '../../../../shared/models/channel.interface';
 import { AsyncPipe } from '@angular/common';
 import { AuthService } from '../../../../services/auth.service';
@@ -21,7 +21,6 @@ export class ChannelListComponent {
   dashboardState: WritableSignal<DashboardState>;
   channels$!: Observable<ChannelInterface[]>;
 
-  selectedChannel: ChannelInterface | null = null;
   channelsVisible: boolean = true;
   showPopup: boolean = false;
   currentUserId!: string | null;
@@ -42,7 +41,7 @@ export class ChannelListComponent {
    * This function opens the CreateChannelForm-Overlay.
    */
   openCreateChannelFormOverlay() {
-    this.overlayService.openComponent(
+    const overlay = this.overlayService.openComponent(
       CreateChannelFormComponent,
       'cdk-overlay-dark-backdrop',
       { globalPosition: 'center' }
