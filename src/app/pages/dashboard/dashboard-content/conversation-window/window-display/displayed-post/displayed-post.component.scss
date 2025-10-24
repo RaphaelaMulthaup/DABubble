@@ -108,7 +108,7 @@
           grid-column: 4;
         }
       }
-    }
+    } 
 
     .add-reaction {
       gap: 0px;
@@ -117,7 +117,7 @@
         border: 2px solid var(--color-purple-white);
         border-radius: 30px;
         height: 40px;
-        aspect-ratio: 1 / 1;
+        width: 40px;
         transition: 0.2s;
 
         &:hover {
@@ -139,8 +139,8 @@
       }
 
       .add-reaction-btn {
-        width: 32px;
-        aspect-ratio: 1 / 1;
+        width: 34px;
+        height: 34px;
         transition: 0.2s;
         background-image: url("./../../../../../../../assets/img/add-reaction.svg");
         background-repeat: no-repeat;
@@ -301,11 +301,13 @@
     .add-reaction {
       .toggle-reactions-btn {
         width: 40px;
+        height: 40px;
         font-size: 18px;
       }
 
       .add-reaction-btn {
         width: 40px;
+        height: 40px;
         background-size: 80%;
       }
     }
