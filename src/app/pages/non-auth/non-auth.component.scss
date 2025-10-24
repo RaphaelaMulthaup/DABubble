@@ -55,3 +55,11 @@ footer {
 .intro-max-width {
   max-width: 1920px;
 }
+
+.hideIntro{
+  display: none;
+}
+
+.showIntro{
+  display: flex;
+}
