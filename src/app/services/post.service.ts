@@ -254,13 +254,13 @@ export class PostService {
   replaceMarkTokens(result: string) {
     result = result.replace(/\{@([^}]+)\}/g, (_, name: string) => {
       return `<mark class="mark flex" contenteditable="false">
-                <img src="/assets/img/alternate-email-purple.svg" alt="mark">
+                <img src="./assets/img/alternate-email-purple.svg" alt="mark">
                 <span>${name}</span>
               </mark>`;
     });
     result = result.replace(/\{#([^}]+)\}/g, (_, name: string) => {
       return `<mark class="mark flex" contenteditable="false">
-                <img src="/assets/img/tag-blue.svg" alt="mark">
+                <img src="./assets/img/tag-blue.svg" alt="mark">
                 <span>${name}</span>
               </mark>`;
     });
