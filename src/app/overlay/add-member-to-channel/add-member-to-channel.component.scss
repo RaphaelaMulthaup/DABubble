@@ -26,6 +26,23 @@
   opacity: 0;
 }
 
+.radio-btn {
+  width: 20px;
+  aspect-ratio: 1;
+  cursor: pointer;
+  background-repeat: no-repeat;
+  background-position: center;
+  transition: 0.2s;
+}
+
+.radio-btn-checked {
+  background-image: url("../../../assets/img/radio_button_checked.svg");
+}
+
+.radio-btn-unchecked {
+  background-image: url("../../../assets/img/radio_button_unchecked.svg");
+}
+
 input {
   display: flex;
   width: 100%;
@@ -96,7 +113,7 @@ input {
   background-image: url("../../../assets/img/close.svg");
   background-position: center;
   transition: 0.2s;
-  
+
   &:hover {
     background-image: url("../../../assets/img/close-hover.svg");
   }

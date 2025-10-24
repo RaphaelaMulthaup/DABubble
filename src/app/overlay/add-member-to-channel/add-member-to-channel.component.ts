@@ -20,6 +20,7 @@ import {
   takeUntil,
   Subject,
   BehaviorSubject,
+  take,
 } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { UserInterface } from '../../shared/models/user.interface';
@@ -50,6 +51,7 @@ export class AddMemberToChannelComponent {
   addMemberSearchBar!: ElementRef<HTMLElement>;
   searchControl = new FormControl<string>('', { nonNullable: true });
   membersIds$ = new BehaviorSubject<string[]>([]);
+  allContactsSelected$ = new BehaviorSubject<boolean>(false);
   results!: Signal<UserInterface[]>;
   private destroy$ = new Subject<void>();
   private term$: Observable<string> = this.searchControl.valueChanges.pipe(
@@ -126,13 +128,19 @@ export class AddMemberToChannelComponent {
   }
 
   /**
+   * Toggles the Radio-Btn state to switch between adding all or just selected contacts to a channel.
+   */
+  toggleRadioBtn() {
+    const currentRadioBtnState = this.allContactsSelected$.value
+    this.allContactsSelected$.next(!currentRadioBtnState);
+  }
+
+  /**
    * This function closes all overlays after the animation.
    */
   closeOverlay() {
     this.isClosing = true;
-    setTimeout(() => {
-      this.overlayService.closeAll();
-    }, 500);
+    setTimeout(() => this.overlayService.closeAll(), 500);
   }
 
   /**
@@ -161,8 +169,13 @@ export class AddMemberToChannelComponent {
    * @param channelId - the ID of the channel
    */
   addMembertoChannel(channelId: string) {
-    const membersId = this.membersList.map((user) => user.uid);
-    this.channelService.addMemberToChannel(channelId, membersId);
+    let memberIds: string[] = [];
+    if (this.allContactsSelected$.value === true) {
+      this.searchService.getUsers$()
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((users) => memberIds = users.map(user => user.uid));
+    } else memberIds = this.membersList.map((user) => user.uid);
+    this.channelService.addMemberToChannel(channelId, memberIds);
     this.overlayService.clearUsers();
     this.overlayService.closeAll();
   }
