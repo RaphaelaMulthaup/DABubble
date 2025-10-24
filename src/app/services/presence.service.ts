@@ -1,5 +1,5 @@
 import { Injectable, NgZone } from '@angular/core';
-import { doc, Firestore, updateDoc } from '@angular/fire/firestore';
+import { doc, Firestore, updateDoc, setDoc, getDoc } from '@angular/fire/firestore';
 import { ref, onDisconnect, set, serverTimestamp } from 'firebase/database';
 import { Database, get, onValue } from '@angular/fire/database';
 import { Observable } from 'rxjs';
@@ -25,9 +25,11 @@ export class PresenceService {
     if (!user) return;
     const statusRef = ref(this.db, `/status/${user.uid}`);
     const userRef = doc(this.firestore, `users/${user.uid}`);
-    await set(statusRef, { state: 'online', forcedClose: false, lastChanged: Date.now()});
-    await updateDoc(userRef, { active: true, lastActive: serverTimestamp()});
-    onDisconnect(statusRef).set({ state: 'offline', forcedClose: true, lastChanged: Date.now()});
+    const snap = await getDoc(userRef);
+    if (!snap.exists()) await setDoc(userRef, { active: true, lastActive: serverTimestamp() }, { merge: true });
+    await set(statusRef, { state: 'online', forcedClose: false, lastChanged: { '.sv': 'timestamp' } });
+    await updateDoc(userRef, { active: true, lastActive: serverTimestamp() });
+    await onDisconnect(statusRef).set({ state: 'offline', forcedClose: true, lastChanged: { '.sv': 'timestamp' } });
   }
 
   /**

@@ -236,12 +236,7 @@ export class WindowDisplayComponent implements OnInit {
    * @param chatId - ID of the chat to delete
    */
   tryDeleteEmptyChat(chatId?: string) {
-    if (chatId && this.postInfo.length === 0) {
-      this.chatService
-        .deleteChat(chatId)
-        .then(() => console.log(`Empty chat ${chatId} deleted`))
-        .catch((err) => console.error('Error deleting chat', err));
-    }
+    if (chatId && this.postInfo.length === 0) this.chatService.deleteChat(chatId)
   }
 
   /**

@@ -6,9 +6,9 @@ export const CHATMESSAGES = {
     }
   ],
 
-  '5lntBSrRRUM9JB5AFE14z7lTE6n1': [
+  'VSreXOxPvuZ6s3DgDPZUMD2I6AS2': [
     {
-      senderId: '5lntBSrRRUM9JB5AFE14z7lTE6n1',
+      senderId: 'VSreXOxPvuZ6s3DgDPZUMD2I6AS2',
       text: 'Hallo! Du suchst einen bestimmten User, Channel oder eine Nachricht? Dann teste doch mal die Suchleiste aus! :smiling-face-with-halo: \n Wenn du eine neue Nachricht schreiben möchtest, kannst du den entsprechenden Button in der Sidenav auswählen und dann nach User-Emails, Usern(@) oder Channels(#) suchen.',
     }
   ],

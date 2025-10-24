@@ -33,8 +33,8 @@ export class ChannelListComponent {
     public screenService: ScreenService,
     private searchService: SearchService
   ) {
-    this.channels$ = this.searchService.getUserChannels$();
     this.currentUserId = this.authService.getCurrentUserId();
+    this.channels$ = this.searchService.getUserChannels$();
     this.dashboardState = this.screenService.dashboardState;
   }
 
