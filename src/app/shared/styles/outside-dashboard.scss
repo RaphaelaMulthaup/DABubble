@@ -88,6 +88,8 @@ form {
 
 .toast-notification {
   position: absolute;
+  bottom: 48px;
+  right: 48px;
   width: fit-content;
   padding: clamp(1.25rem, 0.875rem + 1.875vw, 2rem)
     clamp(1.875rem, 1.5625rem + 1.5625vw, 2.5rem);
