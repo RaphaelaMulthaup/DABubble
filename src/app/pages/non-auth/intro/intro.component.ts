@@ -8,10 +8,28 @@ import { count } from '@angular/fire/firestore';
   styleUrl: './intro.component.scss',
 })
 export class IntroComponent implements OnInit {
+  introPlayed: boolean = false;
+
   constructor() {}
 
   ngOnInit() {
-    this.introAnimation();
+    const introPlayedStorage = localStorage.getItem('introPlayed');
+    this.introPlayed = introPlayedStorage === 'true';
+
+    this.decideLogo();
+  }
+
+  decideLogo() {
+    let logo = document.querySelector('.logo-container');
+    let noIntro = document.querySelector('.noIntro-container');
+
+    if (this.introPlayed) {
+      logo?.classList.add('hide-animation');
+      noIntro?.classList.add('show-noIntro');
+    } else {
+      this.introAnimation();
+      localStorage.setItem('introPlayed', 'true');
+    }
   }
 
   /**
