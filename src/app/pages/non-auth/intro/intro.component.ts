@@ -15,10 +15,12 @@ export class IntroComponent implements OnInit {
   ngOnInit() {
     const introPlayedStorage = localStorage.getItem('introPlayed');
     this.introPlayed = introPlayedStorage === 'true';
-
     this.decideLogo();
   }
 
+  /**
+   * Decides depending on loaded 'introPlayed' state if intro animation will be executed.
+   */
   decideLogo() {
     let logo = document.querySelector('.logo-container');
     let noIntro = document.querySelector('.noIntro-container');
