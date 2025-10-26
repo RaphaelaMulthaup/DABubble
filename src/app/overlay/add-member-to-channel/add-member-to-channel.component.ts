@@ -78,37 +78,21 @@ export class AddMemberToChannelComponent {
         this.overlayService.clearReset();
       }
     });
-
-    effect(() => {
-      this.membersList = this.overlayService.users();
-    });
-
+    effect(() => this.membersList = this.overlayService.users());
     effect(() => {
       const r = this.results();
       if (r.length > 0) {
-        if (!this.resultsOverlayRef) {
-          this.openAddMembersToChannel();
-        }
+        if (!this.resultsOverlayRef) this.openAddMembersToChannel();
       } else if (this.resultsOverlayRef) {
         this.overlayService.closeOne(this.resultsOverlayRef);
         this.resultsOverlayRef = undefined;
       }
     });
-
     this.results = toSignal(
-      combineLatest([
-        this.term$,
-        this.searchService.users$,
-        this.membersIds$,
-      ]).pipe(
+      combineLatest([ this.term$, this.searchService.users$, this.membersIds$ ]).pipe(
         map(([term, users, memberIds]) => {
           if (!term) return [];
-          return users.filter(
-            (user) =>
-              !memberIds.includes(user.uid) &&
-              (user.name?.toLowerCase().includes(term) ||
-                user.email?.toLowerCase().includes(term))
-          );
+          return users.filter((user) => !memberIds.includes(user.uid) && (user.name?.toLowerCase().includes(term) || user.email?.toLowerCase().includes(term)));
         })
       ),
       { initialValue: [] as UserInterface[] }
@@ -116,14 +100,10 @@ export class AddMemberToChannelComponent {
   }
 
   ngOnInit() {
-    if(this.isChannelNew){
-      this.allContactsSelected$.next(true);
-    }
+    if(this.isChannelNew) this.allContactsSelected$.next(true);
     this.channelDetails$
       ?.pipe(takeUntil(this.destroy$))
-      .subscribe((channel) => {
-        this.membersIds$.next(channel?.memberIds ?? []);
-      });
+      .subscribe((channel) => this.membersIds$.next(channel?.memberIds ?? []));
     this.overlayService.clearUsers();
   }
 
@@ -140,15 +120,20 @@ export class AddMemberToChannelComponent {
     this.allContactsSelected$.next(!currentRadioBtnState);
   }
 
-
-    selectAllContacts() {
+  /**
+   * Selects all contacts as members for a new channel.
+   */
+  selectAllContacts() {
     this.allContactsSelected$.next(true);
-    this.addMemberToChannel = false; // resetăm pentru claritate
+    this.addMemberToChannel = false;
   }
 
+  /**
+   * Selects only specific contacts as members for a new channel.
+   */
   selectSpecificContacts() {
     this.allContactsSelected$.next(false);
-    this.addMemberToChannel = true; // activăm logica pentru al doilea buton
+    this.addMemberToChannel = true;
   }
 
   /**
@@ -184,30 +169,18 @@ export class AddMemberToChannelComponent {
    *
    * @param channelId - the ID of the channel
    */
-  // addMembertoChannel(channelId: string) {
-  //   
-  //   if (this.allContactsSelected$.value === true) {
-  //     this.searchService.getUsers$()
-  //       .pipe(takeUntil(this.destroy$))
-  //       .subscribe((users) => memberIds = users.map(user => user.uid));
-  //   } else memberIds  = this.membersList.map((user) => user.uid);
-  //   this.channelService.addMemberToChannel(channelId, memberIds);
-  //   this.overlayService.clearUsers();
-  //   this.overlayService.closeAll();
-  // }
-
-    addMembertoChannel(channelId: string) {
-      if (this.allContactsSelected$.value === true) {
-        this.searchService.getUsers$()
-        .pipe(take(1))
-        .subscribe((users) => {
-          const allUserIds = users.map((user) => user.uid);
+  addMembertoChannel(channelId: string) {
+    if (this.allContactsSelected$.value === true) {
+      this.searchService.getUsers$()
+      .pipe(take(1))
+      .subscribe((users) => {
+        const allUserIds = users.map((user) => user.uid);
         this.channelService.addMemberToChannel(channelId, allUserIds);
-        })
-      }else{
-          const membersId = this.membersList.map((user) => user.uid);
-          this.channelService.addMemberToChannel(channelId, membersId);
-      }
+      })
+    } else {
+      const membersId = this.membersList.map((user) => user.uid);
+      this.channelService.addMemberToChannel(channelId, membersId);
+    }
     this.overlayService.clearUsers();
     this.overlayService.closeAll();
   }
@@ -221,25 +194,14 @@ export class AddMemberToChannelComponent {
       null,
       {
         origin: this.addMemberSearchBar.nativeElement,
-        originPosition: {
-          originX: 'start',
-          originY: 'bottom',
-          overlayX: 'start',
-          overlayY: 'top',
-        },
-        originPositionFallback: {
-          originX: 'start',
-          originY: 'top',
-          overlayX: 'start',
-          overlayY: 'bottom',
-        },
+        originPosition: { originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top' },
+        originPositionFallback: { originX: 'start', originY: 'top', overlayX: 'start', overlayY: 'bottom' },
       },
       {
         results: this.results,
         onBottom: this.onBottom,
       }
     );
-
     if (!overlay) return;
     this.configureResultsOverlay(overlay);
   }
