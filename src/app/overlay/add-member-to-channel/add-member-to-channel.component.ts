@@ -51,7 +51,7 @@ export class AddMemberToChannelComponent {
   addMemberSearchBar!: ElementRef<HTMLElement>;
   searchControl = new FormControl<string>('', { nonNullable: true });
   membersIds$ = new BehaviorSubject<string[]>([]);
-  allContactsSelected$ = new BehaviorSubject<boolean>(true);
+  allContactsSelected$ = new BehaviorSubject<boolean>(false);
   results!: Signal<UserInterface[]>;
   private destroy$ = new Subject<void>();
   private term$: Observable<string> = this.searchControl.valueChanges.pipe(
@@ -64,6 +64,7 @@ export class AddMemberToChannelComponent {
   isClosing = false;
   overlay: string = '';
   addMemberToChannel:boolean = false;
+  isChannelNew = false;
 
   constructor(
     private channelService: ChannelsService,
@@ -115,6 +116,9 @@ export class AddMemberToChannelComponent {
   }
 
   ngOnInit() {
+    if(this.isChannelNew){
+      this.allContactsSelected$.next(true);
+    }
     this.channelDetails$
       ?.pipe(takeUntil(this.destroy$))
       .subscribe((channel) => {
@@ -180,14 +184,30 @@ export class AddMemberToChannelComponent {
    *
    * @param channelId - the ID of the channel
    */
-  addMembertoChannel(channelId: string) {
-    let memberIds: string[] = [];
-    if (this.allContactsSelected$.value === true) {
-      this.searchService.getUsers$()
-        .pipe(takeUntil(this.destroy$))
-        .subscribe((users) => memberIds = users.map(user => user.uid));
-    } else memberIds = this.membersList.map((user) => user.uid);
-    this.channelService.addMemberToChannel(channelId, memberIds);
+  // addMembertoChannel(channelId: string) {
+  //   
+  //   if (this.allContactsSelected$.value === true) {
+  //     this.searchService.getUsers$()
+  //       .pipe(takeUntil(this.destroy$))
+  //       .subscribe((users) => memberIds = users.map(user => user.uid));
+  //   } else memberIds  = this.membersList.map((user) => user.uid);
+  //   this.channelService.addMemberToChannel(channelId, memberIds);
+  //   this.overlayService.clearUsers();
+  //   this.overlayService.closeAll();
+  // }
+
+    addMembertoChannel(channelId: string) {
+      if (this.allContactsSelected$.value === true) {
+        this.searchService.getUsers$()
+        .pipe(take(1))
+        .subscribe((users) => {
+          const allUserIds = users.map((user) => user.uid);
+        this.channelService.addMemberToChannel(channelId, allUserIds);
+        })
+      }else{
+          const membersId = this.membersList.map((user) => user.uid);
+          this.channelService.addMemberToChannel(channelId, membersId);
+      }
     this.overlayService.clearUsers();
     this.overlayService.closeAll();
   }

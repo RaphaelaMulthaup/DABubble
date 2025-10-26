@@ -26,6 +26,7 @@
         <span class="flex w-full color">{{ channelDetails.name }}</span>
       </div>
     </div>
+    @if(isChannelNew){
     <div (click)="selectAllContacts()" class="flex gap-[24px]">
       <div class="radio-btn"
       [ngClass]="(allContactsSelected$|async)? 'radio-btn-checked': 'radio-btn-unchecked'"></div>
@@ -36,11 +37,15 @@
       [ngClass]="(allContactsSelected$|async)? 'radio-btn-unchecked': 'radio-btn-checked'"></div>
       <p>Bestimmte Kontakte hinzufügen</p>
     </div>
-    <div class="flex w-full flex-col gap-[20px]">
+    }
+
  
-@if(addMemberToChannel){
+@if(addMemberToChannel || !isChannelNew){
+    <div class="flex w-full flex-col gap-[20px]">
+
       <ul class="cont">
         @for(user of membersList; track $index){
+          {{user.name}}
         <li class="container">
           <img
             class="profil-img"
@@ -64,10 +69,10 @@
           />
         </li>
       </ul>
+    </div>
+
 }
 
-
-    </div>
           <div class="flex w-full justify-end">
         <button
           class="btn-primary"

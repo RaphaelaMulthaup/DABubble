@@ -133,6 +133,7 @@ export class CreateChannelFormComponent {
       {
         channelDetails$: this.channelToObservable() as Observable<ChannelInterface>,
         overlay: 'overlay',
+        isChannelNew: true
       }
     );
   }
