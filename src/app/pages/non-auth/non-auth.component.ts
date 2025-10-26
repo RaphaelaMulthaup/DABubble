@@ -70,10 +70,7 @@ export class NonAuthComponent {
   }
 
   ngOnInit() {
-    const introPlayedStorage = localStorage.getItem('introPlayed');
-    this.introPlayed = introPlayedStorage === 'true';
     
-    this.isIntroPlayed();
     const usersRef = collection(this.firestore, 'users');
     this.handleIntroState();
     this.route.queryParams.subscribe((params) => {
@@ -136,19 +133,5 @@ export class NonAuthComponent {
 
     intro?.classList.add('hide');
     showLogo?.classList.add('.show-logo');
-  }
-
-  isIntroPlayed() {
-    let intro = document.querySelector('.intro');
-    console.log(this.introPlayed);
-    
-
-    if (this.introPlayed) {
-      intro?.classList.add('hideIntro');
-    } else {
-      intro?.classList.add('showIntro');
-      this.introPlayed = true;
-      localStorage.setItem('introPlayed', 'true');
-    }
   }
 }
