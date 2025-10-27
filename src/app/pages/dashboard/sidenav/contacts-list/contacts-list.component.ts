@@ -3,16 +3,7 @@ import { CommonModule, AsyncPipe } from '@angular/common';
 import { UserService } from '../../../../services/user.service';
 import { AuthService } from '../../../../services/auth.service';
 import { ChatService } from '../../../../services/chat.service';
-import {
-  Observable,
-  of,
-  switchMap,
-  map,
-  combineLatest,
-  filter,
-  shareReplay,
-  firstValueFrom,
-} from 'rxjs';
+import { Observable, of, switchMap, map, combineLatest, filter, shareReplay, firstValueFrom } from 'rxjs';
 import { UserInterface } from '../../../../shared/models/user.interface';
 import { UserListItemComponent } from '../../../../shared/components/user-list-item/user-list-item.component';
 import { DashboardState } from '../../../../shared/types/dashboard-state.type';
