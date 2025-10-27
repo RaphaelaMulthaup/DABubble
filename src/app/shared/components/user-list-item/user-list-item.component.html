@@ -10,8 +10,7 @@
     dashboardState() !== 'new-message-view' &&
     !inHeaderChat &&
     !relatedToSearchResultPost &&
-    conversationActiveRouterService.currentConversation() ===
-      lastUserSnapshot?.uid
+    conversationActiveRouterService.currentConversation() === lastUserSnapshot?.uid
   "
 >
   @if (user$ | async; as user) {

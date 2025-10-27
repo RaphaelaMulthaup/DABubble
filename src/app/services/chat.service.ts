@@ -1,28 +1,7 @@
 import { Injectable } from '@angular/core';
-import {
-  collection,
-  collectionData,
-  collectionSnapshots,
-  deleteDoc,
-  doc,
-  DocumentData,
-  Firestore,
-  getDocs,
-  limit,
-  query,
-  QueryDocumentSnapshot,
-  setDoc,
-} from '@angular/fire/firestore';
+import { collection, collectionData, collectionSnapshots, deleteDoc, doc, DocumentData, Firestore, getDocs, limit, query, QueryDocumentSnapshot, setDoc } from '@angular/fire/firestore';
 import { ChatInterface } from '../shared/models/chat.interface';
-import {
-  BehaviorSubject,
-  distinctUntilChanged,
-  filter,
-  map,
-  Observable,
-  shareReplay,
-  take,
-} from 'rxjs';
+import { BehaviorSubject, distinctUntilChanged, filter, map, Observable, shareReplay, take } from 'rxjs';
 import { NavigationEnd, Router } from '@angular/router';
 import { UserInterface } from '../shared/models/user.interface';
 import { ScreenService } from './screen.service';
@@ -31,9 +10,9 @@ import { ScreenService } from './screen.service';
   providedIn: 'root',
 })
 export class ChatService {
-  private chatsCache = new Map<string, Observable<ChatInterface[]>>();
-  private _otherUser$ = new BehaviorSubject<UserInterface | null>(null);
-  public otherUser$ = this._otherUser$.asObservable();
+  chatsCache = new Map<string, Observable<ChatInterface[]>>();
+  _otherUser$ = new BehaviorSubject<UserInterface | null>(null);
+  otherUser$ = this._otherUser$.asObservable();
   previousUrl = '';
 
   constructor(
@@ -110,9 +89,7 @@ export class ChatService {
    * 
    * @param userId - The ID of the user to search for in chat document IDs.
    */
-  async getChatRefsForUser(
-    userId: string
-  ): Promise<QueryDocumentSnapshot<DocumentData>[]> {
+  async getChatRefsForUser( userId: string): Promise<QueryDocumentSnapshot<DocumentData>[]> {
     const chatsRef = collection(this.firestore, 'chats');
     const snaps = await getDocs(chatsRef);
     return snaps.docs.filter((snap) => snap.id.includes(userId));
