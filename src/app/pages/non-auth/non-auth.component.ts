@@ -117,7 +117,7 @@ export class NonAuthComponent {
   }
 
   /**
-   * Adds max-width to intro content.
+   * Adds max-width to intro content. With delay in case of first init.
    */
   addMaxWidth() {
     let intro = document.querySelector('.intro');
