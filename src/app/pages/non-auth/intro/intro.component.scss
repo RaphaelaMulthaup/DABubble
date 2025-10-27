@@ -165,6 +165,7 @@
     display: none;
     padding: 74px 0px 0px 0px;
     margin: 0px 0px 0px 74px;
+    max-width: 1920px;
 
     @include respond-to('959') {
         width: 100%;

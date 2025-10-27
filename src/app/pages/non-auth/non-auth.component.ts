@@ -70,6 +70,8 @@ export class NonAuthComponent {
   }
 
   ngOnInit() {
+    const introPlayedStorage = localStorage.getItem('introPlayed');
+    this.introPlayed = introPlayedStorage === 'true';
     
     const usersRef = collection(this.firestore, 'users');
     this.handleIntroState();
@@ -118,10 +120,15 @@ export class NonAuthComponent {
    * Adds max-width to intro content.
    */
   addMaxWidth() {
-    setTimeout(() => {
-      let intro = document.querySelector('.intro');
-      intro?.classList.add('intro-max-width');
-    }, 3500);
+    let intro = document.querySelector('.intro');
+
+    if (this.introPlayed) {
+      intro?.classList.add('intro-max-width')
+    } else {
+      setTimeout(() => {
+        intro?.classList.add('intro-max-width');
+      }, 3500);
+    }
   }
 
   /**
