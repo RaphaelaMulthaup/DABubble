@@ -1,22 +1,6 @@
-import {
-  Component,
-  EventEmitter,
-  Input,
-  Output,
-  OnDestroy,
-  WritableSignal,
-} from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnDestroy, WritableSignal } from '@angular/core';
 import { BehaviorSubject, Observable, Subject, timer } from 'rxjs';
-import {
-  filter,
-  switchMap,
-  shareReplay,
-  map,
-  takeUntil,
-  delayWhen,
-  repeatWhen,
-  takeWhile,
-} from 'rxjs/operators';
+import { filter, switchMap, shareReplay, map, takeUntil, delayWhen, repeatWhen, takeWhile } from 'rxjs/operators';
 import { UserInterface } from '../../models/user.interface';
 import { AuthService } from '../../../services/auth.service';
 import { ChatService } from '../../../services/chat.service';
@@ -49,14 +33,14 @@ export class UserListItemComponent implements OnDestroy {
 
   userStatus$: Observable<any> | undefined;
   currentStatus$!: Observable<any>;
-  private userUid$ = new BehaviorSubject<string | null>(null);
-  private destroy$ = new Subject<void>();
-  public dashboardState!: WritableSignal<DashboardState>;
-  public screenSize$!: Observable<ScreenSize>;
-  public user$: Observable<UserInterface | null>;
-  public currentUserId$: Observable<string | null>;
-  public lastUserSnapshot: UserInterface | null = null;
-  private currentUserId: string | null = null;
+  userUid$ = new BehaviorSubject<string | null>(null);
+  destroy$ = new Subject<void>();
+  dashboardState!: WritableSignal<DashboardState>;
+  screenSize$!: Observable<ScreenSize>;
+  user$: Observable<UserInterface | null>;
+  currentUserId$: Observable<string | null>;
+  lastUserSnapshot: UserInterface | null = null;
+  currentUserId: string | null = null;
 
   constructor(
     private authService: AuthService,
@@ -111,6 +95,7 @@ export class UserListItemComponent implements OnDestroy {
     if (!this.currentUserId || !this.lastUserSnapshot) return;
     this.overlayService.closeAll();
     this.chatService.navigateToChat(this.currentUserId, this.lastUserSnapshot);
+    this.conversationActiveRouterService.currentConversation.set(this.lastUserSnapshot.uid);
   }
 
   /**
