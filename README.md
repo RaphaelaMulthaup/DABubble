@@ -79,7 +79,7 @@ src/<br>
 
 👨‍💻 Andrei Buha
 
-👩‍💻 Anne Vollman
+👩‍💻 Anne Vollmann
 
 👨‍💻 Nicolaus Feldtmann
 

@@ -21,13 +21,7 @@ import { ConversationActiveRouterService } from '../../services/conversation-act
 
 @Component({
   selector: 'app-create-channel-form',
-  imports: [
-    FormsModule,
-    ReactiveFormsModule,
-    HeaderOverlayComponent,
-    CommonModule,
-    AddMemberToChannelComponent,
-  ],
+  imports: [ FormsModule, ReactiveFormsModule, CommonModule ],
   templateUrl: './create-channel-form.component.html',
   styleUrl: './create-channel-form.component.scss',
 })
