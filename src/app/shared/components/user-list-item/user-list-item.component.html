@@ -10,8 +10,7 @@
     dashboardState() !== 'new-message-view' &&
     !inHeaderChat &&
     !relatedToSearchResultPost &&
-    conversationActiveRouterService.currentConversation() ===
-      lastUserSnapshot?.uid
+    conversationActiveRouterService.currentConversation() === lastUserSnapshot?.uid
   "
 >
   @if (user$ | async; as user) {
@@ -29,9 +28,7 @@
               status?.state === 'online'
                 ? 'assets/img/online-with-white-circle.svg'
                 : 'assets/img/offline-with-white-circle.svg'
-            "
-            alt="Status"
-          />
+            " alt="Status"/>
         } @else {
           <img class="status" src="assets/img/offline-with-white-circle.svg" alt="Status" />
         } 

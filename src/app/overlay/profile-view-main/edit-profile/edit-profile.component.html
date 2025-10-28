@@ -27,13 +27,19 @@
       type="text"
       maxlength="24"
       autofocus
+      (input)="onInput()"
     />
+
+    <p class="error-message">
+      @if (!(userNameValide$|async))
+        {Diese Feld darf nicht leer sein.}
+    </p>
   </div>
   <div class="btn-area flex items-center justify-around w-full">
     <button class="btn-secondary" (click)="overlayService.closeOne(this.overlayRef)">
       Abbrechen
     </button>
-    <button class="btn-primary save" (click)="changeUserName()">
+    <button class="btn-primary save" (click)="changeUserName()" [disabled]="!(userNameValide$|async)">
       Speichern
     </button>
   </div>

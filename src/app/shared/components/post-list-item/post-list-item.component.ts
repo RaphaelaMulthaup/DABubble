@@ -4,6 +4,9 @@ import { PostInterface } from '../../models/post.interface';
 import { Router } from '@angular/router';
 import { PostService } from '../../../services/post.service';
 import { ScreenService } from '../../../services/screen.service';
+import { ConversationActiveRouterService } from '../../../services/conversation-active-router.service';
+import { ChatService } from '../../../services/chat.service';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-post-list-item',
@@ -18,6 +21,9 @@ export class PostListItemComponent {
   @Input() post!: PostInterface;
 
   constructor(
+    private authService: AuthService,
+    private chatService: ChatService,
+    private conversationActiveRouterService: ConversationActiveRouterService,
     private router: Router,
     public postService: PostService,
     public screenService: ScreenService
@@ -31,6 +37,7 @@ export class PostListItemComponent {
     if (postId) {
       this.postService.select(postId);
       this.navigateToAnswerOrMessage(postId);
+      this.setActiveConversationSidenav();
     }
   }
 
@@ -50,6 +57,17 @@ export class PostListItemComponent {
         queryParams: { scrollTo: postId },
       });
     }
+  }
+
+  /**
+   * Sets the currentConversation to the navigated chat- or channel-id.
+   */
+  setActiveConversationSidenav() {
+    let conversationId: string;
+    if (this.post.chatId) {
+      conversationId = this.chatService.getOtherUserId(this.post.chatId, this.authService.currentUser!.uid);
+    } else conversationId = this.post.channelId!;
+    this.conversationActiveRouterService.currentConversation.set(conversationId);
   }
 
   /**
@@ -77,7 +95,7 @@ export class PostListItemComponent {
    *
    * @param data - The data needed for the route and scrolling to the answer.
    */
-  private navigateToAnswerByData(data: NavigationData) {
+  navigateToAnswerByData(data: NavigationData) {
     this.screenService.setDashboardState('thread-window');
     const route = [
       '/dashboard',

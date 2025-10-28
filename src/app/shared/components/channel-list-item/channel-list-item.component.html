@@ -1,6 +1,6 @@
 <li class="list-item channel-list-item" 
   (click)="!isInSearchResultsCurrentPostInput
-      ? screenService.setDashboardState('message-window')
+      ? selectChannel()
       : emitChannel()"
   [routerLink]="!isInSearchResultsCurrentPostInput
       ? ['/dashboard', 'channel', channel.id]

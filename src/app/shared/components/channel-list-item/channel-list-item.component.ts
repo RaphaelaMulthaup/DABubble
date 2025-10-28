@@ -38,6 +38,14 @@ export class ChannelListItemComponent {
   }
 
   /**
+   * Changes the dashboardState to message-window and the currentConversation to the selected channels id.
+   */
+  selectChannel() {
+    this.screenService.setDashboardState('message-window');
+    this.conversationActiveRouterService.currentConversation.set(this.channel.id!);
+  }
+
+  /**
    * Emits the selected channel via the channelSelected EventEmitter.
    * This is used to notify the parent component of the selected channel.
    */
