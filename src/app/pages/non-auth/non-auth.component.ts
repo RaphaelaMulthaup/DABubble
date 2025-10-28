@@ -49,6 +49,7 @@ export class NonAuthComponent {
   showConfirm: boolean = false;
   showLogin: boolean = true;
   showIntro: any;
+  introPlayed: boolean = false;
 
   constructor(
     private auth: Auth,
@@ -69,6 +70,7 @@ export class NonAuthComponent {
   }
 
   ngOnInit() {
+    
     const usersRef = collection(this.firestore, 'users');
     this.handleIntroState();
     this.route.queryParams.subscribe((params) => {

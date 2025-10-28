@@ -1,4 +1,4 @@
-@import "./../../../styles.scss";
+@import "../../../styles.scss";
 
 body,
 main {
@@ -55,6 +55,10 @@ form {
   font-size: 16px;
   color: var(--color-pink);
   line-height: 1;
+
+  @include respond-to("430") {
+    height: 32px !important;
+  }
 }
 
 .link {

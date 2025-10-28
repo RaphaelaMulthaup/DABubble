@@ -40,7 +40,7 @@
     }
   }
 
-  p{
+  p {
     transition: all 0.2s ease;
   }
 
@@ -68,8 +68,12 @@
 
   @media screen and (pointer: coarse) {
     font-weight: 400 !important;
-    //color: inherit !important;
     background-color: inherit !important;
   }
 }
 
+@media (max-width: 430px) {
+  .input-container {
+    margin-bottom: -20px !important;
+  }
+}

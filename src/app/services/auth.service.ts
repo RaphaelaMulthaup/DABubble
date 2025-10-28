@@ -309,6 +309,7 @@ export class AuthService {
       await updateDoc(userRef, { active: false });
       await signOut(this.auth);
     }
+    localStorage.setItem('introPlayed', 'false');
   }
 
   /**

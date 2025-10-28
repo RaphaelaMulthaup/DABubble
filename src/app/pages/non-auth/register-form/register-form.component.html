@@ -42,7 +42,7 @@
                 </div>
 
                 <p class="error-message">
-                    @if (registerForm.get('email')?.touched && registerForm.get('email')?.invalid)
+                    @if (registerForm.get('email')?.invalid && registerForm.get('email')?.touched)
                     {Bitte gib eine gültige E-Mail-Addresse ein.}
                     @else if (emailExists)
                     {Diese E-Mail-Addresse existiert bereits.}
@@ -77,6 +77,8 @@
                 </p>
             </div>
         </div>
-        <button class="btn-primary self-end" type="submit" [disabled]="!registerForm.valid">Weiter</button>
+        <button class="disabled btn-primary self-end" type="submit">
+            <span>Weiter</span>
+        </button>
     </form>
 </section>

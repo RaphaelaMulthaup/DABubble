@@ -80,7 +80,7 @@
       </div>
 
       <button
-        (click)="loginWithGoogle()"
+        (click)="$event.preventDefault(); loginWithGoogle()"
         class="google-login-btn flex items-center place-content-center w-full"
       >
         <img src="./assets/img/google.svg" alt="Google icon" />
@@ -89,10 +89,10 @@
 
       <div class="submit-btns flex">
         <button class="btn-primary" type="submit" [disabled]="!loginForm.valid">
-          Anmelden
+          <span>Anmelden</span>
         </button>
-        <button class="btn-secondary" (click)="loginGuest()">
-          Gäste-Login
+        <button class="btn-secondary" (click)="$event.preventDefault(); loginGuest()">
+          <span>Gäste-Login</span>
         </button>
       </div>
     </form>

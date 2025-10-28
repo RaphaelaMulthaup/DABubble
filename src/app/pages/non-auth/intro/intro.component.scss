@@ -140,9 +140,14 @@
     width: 348px;
     height: 144px !important;
 
-  @include respond-to('959') {
-    width: 100% !important;
-  }
+    @include respond-to('959') {
+        width: 100% !important;
+        margin: 0 !important;
+    }
+
+        @include respond-to(xxxs) {
+        margin: 0px 0px 0px 15px !important;
+    }
 }
 
 @keyframes slideFromLeft{
@@ -154,4 +159,67 @@
         transform: translateX(0);
         opacity: 1;
     }
+}
+
+.noIntro-container{
+    display: none;
+    padding: 74px 0px 0px 0px;
+    margin: 0px 0px 0px 74px;
+
+    @include respond-to('959') {
+        width: 100%;
+        margin: 0 !important;
+    }
+
+    @include respond-to('624') {
+        padding: 36px 0px 0px 0px !important;
+    }
+}
+
+.noIntro-logo {
+    height: 70px;
+    align-self: center;
+
+    @include respond-to(xxxs) {
+        height: 65px;
+        width: 100px;
+    }
+}
+
+.noIntro-logoContent{
+    width: auto;
+}
+
+.noIntro-soloLogo{
+    width: 80px;
+    height: 68px; 
+}
+
+.noIntro-span{
+    overflow: hidden;
+}
+
+.not-animated-name{
+    font-size: 34px;
+    font-weight: 656;
+    margin: 0px 2px 0px 24px;
+    width: 164px;
+
+    @include respond-to('624') {
+        font-size: 28px !important;
+    }
+
+    @include respond-to(xxxs) {
+        margin: 0px 0px 0px 12px !important;
+        font-size: 24px !important;
+        width: 116px;
+    }
+}
+
+.hide-animation{
+    display: none;
+}
+
+.show-noIntro{
+    display: flex;
 }

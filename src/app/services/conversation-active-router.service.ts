@@ -27,10 +27,7 @@ export class ConversationActiveRouterService {
   limits = new Map<string, BehaviorSubject<number>>();
   allMessagesLoaded = new Map<string, boolean>();
   currentConversation = signal<string | null>(null);
-  basePathMap: Record<string, string> = {
-    channel: 'channels',
-    chat: 'chats',
-  };
+  basePathMap: Record<string, string> = { channel: 'channels', chat: 'chats' };
 
   constructor(private firestore: Firestore) {}
 

@@ -72,6 +72,11 @@ export class RegisterFormComponent implements OnInit {
    * On submit, the userToRegister-data is set to the input values.
    */
   onSubmit() {
+    if (this.registerForm.invalid) {
+      this.registerForm.markAllAsTouched();
+      this.registerForm.updateValueAndValidity();
+      return;
+    }
     const thisForm = this.registerForm.value;
     this.userToRegister.displayName = thisForm.displayName;
     this.userToRegister.email = thisForm.email;

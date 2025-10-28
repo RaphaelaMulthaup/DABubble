@@ -20,6 +20,7 @@ import {
   takeUntil,
   Subject,
   BehaviorSubject,
+  take,
 } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { UserInterface } from '../../shared/models/user.interface';
@@ -50,6 +51,7 @@ export class AddMemberToChannelComponent {
   addMemberSearchBar!: ElementRef<HTMLElement>;
   searchControl = new FormControl<string>('', { nonNullable: true });
   membersIds$ = new BehaviorSubject<string[]>([]);
+  allContactsSelected$ = new BehaviorSubject<boolean>(false);
   results!: Signal<UserInterface[]>;
   private destroy$ = new Subject<void>();
   private term$: Observable<string> = this.searchControl.valueChanges.pipe(
@@ -61,6 +63,8 @@ export class AddMemberToChannelComponent {
   private resultsOverlayRef?: OverlayRef;
   isClosing = false;
   overlay: string = '';
+  addMemberToChannel:boolean = false;
+  isChannelNew = false;
 
   constructor(
     private channelService: ChannelsService,
@@ -74,37 +78,21 @@ export class AddMemberToChannelComponent {
         this.overlayService.clearReset();
       }
     });
-
-    effect(() => {
-      this.membersList = this.overlayService.users();
-    });
-
+    effect(() => this.membersList = this.overlayService.users());
     effect(() => {
       const r = this.results();
       if (r.length > 0) {
-        if (!this.resultsOverlayRef) {
-          this.openAddMembersToChannel();
-        }
+        if (!this.resultsOverlayRef) this.openAddMembersToChannel();
       } else if (this.resultsOverlayRef) {
         this.overlayService.closeOne(this.resultsOverlayRef);
         this.resultsOverlayRef = undefined;
       }
     });
-
     this.results = toSignal(
-      combineLatest([
-        this.term$,
-        this.searchService.users$,
-        this.membersIds$,
-      ]).pipe(
+      combineLatest([ this.term$, this.searchService.users$, this.membersIds$ ]).pipe(
         map(([term, users, memberIds]) => {
           if (!term) return [];
-          return users.filter(
-            (user) =>
-              !memberIds.includes(user.uid) &&
-              (user.name?.toLowerCase().includes(term) ||
-                user.email?.toLowerCase().includes(term))
-          );
+          return users.filter((user) => !memberIds.includes(user.uid) && (user.name?.toLowerCase().includes(term) || user.email?.toLowerCase().includes(term)));
         })
       ),
       { initialValue: [] as UserInterface[] }
@@ -112,11 +100,10 @@ export class AddMemberToChannelComponent {
   }
 
   ngOnInit() {
+    if(this.isChannelNew) this.allContactsSelected$.next(true);
     this.channelDetails$
       ?.pipe(takeUntil(this.destroy$))
-      .subscribe((channel) => {
-        this.membersIds$.next(channel?.memberIds ?? []);
-      });
+      .subscribe((channel) => this.membersIds$.next(channel?.memberIds ?? []));
     this.overlayService.clearUsers();
   }
 
@@ -126,13 +113,35 @@ export class AddMemberToChannelComponent {
   }
 
   /**
+   * Toggles the Radio-Btn state to switch between adding all or just selected contacts to a channel.
+   */
+  toggleRadioBtn() {
+    const currentRadioBtnState = this.allContactsSelected$.value
+    this.allContactsSelected$.next(!currentRadioBtnState);
+  }
+
+  /**
+   * Selects all contacts as members for a new channel.
+   */
+  selectAllContacts() {
+    this.allContactsSelected$.next(true);
+    this.addMemberToChannel = false;
+  }
+
+  /**
+   * Selects only specific contacts as members for a new channel.
+   */
+  selectSpecificContacts() {
+    this.allContactsSelected$.next(false);
+    this.addMemberToChannel = true;
+  }
+
+  /**
    * This function closes all overlays after the animation.
    */
   closeOverlay() {
     this.isClosing = true;
-    setTimeout(() => {
-      this.overlayService.closeAll();
-    }, 500);
+    setTimeout(() => this.overlayService.closeAll(), 500);
   }
 
   /**
@@ -161,8 +170,17 @@ export class AddMemberToChannelComponent {
    * @param channelId - the ID of the channel
    */
   addMembertoChannel(channelId: string) {
-    const membersId = this.membersList.map((user) => user.uid);
-    this.channelService.addMemberToChannel(channelId, membersId);
+    if (this.allContactsSelected$.value === true) {
+      this.searchService.getUsers$()
+      .pipe(take(1))
+      .subscribe((users) => {
+        const allUserIds = users.map((user) => user.uid);
+        this.channelService.addMemberToChannel(channelId, allUserIds);
+      })
+    } else {
+      const membersId = this.membersList.map((user) => user.uid);
+      this.channelService.addMemberToChannel(channelId, membersId);
+    }
     this.overlayService.clearUsers();
     this.overlayService.closeAll();
   }
@@ -176,25 +194,14 @@ export class AddMemberToChannelComponent {
       null,
       {
         origin: this.addMemberSearchBar.nativeElement,
-        originPosition: {
-          originX: 'start',
-          originY: 'bottom',
-          overlayX: 'start',
-          overlayY: 'top',
-        },
-        originPositionFallback: {
-          originX: 'start',
-          originY: 'top',
-          overlayX: 'start',
-          overlayY: 'bottom',
-        },
+        originPosition: { originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top' },
+        originPositionFallback: { originX: 'start', originY: 'top', overlayX: 'start', overlayY: 'bottom' },
       },
       {
         results: this.results,
         onBottom: this.onBottom,
       }
     );
-
     if (!overlay) return;
     this.configureResultsOverlay(overlay);
   }
