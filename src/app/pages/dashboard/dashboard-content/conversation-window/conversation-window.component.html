@@ -1,7 +1,7 @@
 <section class="conversation-window flex flex-col" [style.height]="
     (screenSize$ | async) !== 'handset'
       ? '100%'
-      : 'calc(100vh - 82px)'
+      : 'calc(100dvh - 82px)'
   "
   [ngClass]="{'border-radius-0': (screenSize$ | async) === 'handset'}">
   <app-conversation-header [conversationWindowState]="conversationWindowState"></app-conversation-header>

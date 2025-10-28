@@ -20,7 +20,7 @@
 }
 
 .dashboard-web {
-  height: calc(100vh - 115px);
+  height: calc(100dvh - 115px);
   padding: 0 20px;
   gap: 10px;
   background-color: var(--color-purple-white);
@@ -45,7 +45,7 @@
 }
 
 .dashboard-tablet {
-  height: calc(100vh - 115px);
+  height: calc(100dvh - 115px);
   padding: 0 20px;
   gap: 10px;
   background-color: var(--color-purple-white);

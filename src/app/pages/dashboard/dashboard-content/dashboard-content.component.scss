@@ -3,7 +3,7 @@
 }
 
 .dashboard-web {
-  height: calc(100vh - 135px);
+  height: calc(100dvh - 135px);
   gap: 20px;
   background-color: var(--color-purple-white);
   display: flex;
@@ -38,7 +38,7 @@
 }
 
 .dashboard-tablet {
-  height: calc(100vh - 135px);
+  height: calc(100dvh - 135px);
   background-color: var(--color-purple-white);
 
   > * {
@@ -53,7 +53,7 @@
 
 .empty-window-handset {
   width: 100%;
-  height: calc(100vh - 208px);
+  height: calc(100dvh - 208px);
 }
 
 .new-message-view {
