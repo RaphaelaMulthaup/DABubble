@@ -75,7 +75,7 @@ export class IntroComponent implements OnInit {
     }, 3500);
     
     setTimeout(() => {
-      //this.finalForm();
+      this.finalForm();
     }, 5000);
   }
 
