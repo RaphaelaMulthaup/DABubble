@@ -80,7 +80,7 @@
     }
 
     @media screen and (min-width: 2150px) {
-        transition: width 1.5s ease, height 2s ease, margin 0.4s ease;
+        transition: width 1s ease, height 1s ease, margin 0.4s ease;
     }
 }
 
@@ -171,7 +171,7 @@
 .noIntro-container{
     display: none;
     position: relative;
-    margin: 0px 0px 0px 74px;
+    margin: 0px 0px 0px 72px;
     max-width: 1920px;
 
     @include respond-to('959') {
