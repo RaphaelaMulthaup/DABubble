@@ -81,6 +81,19 @@ export class NonAuthComponent {
     });
     collectionData(usersRef).pipe(map((users: any[]) => users.map((user) => user.name)));
     this.addMaxWidth();
+    this.removeBackGround();
+  }
+
+  removeBackGround() {
+    let backGround = document.querySelector('.back-ground');
+    
+    if (this.introPlayed) {
+      backGround?.classList.add('hideBack');
+    } else {
+      setTimeout(() => {
+        backGround?.classList.add('hideBack');
+      }, 3500);
+    }
   }
 
   /**

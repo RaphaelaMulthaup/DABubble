@@ -5,10 +5,15 @@ import { ScreenService } from '../../../services/screen.service';
 import { AsyncPipe } from '@angular/common';
 import { CreateAccountBtnComponent } from '../create-account-btn/create-account-btn.component';
 import { AuthState } from '../../types/auth-state.type';
+import { IntroComponent } from '../../../pages/non-auth/intro/intro.component';
 
 @Component({
   selector: 'app-header-outside-dashboard',
-  imports: [AsyncPipe, CreateAccountBtnComponent],
+  imports: [
+    AsyncPipe, 
+    CreateAccountBtnComponent,
+    IntroComponent
+  ],
   templateUrl: './header-outside-dashboard.component.html',
   styleUrl: './header-outside-dashboard.component.scss',
 })

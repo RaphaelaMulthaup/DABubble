@@ -1,11 +1,11 @@
 @import './../../../../styles.scss';
 
 .logo-container{
-    background: linear-gradient(to top, var(--color-purple-dark), var(--color-purple-medium), var(--color-purple-light));
     width: 100%;
+    max-width: 1920px;
     height: 100%;
     z-index: 100;
-    padding: 74px 0px 0px 0px;
+    //padding: 74px 0px 0px 0px;
     transition: background-color 0.5s ease-out;
 
     @include respond-to('624') {
@@ -78,6 +78,10 @@
         height: 65px;
         width: 100px;
     }
+
+    @media screen and (min-width: 2150px) {
+        transition: width 1.5s ease, height 2s ease, margin 0.4s ease;
+    }
 }
 
 .animat-logo{
@@ -103,7 +107,9 @@
 .moveUp{
     align-items: baseline;
     height: 100%;
+    max-height: 956px;
     width: 100%;
+    max-width: 1920px;
 
     @include respond-to('959') {
         justify-content: center;
@@ -135,10 +141,11 @@
 }
 
 .final-container{
-    position: absolute;
+    position: relative;
     top: 0px;
     width: 348px;
-    height: 144px !important;
+    height: 72px !important;
+    padding: 0;
 
     @include respond-to('959') {
         width: 100% !important;
@@ -163,7 +170,7 @@
 
 .noIntro-container{
     display: none;
-    padding: 74px 0px 0px 0px;
+    position: relative;
     margin: 0px 0px 0px 74px;
     max-width: 1920px;
 
