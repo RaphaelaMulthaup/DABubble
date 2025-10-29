@@ -74,16 +74,17 @@ export class NonAuthComponent {
     this.introPlayed = introPlayedStorage === 'true';
     
     const usersRef = collection(this.firestore, 'users');
-    this.handleIntroState();
     this.route.queryParams.subscribe((params) => {
       const uid = params['uid'];
       if (uid) this.currentState = 'reset-password-confirm';
     });
     collectionData(usersRef).pipe(map((users: any[]) => users.map((user) => user.name)));
-    this.addMaxWidth();
     this.removeBackGround();
   }
 
+  /**
+   * Removes background of animation
+   */
   removeBackGround() {
     let backGround = document.querySelector('.back-ground');
     
@@ -108,40 +109,6 @@ export class NonAuthComponent {
    */
   hideResetPassword() {
     this.currentState = 'login';
-  }
-
-  /**
-   * shows intro animation only if currentState is "login"
-   */
-  handleIntroState() {
-    if ((this.currentState = 'login')) {
-      this.showLogo();
-    } else {
-      this.noIntro();
-    }
-  }
-
-  /**
-   * Repalced the animted logo with the actual one.
-   */
-  showLogo() {
-    let shownLogo = document.querySelector('.logo');
-    shownLogo?.classList.add('show-logo');
-  }
-
-  /**
-   * Adds max-width to intro content. With delay in case of first init.
-   */
-  addMaxWidth() {
-    let intro = document.querySelector('.intro');
-
-    if (this.introPlayed) {
-      intro?.classList.add('intro-max-width')
-    } else {
-      setTimeout(() => {
-        intro?.classList.add('intro-max-width');
-      }, 3500);
-    }
   }
 
   /**
