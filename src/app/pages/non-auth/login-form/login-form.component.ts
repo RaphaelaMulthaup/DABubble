@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter } from '@angular/core';
+import { Component, Output, EventEmitter, OnInit, OnDestroy } from '@angular/core';
 import { AuthService } from '../../../services/auth.service';
 import {
   FormControl,
@@ -8,7 +8,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { finalize, Observable } from 'rxjs';
+import { debounceTime, finalize, Observable, Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-login-form',
@@ -16,14 +16,16 @@ import { finalize, Observable } from 'rxjs';
   templateUrl: './login-form.component.html',
   styleUrl: './login-form.component.scss',
 })
-export class LoginFormComponent {
+export class LoginFormComponent implements OnInit, OnDestroy {
   @Output() forgotPassword = new EventEmitter<void>();
-
+  destroy$ = new Subject<void>();
+  loginForm: FormGroup;  
   showLogin: boolean = true;
   isSubmittingWithGoogleOrAsGuest: boolean = false;
-  showErrorMessage: boolean = false;
-  loginForm: FormGroup;                             
-  
+  showEmailError :boolean = false;
+  showPasswordError :boolean = false;
+  showLoginErrorMessage: boolean = false;
+                             
   constructor(private authService: AuthService) {
     this.loginForm = new FormGroup({
       email: new FormControl('', [Validators.required, Validators.email]),
@@ -31,6 +33,37 @@ export class LoginFormComponent {
         Validators.required,
         Validators.minLength(6),
       ]),
+    });
+  }
+
+  ngOnInit() {
+    this.setupErrorHandler('password', 'showPasswordError');
+    this.setupErrorHandler('email', 'showEmailError');
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  /**
+   * Sets up a reactive error handler for a specific form control.
+   * The handler updates a boolean property after a short debounce when the control becomes invalid and touched, and the user is not submitting via Google or as a guest.
+   *
+   * @param controlName - The name of the form control to observe (e.g. 'email', 'password')
+   * @param target - The component property name that indicates whether the error message should be shown
+   */
+  setupErrorHandler(controlName: string, target: 'showEmailError' | 'showPasswordError') {
+    const control = this.loginForm.get(controlName);
+    control?.statusChanges.pipe(
+      debounceTime(200),
+      takeUntil(this.destroy$)
+    ).subscribe(() => {
+      this[target] =
+        !!control &&
+        control.invalid &&
+        control.touched &&
+        !this.isSubmittingWithGoogleOrAsGuest;
     });
   }
 
@@ -51,7 +84,7 @@ export class LoginFormComponent {
       email: string;
       password: string;
     };
-    this.handleLogin(this.authService.login(email, password));
+    this.handleLogin(this.authService.login(email, password), true);
   }
 
   /**
@@ -59,7 +92,7 @@ export class LoginFormComponent {
    */
   loginWithGoogle() {
     this.isSubmittingWithGoogleOrAsGuest = true;
-    this.handleLogin(this.authService.loginWithGoogle());
+    this.handleLogin(this.authService.loginWithGoogle(), false);
   }
 
   /**
@@ -67,7 +100,7 @@ export class LoginFormComponent {
    */
   loginGuest() {
     this.isSubmittingWithGoogleOrAsGuest = true;
-    this.handleLogin(this.authService.loginAsGuest());
+    this.handleLogin(this.authService.loginAsGuest(), false);
   }
 
   /**
@@ -75,13 +108,14 @@ export class LoginFormComponent {
    * When an error occurs in the login-process, the error-message is shown.
    * When the login-process finished (success or error), the isSubmittingWithGoogleOrAsGuest is set back to false.
    *
-   * @param login$ - the login-operation as an observable
+   * @param login$ - The login-operation as an observable
+   * @param showErrorOnFail - whether an error-message should be shown for invalid inputs or not
    */
-  handleLogin(login$: Observable<any>) {
+  handleLogin(login$: Observable<any>, showErrorOnFail:boolean = true) {
     login$
       .pipe(finalize(() => (this.isSubmittingWithGoogleOrAsGuest = false)))
       .subscribe({
-        error: () => this.showErrorMessage = true
+        error: () => {if(showErrorOnFail) setTimeout(() => this.showLoginErrorMessage = true, 200)}
       });
   }
 }

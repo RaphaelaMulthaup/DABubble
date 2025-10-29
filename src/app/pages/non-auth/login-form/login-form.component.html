@@ -34,8 +34,7 @@
             />
           </div>
           <p class="error-message">
-            @if (loginForm.get('email')?.touched &&
-            loginForm.get('email')?.invalid) {Bitte gib eine gültige
+            @if (showEmailError) {Bitte gib eine gültige
             E-Mail-Addresse ein.}
           </p>
         </div>
@@ -58,13 +57,12 @@
             />
           </div>
           <p class="error-message">
-            @if (loginForm.get('password')?.invalid
-            &&loginForm.get('password')?.touched) {Dein Passwort muss min. 6
+            @if (showPasswordError) {Dein Passwort muss min. 6
             Zeichen lang sein.}
           </p>
         </div>
         <p class="error-message">
-          @if (showErrorMessage && !isSubmittingWithGoogleOrAsGuest){E-Mail und Passwort
+          @if (showLoginErrorMessage && !isSubmittingWithGoogleOrAsGuest){E-Mail und Passwort
           stimmen nicht überein.}
         </p>
       </div>
