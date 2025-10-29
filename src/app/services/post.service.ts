@@ -273,7 +273,8 @@ export class PostService {
    * @param element - the editable to focus on
    */
   focusAtEndEditable(element: ElementRef | null) {
-    if (element) {
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || (navigator as any).msMaxTouchPoints > 0;
+    if (element && !isTouchDevice) {
       element.nativeElement.focus();
       const range = document.createRange();
       range.selectNodeContents(element.nativeElement);

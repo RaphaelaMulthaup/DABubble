@@ -35,9 +35,7 @@ export class SearchResultsComponent {
   }
 
   ngOnInit() {
-    this.subscription = this.screenService.screenSize$.subscribe((size) => {
-      this.screenSize = size;
-    });
+    this.subscription = this.screenService.screenSize$.subscribe((size) => this.screenSize = size);
   }
 
   ngOnDestroy() {
