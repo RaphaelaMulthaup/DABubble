@@ -8,4 +8,9 @@ import { HeaderOutsideDashboardComponent } from '../../shared/components/header-
   templateUrl: './imprint.component.html',
   styleUrl: './imprint.component.scss',
 })
-export class ImprintComponent {}
+export class ImprintComponent {
+  constructor() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+

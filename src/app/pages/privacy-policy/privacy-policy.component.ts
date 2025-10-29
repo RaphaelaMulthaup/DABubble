@@ -8,4 +8,8 @@ import { HeaderOutsideDashboardComponent } from '../../shared/components/header-
   templateUrl: './privacy-policy.component.html',
   styleUrl: './privacy-policy.component.scss',
 })
-export class PrivacyPolicyComponent {}
+export class PrivacyPolicyComponent {
+  constructor() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
