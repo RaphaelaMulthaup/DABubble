@@ -4,6 +4,23 @@
   padding: 40px;
 }
 
+.overlay-create-channel-handset {
+  position: fixed;
+  inset: 0; /* ersetzt top, right, bottom, left */
+  width: 100vw;
+  height: 100dvh;
+  max-height: 100svh; /* NEU: sichert den sichtbaren Viewport */
+  overflow-y: auto; /* erlaubt leichtes Scrollen, falls nötig */
+  border-radius: 0;
+  background-color: var(--color-white);
+  padding: 40px 20px calc(40px + env(safe-area-inset-bottom, 0px));
+  box-sizing: border-box;
+
+  @supports not (height: 100dvh) {
+    height: 100vh; /* Fallback für ältere Browser */
+  }
+}
+
 .input-gap {
   display: flex;
   padding-left: 58px;
@@ -65,12 +82,12 @@ p {
   background-image: url("../../../assets/img/close.svg");
   background-position: center;
   transition: 0.2s;
-  
+
   &:hover {
     background-image: url("../../../assets/img/close-hover.svg");
   }
 
   @media screen and (pointer: coarse) {
-     background-image: url("../../../assets/img/close.svg") !important;
+    background-image: url("../../../assets/img/close.svg") !important;
   }
 }
