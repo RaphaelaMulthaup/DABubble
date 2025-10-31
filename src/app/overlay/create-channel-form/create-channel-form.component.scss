@@ -6,18 +6,20 @@
 
 .overlay-handset {
   position: fixed;
-  inset: 0; /* ersetzt top, right, bottom, left */
+  inset: 0;
   width: 100vw;
   height: 100dvh;
-  max-height: 100svh; /* NEU: sichert den sichtbaren Viewport */
-  overflow-y: auto; /* erlaubt leichtes Scrollen, falls nötig */
+  max-height: none;
+  overflow-y: auto;
   border-radius: 0;
   background-color: var(--color-white);
-  padding: 40px 20px calc(40px + env(safe-area-inset-bottom, 0px));
+  padding: 40px 20px 40px;
   box-sizing: border-box;
-
   @supports not (height: 100dvh) {
-    height: 100vh; /* Fallback für ältere Browser */
+    height: 100vh;
+  }
+  @supports (padding: max(0px)) {
+    padding-bottom: max(40px, env(safe-area-inset-bottom));
   }
 }
 
