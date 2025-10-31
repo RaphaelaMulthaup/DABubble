@@ -1,48 +1,55 @@
-@import './../../../../../styles.scss';
+@import "./../../../../../styles.scss";
 
-.new-avatar-selection{
-    width: 500px;
-    height: 600px;
-    padding: 38px;
-
-    @include respond-to(xs) {
-        width: 90dvw;
+.new-avatar-selection {
+  width: 500px;
+  height: 600px;
+  padding: 38px;
+  @media (max-height: 750px) {
+    height: 500px;
+    padding: 24px;
+    .selectedImg {
+      width: 150px;
+      height: 150px;
     }
+  }
+  @include respond-to(xs) {
+    width: 90dvw;
+  }
 }
 
-.selectedImg{
-    width: 200px;
-    height: 200px;
+.selectedImg {
+  width: 200px;
+  height: 200px;
 }
 
-img{
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    cursor: pointer;
+img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  cursor: pointer;
 }
 
-.newAvatar-h3{
-    margin: 0px 0px 8px 0px;
+.newAvatar-h3 {
+  margin: 0px 0px 8px 0px;
 }
 
-.avatar-list{
-    @include respond-to(xxs) {
-        display: grid;
-        grid-template-columns: auto auto auto;
-    }
+.avatar-list {
+  @include respond-to(xxs) {
+    display: grid;
+    grid-template-columns: auto auto auto;
+  }
 }
 
-.avatar-img{
-    margin: 4px 0px 4px 0px;
+.avatar-img {
+  margin: 4px 0px 4px 0px;
 }
 
-.btn-area{
-    @include respond-to(xxs) {
-        flex-direction: column-reverse;
-    }
+.btn-area {
+  @include respond-to(xxs) {
+    flex-direction: column-reverse;
+  }
 
-    .save{
-        margin: 0px 0px 12px 0px;
-    }
+  .save {
+    margin: 0px 0px 12px 0px;
+  }
 }

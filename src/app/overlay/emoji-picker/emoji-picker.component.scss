@@ -1,29 +1,32 @@
 .reaction-options {
-    padding: 12px;
-    border-radius: 0 20px 20px 20px;
-    background-color: var(--color-purple-white);
-    box-shadow: 0px 6px 10px 0px #00000033;
-    display: grid;
-    justify-content: center;
-    grid-template-columns: repeat(5, 1fr);
+  padding: 12px;
+  border-radius: 0 20px 20px 20px;
+  background-color: var(--color-purple-white);
+  box-shadow: 0px 6px 10px 0px #00000033;
+  display: grid;
+  justify-content: center;
+  grid-template-columns: repeat(5, 1fr);
 
-    .reaction-img {
-        width: 50px;
-        height: 50px;
-        padding: 2px;
-        transition: 0.2s;
-
-        &:hover {
-            cursor: pointer;
-            transform: scale(1.1);
-        }
+  .reaction-img {
+    width: 50px;
+    height: 50px;
+    padding: 2px;
+    transition: 0.2s;
+    @media (max-height: 750px) {
+      width: 40px;
+      height: 40px;
     }
+    &:hover {
+      cursor: pointer;
+      transform: scale(1.1);
+    }
+  }
 }
 
 .right-angle-top-right {
-    border-radius: 20px 0 20px 20px !important;
+  border-radius: 20px 0 20px 20px !important;
 }
 
 .right-angle-bottom-left {
-    border-radius: 20px 20px 20px 0 !important;
+  border-radius: 20px 20px 20px 0 !important;
 }

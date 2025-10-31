@@ -1,4 +1,4 @@
-<div class="overlay" [class.overlay-create-channel-handset]="(screenSize$|async) === 'handset'">
+<div class="overlay" [class.overlay-handset]="(screenSize$|async) === 'handset'">
   <form action="" [formGroup]="createChannel" (ngSubmit)="onSubmit()">
     <div class="form-group flex flex-col max-w-[872px] mt-[20px] gap-[20px]">
       <div class="w-full flex justify-between">

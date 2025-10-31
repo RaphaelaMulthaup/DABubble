@@ -4,7 +4,16 @@
   width: 500px;
   height: 600px;
   padding: 38px;
-
+  @media (max-height: 750px) {
+    height: 500px;
+    padding: 24px;
+    .img-area {
+      height: 158px;
+    }
+    .user-img {
+      width: 150px;
+    }
+  }
   @include respond-to(xs) {
     width: 90dvw;
   }
@@ -59,7 +68,7 @@ input {
 .close {
   transition: 0.2s;
   background-image: url("./../../../../assets/img/close.svg");
-  
+
   &:hover {
     background-image: url("./../../../../assets/img/close-hover.svg");
   }

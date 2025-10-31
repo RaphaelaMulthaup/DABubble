@@ -4,7 +4,7 @@
   padding: 40px;
 }
 
-.overlay-create-channel-handset {
+.overlay-handset {
   position: fixed;
   inset: 0; /* ersetzt top, right, bottom, left */
   width: 100vw;
@@ -67,13 +67,6 @@ p {
 
 .inputAndErrorMessage {
   height: 88px;
-}
-
-.overlay-handset {
-  width: 100vw;
-  height: 100dvh;
-  border-radius: 0;
-  padding: 40px 20px;
 }
 
 .close {
