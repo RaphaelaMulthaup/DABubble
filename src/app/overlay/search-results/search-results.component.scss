@@ -14,11 +14,17 @@
   box-shadow: 0px 2px 10px 0px #00000014;
   margin-top: -15px;
   margin-left: 43px;
+  margin-bottom: 16px;
   border: 1px solid var(--color-purple-light-lines);
 
   .scroll-container {
-    max-height: clamp(43.75rem, 30rem + 22.9167vw, 57.5rem);
+    height: fit-content;
+    max-height: calc(100dvh - 96px);
     margin-right: 10px;
+
+    @media (min-height: 800px) {
+      max-height: 700px;
+    }
   }
 }
 
