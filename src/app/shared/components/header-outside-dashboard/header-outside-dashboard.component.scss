@@ -5,6 +5,8 @@ header {
   background-color: var(--color-purple-white);
   padding: clamp(3rem, 2.25rem + 3.75vw, 4.5rem);
   padding-bottom: 0;
+  justify-content: space-between;
+  max-width: 1920px;
 
   .logo-final {
     width: 100%;
@@ -19,4 +21,13 @@ header {
   .hideLogo{
     visibility: hidden !important;
   }
+}
+
+.intro{
+  position: relative;
+  left: 0;
+}
+
+.create{
+  margin: 0px 74px 0px 0px;
 }
