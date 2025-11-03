@@ -33,6 +33,7 @@
 }
 
 .handset-settings-view-main {
+  position: fixed;
   top: unset;
   right: 0;
   left: 0;
@@ -42,7 +43,7 @@
   border-top-right-radius: 30px !important;
   border-bottom-left-radius: 0 !important;
   border-bottom-right-radius: 0 !important;
-
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px));
   .settings-btn {
     justify-content: start !important;
     transition: 0.2s;
@@ -56,14 +57,14 @@
   .settingsIcon {
     display: flex !important;
     transition: 0.2s;
-    
+
     &:hover {
       color: var(--color-black);
       background-color: var(--color-white);
     }
   }
 
-  .settings-icon{
+  .settings-icon {
     width: 30px;
     height: 30px;
     background-repeat: no-repeat;

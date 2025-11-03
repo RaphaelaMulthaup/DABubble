@@ -17,6 +17,10 @@ section {
   overflow-x: hidden;
   scrollbar-width: none;
   padding-bottom: 16px;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .profil-img {
@@ -59,7 +63,7 @@ section {
     background-size: 24px 24px;
     transition: background-image 0.2s ease;
   }
-  
+
   &:hover {
     .add-person {
       background-image: url("../../../../assets/img/person-add-hover.svg");

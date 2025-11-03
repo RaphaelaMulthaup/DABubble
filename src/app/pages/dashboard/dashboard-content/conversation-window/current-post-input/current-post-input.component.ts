@@ -305,13 +305,74 @@ export class CurrentPostInput implements OnInit, OnDestroy {
   async insertName(mark: string) {
     const selection = window.getSelection();
     if (!this.savedRange || !selection) return;
-    selection.removeAllRanges();
-    selection.addRange(this.savedRange);
+    this.restoreSavedRange(selection);
     const range = selection.getRangeAt(0);
     range.collapse(false);
-    if (this.searchText) await this.deleteAfterSearchChar(this.searchText.length);
-    document.execCommand('insertHTML', false, mark);
+    if (this.searchText) {
+      await this.deleteAfterSearchChar(this.searchText.length);
+    }
+    const markNode = this.createMarkNode(mark);
+    this.insertMarkNode(range, markNode);
+    this.placeCursorAfterMark(selection, range, markNode);
     this.postService.focusAtEndEditable(this.postTextInput);
+    this.resetSearchState();
+  }
+
+  /**
+   * Restores the previously saved text range in the current selection.
+   */
+  private restoreSavedRange(selection: Selection) {
+    selection.removeAllRanges();
+    selection.addRange(this.savedRange!);
+  }
+
+  /**
+   * Creates a DOM element from the provided HTML mark string.
+   *
+   * @param mark - The HTML string representing the mark.
+   */
+  private createMarkNode(mark: string): HTMLElement {
+    const temp = document.createElement('div');
+    temp.innerHTML = mark.trim();
+    return temp.firstElementChild as HTMLElement;
+  }
+
+  /**
+   * Inserts the mark node into the document and adds a space after it to ensure proper cursor placement (especially for Safari).
+   *
+   * @param range - The current text range.
+   * @param markNode - The mark element to insert.
+   */
+  private insertMarkNode(range: Range, markNode: HTMLElement) {
+    range.insertNode(markNode);
+    const space = document.createTextNode('\u00A0');
+    markNode.parentNode!.insertBefore(space, markNode.nextSibling);
+  }
+
+  /**
+   * Moves the cursor to the position immediately after the inserted mark.
+   *
+   * @param selection - The current text selection.
+   * @param range - The modified range after insertion.
+   * @param markNode - The inserted mark element.
+   */
+  private placeCursorAfterMark(
+    selection: Selection,
+    range: Range,
+    markNode: HTMLElement
+  ) {
+    const space = markNode.nextSibling;
+    if (!space) return;
+    range.setStartAfter(space);
+    range.collapse(true);
+    selection.removeAllRanges();
+    selection.addRange(range);
+  }
+
+  /**
+   * Resets all temporary search and range variables to their default values.
+   */
+  private resetSearchState() {
     this.searchResults = [];
     this.searchChar = null;
     this.searchText = null;
