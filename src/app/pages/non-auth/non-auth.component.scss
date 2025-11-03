@@ -1,11 +1,19 @@
-@import "../../shared/styles/outside-dashboard.scss";
 @import "./../../../styles.scss";
+@import "../../shared/styles/outside-dashboard.scss";
+
+:host {
+  display: block;
+  height: 100dvh;
+  background-color: var(--color-purple-white);
+  align-content: center;
+}
 
 * {
   background-color: var(--color-purple-white);
 }
 
 body {
+  display: unset !important;
   justify-content: center;
 }
 
@@ -25,12 +33,19 @@ body {
   }
 }
 
-.back-ground{
-    position: absolute;
-    width: 100vw;
-    height: 100dvh;
-    z-index: 99;
-    background: linear-gradient(to top, var(--color-purple-dark), var(--color-purple-medium), var(--color-purple-light));
+.background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  z-index: 99;
+  background: linear-gradient(
+    to top,
+    var(--color-purple-dark),
+    var(--color-purple-medium),
+    var(--color-purple-light)
+  );
 }
 
 main {
@@ -61,8 +76,7 @@ footer {
     margin-top: 32px;
   }
 }
-  
-.hideBack{
+
+.hideBack {
   display: none;
 }
-

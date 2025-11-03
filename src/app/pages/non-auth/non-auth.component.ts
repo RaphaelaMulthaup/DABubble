@@ -30,8 +30,7 @@ import { UserToRegisterInterface } from '../../shared/models/user.to.register.in
     HeaderOutsideDashboardComponent,
     ConfirmPasswordComponent,
     ResetPasswordComponent,
-    CreateAccountBtnComponent,
-    IntroComponent,
+    CreateAccountBtnComponent
   ],
   templateUrl: './non-auth.component.html',
   styleUrl: './non-auth.component.scss',
@@ -86,13 +85,15 @@ export class NonAuthComponent {
    * Removes background of animation
    */
   removeBackGround() {
-    let backGround = document.querySelector('.back-ground');
+    let backGround = document.querySelector('.background');
     
     if (this.introPlayed) {
       backGround?.classList.add('hideBack');
     } else {
+      document.body.style.overflow = 'hidden';
       setTimeout(() => {
         backGround?.classList.add('hideBack');
+        document.body.style.overflow = '';
       }, 3500);
     }
   }

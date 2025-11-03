@@ -18,16 +18,20 @@ header {
     visibility: visible !important;
   }
 
-  .hideLogo{
+  .hideLogo {
     visibility: hidden !important;
   }
 }
 
-.intro{
+.intro {
   position: relative;
   left: 0;
+  @include respond-to('959') {
+    width: 100%;
+    justify-self: center;
+  }
 }
 
-.create{
+.create {
   margin: 0px 74px 0px 0px;
 }

@@ -1,5 +1,6 @@
 <header class="flex place-content-between w-full">
 <app-intro class="intro"></app-intro>
-  @if (currentState === 'login' && ((screenSize$|async) != 'handset')) {
-  <app-create-account-btn class="create" (changeAuthState)="onChildStateChange($event)"></app-create-account-btn>}
+@if (currentState === 'login' && ((screenSize$|async) != 'handset')) {
+  <app-create-account-btn class="create" (changeAuthState)="onChildStateChange($event)"></app-create-account-btn>
+}
 </header>

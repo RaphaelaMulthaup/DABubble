@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { count } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-intro',
