@@ -447,22 +447,3 @@ h4 {
 .border-radius-0 {
   border-radius: 0 !important;
 }
-
-// @include respond-to('959') {
-//   .btn-dropdown,
-//   .btn-dropdown div,
-//   .channel-list-item {
-//     color: inherit !important;
-//     background-color: inherit !important;
-//     background-image: inherit !important;
-//   }
-// }
-
-// @media (hover: none) {
-//   .btn-dropdown,
-//   .btn-dropdown div {
-//     color: inherit !important;
-//     background-color: inherit !important;
-//     background-image: inherit !important;
-//   }
-// }
