@@ -1,232 +1,240 @@
-@import './../../../../styles.scss';
+@import "./../../../../styles.scss";
 
-.logo-container{
-    width: 100%;
-    max-width: 1920px;
-    height: 100%;
-    z-index: 100;
-    transition: background-color 0.5s ease-out;
+.logo-container {
+  width: 100%;
+  max-width: 1920px;
+  height: 100%;
+  z-index: 100;
+  transition: background-color 0.5s ease-out;
 
-    @include respond-to('624') {
-        padding: 36px 0px 0px 0px !important;
-    }
+  @include respond-to("624") {
+    padding: 36px 0px 0px 0px !important;
+  }
 
-    .solo-logo{
-        position: relative;
-        width: 80px;
-        height: 68px;
-        overflow: hidden;
-
-        @include respond-to('624') {
-            width: 64px;
-            height: 60px;
-        }
-
-        @include respond-to(xxxs) {
-            width: 52px !important;
-            height: 48px !important;
-        }
-    }
-}
-
-.addMaxWidth{
-    max-width: 1920px;
-}
-
-.logo-container-final{
-    width: unset;
-    height: 20%;
-    position: absolute;
-}
-
-.span-box{
+  .solo-logo {
+    position: relative;
+    width: 80px;
+    height: 68px;
     overflow: hidden;
-}
 
-.animat-name{
-    display: none;
-    font-size: 34px;
-    font-weight: 656;
-    color: var(--color-white);
-    margin: 0px 2px 0px 24px;
-    animation: slideFromLeft 0.5s ease-in;
-    width: 164px;
-
-    @include respond-to('624') {
-        font-size: 28px !important;
+    @include respond-to("624") {
+      width: 64px;
+      height: 60px;
     }
 
     @include respond-to(xxxs) {
-        margin: 0px 0px 0px 12px !important;
-        font-size: 24px !important;
-        width: 116px;
+      width: 52px !important;
+      height: 48px !important;
     }
+  }
 }
 
-.name-black{
-    color: var(--color-black);
+.addMaxWidth {
+  max-width: 1920px;
 }
 
-.animated-logo{
-    transition: width 1.5s ease, height 1s ease, margin 0.4s ease;
+.logo-container-final {
+  width: unset;
+  height: 20%;
+  position: absolute;
+}
+
+.span-box {
+  overflow: hidden;
+}
+
+.animat-name {
+  display: none;
+  font-size: 34px;
+  font-weight: 656;
+  color: var(--color-white);
+  margin: 0px 2px 0px 24px;
+  animation: slideFromLeft 0.5s ease-in;
+  width: 164px;
+
+  @include respond-to("624") {
+    font-size: 28px !important;
+  }
+
+  @include respond-to(xxxs) {
+    margin: 0px 0px 0px 12px !important;
+    font-size: 24px !important;
+    width: 116px;
+  }
+}
+
+.name-black {
+  color: var(--color-black);
+}
+
+.animated-logo {
+  transition: width 1.5s ease, height 1s ease, margin 0.4s ease;
+  width: 100px;
+  height: 70px;
+  align-self: center;
+
+  @include respond-to(xxxs) {
+    height: 65px;
     width: 100px;
-    height: 70px;
-    align-self: center;
+  }
 
-    @include respond-to(xxxs) {
-        height: 65px;
-        width: 100px;
-    }
-
-    @media screen and (min-width: 2150px) {
-        transition: width 1s ease, height 1s ease, margin 0.4s ease;
-    }
+  @media screen and (min-width: 2150px) {
+    transition: width 1s ease, height 1s ease, margin 0.4s ease;
+  }
 }
 
-.animat-logo{
-    width: auto;
+.animat-logo {
+  width: auto;
 }
 
-.expand{
-    width: 280px;
+.expand {
+  width: 280px;
 
-    @include respond-to('624') {
-        width: 255px;
-    }
+  @include respond-to("624") {
+    width: 255px;
+  }
 
-    @include respond-to(xxxs) {
-        width: 180px;
-    }
+  @include respond-to(xxxs) {
+    width: 180px;
+  }
 }
 
-.show{
-    display: flex !important;
+.show {
+  display: flex !important;
 }
 
-.moveUp{
-    align-items: baseline;
-    height: 100%;
-    max-height: 956px;
+.moveUp {
+  align-items: baseline;
+  height: 100%;
+  max-height: 956px;
+  width: 100%;
+  max-width: 1920px;
+
+  @include respond-to("959") {
+    justify-content: center;
+  }
+
+  @include respond-to(xxxs) {
+    writing-mode: 228px;
+  }
+}
+
+.addMargin {
+  margin: 0px 0px 0px 74px;
+
+  @include respond-to("959") {
+    margin: 0 !important;
+  }
+
+  @include respond-to(xxxs) {
+    margin: 0px 0px 0px 15px !important;
+  }
+}
+
+.getRid {
+  display: none;
+}
+
+.container-transperent {
+  background: transparent !important;
+}
+
+.final-container {
+  position: relative;
+  top: 0px;
+  width: 348px;
+  height: 72px !important;
+  padding: 0;
+
+  @include respond-to("959") {
+    width: 100% !important;
+    margin: 0 !important;
+  }
+
+  @include respond-to(xxxs) {
+    margin: 0px 0px 0px 15px !important;
+  }
+}
+
+@keyframes slideFromLeft {
+  from {
+    transform: translateX(-150%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.noIntro-container {
+  display: none;
+  position: relative;
+  margin: 0px 0px 0px 72px;
+  max-width: 1920px;
+
+  @include respond-to("959") {
     width: 100%;
-    max-width: 1920px;
+    margin: 0 !important;
+  }
 
-    @include respond-to('959') {
-        justify-content: center;
+  @include respond-to("624") {
+    padding: 36px 0px 0px 0px !important;
+  }
+
+  @include respond-to("xxxs") {
+    justify-content: left;
+
+    .noIntro-span {
+      overflow: visible;
     }
-
-    @include respond-to(xxxs) {
-        writing-mode: 228px;
-    }
-}
-
-.addMargin{
-    margin: 0px 0px 0px 74px;
-
-    @include respond-to('959') {
-        margin: 0 !important;
-    }
-
-    @include respond-to(xxxs) {
-        margin: 0px 0px 0px 15px !important;
-    }
-}
-
-.getRid{
-    display: none;
-}
-
-.container-transperent{
-    background: transparent !important;
-}
-
-.final-container{
-    position: relative;
-    top: 0px;
-    width: 348px;
-    height: 72px !important;
-    padding: 0;
-
-    @include respond-to('959') {
-        width: 100% !important;
-        margin: 0 !important;
-    }
-
-        @include respond-to(xxxs) {
-        margin: 0px 0px 0px 15px !important;
-    }
-}
-
-@keyframes slideFromLeft{
-    from {
-        transform: translateX(-150%);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
-}
-
-.noIntro-container{
-    display: none;
-    position: relative;
-    margin: 0px 0px 0px 72px;
-    max-width: 1920px;
-
-    @include respond-to('959') {
-        width: 100%;
-        margin: 0 !important;
-    }
-
-    @include respond-to('624') {
-        padding: 36px 0px 0px 0px !important;
-    }
+  }
 }
 
 .noIntro-logo {
-    height: 70px;
-    align-self: center;
+  height: 70px;
+  align-self: center;
 
-    @include respond-to(xxxs) {
-        height: 65px;
-        width: 100px;
-    }
+  @include respond-to(xxxs) {
+    height: 65px;
+    width: 100px;
+  }
 }
 
-.noIntro-logoContent{
-    width: auto;
+.noIntro-logoContent {
+  width: auto;
 }
 
-.noIntro-soloLogo{
-    width: 80px;
-    height: 68px; 
+.noIntro-soloLogo {
+  width: 80px;
+  height: 68px;
 }
 
-.noIntro-span{
-    overflow: hidden;
+.noIntro-span {
+  overflow: hidden;
 }
 
-.not-animated-name{
-    font-size: 34px;
-    font-weight: 656;
-    margin: 0px 2px 0px 24px;
-    width: 164px;
+.not-animated-name {
+  font-size: 34px;
+  font-weight: 656;
+  margin: 0px 2px 0px 24px;
+  width: 164px;
 
-    @include respond-to('624') {
-        font-size: 28px !important;
-    }
+  @include respond-to("624") {
+    font-size: 28px !important;
+  }
 
-    @include respond-to(xxxs) {
-        margin: 0px 0px 0px 12px !important;
-        font-size: 24px !important;
-        width: 116px;
-    }
+  @include respond-to(xxxs) {
+    margin: 0px 0px 0px 12px !important;
+    font-size: 24px !important;
+    width: 116px;
+  }
 }
 
-.hide-animation{
-    display: none;
+.hide-animation {
+  display: none;
 }
 
-.show-noIntro{
-    display: flex;
+.show-noIntro {
+  display: flex;
 }
