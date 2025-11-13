@@ -195,10 +195,10 @@
   height: 70px;
   align-self: center;
 
-  @include respond-to(xxxs) {
-    height: 65px;
-    width: 100px;
-  }
+    @include respond-to(xxxs) {
+        height: 65px;
+        width: 208px;
+    }
 }
 
 .noIntro-logoContent {
