@@ -8,6 +8,10 @@ header {
   justify-content: space-between;
   max-width: 1920px;
 
+  @media screen and (max-width: 960px) {
+    justify-content: center;
+  }
+
   .logo-final {
     width: 100%;
     max-width: 306px;
